@@ -20,13 +20,13 @@
             "name": "effects",
             "label": "Ranged Combat Effects",
             "path": "./packs/effects.db",
-            "entity": "Item"
+            "type": "Item"
         },
         {
             "name": "macros",
             "label": "Ranged Combat Macros",
             "path": "./packs/macros.db",
-            "entity": "Macro"
+            "type": "Macro"
         }
     ]
 }
