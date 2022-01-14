@@ -79,7 +79,7 @@ function getControlledToken() {
     if (!myTokens.length) {
         let myCharacter = game.user.character;
         if (game.user.character) {
-            let userTokens = myCharacter.getActiveTokens;
+            let userTokens = myCharacter.getActiveTokens();
             if (!userTokens.length) {
                 ui.notifications.warn("No token selected");
                 return;
