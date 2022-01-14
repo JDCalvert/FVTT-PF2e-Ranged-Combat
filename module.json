@@ -1,0 +1,32 @@
+{
+    "name": "pf2e-ranged-combat",
+    "title": "PF2e Ranged Combat",
+    "description": "Utilities for impriving ranged combat in Pathfinder 2e.",
+    "author": "JDCalvert",
+    "version": "1.0.0",
+    "minimumCoreVersion": "9",
+    "compatibleCoreVersion": "9",
+    "system": [
+        "pf2e"
+    ],
+    "url": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat",
+    "manifest": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/releases/latest/download/module.json",
+    "download": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/archive/1.0.0.zip",
+    "readme": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat",
+    "bugs": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/issues",
+    "changelog": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/CHANGELOG.md",
+    "packs": [
+        {
+            "name": "effects",
+            "label": "Ranged Combat Effects",
+            "path": "./packs/effects.db",
+            "entity": "Item"
+        },
+        {
+            "name": "macros",
+            "label": "Ranged Combat Macros",
+            "path": "./packs/macros.db",
+            "entity": "Macro"
+        }
+    ]
+}
