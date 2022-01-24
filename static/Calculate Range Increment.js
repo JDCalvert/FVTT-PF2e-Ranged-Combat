@@ -117,7 +117,11 @@ async function calculateRangeIncrement() {
 
     // Calculate the distance between the controlled and targetted tokens, measured on the grid, and then
     // which range increment of the weapon the target is in
-    const distance = canvas.grid.measureDistance(myToken.center, targetToken.center, { gridSpaces: true });
+    const gridSize = canvas.dimensions.size;
+    const dx = Math.max(0, myToken.x - (targetToken.x + targetToken.w - gridSize), targetToken.x - (myToken.x + myToken.w - gridSize));
+    const dy = Math.max(0, myToken.y - (targetToken.y + targetToken.h - gridSize), targetToken.y - (myToken.y + myToken.h - gridSize));
+
+    const distance = canvas.grid.measureDistance({x: 0, y: 0}, {x: dx, y: dy}, { gridSpaces: true });
     const rangeIncrement = Math.ceil(distance / weapon.data.range);
 
     if (rangeIncrement < 2) {
