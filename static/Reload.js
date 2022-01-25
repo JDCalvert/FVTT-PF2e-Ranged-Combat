@@ -21,7 +21,7 @@ class WeaponSelectDialog extends Dialog {
     static async getWeapon(weapons) {
         let content = `
             <div class="weapon-buttons" style="max-width: max-content; justify-items: center; margin: auto;">
-            <p>Select Strike Weapon</p>
+            <p>Select Weapon</p>
         `
         for (let weapon of weapons) {
             content += `
@@ -62,7 +62,13 @@ class WeaponSelectDialog extends Dialog {
 reload();
 
 async function reload() {
+    const RELOAD_ACTION_ONE_ID = "Compendium.pf2e-ranged-combat.actions.MAYuLJ4bsciOXiNM";
+    const RELOAD_ACTION_TWO_ID = "Compendium.pf2e-ranged-combat.actions.lqjuYBOAjDb9ACfo";
     const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
+    const CROSSBOW_ACE_FEAT_ID = "Compendium.pf2e.feats-srd.CpjN7v1QN8TQFcvI";
+    const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zP0vPd14V5OG9ZFv";
+    const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3gecLk6";
+    const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
 
     const effectsToAdd = [];
 
@@ -77,11 +83,90 @@ async function reload() {
         return;
     }
 
-    // Get the "Loaded" effect and change its name
-    const loadedEffect = await getItem(LOADED_EFFECT_ID);
-    setEffectTarget(loadedEffect, weapon.name);
+    // Check if this weapon is already loaded
+    const myLoadedEffect = myToken.actor.itemTypes.effect.find(effect =>
+        effect.getFlag("core", "sourceId") === LOADED_EFFECT_ID
+        && effect.getFlag("pf2e-ranged-combat", "weaponId") === weapon._id
+    );
+    if (myLoadedEffect) {
+        ui.notifications.warn(`${weapon.name} is already loaded`);
+        return;
+    }
 
+    // If we don't already have it, add the reload action, and then post it
+    const reloadActions = weapon.data.reload.value;
+    const reloadActionId = (() => {
+        switch (reloadActions) {
+            case "1":
+                return RELOAD_ACTION_ONE_ID;
+            case "2":
+                return RELOAD_ACTION_TWO_ID;
+            default:
+                return RELOAD_ACTION_ONE_ID;
+        }
+    })();
+    const reloadAction = await getItem(reloadActionId);
+    let myReloadAction = myToken.actor.itemTypes.action.find(action =>
+        action.getFlag("core", "sourceId") === reloadActionId
+    );
+    if (!myReloadAction) {
+        await myToken.actor.createEmbeddedDocuments("Item", [reloadAction]);
+        myReloadAction = myToken.actor.itemTypes.action.find(action =>
+            action.getFlag("core", "sourceId") === reloadActionId
+        );
+    }
+    myReloadAction.toMessage();
+
+    // Get the "Loaded" effect and set its target to the weapon we're reloading
+    const loadedEffect = await getItem(LOADED_EFFECT_ID);
+    setEffectTarget(loadedEffect, weapon);
     effectsToAdd.push(loadedEffect);
+
+    // Handle crossbow effects that trigger on reload
+    const weaponIsCrossbow = weapon.data.traits.otherTags.includes("crossbow");
+    const weaponIsEquipped = weapon.data.equipped.value;
+    if (weaponIsCrossbow && weaponIsEquipped) {
+        const crossbowFeats = [
+            {
+                featId: CROSSBOW_ACE_FEAT_ID,
+                effectId: CROSSBOW_ACE_EFFECT_ID
+            },
+            {
+                featId: CROSSBOW_CRACK_SHOT_FEAT_ID,
+                effectId: CROSSBOW_CRACK_SHOT_EFFECT_ID
+            }
+        ]
+
+        for (const crossbowFeat of crossbowFeats) {
+            const featId = crossbowFeat.featId;
+            const effectId = crossbowFeat.effectId;
+
+            const hasFeat = myToken.actor.itemTypes.feat.some(feat =>
+                feat.data.flags.core.sourceId === featId
+            );
+
+            if (hasFeat) {
+                // Remove any existing effects
+                const existing = myToken.actor.itemTypes.effect.find(effect =>
+                    effect.getFlag('core', 'sourceId') === effectId
+                    && effect.getFlag("pf2e-ranged-combat", "weaponId") === weapon._id
+                );
+                if (existing) {
+                    await existing.delete();
+                }
+
+                // Add the new effect
+                const effect = await getItem(effectId);
+                setEffectTarget(effect, weapon);
+
+                // Until DamageDice "upgrade" is in the system, we have to hack it
+                const damageDieRule = effect.data.rules.find(rule => rule.key === "DamageDice");
+                damageDieRule.override.dieSize = getNextDieSize(weapon.data.damage.die);
+
+                effectsToAdd.push(effect);
+            }
+        }
+    }
 
     myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
 }
@@ -94,7 +179,7 @@ function getControlledToken() {
 }
 
 async function getWeapon(token) {
-    let weapons = token.actor.itemTypes.weapon.map(weapon => weapon.data).filter(weapon => weapon.data.reload.value);
+    let weapons = token.actor.itemTypes.weapon.map(weapon => weapon.data).filter(weapon => weapon.data.reload.value > 0);
     if (!weapons.length) {
         ui.notifications.info(`You have no ranged weapons equipped`);
     } else if (weapons.length == 1) {
@@ -120,11 +205,34 @@ async function getItem(id) {
     return source;
 }
 
-function setEffectTarget(effect, targetName) {
-    effect.name = `${effect.name} (${targetName})`;
+function setEffectTarget(effect, weapon) {
+    effect.name = `${effect.name} (${weapon.name})`;
+    effect.flags["pf2e-ranged-combat"] = {
+        weaponId: weapon._id
+    };
+    
     const rules = effect.data.rules;
     const indexOfEffectTarget = rules.findIndex(rule =>
         rule.key === "EffectTarget"
     );
     rules.splice(indexOfEffectTarget, 1);
+
+    rules.forEach(rule =>
+        rule.selector = rule.selector.replace("{item|data.target}", weapon._id)
+    );
+}
+
+function getNextDieSize(dieSize) {
+    switch (dieSize) {
+        case "d4":
+            return "d6";
+        case "d6":
+            return "d8";
+        case "d8":
+            return "d10";
+        case "d10":
+            return "d12";
+        case "d12":
+            return "d12";
+    }
 }
