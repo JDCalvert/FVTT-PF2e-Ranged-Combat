@@ -25,7 +25,6 @@ function setHuntedPrey() {
         controlledActors.push(game.user.character);
     }
 
-
     for (actor of controlledActors) {
         const huntedPreyEffect = actor.itemTypes.effect.find(effect =>
             effect.getFlag("core", "sourceId") === HUNTED_TARGET_EFFECT_ID
