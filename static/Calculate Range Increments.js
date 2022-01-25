@@ -1,7 +1,7 @@
 /**
  * Macro to determine the range penalties to be applied based on the distance bwtween the controlled
  * token and the targeted token. Note that you must have exactly one controlled token (or one token
- * of your assigned character in the scene) and one targetted token to calculate the range penalties.
+ * of your assigned character in the scene) and one targeted token to calculate the range penalties.
  * 
  * If you already have any ranged penalties already applied, they will be removed first.
  * 
@@ -38,7 +38,7 @@ async function calculateRangeIncrement() {
         }
     }
 
-    // Find the currently targetted token, if there is one
+    // Find the currently targeted token, if there is one
     const targetToken = getTarget(hasRemovedExistingEffect);
     if (!targetToken) {
         return;
@@ -50,7 +50,7 @@ async function calculateRangeIncrement() {
         return;
     }
 
-    // Calculate the distance between the controlled and targetted tokens, measured on the grid, and then
+    // Calculate the distance between the controlled and targeted tokens, measured on the grid, and then
     // which range increment of the weapon the target is in
     const gridSize = canvas.dimensions.size;
     const dx = Math.max(0, myToken.x - (targetToken.x + targetToken.w - gridSize), targetToken.x - (myToken.x + myToken.w - gridSize));
@@ -111,11 +111,11 @@ function getControlledToken() {
 }
 
 /**
- * Try to find exactly one targetted token
+ * Try to find exactly one targeted token
  * 
  * @param {boolean} hasRemovedExistingEffect If we've removed an existing effect, don't give a warning
- *                                           about no targetted token, just exit silently.
- * @returns The currently targetted token, if there is exactly one
+ *                                           about no targeted token, just exit silently.
+ * @returns The currently targeted token, if there is exactly one
  */
 function getTarget(hasRemovedExistingEffect) {
     const targetTokenIds = game.user.targets.ids;
