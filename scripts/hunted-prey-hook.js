@@ -5,11 +5,7 @@ const HUNTED_TARGET_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOB
 Hooks.on(
     "targetToken",
     (user) => {
-        // Not interested
-        if (!user.isSelf) {
-            return;
-        }
-
+        if (!user.isSelf) return;
         setHuntedPrey();
     }
 );
