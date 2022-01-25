@@ -1,3 +1,6 @@
+## 1.2.1 - 2022-01-25
+- Fix issue with Reload and Hunt Prey macros duplicating effects
+
 ## 1.2.0 - 2022-01-25
 - Add to actions compendium with one- and two-action reload versions
 - Add item-targeted effects for Crossbow Ace and Crossbow Crack Shot
@@ -7,12 +10,9 @@
 - Automate enabling/disabling "Hunted Prey" toggle based on current hunted prey and targeted token
 
 ## 1.1.0 - 2022-01-24
-### Features
-- Add Reload macro to apply the "Loaded" effect for a particular weapon.
-- Add actions compendium with Reload action.
-
-### Fixes
-- Update range calculation to take into account large and larger creatures.
+- Add Reload macro to apply the "Loaded" effect for a particular weapon
+- Add actions compendium with Reload action
+- Update range calculation to take into account large and larger creatures
 
 ## 1.0.0 - 2022-01-14
 - Add compendia for range penalty effects and macros to automatically calculate which to use

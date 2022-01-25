@@ -84,10 +84,7 @@ async function reload() {
     }
 
     // Check if this weapon is already loaded
-    const myLoadedEffect = myToken.actor.itemTypes.effect.find(effect =>
-        effect.getFlag("core", "sourceId") === LOADED_EFFECT_ID
-        && effect.getFlag("pf2e-ranged-combat", "weaponId") === weapon._id
-    );
+    const myLoadedEffect = getEffectFromActor(myToken, LOADED_EFFECT_ID, weapon._id);
     if (myLoadedEffect) {
         ui.notifications.warn(`${weapon.name} is already loaded`);
         return;
@@ -105,16 +102,7 @@ async function reload() {
                 return RELOAD_ACTION_ONE_ID;
         }
     })();
-    const reloadAction = await getItem(reloadActionId);
-    let myReloadAction = myToken.actor.itemTypes.action.find(action =>
-        action.getFlag("core", "sourceId") === reloadActionId
-    );
-    if (!myReloadAction) {
-        await myToken.actor.createEmbeddedDocuments("Item", [reloadAction]);
-        myReloadAction = myToken.actor.itemTypes.action.find(action =>
-            action.getFlag("core", "sourceId") === reloadActionId
-        );
-    }
+    const myReloadAction = await getItemFromActor(myToken, reloadActionId, true);
     myReloadAction.toMessage();
 
     // Get the "Loaded" effect and set its target to the weapon we're reloading
@@ -141,19 +129,10 @@ async function reload() {
             const featId = crossbowFeat.featId;
             const effectId = crossbowFeat.effectId;
 
-            const hasFeat = myToken.actor.itemTypes.feat.some(feat =>
-                feat.data.flags.core.sourceId === featId
-            );
-
-            if (hasFeat) {
+            if (actorHasItem(myToken, featId)) {
                 // Remove any existing effects
-                const existing = myToken.actor.itemTypes.effect.find(effect =>
-                    effect.getFlag('core', 'sourceId') === effectId
-                    && effect.getFlag("pf2e-ranged-combat", "weaponId") === weapon._id
-                );
-                if (existing) {
-                    await existing.delete();
-                }
+                const existing = getEffectFromActor(myToken, effectId, weapon._id);
+                if (existing) await existing.delete();
 
                 // Add the new effect
                 const effect = await getItem(effectId);
@@ -197,6 +176,27 @@ async function chooseWeapon(weapons) {
     return weapon;
 }
 
+function actorHasItem(token, sourceId) {
+    return token.actor.items.some(item => item.getFlag("core", "sourceId") === sourceId);
+}
+
+async function getItemFromActor(token, sourceId, addIfNotPresent = false) {
+    let myItem = token.actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
+    if (!myItem && addIfNotPresent) {
+        const newItem = await getItem(sourceId);
+        await token.actor.createEmbeddedDocuments("Item", [newItem]);
+        myItem = await getItemFromActor(token, sourceId);
+    }
+    return myItem;
+}
+
+function getEffectFromActor(token, sourceId, targetId) {
+    return token.actor.itemTypes.effect.find(effect =>
+        effect.getFlag("core", "sourceId") === sourceId
+        && effect.getFlag("pf2e-ranged-combat", "targetId") === targetId
+    );
+}
+
 async function getItem(id) {
     const source = (await fromUuid(id)).toObject();
     source.flags.core ??= {};
@@ -208,7 +208,7 @@ async function getItem(id) {
 function setEffectTarget(effect, weapon) {
     effect.name = `${effect.name} (${weapon.name})`;
     effect.flags["pf2e-ranged-combat"] = {
-        weaponId: weapon._id
+        targetId: weapon._id
     };
     
     const rules = effect.data.rules;
