@@ -25,7 +25,7 @@ class WeaponSelectDialog extends Dialog {
         `
         for (let weapon of weapons) {
             content += `
-                <button class="weapon-button" type="button" value="${weapon._id}" style="display: flex; align-items: center; margin: 4px auto">
+                <button class="weapon-button" type="button" value="${weapon.id}" style="display: flex; align-items: center; margin: 4px auto">
                     <img src="${weapon.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
                     <span>${weapon.name}</span>
                 </button>
@@ -33,7 +33,7 @@ class WeaponSelectDialog extends Dialog {
         }
         content += `</div>`
         let weaponId = await new this(content).getWeaponId();
-        return weapons.filter(weapon => weapon._id === weaponId)[0];
+        return weapons.filter(weapon => weapon.id === weaponId)[0];
     }
 
     activateListeners(html) {
@@ -62,14 +62,6 @@ class WeaponSelectDialog extends Dialog {
 reload();
 
 async function reload() {
-    const RELOAD_ACTION_ONE_ID = "Compendium.pf2e-ranged-combat.actions.MAYuLJ4bsciOXiNM";
-    const RELOAD_ACTION_TWO_ID = "Compendium.pf2e-ranged-combat.actions.lqjuYBOAjDb9ACfo";
-    const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
-    const CROSSBOW_ACE_FEAT_ID = "Compendium.pf2e.feats-srd.CpjN7v1QN8TQFcvI";
-    const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zP0vPd14V5OG9ZFv";
-    const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3gecLk6";
-    const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
-
     const effectsToAdd = [];
 
     const myToken = getControlledToken();
@@ -84,36 +76,36 @@ async function reload() {
     }
 
     // Check if this weapon is already loaded
-    const myLoadedEffect = getEffectFromActor(myToken, LOADED_EFFECT_ID, weapon._id);
+    const myLoadedEffect = PF2eRangedCombat.getEffectFromActor(myToken, PF2eRangedCombat.LOADED_EFFECT_ID, weapon.id);
     if (myLoadedEffect) {
         ui.notifications.warn(`${weapon.name} is already loaded`);
         return;
     }
 
     // If we don't already have it, add the reload action, and then post it
-    const reloadActions = weapon.data.reload.value;
+    const reloadActions = weapon.reload;
     const reloadActionId = (() => {
         switch (reloadActions) {
-            case "1":
-                return RELOAD_ACTION_ONE_ID;
-            case "2":
-                return RELOAD_ACTION_TWO_ID;
+            case 1:
+                return PF2eRangedCombat.RELOAD_ACTION_ONE_ID;
+            case 2:
+                return PF2eRangedCombat.RELOAD_ACTION_TWO_ID;
+            case 3:
+                return PF2eRangedCombat.RELOAD_ACTION_THREE_ID;
             default:
-                return RELOAD_ACTION_ONE_ID;
+                return PF2eRangedCombat.RELOAD_ACTION_EXPLORE_ID;
         }
     })();
-    const myReloadAction = await getItemFromActor(myToken, reloadActionId, true);
+    const myReloadAction = await PF2eRangedCombat.getItemFromActor(myToken, reloadActionId, true);
     myReloadAction.toMessage();
 
     // Get the "Loaded" effect and set its target to the weapon we're reloading
-    const loadedEffect = await getItem(LOADED_EFFECT_ID);
+    const loadedEffect = await getItem(PF2eRangedCombat.LOADED_EFFECT_ID);
     setEffectTarget(loadedEffect, weapon);
     effectsToAdd.push(loadedEffect);
 
     // Handle crossbow effects that trigger on reload
-    const weaponIsCrossbow = weapon.data.traits.otherTags.includes("crossbow");
-    const weaponIsEquipped = weapon.data.equipped.value;
-    if (weaponIsCrossbow && weaponIsEquipped) {
+    if (weapon.isCrossbow && weapon.isEquipped) {
         const crossbowFeats = [
             {
                 featId: CROSSBOW_ACE_FEAT_ID,
@@ -131,7 +123,7 @@ async function reload() {
 
             if (actorHasItem(myToken, featId)) {
                 // Remove any existing effects
-                const existing = getEffectFromActor(myToken, effectId, weapon._id);
+                const existing = PF2eRangedCombat.getEffectFromActor(myToken, effectId, weapon.id);
                 if (existing) await existing.delete();
 
                 // Add the new effect
@@ -140,14 +132,14 @@ async function reload() {
 
                 // Until DamageDice "upgrade" is in the system, we have to hack it
                 const damageDieRule = effect.data.rules.find(rule => rule.key === "DamageDice");
-                damageDieRule.override.dieSize = getNextDieSize(weapon.data.damage.die);
+                damageDieRule.override.dieSize = getNextDieSize(weapon.damageDie);
 
                 effectsToAdd.push(effect);
             }
         }
     }
 
-    myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
+    await myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
 }
 
 function getControlledToken() {
@@ -158,7 +150,36 @@ function getControlledToken() {
 }
 
 async function getWeapon(token) {
-    let weapons = token.actor.itemTypes.weapon.map(weapon => weapon.data).filter(weapon => weapon.data.reload.value > 0);
+    let weapons;
+    if (token.actor.type === "character") {
+        weapons = token.actor.itemTypes.weapon
+            .filter(weapon => PF2eRangedCombat.requiresLoading(weapon))
+            .map(weapon => {
+                return {
+                    id: weapon.data._id,
+                    name: weapon.data.name,
+                    img: weapon.data.img,
+                    damageDie: weapon.data.data.damage.die,
+                    reload: PF2eRangedCombat.getReloadTime(weapon),
+                    isEquipped: weapon.data.data.equipped.value,
+                    isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
+                }
+            });
+    } else if (token.actor.type === "npc") {
+        weapons = token.actor.itemTypes.melee
+            .filter(weapon => PF2eRangedCombat.requiredLoading(weapon))
+            .map(weapon => {
+                return {
+                    id: weapon.data._id,
+                    name: weapon.data.name,
+                    img: weapon.data.img,
+                    reload: PF2eRangedCombat.getReloadTime(weapon),
+                    isEquipped: true,
+                    isCrossbow: false
+                }
+            });
+    }
+
     if (!weapons.length) {
         ui.notifications.info(`You have no ranged weapons equipped`);
     } else if (weapons.length == 1) {
@@ -180,37 +201,12 @@ function actorHasItem(token, sourceId) {
     return token.actor.items.some(item => item.getFlag("core", "sourceId") === sourceId);
 }
 
-async function getItemFromActor(token, sourceId, addIfNotPresent = false) {
-    let myItem = token.actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
-    if (!myItem && addIfNotPresent) {
-        const newItem = await getItem(sourceId);
-        await token.actor.createEmbeddedDocuments("Item", [newItem]);
-        myItem = await getItemFromActor(token, sourceId);
-    }
-    return myItem;
-}
-
-function getEffectFromActor(token, sourceId, targetId) {
-    return token.actor.itemTypes.effect.find(effect =>
-        effect.getFlag("core", "sourceId") === sourceId
-        && effect.getFlag("pf2e-ranged-combat", "targetId") === targetId
-    );
-}
-
-async function getItem(id) {
-    const source = (await fromUuid(id)).toObject();
-    source.flags.core ??= {};
-    source.flags.core.sourceId = id;
-    source._id = randomID();
-    return source;
-}
-
 function setEffectTarget(effect, weapon) {
     effect.name = `${effect.name} (${weapon.name})`;
     effect.flags["pf2e-ranged-combat"] = {
-        targetId: weapon._id
+        targetId: weapon.id
     };
-    
+
     const rules = effect.data.rules;
     const indexOfEffectTarget = rules.findIndex(rule =>
         rule.key === "EffectTarget"
@@ -218,7 +214,7 @@ function setEffectTarget(effect, weapon) {
     rules.splice(indexOfEffectTarget, 1);
 
     rules.forEach(rule =>
-        rule.selector = rule.selector.replace("{item|data.target}", weapon._id)
+        rule.selector = rule.selector.replace("{item|data.target}", weapon.id)
     );
 }
 

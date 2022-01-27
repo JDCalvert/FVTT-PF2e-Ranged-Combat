@@ -1,7 +1,3 @@
-const PF2E_RANGED_COMBAT_DOMAIN = "pf2e-ranged-combat";
-
-const HUNTED_TARGET_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
-
 Hooks.on(
     "targetToken",
     (user) => {
