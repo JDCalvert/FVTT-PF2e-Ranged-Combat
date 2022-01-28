@@ -45,7 +45,7 @@ async function calculateRangeIncrement() {
     }
 
     // Find the weapon to apply the penalty to
-    let weapons = getWeapons(myToken);
+    let weapons = getRangedWeapons(myToken);
     if (!weapons.length) {
         return;
     }
@@ -78,68 +78,15 @@ async function calculateRangeIncrement() {
     ui.notifications.info(`Calculated range increments for attack from ${myToken.name} to ${targetToken.name} (${distance} ft.)`);
 }
 
-function getControlledToken() {
-    const myTokens = canvas.tokens.controlled;
-    if (!myTokens.length) {
-        let myCharacter = game.user.character;
-        if (game.user.character) {
-            let userTokens = myCharacter.getActiveTokens();
-            if (!userTokens.length) {
-                ui.notifications.warn("No token selected");
-                return;
-            } else if (userTokens.length > 1) {
-                ui.notifications.warn("More than one current character token");
-                return;
-            } else {
-                return userTokens[0];
-            }
-        } else {
-            ui.notifications.warn("No token selected");
-            return;
-        }
-    } else if (myTokens.length > 1) {
-        ui.notifications.warn("You must have only one token selected");
-        return;
-    } else {
-        let myToken = myTokens[0];
-        if (!["character", "npc"].includes(myToken.actor.type)) {
-            ui.notifications.warn("You must have a character selected");
-            return;
-        }
-        return myToken;
-    }
-}
-
-/**
- * Try to find exactly one targeted token
- * 
- * @param {boolean} hasRemovedExistingEffect If we've removed an existing effect, don't give a warning
- *                                           about no targeted token, just exit silently.
- * @returns The currently targeted token, if there is exactly one
- */
-function getTarget(hasRemovedExistingEffect) {
-    const targetTokenIds = game.user.targets.ids;
-    const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
-    if (!targetTokens.length) {
-        if (!hasRemovedExistingEffect) {
-            ui.notifications.warn("No target selected");
-        }
-    } else if (targetTokens.length > 1) {
-        if (!hasRemovedExistingEffect) {
-            ui.notifications.warn("You must have only one target selected");
-        }
-    } else {
-        return targetTokens[0];
-    }
-}
-
-function getWeapons(token) {
+function getRangedWeapons(token) {
     let weapons;
 
     let strikes = token.actor.data.data.actions.filter(action => action.type === "strike");
     if (token.actor.type == "character") {
         // Characters' strikes, even thos granted by feats, all have weapon data associated with them, so we can find any associated with ranged weapons
-        weapons = strikes.filter(action => action.ready).map(action => action.weapon.data).filter(weapon => weapon.data.range);
+        weapons = strikes.filter(action => action.ready)
+        .filter(action => action.weapon.data.data.range)
+        .map(action => action.weapon.data)
     } else if (token.actor.type == "npc") {
         // NPCs' strikes don't have weapon data, but ranged options will have a range-increment-x trait
         // Coerce the data to have everything we need, with the same structure as a PC's weapon data

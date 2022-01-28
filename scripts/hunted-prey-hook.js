@@ -1,3 +1,5 @@
+import { PF2eRangedCombat } from "./utils.js";
+
 Hooks.on(
     "targetToken",
     (user) => {
@@ -21,12 +23,12 @@ function setHuntedPrey() {
         controlledActors.push(game.user.character);
     }
 
-    for (actor of controlledActors) {
+    for (const actor of controlledActors) {
         const huntedPreyEffect = actor.itemTypes.effect.find(effect =>
-            effect.getFlag("core", "sourceId") === HUNTED_TARGET_EFFECT_ID
+            effect.getFlag("core", "sourceId") === PF2eRangedCombat.HUNTED_TARGET_EFFECT_ID
         )
 
-        const huntedPreyId = huntedPreyEffect?.getFlag(PF2E_RANGED_COMBAT_DOMAIN, "targetId");
+        const huntedPreyId = huntedPreyEffect?.getFlag(PF2eRangedCombat.PF2E_RANGED_COMBAT_DOMAIN, "targetId");
         if (!huntedPreyId) {
             continue;
         }

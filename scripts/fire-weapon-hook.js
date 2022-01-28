@@ -1,3 +1,5 @@
+import { PF2eRangedCombat } from "./utils.js";
+
 Hooks.on(
     "ready",
     () => {
@@ -25,10 +27,11 @@ Hooks.on(
                     && effect.getFlag("pf2e-ranged-combat", "targetId") === item.id
                 );
 
-                if (requiresLoading && !loadedEffect && game.settings.get("pf2e-ranged-combat","preventFireNotLoaded")) {
+                if (requiresLoading && !loadedEffect && game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded")) {
                     ui.notifications.warn(`${item.name} is not loaded!`);
                     return;
                 } else if (loadedEffect) {
+                    // If we did find a loaded effect, then remove it, as we're firing the weapon
                     loadedEffect.delete()
                 }
 

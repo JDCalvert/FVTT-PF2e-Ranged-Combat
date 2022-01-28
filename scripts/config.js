@@ -1,3 +1,6 @@
+import { reload } from "./actions/reload.js";
+import { huntPrey } from "./actions/hunt-prey.js";
+
 Hooks.on(
     "init",
     () => {
@@ -13,5 +16,10 @@ Hooks.on(
                 default: true
             }
         );
+
+        game.pf2eRangedCombat = {
+            reload,
+            huntPrey
+        };
     }
 );

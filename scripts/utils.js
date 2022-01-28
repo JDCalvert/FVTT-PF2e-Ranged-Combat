@@ -1,4 +1,6 @@
-class PF2eRangedCombat {
+import { WeaponSelectDialog } from "./dialog.js";
+
+export class PF2eRangedCombat {
 
     // Loaded
     static LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
@@ -21,6 +23,35 @@ class PF2eRangedCombat {
     // Crossbow Crack Shot
     static CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3gecLk6";
     static CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
+
+    /**
+     * Get exactly one controlled token. If there are no tokens controlled, looks for a single
+     * token belonging to the current user's character. If there are multiple tokens found,
+     * returns undefined.
+     */
+    static getControlledToken() {
+        return [canvas.tokens.controlled, game.user.character?.getActiveTokens()]
+            .filter(tokens => !!tokens)
+            .find(tokens => tokens.length === 1)
+            ?.[0];
+    }
+
+    /**
+     * Find exactly one targeted token
+     */
+    static getTarget(notifyNoToken = true) {
+        const targetTokenIds = game.user.targets.ids;
+        const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
+        if (!targetTokens.length) {
+            if (notifyNoToken) ui.notifications.warn("No target selected");
+        } else if (targetTokens.length > 1) {
+            if (notifyNoToken) ui.notifications.warn("You must have only one target selected");
+        } else {
+            return targetTokens[0];
+        }
+
+        return null;
+    }
 
     /**
      * Find out if a weapon requires loading (e.g. has a reload time of greater than 0)
@@ -56,14 +87,21 @@ class PF2eRangedCombat {
     }
 
     /**
+     * Find whether the actor has the specified item
+     */
+    static actorHasItem(actor, sourceId) {
+        return actor.items.some(item => item.getFlag("core", "sourceId") === sourceId);
+    }
+
+    /**
      * Get a specific item from the actor, identified by its source ID. Optionally, add it if not already present
      */
     static async getItemFromActor(actor, sourceId, addIfNotPresent = false) {
         let myItem = actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
         if (!myItem && addIfNotPresent) {
-            const newItem = await getItem(sourceId);
+            const newItem = await this.getItem(sourceId);
             await actor.createEmbeddedDocuments("Item", [newItem]);
-            myItem = await getItemFromActor(actor, sourceId);
+            myItem = await this.getItemFromActor(actor, sourceId);
         }
         return myItem;
     }
@@ -87,5 +125,55 @@ class PF2eRangedCombat {
         source.flags.core.sourceId = id;
         source._id = randomID();
         return source;
+    }
+
+    static setEffectTarget(effect, weapon) {
+        effect.name = `${effect.name} (${weapon.name})`;
+        effect.flags["pf2e-ranged-combat"] = {
+            targetId: weapon.id
+        };
+
+        const rules = effect.data.rules;
+        const indexOfEffectTarget = rules.findIndex(rule =>
+            rule.key === "EffectTarget"
+        );
+        rules.splice(indexOfEffectTarget, 1);
+
+        rules.forEach(rule =>
+            rule.selector = rule.selector.replace("{item|data.target}", weapon.id)
+        );
+    }
+
+    static async getSingleWeapon(weapons) {
+        if (!weapons.length) {
+            ui.notifications.info("You have no applicable weapons");
+        } else if (weapons.length == 1) {
+            return weapons[0];
+        } else {
+            let weapon = await WeaponSelectDialog.getWeapon(weapons);
+            if (!weapon) {
+                ui.notifications.warn("No weapon selected");
+            }
+            return weapon;
+        }
+    }
+
+
+    /**
+     * From the given dice size, find the next bigger one, capped at d12
+     */
+    static getNextDieSize(dieSize) {
+        switch (dieSize) {
+            case "d4":
+                return "d6";
+            case "d6":
+                return "d8";
+            case "d8":
+                return "d10";
+            case "d10":
+                return "d12";
+            case "d12":
+                return "d12";
+        }
     }
 }

@@ -122,24 +122,9 @@ async function calculateRangeIncrement() {
     const dy = Math.max(0, myToken.y - (targetToken.y + targetToken.h - gridSize), targetToken.y - (myToken.y + myToken.h - gridSize));
 
     const distance = canvas.grid.measureDistance({x: 0, y: 0}, {x: dx, y: dy}, { gridSpaces: true });
-    const rangeIncrement = Math.ceil(distance / weapon.data.range);
+    
 
-    if (rangeIncrement < 2) {
-        ui.notifications.info(`Attack from ${myToken.name} to ${targetToken.name} is ${distance} ft, using ${weapon.name} with range increment ${weapon.data.range} ft. Attack is in the first range increment`);
-        return;
-    } else if (rangeIncrement > 6) {
-        ui.notifications.error(`Attack from ${myToken.name} to ${targetToken.name} is ${distance} ft, using ${weapon.name} with range increment ${weapon.data.range} ft. Attack is past the sixth range increment and cannot be made`);
-        return;
-    }
-
-    let rangeIncrementId = rangeIncrements[rangeIncrement];
-    const rangeIncrementEffect = await getItem(rangeIncrementId.itemId);
-    rangeIncrementEffect.data.rules[0].selector = `${weapon._id}-attack`;
-    rangeIncrementEffect.name = `${rangeIncrementEffect.name} (${weapon.name})`;
-
-    ui.notifications.info(`Attack from ${myToken.name} to ${targetToken.name} is ${distance} ft, using ${weapon.name} with range increment ${weapon.data.range} ft. Attack is in the ${rangeIncrementId.desc} range increment`);
-
-    await myToken.actor.createEmbeddedDocuments('Item', [rangeIncrementEffect]);
+    
 }
 
 function getControlledToken() {
