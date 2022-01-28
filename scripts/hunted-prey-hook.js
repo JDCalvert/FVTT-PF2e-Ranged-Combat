@@ -25,10 +25,10 @@ function setHuntedPrey() {
 
     for (const actor of controlledActors) {
         const huntedPreyEffect = actor.itemTypes.effect.find(effect =>
-            effect.getFlag("core", "sourceId") === PF2eRangedCombat.HUNTED_TARGET_EFFECT_ID
+            effect.getFlag("core", "sourceId") === PF2eRangedCombat.HUNTED_PREY_EFFECT_ID
         )
 
-        const huntedPreyId = huntedPreyEffect?.getFlag(PF2eRangedCombat.PF2E_RANGED_COMBAT_DOMAIN, "targetId");
+        const huntedPreyId = huntedPreyEffect?.getFlag("pf2e-ranged-combat", "targetId");
         if (!huntedPreyId) {
             continue;
         }

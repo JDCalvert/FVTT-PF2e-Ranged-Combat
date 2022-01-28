@@ -70,7 +70,7 @@ export class PF2eRangedCombat {
      */
     static getReloadTime(item) {
         if (item.actor.type === "character") {
-            return item.data.data.reload.value || 0;
+            return Number(item.data.data.reload.value || 0);
         } else if (item.actor.type === "npc") {
             const reloadTrait = item.data.data.traits.value.find(trait => trait.startsWith("reload-"));
             if (reloadTrait) {
@@ -146,8 +146,8 @@ export class PF2eRangedCombat {
 
     static async getSingleWeapon(weapons) {
         if (!weapons.length) {
-            ui.notifications.info("You have no applicable weapons");
-        } else if (weapons.length == 1) {
+            return;
+        } else if (weapons.length === 1) {
             return weapons[0];
         } else {
             let weapon = await WeaponSelectDialog.getWeapon(weapons);

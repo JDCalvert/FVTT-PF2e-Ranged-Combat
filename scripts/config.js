@@ -1,5 +1,6 @@
 import { reload } from "./actions/reload.js";
 import { huntPrey } from "./actions/hunt-prey.js";
+import { calculateRangeIncrement, calculateRangeIncrements } from "./actions/calculate-range-increments.js";
 
 Hooks.on(
     "init",
@@ -19,7 +20,9 @@ Hooks.on(
 
         game.pf2eRangedCombat = {
             reload,
-            huntPrey
+            huntPrey,
+            calculateRangeIncrement, 
+            calculateRangeIncrements
         };
     }
 );

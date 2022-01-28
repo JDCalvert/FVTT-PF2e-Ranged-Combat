@@ -212,19 +212,3 @@ async function getWeapon(token) {
         return chooseWeapon(weapons);
     }
 }
-
-async function chooseWeapon(weapons) {
-    let weapon = await WeaponSelectDialog.getWeapon(weapons);
-    if (!weapon) {
-        ui.notifications.warn("No weapon selected");
-    }
-    return weapon;
-}
-
-async function getItem(id) {
-    const source = (await fromUuid(id)).toObject();
-    source.flags["pf2e-ranged-combat"] = {
-        sourceId: id
-    };
-    return source;
-}

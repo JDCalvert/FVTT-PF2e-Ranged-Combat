@@ -23,7 +23,7 @@ Hooks.on(
                 // Try to find the "loaded" effect for the attack. If it's not present, then don't allow
                 // the attack to happen
                 const loadedEffect = actor.itemTypes.effect.find(effect =>
-                    effect.getFlag("core", "sourceId") === LOADED_EFFECT_ID
+                    effect.getFlag("core", "sourceId") === PF2eRangedCombat.LOADED_EFFECT_ID
                     && effect.getFlag("pf2e-ranged-combat", "targetId") === item.id
                 );
 
@@ -40,12 +40,4 @@ Hooks.on(
             "MIXED"
         );
     }
-)
-
-// Hook after rolling a check, so we can see if it was an attack roll from a loaded weapon
-Hooks.on(
-    "pf2e.checkRoll",
-    ({ context, actor, item }) => {
-
-    }
-)
+);

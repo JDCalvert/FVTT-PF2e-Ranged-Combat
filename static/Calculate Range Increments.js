@@ -78,37 +78,7 @@ async function calculateRangeIncrement() {
     ui.notifications.info(`Calculated range increments for attack from ${myToken.name} to ${targetToken.name} (${distance} ft.)`);
 }
 
-function getRangedWeapons(token) {
-    let weapons;
 
-    let strikes = token.actor.data.data.actions.filter(action => action.type === "strike");
-    if (token.actor.type == "character") {
-        // Characters' strikes, even thos granted by feats, all have weapon data associated with them, so we can find any associated with ranged weapons
-        weapons = strikes.filter(action => action.ready)
-        .filter(action => action.weapon.data.data.range)
-        .map(action => action.weapon.data)
-    } else if (token.actor.type == "npc") {
-        // NPCs' strikes don't have weapon data, but ranged options will have a range-increment-x trait
-        // Coerce the data to have everything we need, with the same structure as a PC's weapon data
-        weapons = strikes.filter(action => action.traits.filter(trait => trait.name.startsWith("range-increment-")).length).map(strike => {
-            return {
-                _id: strike.sourceId,
-                name: strike.name,
-                img: strike.imageUrl,
-                data: {
-                    range: strike.traits.filter(trait => trait.name.startsWith("range-increment-"))[0].name.slice(16)
-                }
-            }
-        });
-    }
-
-    if (!weapons.length) {
-        ui.notifications.info(`You have no ranged weapons equipped`);
-        return [];
-    } else {
-        return weapons;
-    }
-}
 
 async function getItem(id) {
     const source = (await fromUuid(id)).toObject();
