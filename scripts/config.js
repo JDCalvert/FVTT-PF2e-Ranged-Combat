@@ -1,6 +1,5 @@
-import { reload } from "./actions/reload.js";
+import { reload, reloadAll } from "./actions/reload.js";
 import { huntPrey } from "./actions/hunt-prey.js";
-import { calculateRangeIncrement, calculateRangeIncrements } from "./actions/calculate-range-increments.js";
 
 Hooks.on(
     "init",
@@ -18,11 +17,23 @@ Hooks.on(
             }
         );
 
+        game.settings.register(
+            "pf2e-ranged-combat",
+            "postFullAction",
+            {
+                name: "Post Full Action from Macros",
+                hint: "When running macros that simulate taking actions, post the full action description to chat",
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: true
+            }
+        );
+
         game.pf2eRangedCombat = {
             reload,
-            huntPrey,
-            calculateRangeIncrement, 
-            calculateRangeIncrements
+            reloadAll,
+            huntPrey
         };
     }
 );

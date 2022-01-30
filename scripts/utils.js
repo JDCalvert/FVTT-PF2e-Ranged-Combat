@@ -43,9 +43,9 @@ export class PF2eRangedCombat {
         const targetTokenIds = game.user.targets.ids;
         const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
         if (!targetTokens.length) {
-            if (notifyNoToken) ui.notifications.warn("No target selected");
+            if (notifyNoToken) ui.notifications.warn("No target selected.");
         } else if (targetTokens.length > 1) {
-            if (notifyNoToken) ui.notifications.warn("You must have only one target selected");
+            if (notifyNoToken) ui.notifications.warn("You must have only one target selected.");
         } else {
             return targetTokens[0];
         }
@@ -70,7 +70,7 @@ export class PF2eRangedCombat {
      */
     static getReloadTime(item) {
         if (item.actor.type === "character") {
-            return Number(item.data.data.reload.value || 0);
+            return Number(item.reload || 0);
         } else if (item.actor.type === "npc") {
             const reloadTrait = item.data.data.traits.value.find(trait => trait.startsWith("reload-"));
             if (reloadTrait) {
@@ -132,16 +132,11 @@ export class PF2eRangedCombat {
         effect.flags["pf2e-ranged-combat"] = {
             targetId: weapon.id
         };
+        effect.data.target = weapon.id;
 
+        // Remove the "effect target" rule so we skip the popup
         const rules = effect.data.rules;
-        const indexOfEffectTarget = rules.findIndex(rule =>
-            rule.key === "EffectTarget"
-        );
-        rules.splice(indexOfEffectTarget, 1);
-
-        rules.forEach(rule =>
-            rule.selector = rule.selector.replace("{item|data.target}", weapon.id)
-        );
+        rules.splice(rules.findIndex(rule => rule.key === "EffectTarget"), 1);
     }
 
     static async getSingleWeapon(weapons) {
@@ -152,28 +147,27 @@ export class PF2eRangedCombat {
         } else {
             let weapon = await WeaponSelectDialog.getWeapon(weapons);
             if (!weapon) {
-                ui.notifications.warn("No weapon selected");
+                ui.notifications.warn("No weapon selected.");
             }
             return weapon;
         }
     }
 
-
-    /**
-     * From the given dice size, find the next bigger one, capped at d12
-     */
-    static getNextDieSize(dieSize) {
-        switch (dieSize) {
-            case "d4":
-                return "d6";
-            case "d6":
-                return "d8";
-            case "d8":
-                return "d10";
-            case "d10":
-                return "d12";
-            case "d12":
-                return "d12";
+    static async postActionInChat(actor, actionId) {
+        if (game.settings.get("pf2e-ranged-combat", "postFullAction")) {
+            const myAction = await PF2eRangedCombat.getItemFromActor(actor, actionId, true);
+            myAction.toMessage();
         }
+    }
+
+    static async postInChat(actor, actionName, numActions, img, message) {
+        const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.html", { imgPath: img, message: message, });
+        const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.html", { action: { title: actionName, typeNumber: String(numActions) } });
+        ChatMessage.create({
+            type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+            speaker: ChatMessage.getSpeaker({ actor }),
+            flavor,
+            content
+        });
     }
 }

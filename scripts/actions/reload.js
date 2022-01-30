@@ -17,7 +17,7 @@ export async function reload() {
     const myToken = PF2eRangedCombat.getControlledToken();
     const myActor = myToken?.actor;
     if (!myToken) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token")
+        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.")
         return;
     }
 
@@ -29,11 +29,16 @@ export async function reload() {
     // Check if this weapon is already loaded
     const myLoadedEffect = PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.LOADED_EFFECT_ID, weapon.id);
     if (myLoadedEffect) {
-        ui.notifications.warn(`${weapon.name} is already loaded`);
+        ui.notifications.warn(`${weapon.name} is already loaded.`);
         return;
     }
 
-    // If we don't already have it, add the reload action, and then post it
+    // Get the "Loaded" effect and set its target to the weapon we're reloading
+    const loadedEffect = await PF2eRangedCombat.getItem(PF2eRangedCombat.LOADED_EFFECT_ID);
+    PF2eRangedCombat.setEffectTarget(loadedEffect, weapon);
+    effectsToAdd.push(loadedEffect);
+
+    // Find out which reload action to use and post it to chat
     const reloadActions = weapon.reload;
     const reloadActionId = (() => {
         switch (reloadActions) {
@@ -47,13 +52,16 @@ export async function reload() {
                 return PF2eRangedCombat.RELOAD_ACTION_EXPLORE_ID;
         }
     })();
-    const myReloadAction = await PF2eRangedCombat.getItemFromActor(myActor, reloadActionId, true);
-    myReloadAction.toMessage();
 
-    // Get the "Loaded" effect and set its target to the weapon we're reloading
-    const loadedEffect = await PF2eRangedCombat.getItem(PF2eRangedCombat.LOADED_EFFECT_ID);
-    PF2eRangedCombat.setEffectTarget(loadedEffect, weapon);
-    effectsToAdd.push(loadedEffect);
+    const myReloadAction = await PF2eRangedCombat.getItemFromActor(myActor, reloadActionId, true);
+    await PF2eRangedCombat.postActionInChat(myActor, reloadActionId);
+    await PF2eRangedCombat.postInChat(
+        myActor,
+        myReloadAction.name,
+        reloadActions <= 3 ? String(reloadActions) : "",
+        loadedEffect.img,
+        `${myToken.name} reloads their ${weapon.name}.`
+    );
 
     // Handle crossbow effects that trigger on reload
     if (weapon.isCrossbow && weapon.isEquipped) {
@@ -70,10 +78,6 @@ export async function reload() {
                 const effect = await PF2eRangedCombat.getItem(effectId);
                 PF2eRangedCombat.setEffectTarget(effect, weapon);
 
-                // Until DamageDice "upgrade" is in the system, we have to hack it
-                const damageDieRule = effect.data.rules.find(rule => rule.key === "DamageDice");
-                damageDieRule.override.dieSize = PF2eRangedCombat.getNextDieSize(weapon.damageDie);
-
                 effectsToAdd.push(effect);
             }
         }
@@ -81,6 +85,42 @@ export async function reload() {
 
     await myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
 };
+
+export async function reloadAll() {
+    const myToken = PF2eRangedCombat.getControlledToken();
+    const myActor = myToken?.actor;
+    if (!myToken) {
+        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+        return;
+    }
+
+    const weapons = getReloadableWeapons(myActor);
+    if (!weapons.length) {
+        return;
+    }
+
+    weapons = weapons.filter(weapon =>
+        !PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.LOADED_EFFECT_ID, weapon.id)
+    );
+    if (!weapons.length) {
+        ui.notifications.info("All your weapons are already loaded.");
+        return;
+    }
+
+    const effectsToAdd = [];
+
+    const promises = weapons.map(async weapon => {
+        const loadedEffect = await PF2eRangedCombat.getItem(PF2eRangedCombat.LOADED_EFFECT_ID);
+        PF2eRangedCombat.setEffectTarget(loadedEffect, weapon);
+        effectsToAdd.push(loadedEffect);
+    });
+
+    const loadedEffect = await fromUuid(PF2eRangedCombat.LOADED_EFFECT_ID);
+    PF2eRangedCombat.postInChat(myActor, "Reload", "", loadedEffect.img, `${myToken.name} reloads their weapons.`);
+
+    await Promise.all(promises);
+    myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
+}
 
 function getReloadableWeapons(actor) {
     let weapons;

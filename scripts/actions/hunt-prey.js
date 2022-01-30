@@ -6,12 +6,12 @@ export async function huntPrey() {
     const myToken = PF2eRangedCombat.getControlledToken();
     const myActor = myToken?.actor;
     if (!myToken) {
-        ui.notifications.warn("You must have exactly one token selected, or your assigned character must have one token")
+        ui.notifications.warn("You must have exactly one token selected, or your assigned character must have one token.")
         return;
     }
 
     if (!PF2eRangedCombat.actorHasItem(myActor, PF2eRangedCombat.HUNT_PREY_FEATURE_ID)) {
-        ui.notifications.warn("You do not have the Hunt Prey feature");
+        ui.notifications.warn("You do not have the Hunt Prey feature.");
         return;
     }
 
@@ -20,12 +20,26 @@ export async function huntPrey() {
         return;
     }
 
+    //Check if the target is already hunted prey
+    if (PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.HUNTED_PREY_EFFECT_ID, target.id)) {
+        ui.notifications.warn(`${target.name} is already your hunted prey.`);
+        return;
+    }
+
+
     /**
      * HUNT PREY ACTION AND EFFECT
      */
     {
-        const myHuntPreyAction = await PF2eRangedCombat.getItemFromActor(myActor, PF2eRangedCombat.HUNT_PREY_ACTION_ID, true);
-        myHuntPreyAction.toMessage();
+        const myHuntPreyFeature = await PF2eRangedCombat.getItemFromActor(myActor, PF2eRangedCombat.HUNT_PREY_FEATURE_ID);
+        await PF2eRangedCombat.postActionInChat(myActor, PF2eRangedCombat.HUNT_PREY_ACTION_ID);
+        await PF2eRangedCombat.postInChat(
+            myActor,
+            myHuntPreyFeature.name,
+            1,
+            myHuntPreyFeature.img,
+            `${myToken.name} makes ${target.name} their hunted prey.`
+        );
 
         // Remove any existing hunted prey effects
         const existing = await PF2eRangedCombat.getItemFromActor(myActor, PF2eRangedCombat.HUNTED_PREY_EFFECT_ID);
@@ -40,7 +54,7 @@ export async function huntPrey() {
         effectsToAdd.push(huntedPreyEffect);
 
         // Set the Hunt Prey flag, since we're currently targetting our hunted prey
-        myActor.setFlag("pf2e", "rollOptions.all.hunted-prey", true)
+        myActor.setFlag("pf2e", "rollOptions.all.hunted-prey", true);
     }
 
     /**
@@ -56,10 +70,6 @@ export async function huntPrey() {
 
                 const effect = await PF2eRangedCombat.getItem(PF2eRangedCombat.CROSSBOW_ACE_EFFECT_ID);
                 PF2eRangedCombat.setEffectTarget(effect, weapon);
-
-                // Until DamageDice "upgrade" is in the system, we have to hack it
-                const damageDieRule = effect.data.rules.find(rule => rule.key === "DamageDice");
-                damageDieRule.override.dieSize = PF2eRangedCombat.getNextDieSize(weapon.damageDie);
 
                 effectsToAdd.push(effect);
             }
