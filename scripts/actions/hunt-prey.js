@@ -26,7 +26,6 @@ export async function huntPrey() {
         return;
     }
 
-
     /**
      * HUNT PREY ACTION AND EFFECT
      */
@@ -87,8 +86,7 @@ function getCrossbows(actor) {
         .map(weapon => {
             return {
                 id: weapon._id,
-                name: weapon.name,
-                damageDie: weapon.data.damage.die
+                name: weapon.name
             }
         });
 }

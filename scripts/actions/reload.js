@@ -133,7 +133,6 @@ function getReloadableWeapons(actor) {
                     id: weapon.data._id,
                     name: weapon.data.name,
                     img: weapon.data.img,
-                    damageDie: weapon.data.data.damage.die,
                     reload: PF2eRangedCombat.getReloadTime(weapon),
                     isEquipped: weapon.data.data.equipped.value,
                     isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
