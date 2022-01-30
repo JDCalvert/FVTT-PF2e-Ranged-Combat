@@ -1,3 +1,7 @@
+## 2.0.1 - 2022-01-30
+- Fix bug preventing NPCs from reloading
+- Fix bug stopping the "Reload All" macro from working
+
 ## 2.0.0 - 2022-01-30
 - Remove range increment calculation macros and effects (implemented in Pathfinder 2e system)
 - Refactor macros into scripts - future updates will not require macro re-import

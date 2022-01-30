@@ -94,7 +94,7 @@ export async function reloadAll() {
         return;
     }
 
-    const weapons = getReloadableWeapons(myActor);
+    let weapons = getReloadableWeapons(myActor);
     if (!weapons.length) {
         return;
     }
@@ -140,7 +140,7 @@ function getReloadableWeapons(actor) {
             });
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
-            .filter(weapon => PF2eRangedCombat.requiredLoading(weapon))
+            .filter(weapon => PF2eRangedCombat.requiresLoading(weapon))
             .map(weapon => {
                 return {
                     id: weapon.data._id,
