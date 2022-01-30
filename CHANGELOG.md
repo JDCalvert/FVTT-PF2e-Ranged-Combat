@@ -1,3 +1,10 @@
+## 2.0.0 - 2022-01-30
+- Remove range increment calculation macros and effects (implemented in Pathfinder 2e system)
+- Refactor macros into scripts - future updates will not require macro re-import
+- Add useful chat messages for running macros
+- Automatically remove "loaded" effect on firing a weapon
+- (Optional) Prevent firing an unloaded weapon
+
 ## 1.2.1 - 2022-01-25
 - Fix issue with Reload and Hunt Prey macros duplicating effects
 
