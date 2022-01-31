@@ -30,9 +30,13 @@ Hooks.on(
                 if (requiresLoading && !loadedEffect && game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded")) {
                     ui.notifications.warn(`${item.name} is not loaded!`);
                     return;
-                } else if (loadedEffect) {
-                    // If we did find a loaded effect, then remove it, as we're firing the weapon
-                    loadedEffect.delete()
+                }
+
+                // Amend the roll callback to delete the loaded effect after
+                const existingCallback = args[3];
+                args[3] = roll => {
+                    existingCallback?.(roll);
+                    loadedEffect?.delete();
                 }
 
                 return wrapper(...args);
