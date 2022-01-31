@@ -1,3 +1,6 @@
+## 2.0.2 - 2022-01-31
+- Fix issue where the Loaded effect would be removed even if the attack roll was cancelled
+
 ## 2.0.1 - 2022-01-30
 - Fix bug preventing NPCs from reloading
 - Fix bug stopping the "Reload All" macro from working
