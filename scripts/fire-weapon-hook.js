@@ -33,12 +33,10 @@ Hooks.on(
                 }
 
                 // Amend the roll callback to delete the loaded effect after
-                if (loadedEffect) {
-                    const existingCallback = args[3];
-                    args[3] = roll => {
-                        existingCallback?.(roll);
-                        loadedEffect.delete();
-                    }
+                const existingCallback = args[3];
+                args[3] = roll => {
+                    existingCallback?.(roll);
+                    loadedEffect?.delete();
                 }
 
                 return wrapper(...args);
