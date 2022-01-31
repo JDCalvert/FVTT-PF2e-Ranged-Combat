@@ -9,7 +9,6 @@
     "system": [
         "pf2e"
     ],
-    "minimumSystemVersion": "3.3.0",
     "dependencies": [
         {
             "name": "lib-wrapper"
