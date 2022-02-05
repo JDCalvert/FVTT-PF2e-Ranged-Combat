@@ -30,6 +30,19 @@ Hooks.on(
             }
         );
 
+        game.settings.register(
+            "pf2e-ranged-combat",
+            "advancedAmmunitionSystem",
+            {
+                name: "Advanced Ammunition System",
+                hint: "Consume ammunition on loading, track loaded magazine for repeating weapons",
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: true
+            }
+        )
+
         game.pf2eRangedCombat = {
             reload,
             reloadAll,

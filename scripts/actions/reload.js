@@ -38,6 +38,27 @@ export async function reload() {
     PF2eRangedCombat.setEffectTarget(loadedEffect, weapon);
     effectsToAdd.push(loadedEffect);
 
+    // Advanced Ammunition System: consume the ammunition on reload
+    if (game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystem")) {
+        // Consume the assigned ammunition
+        const ammo = weapon.value.ammo;
+        if (!ammo) {
+            ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
+            return;
+        } else if (ammo.quantity < 1) {
+            ui.notifications.warn(`Not enough ammunition to reload ${weapon.name}`);
+            return;
+        }
+
+        // Track the ammunition ID and source on the loaded effect - if we unload the weapon later we'll want to
+        // use a different 
+        loadedEffect.flags["pf2e-ranged-combat"].ammoId = ammo.id;
+        loadedEffect.flags["pf2e-ranged-combat"].ammoSourceId = ammo.getFlag("core", "sourceId");
+
+        // Consume the ammunition
+        ammo.consume();
+    }
+
     // Find out which reload action to use and post it to chat
     const reloadActions = weapon.reload;
     const reloadActionId = (() => {
@@ -130,6 +151,7 @@ function getReloadableWeapons(actor) {
             .filter(weapon => PF2eRangedCombat.requiresLoading(weapon))
             .map(weapon => {
                 return {
+                    value: weapon,
                     id: weapon.data._id,
                     name: weapon.data.name,
                     img: weapon.data.img,
@@ -143,6 +165,7 @@ function getReloadableWeapons(actor) {
             .filter(weapon => PF2eRangedCombat.requiresLoading(weapon))
             .map(weapon => {
                 return {
+                    value: weapon,
                     id: weapon.data._id,
                     name: weapon.data.name,
                     img: weapon.data.img,

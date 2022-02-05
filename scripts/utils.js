@@ -1,4 +1,4 @@
-import { WeaponSelectDialog } from "./dialog.js";
+import { ItemSelectDialog } from "./dialog.js";
 
 export class PF2eRangedCombat {
 
@@ -145,7 +145,7 @@ export class PF2eRangedCombat {
         } else if (weapons.length === 1) {
             return weapons[0];
         } else {
-            let weapon = await WeaponSelectDialog.getWeapon(weapons);
+            let weapon = await ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weapons);
             if (!weapon) {
                 ui.notifications.warn("No weapon selected.");
             }
