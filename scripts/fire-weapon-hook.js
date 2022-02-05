@@ -1,11 +1,11 @@
-import { PF2eRangedCombat } from "./utils.js";
+import * as Utils from "./utils.js";
 
 Hooks.on(
     "ready",
     () => {
         libWrapper.register(
             "pf2e-ranged-combat",
-            "CONFIG.PF2E.Actor.documentClasses.character.prototype.handleStrikeAmmunition",
+            "CONFIG.PF2E.Actor.documentClasses.character.prototype.consumeAmmo",
             function () {
                 return true;
             },
@@ -27,12 +27,12 @@ Hooks.on(
                 }
 
                 // Find out if the weapon needs reloading
-                let requiresLoading = PF2eRangedCombat.requiresLoading(weapon);
+                let requiresLoading = Utils.requiresLoading(weapon);
 
                 // Try to find the "loaded" effect for the attack. If it's not present, then don't allow
                 // the attack to happen
                 const loadedEffect = actor.itemTypes.effect.find(effect =>
-                    effect.getFlag("core", "sourceId") === PF2eRangedCombat.LOADED_EFFECT_ID
+                    effect.getFlag("core", "sourceId") === Utils.LOADED_EFFECT_ID
                     && effect.getFlag("pf2e-ranged-combat", "targetId") === weapon.id
                 );
 

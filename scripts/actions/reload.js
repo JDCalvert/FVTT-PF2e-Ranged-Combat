@@ -1,41 +1,41 @@
-import { PF2eRangedCombat } from "../utils.js";
+import * as Utils from "../utils.js";
 
 export async function reload() {
     const crossbowFeats = [
         {
-            featId: PF2eRangedCombat.CROSSBOW_ACE_FEAT_ID,
-            effectId: PF2eRangedCombat.CROSSBOW_ACE_EFFECT_ID
+            featId: Utils.CROSSBOW_ACE_FEAT_ID,
+            effectId: Utils.CROSSBOW_ACE_EFFECT_ID
         },
         {
-            featId: PF2eRangedCombat.CROSSBOW_CRACK_SHOT_FEAT_ID,
-            effectId: PF2eRangedCombat.CROSSBOW_CRACK_SHOT_EFFECT_ID
+            featId: Utils.CROSSBOW_CRACK_SHOT_FEAT_ID,
+            effectId: Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID
         }
     ];
 
     const effectsToAdd = [];
 
-    const myToken = PF2eRangedCombat.getControlledToken();
+    const myToken = Utils.getControlledToken();
     const myActor = myToken?.actor;
     if (!myToken) {
         ui.notifications.warn("You must have exactly one token selected, or your character must have one token.")
         return;
     }
 
-    let weapon = await PF2eRangedCombat.getSingleWeapon(getReloadableWeapons(myActor));
+    let weapon = await Utils.getSingleWeapon(getReloadableWeapons(myActor));
     if (!weapon) {
         return;
     }
 
     // Check if this weapon is already loaded
-    const myLoadedEffect = PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.LOADED_EFFECT_ID, weapon.id);
+    const myLoadedEffect = Utils.getEffectFromActor(myActor, Utils.LOADED_EFFECT_ID, weapon.id);
     if (myLoadedEffect) {
         ui.notifications.warn(`${weapon.name} is already loaded.`);
         return;
     }
 
     // Get the "Loaded" effect and set its target to the weapon we're reloading
-    const loadedEffect = await PF2eRangedCombat.getItem(PF2eRangedCombat.LOADED_EFFECT_ID);
-    PF2eRangedCombat.setEffectTarget(loadedEffect, weapon);
+    const loadedEffect = await Utils.getItem(Utils.LOADED_EFFECT_ID);
+    Utils.setEffectTarget(loadedEffect, weapon);
     effectsToAdd.push(loadedEffect);
 
     // Advanced Ammunition System: consume the ammunition on reload
@@ -64,19 +64,19 @@ export async function reload() {
     const reloadActionId = (() => {
         switch (reloadActions) {
             case 1:
-                return PF2eRangedCombat.RELOAD_ACTION_ONE_ID;
+                return Utils.RELOAD_ACTION_ONE_ID;
             case 2:
-                return PF2eRangedCombat.RELOAD_ACTION_TWO_ID;
+                return Utils.RELOAD_ACTION_TWO_ID;
             case 3:
-                return PF2eRangedCombat.RELOAD_ACTION_THREE_ID;
+                return Utils.RELOAD_ACTION_THREE_ID;
             default:
-                return PF2eRangedCombat.RELOAD_ACTION_EXPLORE_ID;
+                return Utils.RELOAD_ACTION_EXPLORE_ID;
         }
     })();
 
-    const myReloadAction = await PF2eRangedCombat.getItemFromActor(myActor, reloadActionId, true);
-    await PF2eRangedCombat.postActionInChat(myActor, reloadActionId);
-    await PF2eRangedCombat.postInChat(
+    const myReloadAction = await Utils.getItemFromActor(myActor, reloadActionId, true);
+    await Utils.postActionInChat(myActor, reloadActionId);
+    await Utils.postInChat(
         myActor,
         myReloadAction.name,
         reloadActions <= 3 ? String(reloadActions) : "",
@@ -90,14 +90,14 @@ export async function reload() {
             const featId = crossbowFeat.featId;
             const effectId = crossbowFeat.effectId;
 
-            if (PF2eRangedCombat.actorHasItem(myActor, featId)) {
+            if (Utils.actorHasItem(myActor, featId)) {
                 // Remove any existing effects
-                const existing = PF2eRangedCombat.getEffectFromActor(myActor, effectId, weapon.id);
+                const existing = Utils.getEffectFromActor(myActor, effectId, weapon.id);
                 if (existing) await existing.delete();
 
                 // Add the new effect
-                const effect = await PF2eRangedCombat.getItem(effectId);
-                PF2eRangedCombat.setEffectTarget(effect, weapon);
+                const effect = await Utils.getItem(effectId);
+                Utils.setEffectTarget(effect, weapon);
 
                 effectsToAdd.push(effect);
             }
@@ -108,7 +108,7 @@ export async function reload() {
 };
 
 export async function reloadAll() {
-    const myToken = PF2eRangedCombat.getControlledToken();
+    const myToken = Utils.getControlledToken();
     const myActor = myToken?.actor;
     if (!myToken) {
         ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
@@ -121,7 +121,7 @@ export async function reloadAll() {
     }
 
     weapons = weapons.filter(weapon =>
-        !PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.LOADED_EFFECT_ID, weapon.id)
+        !Utils.getEffectFromActor(myActor, Utils.LOADED_EFFECT_ID, weapon.id)
     );
     if (!weapons.length) {
         ui.notifications.info("All your weapons are already loaded.");
@@ -131,13 +131,13 @@ export async function reloadAll() {
     const effectsToAdd = [];
 
     const promises = weapons.map(async weapon => {
-        const loadedEffect = await PF2eRangedCombat.getItem(PF2eRangedCombat.LOADED_EFFECT_ID);
-        PF2eRangedCombat.setEffectTarget(loadedEffect, weapon);
+        const loadedEffect = await Utils.getItem(Utils.LOADED_EFFECT_ID);
+        Utils.setEffectTarget(loadedEffect, weapon);
         effectsToAdd.push(loadedEffect);
     });
 
-    const loadedEffect = await fromUuid(PF2eRangedCombat.LOADED_EFFECT_ID);
-    PF2eRangedCombat.postInChat(myActor, "Reload", "", loadedEffect.img, `${myToken.name} reloads their weapons.`);
+    const loadedEffect = await fromUuid(Utils.LOADED_EFFECT_ID);
+    Utils.postInChat(myActor, "Reload", "", loadedEffect.img, `${myToken.name} reloads their weapons.`);
 
     await Promise.all(promises);
     myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
@@ -148,28 +148,28 @@ function getReloadableWeapons(actor) {
 
     if (actor.type === "character") {
         weapons = actor.itemTypes.weapon
-            .filter(weapon => PF2eRangedCombat.requiresLoading(weapon))
+            .filter(weapon => Utils.requiresLoading(weapon))
             .map(weapon => {
                 return {
                     value: weapon,
                     id: weapon.data._id,
                     name: weapon.data.name,
                     img: weapon.data.img,
-                    reload: PF2eRangedCombat.getReloadTime(weapon),
+                    reload: Utils.getReloadTime(weapon),
                     isEquipped: weapon.data.data.equipped.value,
                     isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
                 }
             });
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
-            .filter(weapon => PF2eRangedCombat.requiresLoading(weapon))
+            .filter(weapon => Utils.requiresLoading(weapon))
             .map(weapon => {
                 return {
                     value: weapon,
                     id: weapon.data._id,
                     name: weapon.data.name,
                     img: weapon.data.img,
-                    reload: PF2eRangedCombat.getReloadTime(weapon),
+                    reload: Utils.getReloadTime(weapon),
                     isEquipped: true,
                     isCrossbow: false
                 }

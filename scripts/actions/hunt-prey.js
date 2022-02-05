@@ -1,27 +1,27 @@
-import { PF2eRangedCombat } from "../utils.js";
+import * as Utils from "../utils.js";
 
 export async function huntPrey() {
     const effectsToAdd = [];
 
-    const myToken = PF2eRangedCombat.getControlledToken();
+    const myToken = Utils.getControlledToken();
     const myActor = myToken?.actor;
     if (!myToken) {
         ui.notifications.warn("You must have exactly one token selected, or your assigned character must have one token.")
         return;
     }
 
-    if (!PF2eRangedCombat.actorHasItem(myActor, PF2eRangedCombat.HUNT_PREY_FEATURE_ID)) {
+    if (!Utils.actorHasItem(myActor, Utils.HUNT_PREY_FEATURE_ID)) {
         ui.notifications.warn("You do not have the Hunt Prey feature.");
         return;
     }
 
-    const target = PF2eRangedCombat.getTarget();
+    const target = Utils.getTarget();
     if (!target) {
         return;
     }
 
     //Check if the target is already hunted prey
-    if (PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.HUNTED_PREY_EFFECT_ID, target.id)) {
+    if (Utils.getEffectFromActor(myActor, Utils.HUNTED_PREY_EFFECT_ID, target.id)) {
         ui.notifications.warn(`${target.name} is already your hunted prey.`);
         return;
     }
@@ -30,9 +30,9 @@ export async function huntPrey() {
      * HUNT PREY ACTION AND EFFECT
      */
     {
-        const myHuntPreyFeature = await PF2eRangedCombat.getItemFromActor(myActor, PF2eRangedCombat.HUNT_PREY_FEATURE_ID);
-        await PF2eRangedCombat.postActionInChat(myActor, PF2eRangedCombat.HUNT_PREY_ACTION_ID);
-        await PF2eRangedCombat.postInChat(
+        const myHuntPreyFeature = await Utils.getItemFromActor(myActor, Utils.HUNT_PREY_FEATURE_ID);
+        await Utils.postActionInChat(myActor, Utils.HUNT_PREY_ACTION_ID);
+        await Utils.postInChat(
             myActor,
             myHuntPreyFeature.name,
             1,
@@ -41,11 +41,11 @@ export async function huntPrey() {
         );
 
         // Remove any existing hunted prey effects
-        const existing = await PF2eRangedCombat.getItemFromActor(myActor, PF2eRangedCombat.HUNTED_PREY_EFFECT_ID);
+        const existing = await Utils.getItemFromActor(myActor, Utils.HUNTED_PREY_EFFECT_ID);
         if (existing) await existing.delete();
 
         // Add the new effect
-        const huntedPreyEffect = await PF2eRangedCombat.getItem(PF2eRangedCombat.HUNTED_PREY_EFFECT_ID);
+        const huntedPreyEffect = await Utils.getItem(Utils.HUNTED_PREY_EFFECT_ID);
         huntedPreyEffect.name = `${huntedPreyEffect.name} (${target.name})`;
         huntedPreyEffect.flags["pf2e-ranged-combat"] = {
             targetId: target.id
@@ -60,15 +60,15 @@ export async function huntPrey() {
      * CROSSBOW ACE
      */
     {
-        if (PF2eRangedCombat.actorHasItem(myActor, PF2eRangedCombat.CROSSBOW_ACE_FEAT_ID)) {
+        if (Utils.actorHasItem(myActor, Utils.CROSSBOW_ACE_FEAT_ID)) {
             let weapons = await getCrossbows(myActor);
 
             for (const weapon of weapons) {
-                const existing = await PF2eRangedCombat.getEffectFromActor(myActor, PF2eRangedCombat.CROSSBOW_ACE_EFFECT_ID, weapon.id);
+                const existing = await Utils.getEffectFromActor(myActor, Utils.CROSSBOW_ACE_EFFECT_ID, weapon.id);
                 if (existing) await existing.delete();
 
-                const effect = await PF2eRangedCombat.getItem(PF2eRangedCombat.CROSSBOW_ACE_EFFECT_ID);
-                PF2eRangedCombat.setEffectTarget(effect, weapon);
+                const effect = await Utils.getItem(Utils.CROSSBOW_ACE_EFFECT_ID);
+                Utils.setEffectTarget(effect, weapon);
 
                 effectsToAdd.push(effect);
             }
