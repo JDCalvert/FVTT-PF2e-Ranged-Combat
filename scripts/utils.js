@@ -1,6 +1,7 @@
 import { ItemSelectDialog } from "./dialog.js";
 // Loaded
 export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
+export const MAGAZINE_LOADED_EFFECT = "";
 
 // Reload
 export const RELOAD_ACTION_ONE_ID = "Compendium.pf2e-ranged-combat.actions.MAYuLJ4bsciOXiNM";
@@ -69,7 +70,7 @@ export function getReloadTime(item) {
     if (item.actor.type === "character") {
         return Number(item.reload || 0);
     } else if (item.actor.type === "npc") {
-        const reloadTrait = item.data.data.traits.value.find(trait => trait.startsWith("reload-"));
+        const reloadTrait = item.traits.value.find(trait => trait.startsWith("reload-"));
         if (reloadTrait) {
             const reloadTime = reloadTrait.slice("reload-".length);
             if (reloadTime === "1-min") {

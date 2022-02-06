@@ -107,6 +107,51 @@ export async function reload() {
     await myToken.actor.createEmbeddedDocuments("Item", effectsToAdd);
 };
 
+export async function reloadMagazine() {
+    const myToken = Utils.getControlledToken();
+    const myActor = myToken?.actor || game.user.character;
+    if (!myToken || !myActor) {
+        ui.notifications.warn("You must have exactly one token selected or an assigned character.");
+    }
+
+    let weapon = await Utils.getSingleWeapon(getRepeatingWeapons(myActor));
+    if (!weapon) {
+        return;
+    }
+
+    // Find if the weapon is already loaded with a magazine. If it is, and there's some ammo left in it,
+    // we'll put it back in our inventory
+    const myMagazineLoadedEffect = Utils.getEffectFromActor(myActor, Utils.LOADED_EFFECT_ID, weapon.id);
+    
+
+    const myLoadedEffect = Utils.getEffectFromActor(myActor, Utils.LOADED_EFFECT_ID, weapon.id);
+    if (myLoadedEffect) {
+        ui.notifications.warn(`${weapon.name} is already loaded.`);
+        return;
+    }
+
+    // Advanced Ammunition System: consume the ammunition on reload
+    if (game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystem")) {
+        // Consume the assigned ammunition
+        const ammo = weapon.value.ammo;
+        if (!ammo) {
+            ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
+            return;
+        } else if (ammo.quantity < 1) {
+            ui.notifications.warn(`Not enough ammunition to reload ${weapon.name}`);
+            return;
+        }
+
+        // Track the ammunition ID and source on the loaded effect - if we unload the weapon later we'll want to
+        // use a different 
+        loadedEffect.flags["pf2e-ranged-combat"].ammoId = ammo.id;
+        loadedEffect.flags["pf2e-ranged-combat"].ammoSourceId = ammo.getFlag("core", "sourceId");
+
+        // Consume the ammunition
+        ammo.consume();
+    }
+}
+
 export async function reloadAll() {
     const myToken = Utils.getControlledToken();
     const myActor = myToken?.actor;
@@ -149,31 +194,11 @@ function getReloadableWeapons(actor) {
     if (actor.type === "character") {
         weapons = actor.itemTypes.weapon
             .filter(weapon => Utils.requiresLoading(weapon))
-            .map(weapon => {
-                return {
-                    value: weapon,
-                    id: weapon.data._id,
-                    name: weapon.data.name,
-                    img: weapon.data.img,
-                    reload: Utils.getReloadTime(weapon),
-                    isEquipped: weapon.data.data.equipped.value,
-                    isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
-                }
-            });
+            .map(characterWeaponTransform);
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
             .filter(weapon => Utils.requiresLoading(weapon))
-            .map(weapon => {
-                return {
-                    value: weapon,
-                    id: weapon.data._id,
-                    name: weapon.data.name,
-                    img: weapon.data.img,
-                    reload: Utils.getReloadTime(weapon),
-                    isEquipped: true,
-                    isCrossbow: false
-                }
-            });
+            .map(npcWeaponTransform);
     } else {
         weapons = [];
     }
@@ -182,4 +207,49 @@ function getReloadableWeapons(actor) {
         ui.notifications.warn("You have no reloadable weapons.");
     }
     return weapons;
+}
+
+function getRepeatingWeapons(actor) {
+    let weapons;
+
+    if (actor.type === "character") {
+        weapons = actor.itemTypes.weapon
+            .filter(weapon => weapon.traits.includes("repeating"))
+            .map(characterWeaponTransform);
+    } else if (actor.type === "npc") {
+        weapons = actor.itemTypes.melee
+            .filter(weapon => weapon.traits.includes("repeating"))
+            .map(npcWeaponTransform);
+    } else {
+        weapons = [];
+    }
+
+    if (!weapons.length) {
+        ui.notifications.warn("You have no repeating weapons.");
+    }
+    return weapons;
+}
+
+function characterWeaponTransform(weapon) {
+    return {
+        value: weapon,
+        id: weapon.data._id,
+        name: weapon.data.name,
+        img: weapon.data.img,
+        reload: Utils.getReloadTime(weapon),
+        isEquipped: weapon.data.data.equipped.value,
+        isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
+    }
+}
+
+function npcWeaponTransform(weapon) {
+    return {
+        value: weapon,
+        id: weapon.data._id,
+        name: weapon.data.name,
+        img: weapon.data.img,
+        reload: Utils.getReloadTime(weapon),
+        isEquipped: true,
+        isCrossbow: false
+    }
 }
