@@ -119,10 +119,57 @@ export async function reloadMagazine() {
         return;
     }
 
+    const ammo = weapon.ammo;
+    if (!ammo) {
+        ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
+        return;
+    } else if (ammo.quantity < 1) {
+        ui.notifications.warn(`You don't have enough ammunition to reload ${weapon.name}.`);
+    }
+
+    const itemsToAdd = [];
+    const itemsToRemove = [];
+
     // Find if the weapon is already loaded with a magazine. If it is, and there's some ammo left in it,
     // we'll put it back in our inventory
-    const myMagazineLoadedEffect = Utils.getEffectFromActor(myActor, Utils.LOADED_EFFECT_ID, weapon.id);
-    
+    const myMagazineLoadedEffect = Utils.getEffectFromActor(myActor, Utils.MAGAZINE_LOADED_EFFECT, weapon.id);
+    if (myMagazineLoadedEffect) {
+        const remainingAmmunition = myMagazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining");
+        if (remainingAmmunition) {
+            const ammunitionItemId = myMagazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionItemId");
+            const ammunitionCapacity = myMagazineLoadedEffect.getFlag("pf2e-ranged-combat", "capacity");
+
+            const ammunitionItem = myActor.items.find(item => item.id === ammunitionItemId);
+
+            if (remainingAmmunition === ammunitionCapacity && ammunitionItemId === ammo.id) {
+                // The magazine is full, and we still have the same ammunition selected, so don't reload
+                ui.notifications.warn(`${weapon.name} is already loaded with a full magazine.`);
+                return;
+            } else if (remainingAmmunition === ammunitionCapacity && ammunitionItem) {
+                // The magazine is full, but we've got different ammunition selected, so switch to that
+                ammunitionItem.quantity++;
+            } else {
+                // The magazine still has some ammunition left, create a new item with the remaining ammunition
+                const itemSourceId = myMagazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
+                const ammunitionSource = Utils.getItem(itemSourceId);
+                ammunitionSource.data.charges.value = remainingAmmunition;
+                itemsToAdd.push(ammunitionSource);
+            }
+        }
+
+        // Finally, remove the existing effect
+        itemsToRemove.push(myMagazineLoadedEffect);
+    }
+
+    // Get a magazine from the existing ammunition
+    ammo.quantity--;
+    const magazineLoadedEffectSource = Utils.getItem(MAGAZINE_LOADED_EFFECT);
+    Utils.setEffectTarget(magazineLoadedEffectSource, weapon);
+    magazineLoadedEffectSource.name = `${magazineLoadedEffectSource} (${ammo.name})`;
+    const magazineLoadedEffectFlags = magazineLoadedEffectSource.flags["pf2e-ranged-combat"];
+    magazineLoadedEffectFlags.capacity = ammo.charges.max;
+    magazineLoadedEffectFlags.remaining = ammo.charges.value;
+    magazineLoadedEffectFlags.ammunitionItemId = ammo.id;
 
     const myLoadedEffect = Utils.getEffectFromActor(myActor, Utils.LOADED_EFFECT_ID, weapon.id);
     if (myLoadedEffect) {

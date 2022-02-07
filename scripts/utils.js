@@ -1,7 +1,7 @@
 import { ItemSelectDialog } from "./dialog.js";
 // Loaded
 export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
-export const MAGAZINE_LOADED_EFFECT = "";
+export const MAGAZINE_LOADED_EFFECT = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
 
 // Reload
 export const RELOAD_ACTION_ONE_ID = "Compendium.pf2e-ranged-combat.actions.MAYuLJ4bsciOXiNM";
