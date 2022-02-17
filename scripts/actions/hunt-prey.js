@@ -3,14 +3,14 @@ import * as Utils from "../utils.js";
 export async function huntPrey() {
     const effectsToAdd = [];
 
-    const myToken = Utils.getControlledToken();
-    const myActor = myToken?.actor;
-    if (!myToken) {
+    const token = Utils.getControlledToken();
+    const actor = token?.actor;
+    if (!token) {
         ui.notifications.warn("You must have exactly one token selected, or your assigned character must have one token.")
         return;
     }
 
-    if (!Utils.actorHasItem(myActor, Utils.HUNT_PREY_FEATURE_ID)) {
+    if (!Utils.actorHasItem(actor, Utils.HUNT_PREY_FEATURE_ID)) {
         ui.notifications.warn("You do not have the Hunt Prey feature.");
         return;
     }
@@ -21,7 +21,7 @@ export async function huntPrey() {
     }
 
     //Check if the target is already hunted prey
-    if (Utils.getEffectFromActor(myActor, Utils.HUNTED_PREY_EFFECT_ID, target.id)) {
+    if (Utils.getEffectFromActor(actor, Utils.HUNTED_PREY_EFFECT_ID, target.id)) {
         ui.notifications.warn(`${target.name} is already your hunted prey.`);
         return;
     }
@@ -30,18 +30,18 @@ export async function huntPrey() {
      * HUNT PREY ACTION AND EFFECT
      */
     {
-        const myHuntPreyFeature = await Utils.getItemFromActor(myActor, Utils.HUNT_PREY_FEATURE_ID);
-        await Utils.postActionInChat(myActor, Utils.HUNT_PREY_ACTION_ID);
+        const myHuntPreyFeature = await Utils.getItemFromActor(actor, Utils.HUNT_PREY_FEATURE_ID);
+        await Utils.postActionInChat(actor, Utils.HUNT_PREY_ACTION_ID);
         await Utils.postInChat(
-            myActor,
+            actor,
             myHuntPreyFeature.name,
             1,
             myHuntPreyFeature.img,
-            `${myToken.name} makes ${target.name} their hunted prey.`
+            `${token.name} makes ${target.name} their hunted prey.`
         );
 
         // Remove any existing hunted prey effects
-        const existing = await Utils.getItemFromActor(myActor, Utils.HUNTED_PREY_EFFECT_ID);
+        const existing = await Utils.getItemFromActor(actor, Utils.HUNTED_PREY_EFFECT_ID);
         if (existing) await existing.delete();
 
         // Add the new effect
@@ -53,18 +53,18 @@ export async function huntPrey() {
         effectsToAdd.push(huntedPreyEffect);
 
         // Set the Hunt Prey flag, since we're currently targetting our hunted prey
-        myActor.setFlag("pf2e", "rollOptions.all.hunted-prey", true);
+        actor.setFlag("pf2e", "rollOptions.all.hunted-prey", true);
     }
 
     /**
      * CROSSBOW ACE
      */
     {
-        if (Utils.actorHasItem(myActor, Utils.CROSSBOW_ACE_FEAT_ID)) {
-            let weapons = await getCrossbows(myActor);
+        if (Utils.actorHasItem(actor, Utils.CROSSBOW_ACE_FEAT_ID)) {
+            let weapons = await getCrossbows(actor);
 
             for (const weapon of weapons) {
-                const existing = await Utils.getEffectFromActor(myActor, Utils.CROSSBOW_ACE_EFFECT_ID, weapon.id);
+                const existing = await Utils.getEffectFromActor(actor, Utils.CROSSBOW_ACE_EFFECT_ID, weapon.id);
                 if (existing) await existing.delete();
 
                 const effect = await Utils.getItem(Utils.CROSSBOW_ACE_EFFECT_ID);

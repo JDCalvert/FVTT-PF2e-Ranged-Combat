@@ -1,7 +1,7 @@
 import { ItemSelectDialog } from "./dialog.js";
 // Loaded
 export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
-export const MAGAZINE_LOADED_EFFECT = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
+export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
 
 // Reload
 export const RELOAD_ACTION_ONE_ID = "Compendium.pf2e-ranged-combat.actions.MAYuLJ4bsciOXiNM";
@@ -52,13 +52,49 @@ export function getTarget(notifyNoToken = true) {
 }
 
 /**
+ * Find out if the weapon uses ammunition
+ */
+export function usesAmmunition(item) {
+    if (item.actor.type === "character") {
+        return item.baseType === "blowgun" || ["firearm", "bow", "sling"].includes(item.group);
+    } else if (item.actor.type === "npc") {
+        return false; // TODO work this out
+    } else {
+        return false;
+    }
+}
+
+export function getAmmunition(item) {
+    if (!usesAmmunition(item)) {
+        return;
+    }
+
+    if (item.actor.type === "character") {
+        return item.ammo;
+    } else if (item.actor.type === "npc") {
+        return;
+    } else {
+        return;
+    }
+}
+
+/**
  * Find out if a weapon requires loading (e.g. has a reload time of greater than 0)
  * 
  * @param {WeaponPF2e | MeleePF2e} item
  * @returns true if the weapon has a non-zero reload time
  */
 export function requiresLoading(item) {
-    return this.getReloadTime(item) > 0;
+    return getReloadTime(item) > 0;
+}
+
+/**
+ * Check if a weapon is repeating
+ * @param {WeaponPF2e | MeleePF2e} item
+ * @returns true if the weapon is a repeating weapon
+ */
+export function isRepeating(item) {
+    return item.traits.has("repeating");
 }
 
 /**
@@ -70,7 +106,7 @@ export function getReloadTime(item) {
     if (item.actor.type === "character") {
         return Number(item.reload || 0);
     } else if (item.actor.type === "npc") {
-        const reloadTrait = item.traits.value.find(trait => trait.startsWith("reload-"));
+        const reloadTrait = item.data.data.traits.value.find(trait => trait.startsWith("reload-"));
         if (reloadTrait) {
             const reloadTime = reloadTrait.slice("reload-".length);
             if (reloadTime === "1-min") {
@@ -97,9 +133,9 @@ export function actorHasItem(actor, sourceId) {
 export async function getItemFromActor(actor, sourceId, addIfNotPresent = false) {
     let myItem = actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
     if (!myItem && addIfNotPresent) {
-        const newItem = await this.getItem(sourceId);
+        const newItem = await getItem(sourceId);
         await actor.createEmbeddedDocuments("Item", [newItem]);
-        myItem = await this.getItemFromActor(actor, sourceId);
+        myItem = await getItemFromActor(actor, sourceId);
     }
     return myItem;
 }
@@ -167,4 +203,26 @@ export async function postInChat(actor, actionName, numActions, img, message) {
         flavor,
         content
     });
+}
+
+export async function handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate) {
+    for (const update of itemsToUpdate) {
+        await update();
+    }
+
+    await actor.deleteEmbeddedDocuments("Item", itemsToRemove.map(item => item.id));
+    await actor.createEmbeddedDocuments("Item", itemsToAdd);
+}
+
+/**
+ * For the given actor type, check if the advanced ammunition system is enabled
+ */
+export function useAdvancedAmmunitionSystem(actor) {
+    if (actor.type === "character") {
+        return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
+    } else if (actor.type === "npc") {
+        return false; // Placeholder for NPC advanced ammunition system
+    } else {
+        return false;
+    }
 }
