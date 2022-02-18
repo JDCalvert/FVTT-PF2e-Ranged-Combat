@@ -210,7 +210,7 @@ export async function reloadMagazine() {
 
     await Utils.postInChat(
         actor,
-        magazineLoadedEffectSource.img,
+        Utils.RELOAD_MAGAZINE_IMG,
         `${token.name} loads their ${weapon.name} with ${ammo.name} (${ammo.charges.current}/${ammo.charges.max}).`,
         "Interact",
         String(numActions)
@@ -314,7 +314,7 @@ export async function reloadAll() {
     });
 
     const loadedEffect = await fromUuid(Utils.LOADED_EFFECT_ID);
-    Utils.postInChat(actor, loadedEffect.img, `${token.name} reloads their weapons.`, "Reload", "");
+    Utils.postInChat(actor, Utils.RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");
 
     await Promise.all(promises);
     token.actor.createEmbeddedDocuments("Item", effectsToAdd);
@@ -491,7 +491,18 @@ function getTotalChargesForStack(stack) {
 }
 
 function getReloadableOrRepeatingWeapons(actor) {
-    return getWeapons(actor, weapon => Utils.requiresLoading(weapon) || Utils.isRepeating(weapon), "You have no reloadable or repeating weapons.");
+    return getWeapons(
+        actor,
+        weapon => {
+            if (Utils.isRepeating(weapon)) {
+                return Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
+            } else if (Utils.requiresLoading(weapon)) {
+                return Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+            }
+            return false;
+        },
+        "You have no loaded weapons."
+    );
 }
 
 function getReloadableWeapons(actor) {
@@ -578,7 +589,7 @@ async function postReloadToChat(token, weapon, loadedEffectSource) {
 
     await Utils.postInChat(
         token.actor,
-        loadedEffectSource.img,
+        Utils.RELOAD_AMMUNITION_IMG,
         desc,
         "Interact",
         reloadActions <= 3 ? String(reloadActions) : "",
