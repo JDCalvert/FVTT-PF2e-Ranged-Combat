@@ -104,49 +104,41 @@ Hooks.on(
 
                         magazineLoadedEffect.setFlag("pf2e-ranged-combat", "remaining", magazineRemaining);
                         const magazineLoadedEffectName = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "name");
-                        const magazineLoadedEffectNameWithCapacity = `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`;
                         itemsToUpdate.push(async () => {
                             await magazineLoadedEffect.update({
-                                "name": magazineLoadedEffectNameWithCapacity
+                                "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`
                             });
-
-                            // Show floaty text with the new effect name
-                            const tokens = actor.getActiveTokens();
-                            for (const token of tokens) {
-                                token.showFloatyText({
-                                    update: {
-                                        name: magazineLoadedEffectNameWithCapacity
-                                    }
-                                });
-                            }
-
-                            // Post in chat saying some ammunition was used
-                            Utils.postInChat(
-                                actor,
-                                "",
-                                "",
-                                magazineLoadedEffect.img,
-                                `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
-                            )
                         });
-                    }
+                        // Show floaty text with the new effect name
+                        const tokens = actor.getActiveTokens();
+                        for (const token of tokens) {
+                            token.showFloatyText({
+                                update: {
+                                    name: `${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`
+                                }
+                            });
+                        }
 
-                    // For non-repeating, reload 0 weapons, consume a piece of ammunition from the selected stack
-                    if (Utils.usesAmmunition(weapon) && !Utils.requiresLoading(weapon) && !Utils.isRepeating(weapon)) {
+                        // Post in chat saying some ammunition was used
+                        Utils.postInChat(
+                            actor,
+                            magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
+                            `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
+                        );
+                    } else if (Utils.requiresLoading(weapon)) {
+                        Utils.postInChat(
+                            actor,
+                            loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
+                            `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
+                        )
+                    } else if (Utils.usesAmmunition(weapon)) {
                         const ammo = Utils.getAmmunition(weapon);
                         itemsToUpdate.push(async () => {
                             await ammo.update({
                                 "data.quantity.value": ammo.quantity - 1
                             });
-
-                            await Utils.postInChat(
-                                actor,
-                                "",
-                                "",
-                                ammo.img,
-                                `${actor.name} uses ${ammo.name}.`
-                            );
                         });
+                        Utils.postInChat(actor, ammo.img, `${actor.name} uses ${ammo.name}.`);
                     }
                 } else {
                     weapon.ammo?.consume();

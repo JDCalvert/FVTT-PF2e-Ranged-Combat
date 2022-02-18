@@ -75,6 +75,7 @@ export async function reload() {
 
             const loadedEffectSourceFlags = loadedEffectSource.flags["pf2e-ranged-combat"];
             loadedEffectSourceFlags.ammunitionName = ammo.name;
+            loadedEffectSourceFlags.ammunitionImg = ammo.img;
             loadedEffectSourceFlags.ammunitionItemId = ammo.id;
             loadedEffectSourceFlags.ammunitionSourceId = ammo.sourceId;
 
@@ -189,6 +190,7 @@ export async function reloadMagazine() {
     magazineLoadedEffectFlags.capacity = ammo.charges.max;
     magazineLoadedEffectFlags.remaining = ammo.charges.current;
     magazineLoadedEffectFlags.ammunitionName = ammo.name;
+    magazineLoadedEffectFlags.ammunitionImg = ammo.img;
     magazineLoadedEffectFlags.ammunitionItemId = ammo.id;
     magazineLoadedEffectFlags.ammunitionSourceId = ammo.sourceId;
 
@@ -208,10 +210,10 @@ export async function reloadMagazine() {
 
     await Utils.postInChat(
         actor,
-        "Interact",
-        String(numActions),
         magazineLoadedEffectSource.img,
-        `${token.name} loads their ${weapon.name} with ${ammo.name} (${ammo.charges.current}/${ammo.charges.max}).`
+        `${token.name} loads their ${weapon.name} with ${ammo.name} (${ammo.charges.current}/${ammo.charges.max}).`,
+        "Interact",
+        String(numActions)
     );
 
     Utils.handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate);
@@ -312,7 +314,7 @@ export async function reloadAll() {
     });
 
     const loadedEffect = await fromUuid(Utils.LOADED_EFFECT_ID);
-    Utils.postInChat(actor, "Reload", "", loadedEffect.img, `${token.name} reloads their weapons.`);
+    Utils.postInChat(actor, loadedEffect.img, `${token.name} reloads their weapons.`, "Reload", "");
 
     await Promise.all(promises);
     token.actor.createEmbeddedDocuments("Item", effectsToAdd);
@@ -350,10 +352,10 @@ export async function unload() {
                     await unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate);
                     Utils.postInChat(
                         actor,
-                        "Interact",
-                        "1",
                         magazineLoadedEffect.img,
-                        `${token.name} unloads ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} from their ${weapon.name}.`
+                        `${token.name} unloads ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} from their ${weapon.name}.`,
+                        "Interact",
+                        "1"
                     );
                 }
             } else {
@@ -361,10 +363,10 @@ export async function unload() {
                 if (Utils.useAdvancedAmmunitionSystem(actor)) {
                     Utils.postInChat(
                         actor,
-                        "Interact",
-                        "1",
                         loadedEffect.img,
-                        `${token.name} unloads ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} from their ${weapon.name}.`
+                        `${token.name} unloads ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} from their ${weapon.name}.`,
+                        "Interact",
+                        "1"
                     );
                 }
             }
@@ -473,10 +475,10 @@ export async function consolidateRepeatingWeaponAmmunition() {
     if (itemsToAdd.length || itemsToRemove.length || itemsToUpdate.length) {
         Utils.postInChat(
             actor,
-            "Interact",
-            "",
             ammunitionStacks[0].img,
-            `${token.name} consolidates their ammunition.`
+            `${token.name} consolidates their ammunition.`,
+            "Interact",
+            ""
         );
         Utils.handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate);
     } else {
@@ -576,10 +578,10 @@ async function postReloadToChat(token, weapon, loadedEffectSource) {
 
     await Utils.postInChat(
         token.actor,
+        loadedEffectSource.img,
+        desc,
         "Interact",
         reloadActions <= 3 ? String(reloadActions) : "",
-        loadedEffectSource.img,
-        desc
     );
 }
 

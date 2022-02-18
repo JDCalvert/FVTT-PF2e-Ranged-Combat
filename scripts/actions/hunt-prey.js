@@ -34,10 +34,10 @@ export async function huntPrey() {
         await Utils.postActionInChat(actor, Utils.HUNT_PREY_ACTION_ID);
         await Utils.postInChat(
             actor,
-            myHuntPreyFeature.name,
-            1,
             myHuntPreyFeature.img,
-            `${token.name} makes ${target.name} their hunted prey.`
+            `${token.name} makes ${target.name} their hunted prey.`,
+            myHuntPreyFeature.name,
+            1
         );
 
         // Remove any existing hunted prey effects

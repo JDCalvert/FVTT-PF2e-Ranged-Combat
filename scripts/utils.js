@@ -190,7 +190,7 @@ export async function postActionInChat(actor, actionId) {
     }
 }
 
-export async function postInChat(actor, actionName, numActions, img, message) {
+export async function postInChat(actor, img, message, actionName = "", numActions = "") {
     const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.html", { imgPath: img, message: message, });
     const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.html", { action: { title: actionName, typeNumber: String(numActions) } });
     ChatMessage.create({
