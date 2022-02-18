@@ -1,11 +1,11 @@
-export class WeaponSelectDialog extends Dialog {
-    weaponId;
+export class ItemSelectDialog extends Dialog {
+    itemId;
     result;
 
-    constructor(content) {
+    constructor(title, content) {
         super(
             {
-                title: "Weapon Select",
+                title,
                 content: content,
                 buttons: {
                 }
@@ -13,45 +13,45 @@ export class WeaponSelectDialog extends Dialog {
             {
                 height: "100%",
                 width: "100%",
-                id: "weapon-dialog"
+                id: "item-dialog"
             }
         )
     }
 
-    static async getWeapon(weapons) {
+    static async getItem(title, header, items) {
         let content = `
-            <div class="weapon-buttons" style="max-width: max-content; justify-items: center; margin: auto;">
-            <p>Select Weapon</p>
+            <div class="item-buttons" style="max-width: max-content; justify-items: center; margin: auto;">
+            <p>${header}</p>
         `
-        for (let weapon of weapons) {
+        for (let item of items) {
             content += `
-                <button class="weapon-button" type="button" value="${weapon.id}" style="display: flex; align-items: center; margin: 4px auto">
-                    <img src="${weapon.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
-                    <span>${weapon.name}</span>
+                <button class="item-button" type="button" value="${item.id}" style="display: flex; align-items: center; margin: 4px auto">
+                    <img src="${item.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
+                    <span>${item.name}</span>
                 </button>
             `
         }
         content += `</div>`
-        let weaponId = await new this(content).getWeaponId();
-        return weapons.find(weapon => weapon.id === weaponId);
+        let itemId = await new this(title, content).getItemId();
+        return items.find(item => item.id === itemId);
     }
 
     activateListeners(html) {
-        html.find(".weapon-button").click(this.clickWeaponButton.bind(this));
+        html.find(".item-button").click(this.clickItemButton.bind(this));
         super.activateListeners(html);
     }
 
-    clickWeaponButton(event) {
-        this.weaponId = event.currentTarget.value;
+    clickItemButton(event) {
+        this.itemId = event.currentTarget.value;
         this.close();
     }
 
     async close() {
-        this.result?.(this.weaponId);
+        this.result?.(this.itemId);
         await super.close();
     }
 
-    async getWeaponId() {
+    async getItemId() {
         this.render(true);
         return new Promise(result => {
             this.result = result;
