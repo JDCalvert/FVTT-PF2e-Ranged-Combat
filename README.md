@@ -23,7 +23,7 @@ The <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> effects apply the feat ef
 </small>
 
 ### Advanced Ammunition System
-This advanced version of the reloading system handles the bookkeeping of ammunition management, and handles ammunition for repeating weapons. A Game Master can enable this in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
+This advanced version of the reloading system handles ammunition management for reloadeable and repeating weapons. A Game Master can enable this in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
 
 With the Advanced Ammunition System, there are a few changes that affect all weapons that use ammunition:
  - You <i>must</i> have selected ammunition to use the weapon.

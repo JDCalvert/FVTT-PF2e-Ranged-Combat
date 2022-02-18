@@ -1,5 +1,6 @@
 ## 2.1.0 - 2022-02-18
 - Implement Advanced Ammunition System
+- Add improved macro icons
 
 ## 2.0.2 - 2022-01-31
 - Fix issue where the Loaded effect would be removed even if the attack roll was cancelled
