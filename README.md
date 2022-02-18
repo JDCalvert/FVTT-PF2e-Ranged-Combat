@@ -4,9 +4,9 @@ A module for the Foundry VTT Pathfinder 2e system that provides helper effects a
 ## Features
 
 ### Reloading System
-When you have a reloadeable weapon (e.g. reload 1 or higher), you can use the <b>Reload</b> macro to choose a weapon to reload (if you have more than one) and give yourself the <b>Loaded</b> effect showing that the weapon has been loaded. If you have the feats, this also applies the effects of <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b>. Firing the weapon removes the <b>Loaded</b> effect.
+When you have a reloadable weapon (e.g. reload 1 or higher), you can use the <b>Reload</b> macro to choose a weapon to reload (if you have more than one) and give yourself the <b>Loaded</b> effect showing that the weapon has been loaded. If you have the feats, this also applies the effects of <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b>. Firing the weapon removes the <b>Loaded</b> effect.
 
-You can also use the <b>Reload All</b> macro to reload all of your reloadeable weapons at once. This is intended to be used outside of combat and so doesn't apply the <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> feat effects.
+You can also use the <b>Reload All</b> macro to reload all of your reloadable weapons at once. This is intended to be used outside of combat and so doesn't apply the <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> feat effects.
 
 If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> in the macro settings, then you <i>must</i> reload weapons before you can fire them.
 
@@ -23,7 +23,7 @@ The <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> effects apply the feat ef
 </small>
 
 ### Advanced Ammunition System
-This advanced version of the reloading system handles ammunition management for reloadeable and repeating weapons. A Game Master can enable this in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
+This advanced version of the reloading system handles ammunition management for reloadable and repeating weapons. A Game Master can enable this in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
 
 With the Advanced Ammunition System, there are a few changes that affect all weapons that use ammunition:
  - You <i>must</i> have selected ammunition to use the weapon.
