@@ -489,64 +489,34 @@ function getTotalChargesForStack(stack) {
 }
 
 function getReloadableOrRepeatingWeapons(actor) {
-    let weapons;
-
-    if (actor.type === "character") {
-        weapons = actor.itemTypes.weapon
-            .filter(weapon => Utils.requiresLoading(weapon) || Utils.isRepeating(weapon))
-            .map(characterWeaponTransform);
-    } else if (actor.type === "npc") {
-        weapons = actor.itemTypes.melee
-            .filter(weapon => Utils.requiresLoading(weapon) || Utils.isRepeating(weapon))
-            .map(npcWeaponTransform);
-    } else {
-        weapons = [];
-    }
-
-    if (!weapons.length) {
-        ui.notifications.warn("You have no reloadable or repeating weapons.");
-    }
-    return weapons;
+    return getWeapons(actor, weapon => Utils.requiresLoading(weapon) || Utils.isRepeating(weapon), "You have no reloadable or repeating weapons.");
 }
 
 function getReloadableWeapons(actor) {
-    let weapons;
-
-    if (actor.type === "character") {
-        weapons = actor.itemTypes.weapon
-            .filter(weapon => Utils.requiresLoading(weapon))
-            .map(characterWeaponTransform);
-    } else if (actor.type === "npc") {
-        weapons = actor.itemTypes.melee
-            .filter(weapon => Utils.requiresLoading(weapon))
-            .map(npcWeaponTransform);
-    } else {
-        weapons = [];
-    }
-
-    if (!weapons.length) {
-        ui.notifications.warn("You have no reloadable weapons.");
-    }
-    return weapons;
+    return getWeapons(actor, weapon => Utils.requiresLoading(weapon), "You have no reloadable weapons.");
 }
 
 function getRepeatingWeapons(actor) {
+    return getWeapons(actor, weapon => Utils.isRepeating(weapon), "You have no repeating weapons.");
+}
+
+function getWeapons(actor, predicate, noResultsMessage) {
     let weapons;
 
     if (actor.type === "character") {
         weapons = actor.itemTypes.weapon
-            .filter(weapon => Utils.isRepeating(weapon))
+            .filter(predicate)
             .map(characterWeaponTransform);
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
-            .filter(weapon => Utils.isRepeating(weapon))
+            .filter(predicate)
             .map(npcWeaponTransform);
     } else {
         weapons = [];
     }
 
     if (!weapons.length) {
-        ui.notifications.warn("You have no repeating weapons.");
+        ui.notifications.warn(noResultsMessage);
     }
     return weapons;
 }
@@ -559,7 +529,7 @@ function characterWeaponTransform(weapon) {
         img: weapon.img,
         reload: Utils.getReloadTime(weapon),
         isRepeating: Utils.isRepeating(weapon),
-        isEquipped: weapon.data.data.equipped.value,
+        isEquipped: weapon.isEquipped,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
     }
 }

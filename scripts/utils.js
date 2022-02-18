@@ -179,11 +179,7 @@ export async function getSingleWeapon(weapons) {
     } else if (weapons.length === 1) {
         return weapons[0];
     } else {
-        let weapon = await ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weapons);
-        if (!weapon) {
-            ui.notifications.warn("No weapon selected.");
-        }
-        return weapon;
+        return await ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weapons);
     }
 }
 

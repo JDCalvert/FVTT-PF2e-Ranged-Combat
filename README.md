@@ -3,7 +3,15 @@ A module for the Foundry VTT Pathfinder 2e system that provides helper effects a
 
 ## Features
 
-### Reloading
+### Reloading System
+
+#### Macros
+The <b>Reload</b> macro gives you a choice of which weapon to reload, and adds a <b>Loaded</b> effect showing that the weapon has been loaded. If you have the feats, this also applies the effects of <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b>. Firing the weapon removes the <b>Loaded</b> effect.
+
+If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> then a reloadable weapon <i>must</i> be loaded before it can be fired.
+
+The <b>Reload All</b> macro reloads all of your unloaded reloadable weapons at once, and does not apply feat effects. This is intended to be used outside of combat.
+
 #### Actions
 Four <b>Reload</b> actions, for one- two-, three-action and "exploration" (more than three-action) reloads.
 
@@ -16,10 +24,7 @@ The <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> effects apply the feat ef
 - <b>Note:</b> The effect is not currently removed automatically. This must be done manually.
 </small>
 
-#### Macros
-The <b>Reload</b> macro gives a choice of which weapon to reload, posts the appropriate <b>Reload</b> action in the chat (adding the action to your character if needed) and applies the <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> effects if you have the feats.
-
-The <b>Reload All</b> macro reloads all of your unloaded reloadable weapons at once, and does not apply feat effects. This is intended to be used outside of combat.
+### Advanced Ammunition System
 
 ### Hunt Prey
 The <b>Hunt Prey</b> macro applies the <b>Hunted Prey</b> effect to your character, with the name of your current target, as a reminder of who your hunted prey is. It also applies the <b>Crossbow Ace</b> effect for your equipped crossbow(s) if you have the feat.
