@@ -75,7 +75,7 @@ export async function huntPrey() {
         }
     }
 
-    myActor.createEmbeddedDocuments("Item", effectsToAdd);
+    actor.createEmbeddedDocuments("Item", effectsToAdd);
 }
 
 function getCrossbows(actor) {

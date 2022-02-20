@@ -137,13 +137,13 @@ export function actorHasItem(actor, sourceId) {
  * Get a specific item from the actor, identified by its source ID. Optionally, add it if not already present
  */
 export async function getItemFromActor(actor, sourceId, addIfNotPresent = false) {
-    let myItem = actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
-    if (!myItem && addIfNotPresent) {
+    let item = actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
+    if (!item && addIfNotPresent) {
         const newItem = await getItem(sourceId);
         await actor.createEmbeddedDocuments("Item", [newItem]);
-        myItem = await getItemFromActor(actor, sourceId);
+        item = await getItemFromActor(actor, sourceId);
     }
-    return myItem;
+    return item;
 }
 
 /**
@@ -191,8 +191,7 @@ export async function getSingleWeapon(weapons) {
 
 export async function postActionInChat(actor, actionId) {
     if (game.settings.get("pf2e-ranged-combat", "postFullAction")) {
-        const myAction = await getItemFromActor(actor, actionId, true);
-        myAction.toMessage();
+        (await getItemFromActor(actor, actionId, true)).toMessage();
     }
 }
 
