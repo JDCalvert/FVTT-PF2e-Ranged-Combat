@@ -1,3 +1,6 @@
+## 2.1.1 - 2022-02-20
+- Fix issue with Hunted Prey effect not applying
+
 ## 2.1.0 - 2022-02-18
 - Implement Advanced Ammunition System
 - Add improved macro icons
