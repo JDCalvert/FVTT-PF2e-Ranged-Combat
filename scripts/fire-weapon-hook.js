@@ -32,10 +32,10 @@ Hooks.on(
                     if (Utils.isRepeating(weapon)) {
                         const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
                         if (!magazineLoadedEffect) {
-                            ui.notifications.warn(`${weapon.name} has no magazine loaded!`);
+                            Utils.showWarning(`${weapon.name} has no magazine loaded!`);
                             return;
                         } else if (magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining") < 1) {
-                            ui.notifications.warn(`${weapon.name}'s magazine is empty!`);
+                            Utils.showWarning(`${weapon.name}'s magazine is empty!`);
                             return;
                         }
                     }
@@ -44,7 +44,7 @@ Hooks.on(
                     if (Utils.requiresLoading(weapon)) {
                         const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id)
                         if (!loadedEffect) {
-                            ui.notifications.warn(`${weapon.name} is not loaded!`);
+                            Utils.showWarning(`${weapon.name} is not loaded!`);
                             return;
                         }
                     }
@@ -54,10 +54,10 @@ Hooks.on(
                     if (Utils.usesAmmunition(weapon) && !Utils.isRepeating(weapon) && !Utils.requiresLoading(weapon)) {
                         const ammunition = Utils.getAmmunition(weapon);
                         if (!ammunition) {
-                            ui.notifications.warn(`${weapon.name} has no ammunition selected!`);
+                            Utils.showWarning(`${weapon.name} has no ammunition selected!`);
                             return;
                         } else if (ammunition.quantity <= 0) {
-                            ui.notifications.warn(`${weapon.name} has no ammunition remaining!`);
+                            Utils.showWarning(`${weapon.name} has no ammunition remaining!`);
                             return;
                         }
                     }
@@ -66,14 +66,14 @@ Hooks.on(
                     // but not if ammo is selected and it is empty
                     const ammunition = Utils.getAmmunition(weapon);
                     if (ammunition && ammunition.quantity < 1) {
-                        ui.notifications.warn(game.i18n.localize("PF2E.ErrorMessage.NotEnoughAmmo"));
+                        Utils.showWarning(game.i18n.localize("PF2E.ErrorMessage.NotEnoughAmmo"));
                         return;
                     }
 
                     // If the weapon requires loading and Prevent Fire if not Reloaded is enabled, check that is has been loaded
                     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id)
                     if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && Utils.requiresLoading(weapon) && !loadedEffect) {
-                        ui.notifications.warn(`${weapon.name} is not loaded!`);
+                        Utils.showWarning(`${weapon.name} is not loaded!`);
                         return;
                     }
                 }
