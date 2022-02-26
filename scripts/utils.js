@@ -227,3 +227,29 @@ export function useAdvancedAmmunitionSystem(actor) {
         return false;
     }
 }
+
+export function showWarning(warningMessage) {
+    if (game.settings.get("pf2e-ranged-combat", "doNotShowWarningAgain")) {
+        ui.notifications.warn(warningMessage);
+    } else {
+        new Dialog(
+            {
+                "title": "PF2e Ranged Combat",
+                "content": `
+                    <p>You cannot fire this weapon because: ${warningMessage}<p>
+                    <p>This is a feature of the PF2e Ranged Combat module. 
+                    You can learn how to use the module <a href="https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md">here</a>.</p>
+                `,
+                "buttons": {
+                    "ok": {
+                        "label": "OK",
+                    },
+                    "doNotShowAgain": {
+                        "label": "OK (Do not show again)",
+                        "callback": () => game.settings.set("pf2e-ranged-combat", "doNotShowWarningAgain", true)
+                    }
+                }
+            }
+        ).render(true);
+    }
+}

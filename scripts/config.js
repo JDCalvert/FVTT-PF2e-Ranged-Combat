@@ -43,13 +43,24 @@ Hooks.on(
             }
         );
 
+        game.settings.register(
+            "pf2e-ranged-combat",
+            "doNotShowWarningAgain",
+            {
+                name: "",
+                default: false,
+                type: Boolean,
+                scope: "client",
+                config: false
+            }
+        );
+
         game.pf2eRangedCombat = {
             reload,
             unload,
             reloadMagazine,
             reloadAll,
             consolidateRepeatingWeaponAmmunition,
-
             huntPrey
         };
     }

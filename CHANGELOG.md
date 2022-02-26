@@ -1,3 +1,6 @@
+## 2.1.2 - 2022-02-26
+- Add a dialog when first being unable to fire a weapon because of the module, linking to documentation
+
 ## 2.1.1 - 2022-02-20
 - Fix issue with Hunted Prey effect not applying
 
