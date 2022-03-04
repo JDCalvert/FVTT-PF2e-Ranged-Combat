@@ -50,7 +50,7 @@ export async function reload() {
                 ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
                 return;
             } else if (ammo.quantity < 1) {
-                ui.notifications.warn(`Not enough ammunition to reload ${weapon.name}`);
+                ui.notifications.warn(`Not enough ammunition to reload ${weapon.name}.`);
                 return;
             }
 
@@ -224,8 +224,8 @@ async function unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, 
     const loadedSourceId = loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
 
     // Try to find either the stack the loaded ammunition came from, or another stack of the same ammunition
-    const ammunitionItem = actor.items.find(item => item.id === loadedItemId)
-        || actor.items.find(item => item.sourceId === loadedSourceId);
+    const ammunitionItem = actor.items.find(item => item.id === loadedItemId && !item.isStowed)
+        || actor.items.find(item => item.sourceId === loadedSourceId && !item.isStowed);
 
     if (ammunitionItem) {
         // We still have the stack the ammunition originally came from, or another that's the same.
@@ -253,10 +253,10 @@ async function unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRe
     const ammunitionRemaining = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining");
 
     const ammunitionItemId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionItemId");
-    const ammunitionItem = actor.items.find(item => item.id === ammunitionItemId);
+    const ammunitionItem = actor.items.find(item => item.id === ammunitionItemId && !item.isStowed);
 
     if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
-        // The magazine is full, but we've got different ammunition selected, so switch to that
+        // We found the original stack of ammunition this
         itemsToUpdate.push(() => {
             ammunitionItem.update({
                 "data.quantity.value": ammunitionItem.quantity + 1

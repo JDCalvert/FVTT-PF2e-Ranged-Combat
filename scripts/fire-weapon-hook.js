@@ -14,6 +14,16 @@ Hooks.on(
 
         libWrapper.register(
             "pf2e-ranged-combat",
+            "CONFIG.PF2E.Item.documentClasses.weapon.prototype.ammo",
+            function() {
+                const ammo = this.actor?.items.get(this.data.data.selectedAmmoId ?? "");
+                return ammo?.type === "consumable" ? ammo : null;
+            },
+            "OVERRIDE"
+        );
+
+        libWrapper.register(
+            "pf2e-ranged-combat",
             "game.pf2e.Check.roll",
             async function (wrapper, ...args) {
                 const context = args[1];
