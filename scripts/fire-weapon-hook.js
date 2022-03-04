@@ -6,7 +6,7 @@ Hooks.on(
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Actor.documentClasses.character.prototype.consumeAmmo",
-            function () {
+            function() {
                 return true;
             },
             "OVERRIDE"
@@ -25,7 +25,7 @@ Hooks.on(
         libWrapper.register(
             "pf2e-ranged-combat",
             "game.pf2e.Check.roll",
-            async function (wrapper, ...args) {
+            async function(wrapper, ...args) {
                 const context = args[1];
                 const actor = context.actor;
                 const weapon = context.item; // Either WeaponPF2e (for a character) or MeleePF2e (for an NPC)
@@ -52,7 +52,7 @@ Hooks.on(
 
                     // If the weapon requires reloading, check that it has been loaded
                     if (Utils.requiresLoading(weapon)) {
-                        const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id)
+                        const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
                         if (!loadedEffect) {
                             Utils.showWarning(`${weapon.name} is not loaded!`);
                             return;
@@ -81,7 +81,7 @@ Hooks.on(
                     }
 
                     // If the weapon requires loading and Prevent Fire if not Reloaded is enabled, check that is has been loaded
-                    const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id)
+                    const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
                     if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && Utils.requiresLoading(weapon) && !loadedEffect) {
                         Utils.showWarning(`${weapon.name} is not loaded!`);
                         return;
@@ -98,9 +98,10 @@ Hooks.on(
                 const itemsToRemove = [];
                 const itemsToUpdate = [];
 
-                // Remove the loaded effect
-                const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id)
-                if (loadedEffect) {
+                // Remove the loaded effect if the weapon requires reloading. It could have a loaded effect
+                // and not require reloading e.g. combination weapons
+                const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+                if (loadedEffect && Utils.requiresLoading(weapon)) {
                     itemsToRemove.push(loadedEffect);
                 }
 
@@ -140,7 +141,7 @@ Hooks.on(
                             actor,
                             loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
                             `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
-                        )
+                        );
                     } else if (Utils.usesAmmunition(weapon)) {
                         const ammo = Utils.getAmmunition(weapon);
                         itemsToUpdate.push(async () => {
