@@ -1,7 +1,9 @@
+## 2.1.4 - 2022-03-05
+- Prevent melee usage of combination weapons consuming ammunition
+
 ## 2.1.3 - 2022-03-04
 - Revert system change to disregard empty ammunition stacks
 - Prevent unloading into stowed ammunition stacks
-- Prevent melee usage of combination weapons consuming ammunition
 
 ## 2.1.2 - 2022-02-26
 - Add a dialog when first being unable to fire a weapon because of the module, linking to documentation
