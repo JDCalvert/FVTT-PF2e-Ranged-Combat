@@ -1,7 +1,7 @@
 # FVTT PF2e Ranged Combat
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
-## System Compatibility
+## Issues and System Compatibility
 This module is built for the Pathfinder 2e system, which receives regular updates, and some of those updates may occassionally break the functionality of this module. I will do my best to fix issues caused by updates, but this may require losing support for earlier versions of the system.
 
 Also, some parts of this module may require features/functions from the latest release of the Pathfinder 2e system.
