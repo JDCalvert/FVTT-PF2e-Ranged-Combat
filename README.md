@@ -6,7 +6,7 @@ This module is built for the Pathfinder 2e system, which receives regular update
 
 Also, some parts of this module may require features/functions from the latest release of the Pathfinder 2e system.
 
-In summary, each release of this module only officially supports the latest release of the Pathfinder 2e system at the time of release, which will be listed in the [Changelog](/CHANGELOG.md). If you encounter an issue, please make sure you're using the latest system version. If the issue persists on the most recent version, please [report it](/issues/new)!
+In summary, each release of this module only officially supports the latest release of the Pathfinder 2e system at the time of release, which will be listed in the [Changelog](/CHANGELOG.md). If you encounter an issue, please make sure you're using the latest system version. If the issue persists on the most recent version, please [report it](https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/issues/new)!
 
 ## Features
 
