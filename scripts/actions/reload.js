@@ -82,7 +82,7 @@ export async function reload() {
             // Remove one piece of ammunition from the stack
             itemsToUpdate.push(async () => {
                 await ammo.update({
-                    "data.quantity.value": ammo.quantity - 1
+                    "data.quantity": ammo.quantity - 1
                 });
             });
 
@@ -204,7 +204,7 @@ export async function reloadMagazine() {
 
     // Remove that magazine from the stack
     await ammo.update({
-        "data.quantity.value": ammo.quantity - 1,
+        "data.quantity": ammo.quantity - 1,
         "data.charges.value": ammo.charges.max,
     });
 
@@ -232,13 +232,13 @@ async function unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, 
         // Add the currently loaded ammunition to the stack
         itemsToUpdate.push(() => {
             ammunitionItem.update({
-                "data.quantity.value": ammunitionItem.quantity + 1
+                "data.quantity": ammunitionItem.quantity + 1
             });
         });
     } else {
         // Create a new stack with one piece of ammunition in it
         const ammunitionSource = await Utils.getItem(loadedSourceId);
-        ammunitionSource.data.quantity.value = 1;
+        ammunitionSource.data.quantity = 1;
         itemsToAdd.push(ammunitionSource);
     }
 
@@ -259,7 +259,7 @@ async function unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRe
         // We found the original stack of ammunition this
         itemsToUpdate.push(() => {
             ammunitionItem.update({
-                "data.quantity.value": ammunitionItem.quantity + 1
+                "data.quantity": ammunitionItem.quantity + 1
             });
         });
     } else if (ammunitionRemaining > 0) {
@@ -439,7 +439,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
             const indexNow = index;
             itemsToUpdate.push(async () => {
                 await stacks[indexNow].update({
-                    "data.quantity.value": quantityFullCharges,
+                    "data.quantity": quantityFullCharges,
                     "data.charges.value": maxChargesPerItem
                 });
             });
@@ -450,14 +450,14 @@ export async function consolidateRepeatingWeaponAmmunition() {
         if (remainingCharges) {
             if (index >= stacks.length) {
                 const newStackSource = await Utils.getItem(sourceId);
-                newStackSource.data.quantity.value = 1;
+                newStackSource.data.quantity = 1;
                 newStackSource.data.charges.value = remainingCharges;
                 itemsToAdd.push(newStackSource);
             } else {
                 const indexNow = index;
                 itemsToUpdate.push(async () => {
                     await stacks[indexNow].update({
-                        "data.quantity.value": 1,
+                        "data.quantity": 1,
                         "data.charges.value": remainingCharges
                     });
                 });

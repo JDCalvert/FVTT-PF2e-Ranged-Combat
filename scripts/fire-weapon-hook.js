@@ -146,7 +146,7 @@ Hooks.on(
                         const ammo = Utils.getAmmunition(weapon);
                         itemsToUpdate.push(async () => {
                             await ammo.update({
-                                "data.quantity.value": ammo.quantity - 1
+                                "data.quantity": ammo.quantity - 1
                             });
                         });
                         Utils.postInChat(actor, ammo.img, `${actor.name} uses ${ammo.name}.`);
