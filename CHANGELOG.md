@@ -1,3 +1,6 @@
+## 2.1.6 - 2022-03-18 (Pathfinder 2e 3.7.2)
+- Fix issue where Hunt Prey did not apply Crossbow Ace effect due to system data change
+
 ## 2.1.5 - 2022-03-14 (Pathfinder 2e 3.7.1)
 - Update to support data structure changes in Pathfinder 2e 3.7.0 (thanks to MrVauxs)
 
