@@ -80,12 +80,11 @@ export async function huntPrey() {
 
 function getCrossbows(actor) {
     return actor.itemTypes.weapon
-        .map(weapon => weapon.data)
-        .filter(weapon => weapon.data.equipped.value)
-        .filter(weapon => weapon.data.traits.otherTags.includes("crossbow"))
+        .filter(weapon => weapon.isEquipped)
+        .filter(weapon => weapon.data.data.traits.otherTags.includes("crossbow"))
         .map(weapon => {
             return {
-                id: weapon._id,
+                id: weapon.id,
                 name: weapon.name
             }
         });
