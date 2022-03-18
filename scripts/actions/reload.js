@@ -5,10 +5,8 @@ export async function reload() {
     const itemsToRemove = [];
     const itemsToUpdate = [];
 
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.")
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -118,10 +116,8 @@ export async function reload() {
  *     - Load the new magazine (two actions)
  */
 export async function reloadMagazine() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor || game.user.character;
-    if (!token || !actor) {
-        ui.notifications.warn("You must have exactly one token selected or an assigned character.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -282,10 +278,8 @@ async function unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRe
 }
 
 export async function reloadAll() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -321,10 +315,8 @@ export async function reloadAll() {
 }
 
 export async function unload() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -379,23 +371,21 @@ export async function unload() {
 }
 
 export async function consolidateRepeatingWeaponAmmunition() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
     // Find all the repeating ammunition stacks
     const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.charges.max > 1);
     const ammunitionStacksBySourceId = ammunitionStacks.reduce(
-        function (map, stack) {
+        function(map, stack) {
             const mapEntry = map[stack.sourceId];
             if (!mapEntry) {
                 map[stack.sourceId] = {
                     stacks: [stack],
                     totalCharges: getTotalChargesForStack(stack)
-                }
+                };
             } else {
                 mapEntry.stacks.push(stack);
                 mapEntry.totalCharges += getTotalChargesForStack(stack);
@@ -544,7 +534,7 @@ function characterWeaponTransform(weapon) {
         isRepeating: Utils.isRepeating(weapon),
         isEquipped: weapon.isEquipped,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
-    }
+    };
 }
 
 function npcWeaponTransform(weapon) {
@@ -557,7 +547,7 @@ function npcWeaponTransform(weapon) {
         isRepeating: Utils.isRepeating(weapon),
         isEquipped: true,
         isCrossbow: false
-    }
+    };
 }
 
 async function postReloadToChat(token, weapon, loadedEffectSource) {
@@ -598,14 +588,8 @@ async function postReloadToChat(token, weapon, loadedEffectSource) {
 
 async function triggerCrossbowReloadEffects(actor, weapon, itemsToAdd, itemsToRemove) {
     const crossbowFeats = [
-        {
-            featId: Utils.CROSSBOW_ACE_FEAT_ID,
-            effectId: Utils.CROSSBOW_ACE_EFFECT_ID
-        },
-        {
-            featId: Utils.CROSSBOW_CRACK_SHOT_FEAT_ID,
-            effectId: Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID
-        }
+        { featId: Utils.CROSSBOW_ACE_FEAT_ID, effectId: Utils.CROSSBOW_ACE_EFFECT_ID },
+        { featId: Utils.CROSSBOW_CRACK_SHOT_FEAT_ID, effectId: Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID }
     ];
 
     // Handle crossbow effects that trigger on reload
@@ -619,9 +603,11 @@ async function triggerCrossbowReloadEffects(actor, weapon, itemsToAdd, itemsToRe
                 const existing = Utils.getEffectFromActor(actor, effectId, weapon.id);
                 if (existing) itemsToRemove.push(existing);
 
+
                 // Add the new effect
                 const effect = await Utils.getItem(effectId);
                 Utils.setEffectTarget(effect, weapon);
+                effect.flags["pf2e-ranged-combat"].fired = false;
 
                 itemsToAdd.push(effect);
             }

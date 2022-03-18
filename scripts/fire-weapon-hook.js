@@ -98,6 +98,17 @@ Hooks.on(
                 const itemsToRemove = [];
                 const itemsToUpdate = [];
 
+                // Crossbow Ace and Crossbow Crack Shot only apply to the next shot fired. If that shot hadn't
+                // already been fired, it has now. If it had already been fired, remove the effect.
+                const crossbowAceEffect = Utils.getEffectFromActor(actor, Utils.CROSSBOW_ACE_EFFECT_ID, weapon.id);
+                if (crossbowAceEffect) {
+                    if (crossbowAceEffect.data.flags["pf2e-ranged-combat"].fired) {
+                        itemsToRemove.push(crossbowAceEffect);
+                    } else {
+                        itemsToUpdate.push(() => crossbowAceEffect.update({ "flags.pf2e-ranged-combat.fired": true }));
+                    }
+                }
+
                 // Remove the loaded effect if the weapon requires reloading. It could have a loaded effect
                 // and not require reloading e.g. combination weapons
                 const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);

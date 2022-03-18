@@ -10,7 +10,6 @@ export const RELOAD_ACTION_THREE_ID = "Compendium.pf2e-ranged-combat.actions.IOh
 export const RELOAD_ACTION_EXPLORE_ID = "Compendium.pf2e-ranged-combat.actions.t8xTgsZqOIW02suc";
 
 // Hunt Prey
-export const HUNT_PREY_FEATURE_ID = "Compendium.pf2e.classfeatures.0nIOGpHQNHsKSFKT";
 export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
 export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
 
@@ -23,21 +22,72 @@ export const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3
 export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
 
 // Images
+export const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
 export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammunition.webp";
 export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazine.webp";
 export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
 export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
 
+export class Updates {
+    constructor(actor) {
+        this.actor = actor;
+        this.itemsToAdd = new [];
+        this.itemsToRemove = new [];
+        this.itemsToUpdate = new [];
+    }
+
+    add(item) {
+        this.itemsToAdd.push(item);
+    }
+
+    remove(item) {
+        this.itemsToRemove.push(item);
+    }
+
+    update(update) {
+        this.itemsToUpdate.push(update);
+    }
+
+    async handleUpdates() {
+        for (const update of this.itemsToUpdate) {
+            await update();
+        }
+    
+        await this.actor.deleteEmbeddedDocuments("Item", this.itemsToRemove.map(item => item.id));
+        await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
+    }
+}
+
 /**
- * Get exactly one controlled token. If there are no tokens controlled, looks for a single
- * token belonging to the current user's character. If there are multiple tokens found,
- * returns undefined.
+ * Find a single controlled actor and token.
+ * 
+ * - If there is exactly one token selected, return that token and its actor
+ * - If there are no tokens selected, but the user has an owned actor with one token in the scene, return that actor and token
+ * - Otherwise, show a warning and return an empty object
+ * 
+ * @returns an object with `actor` and `token` fields, which are either both populated or both null
  */
-export function getControlledToken() {
-    return [canvas.tokens.controlled, game.user.character?.getActiveTokens()]
-        .filter(tokens => !!tokens)
-        .find(tokens => tokens.length === 1)
-        ?.[0];
+export function getControlledActorAndToken() {
+    const controlledTokens = canvas.tokens.controlled;
+    if (controlledTokens.length) {
+        if (controlledTokens.length === 1) {
+            const token = controlledTokens[0];
+            const actor = token?.actor;
+            if (actor && token) {
+                return {actor, token};
+            }
+        }
+    } else {
+        const actor = game.user.character;
+        const tokens = actor?.getActiveTokens();
+        const token = tokens?.length === 1 ? tokens[0] : null;
+        if (actor && token) {
+            return { actor, token };
+        }
+    }
+
+    ui.notifications.warn("You must have a single character selected.");
+    return { actor: null, token: null };
 }
 
 /**
@@ -204,15 +254,6 @@ export async function postInChat(actor, img, message, actionName = "", numAction
         flavor,
         content
     });
-}
-
-export async function handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate) {
-    for (const update of itemsToUpdate) {
-        await update();
-    }
-
-    await actor.deleteEmbeddedDocuments("Item", itemsToRemove.map(item => item.id));
-    await actor.createEmbeddedDocuments("Item", itemsToAdd);
 }
 
 /**
