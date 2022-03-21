@@ -543,24 +543,7 @@ function npcWeaponTransform(weapon) {
 }
 
 async function postReloadToChat(token, weapon, loadedEffectSource) {
-    // Find out which reload action to use and post it to chat
     const reloadActions = weapon.reload;
-    const reloadActionId = (() => {
-        switch (reloadActions) {
-            case 1:
-                return Utils.RELOAD_ACTION_ONE_ID;
-            case 2:
-                return Utils.RELOAD_ACTION_TWO_ID;
-            case 3:
-                return Utils.RELOAD_ACTION_THREE_ID;
-            default:
-                return Utils.RELOAD_ACTION_EXPLORE_ID;
-        }
-    })();
-
-    // Post into chat that we've reloaded
-    await Utils.postActionInChat(token.actor, reloadActionId);
-
     const ammunitionName = loadedEffectSource.flags["pf2e-ranged-combat"]?.ammunitionName;
     let desc = `${token.name} reloads their ${weapon.name}`;
     if (ammunitionName) {
