@@ -95,14 +95,26 @@ Hooks.on(
                     return;
                 }
 
-                const itemsToRemove = [];
-                const itemsToUpdate = [];
+                const updates = new Utils.Updates(actor);
+
+                // Crossbow Ace and Crossbow Crack Shot only apply to the next shot fired. If that shot hadn't
+                // already been fired, it has now. If it had already been fired, remove the effect.
+                for (const effectId of [Utils.CROSSBOW_ACE_EFFECT_ID, Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
+                    const effect = Utils.getEffectFromActor(actor, effectId, weapon.id);
+                    if (effect) {
+                        if (effect.data.flags["pf2e-ranged-combat"].fired) {
+                            updates.remove(effect);
+                        } else {
+                            updates.update(() => effect.update({ "flags.pf2e-ranged-combat.fired": true }));
+                        }
+                    }
+                }
 
                 // Remove the loaded effect if the weapon requires reloading. It could have a loaded effect
                 // and not require reloading e.g. combination weapons
                 const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
                 if (loadedEffect && Utils.requiresLoading(weapon)) {
-                    itemsToRemove.push(loadedEffect);
+                    updates.remove(loadedEffect);
                 }
 
                 // If the advanced ammunition system is not enabled, consume a piece of ammunition
@@ -115,7 +127,7 @@ Hooks.on(
 
                         magazineLoadedEffect.setFlag("pf2e-ranged-combat", "remaining", magazineRemaining);
                         const magazineLoadedEffectName = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "name");
-                        itemsToUpdate.push(async () => {
+                        updates.update(async () => {
                             await magazineLoadedEffect.update({
                                 "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`
                             });
@@ -144,7 +156,7 @@ Hooks.on(
                         );
                     } else if (Utils.usesAmmunition(weapon)) {
                         const ammo = Utils.getAmmunition(weapon);
-                        itemsToUpdate.push(async () => {
+                        updates.update(async () => {
                             await ammo.update({
                                 "data.quantity": ammo.quantity - 1
                             });
@@ -155,7 +167,7 @@ Hooks.on(
                     weapon.ammo?.consume();
                 }
 
-                Utils.handleUpdates(actor, [], itemsToRemove, itemsToUpdate);
+                updates.handleUpdates();
 
                 return roll;
             },

@@ -28,16 +28,70 @@ export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazi
 export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
 export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
 
+export class Updates {
+    constructor(actor) {
+        this.actor = actor;
+        this.itemsToAdd = [];
+        this.itemsToRemove = [];
+        this.itemsToUpdate = [];
+    }
+
+    add(item) {
+        this.itemsToAdd.push(item);
+    }
+
+    remove(item) {
+        this.itemsToRemove.push(item);
+    }
+
+    update(update) {
+        this.itemsToUpdate.push(update);
+    }
+
+    hasChanges() {
+        return this.itemsToAdd.length || this.itemsToUpdate.length || this.itemsToRemove.length;
+    }
+
+    async handleUpdates() {
+        for (const update of this.itemsToUpdate) {
+            await update();
+        }
+    
+        await this.actor.deleteEmbeddedDocuments("Item", this.itemsToRemove.map(item => item.id));
+        await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
+    }
+}
+
 /**
- * Get exactly one controlled token. If there are no tokens controlled, looks for a single
- * token belonging to the current user's character. If there are multiple tokens found,
- * returns undefined.
+ * Find a single controlled actor and token.
+ * 
+ * - If there is exactly one token selected, return that token and its actor
+ * - If there are no tokens selected, but the user has an owned actor with one token in the scene, return that actor and token
+ * - Otherwise, show a warning and return an empty object
+ * 
+ * @returns an object with `actor` and `token` fields, which are either both populated or both null
  */
-export function getControlledToken() {
-    return [canvas.tokens.controlled, game.user.character?.getActiveTokens()]
-        .filter(tokens => !!tokens)
-        .find(tokens => tokens.length === 1)
-        ?.[0];
+export function getControlledActorAndToken() {
+    const controlledTokens = canvas.tokens.controlled;
+    if (controlledTokens.length) {
+        if (controlledTokens.length === 1) {
+            const token = controlledTokens[0];
+            const actor = token?.actor;
+            if (actor && token) {
+                return {actor, token};
+            }
+        }
+    } else {
+        const actor = game.user.character;
+        const tokens = actor?.getActiveTokens();
+        const token = tokens?.length === 1 ? tokens[0] : null;
+        if (actor && token) {
+            return { actor, token };
+        }
+    }
+
+    ui.notifications.warn("You must have a single character selected.");
+    return { actor: null, token: null };
 }
 
 /**
@@ -204,15 +258,6 @@ export async function postInChat(actor, img, message, actionName = "", numAction
         flavor,
         content
     });
-}
-
-export async function handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate) {
-    for (const update of itemsToUpdate) {
-        await update();
-    }
-
-    await actor.deleteEmbeddedDocuments("Item", itemsToRemove.map(item => item.id));
-    await actor.createEmbeddedDocuments("Item", itemsToAdd);
 }
 
 /**

@@ -1,3 +1,6 @@
+## 2.1.7 - ??? (Pathfinder 2e ???)
+- Automatically remove the Crossbow Ace and Crossbow Crack Shot effects upon dealing damage or making a second attack roll
+
 ## 2.1.6 - 2022-03-18 (Pathfinder 2e 3.7.2)
 - Fix issue where Hunt Prey did not apply Crossbow Ace effect due to system data change
 

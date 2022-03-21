@@ -1,14 +1,9 @@
+import { Updates } from "../utils.js";
 import * as Utils from "../utils.js";
 
 export async function reload() {
-    const itemsToAdd = [];
-    const itemsToRemove = [];
-    const itemsToUpdate = [];
-
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.")
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -16,6 +11,8 @@ export async function reload() {
     if (!weapon) {
         return;
     }
+
+    const updates = new Updates(actor);
 
     if (Utils.useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
@@ -40,7 +37,7 @@ export async function reload() {
             // Create the new loaded effect
             const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
             Utils.setEffectTarget(loadedEffectSource, weapon);
-            itemsToAdd.push(loadedEffectSource);
+            updates.add(loadedEffectSource);
 
             await postReloadToChat(token, weapon, loadedEffectSource);
         } else {
@@ -63,12 +60,12 @@ export async function reload() {
                     ui.notifications.warn(`${weapon.name} is already loaded with ${ammo.name}.`);
                     return;
                 }
-                await unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate);
+                await unloadAmmunition(actor, loadedEffect, updates);
             }
 
             // Now we can load the new ammunition
             const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
-            itemsToAdd.push(loadedEffectSource);
+            updates.add(loadedEffectSource);
 
             Utils.setEffectTarget(loadedEffectSource, weapon);
             loadedEffectSource.name = `${loadedEffectSource.name} (${ammo.name})`;
@@ -80,7 +77,7 @@ export async function reload() {
             loadedEffectSourceFlags.ammunitionSourceId = ammo.sourceId;
 
             // Remove one piece of ammunition from the stack
-            itemsToUpdate.push(async () => {
+            updates.update(async () => {
                 await ammo.update({
                     "data.quantity": ammo.quantity - 1
                 });
@@ -99,14 +96,14 @@ export async function reload() {
         // Create the new loaded effect
         const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
         Utils.setEffectTarget(loadedEffectSource, weapon);
-        itemsToAdd.push(loadedEffectSource);
+        updates.add(loadedEffectSource);
 
         await postReloadToChat(token, weapon, loadedEffectSource);
     }
 
-    await triggerCrossbowReloadEffects(actor, weapon, itemsToAdd, itemsToRemove);
+    await triggerCrossbowReloadEffects(actor, weapon, updates);
 
-    Utils.handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate);
+    updates.handleUpdates();
 };
 
 /**
@@ -118,10 +115,8 @@ export async function reload() {
  *     - Load the new magazine (two actions)
  */
 export async function reloadMagazine() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor || game.user.character;
-    if (!token || !actor) {
-        ui.notifications.warn("You must have exactly one token selected or an assigned character.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -140,9 +135,7 @@ export async function reloadMagazine() {
         return;
     }
 
-    const itemsToAdd = [];
-    const itemsToRemove = [];
-    const itemsToUpdate = [];
+    const updates = new Updates(actor);
 
     // If we have no ammunition selected, or we have none left in the stack, we can't reload
     const ammo = Utils.getAmmunition(weapon.value);
@@ -177,7 +170,7 @@ export async function reloadMagazine() {
         } else {
             // We actually want to reload, either for a magazine with more ammunition remaining, or for a different type of ammunition
             numActions++;
-            await unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate);
+            await unloadMagazine(actor, magazineLoadedEffect, updates);
         }
     }
 
@@ -196,16 +189,18 @@ export async function reloadMagazine() {
 
     magazineLoadedEffectSource.name = `${magazineLoadedEffectSource.name} (${ammo.name}) (${ammo.charges.current}/${ammo.charges.max})`;
 
-    itemsToAdd.push(magazineLoadedEffectSource);
+    updates.add(magazineLoadedEffectSource);
 
-    await triggerCrossbowReloadEffects(actor, weapon, itemsToAdd, itemsToRemove);
+    await triggerCrossbowReloadEffects(actor, weapon, updates);
 
     numActions += 2;
 
     // Remove that magazine from the stack
-    await ammo.update({
-        "data.quantity": ammo.quantity - 1,
-        "data.charges.value": ammo.charges.max,
+    updates.update(async () => {
+        await ammo.update({
+            "data.quantity": ammo.quantity - 1,
+            "data.charges.value": ammo.charges.max,
+        })
     });
 
     await Utils.postInChat(
@@ -216,10 +211,10 @@ export async function reloadMagazine() {
         String(numActions)
     );
 
-    Utils.handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate);
+    updates.handleUpdates();
 }
 
-async function unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate) {
+async function unloadAmmunition(actor, loadedEffect, updates) {
     const loadedItemId = loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionItemId");
     const loadedSourceId = loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
 
@@ -230,7 +225,7 @@ async function unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, 
     if (ammunitionItem) {
         // We still have the stack the ammunition originally came from, or another that's the same.
         // Add the currently loaded ammunition to the stack
-        itemsToUpdate.push(() => {
+        updates.update(() => {
             ammunitionItem.update({
                 "data.quantity": ammunitionItem.quantity + 1
             });
@@ -239,16 +234,16 @@ async function unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, 
         // Create a new stack with one piece of ammunition in it
         const ammunitionSource = await Utils.getItem(loadedSourceId);
         ammunitionSource.data.quantity = 1;
-        itemsToAdd.push(ammunitionSource);
+        updates.add(ammunitionSource);
     }
 
-    itemsToRemove.push(loadedEffect);
+    updates.remove(loadedEffect);
 }
 
 /**
  * Remove the magazine effect and add the remaining ammunition back to the actor
  */
-async function unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate) {
+async function unloadMagazine(actor, magazineLoadedEffect, updates) {
     const ammunitionCapacity = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "capacity");
     const ammunitionRemaining = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining");
 
@@ -257,7 +252,7 @@ async function unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRe
 
     if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
         // We found the original stack of ammunition this
-        itemsToUpdate.push(() => {
+        updates.update(() => {
             ammunitionItem.update({
                 "data.quantity": ammunitionItem.quantity + 1
             });
@@ -267,25 +262,23 @@ async function unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRe
         const itemSourceId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
         const ammunitionSource = await Utils.getItem(itemSourceId);
         ammunitionSource.data.charges.value = ammunitionRemaining;
-        itemsToAdd.push(ammunitionSource);
+        updates.add(ammunitionSource);
     }
 
     // Finally, remove the existing effect
-    itemsToRemove.push(magazineLoadedEffect);
+    updates.remove(magazineLoadedEffect);
 
     // If the weapon was loaded, then remove the loaded status as well
     const weaponId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "targetId");
     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weaponId);
     if (loadedEffect) {
-        itemsToRemove.push(loadedEffect);
+        updates.remove(loadedEffect);
     }
 }
 
 export async function reloadAll() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -305,26 +298,21 @@ export async function reloadAll() {
         return;
     }
 
-    const effectsToAdd = [];
+    const updates = new Updates();
 
-    const promises = weapons.map(async weapon => {
+    for (const weapon of weapons) {
         const loadedEffect = await Utils.getItem(Utils.LOADED_EFFECT_ID);
         Utils.setEffectTarget(loadedEffect, weapon);
-        effectsToAdd.push(loadedEffect);
-    });
+        updates.add(loadedEffect);
+    }
 
-    const loadedEffect = await fromUuid(Utils.LOADED_EFFECT_ID);
     Utils.postInChat(actor, Utils.RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");
-
-    await Promise.all(promises);
-    token.actor.createEmbeddedDocuments("Item", effectsToAdd);
+    updates.handleUpdates();
 }
 
 export async function unload() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
@@ -333,9 +321,7 @@ export async function unload() {
         return;
     }
 
-    const itemsToAdd = [];
-    const itemsToRemove = [];
-    const itemsToUpdate = [];
+    const updates = new Updates(actor);
 
     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
     const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
@@ -346,10 +332,10 @@ export async function unload() {
         if (Utils.useAdvancedAmmunitionSystem(actor)) {
             if (weapon.isRepeating) {
                 if (loadedEffect) {
-                    itemsToRemove.push(loadedEffect);
+                    updates.remove(loadedEffect);
                 }
                 if (magazineLoadedEffect) {
-                    await unloadMagazine(actor, magazineLoadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate);
+                    await unloadMagazine(actor, magazineLoadedEffect, updates);
                     Utils.postInChat(
                         actor,
                         magazineLoadedEffect.img,
@@ -359,7 +345,7 @@ export async function unload() {
                     );
                 }
             } else {
-                await unloadAmmunition(actor, loadedEffect, itemsToAdd, itemsToRemove, itemsToUpdate);
+                await unloadAmmunition(actor, loadedEffect, updates);
                 if (Utils.useAdvancedAmmunitionSystem(actor)) {
                     Utils.postInChat(
                         actor,
@@ -371,31 +357,29 @@ export async function unload() {
                 }
             }
         } else if (loadedEffect) {
-            itemsToRemove.push(loadedEffect);
+            updates.remove(loadedEffect);
         }
     }
 
-    Utils.handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate);
+    updates.handleUpdates();
 }
 
 export async function consolidateRepeatingWeaponAmmunition() {
-    const token = Utils.getControlledToken();
-    const actor = token?.actor;
-    if (!token) {
-        ui.notifications.warn("You must have exactly one token selected, or your character must have one token.");
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
     // Find all the repeating ammunition stacks
     const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.charges.max > 1);
     const ammunitionStacksBySourceId = ammunitionStacks.reduce(
-        function (map, stack) {
+        function(map, stack) {
             const mapEntry = map[stack.sourceId];
             if (!mapEntry) {
                 map[stack.sourceId] = {
                     stacks: [stack],
                     totalCharges: getTotalChargesForStack(stack)
-                }
+                };
             } else {
                 mapEntry.stacks.push(stack);
                 mapEntry.totalCharges += getTotalChargesForStack(stack);
@@ -405,9 +389,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
         {}
     );
 
-    const itemsToAdd = [];
-    const itemsToRemove = [];
-    const itemsToUpdate = [];
+    const updates = new Updates(actor);
 
     for (const sourceId in ammunitionStacksBySourceId) {
         const stackEntry = ammunitionStacksBySourceId[sourceId];
@@ -437,7 +419,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
         // Make one stack of fully-charged items
         if (quantityFullCharges) {
             const indexNow = index;
-            itemsToUpdate.push(async () => {
+            updates.update(async () => {
                 await stacks[indexNow].update({
                     "data.quantity": quantityFullCharges,
                     "data.charges.value": maxChargesPerItem
@@ -452,10 +434,10 @@ export async function consolidateRepeatingWeaponAmmunition() {
                 const newStackSource = await Utils.getItem(sourceId);
                 newStackSource.data.quantity = 1;
                 newStackSource.data.charges.value = remainingCharges;
-                itemsToAdd.push(newStackSource);
+                updates.add(newStackSource);
             } else {
                 const indexNow = index;
-                itemsToUpdate.push(async () => {
+                updates.update(async () => {
                     await stacks[indexNow].update({
                         "data.quantity": 1,
                         "data.charges.value": remainingCharges
@@ -467,12 +449,12 @@ export async function consolidateRepeatingWeaponAmmunition() {
 
         // Remove the rest of the stacks
         while (index < stacks.length) {
-            itemsToRemove.push(stacks[index]);
+            updates.remove(stacks[index]);
             index++;
         }
     }
 
-    if (itemsToAdd.length || itemsToRemove.length || itemsToUpdate.length) {
+    if (updates.hasChanges()) {
         Utils.postInChat(
             actor,
             ammunitionStacks[0].img,
@@ -480,7 +462,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
             "Interact",
             ""
         );
-        Utils.handleUpdates(actor, itemsToAdd, itemsToRemove, itemsToUpdate);
+        updates.handleUpdates();
     } else {
         ui.notifications.info("Your repeating ammunition is already consolidated!");
     }
@@ -544,7 +526,7 @@ function characterWeaponTransform(weapon) {
         isRepeating: Utils.isRepeating(weapon),
         isEquipped: weapon.isEquipped,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
-    }
+    };
 }
 
 function npcWeaponTransform(weapon) {
@@ -557,7 +539,7 @@ function npcWeaponTransform(weapon) {
         isRepeating: Utils.isRepeating(weapon),
         isEquipped: true,
         isCrossbow: false
-    }
+    };
 }
 
 async function postReloadToChat(token, weapon, loadedEffectSource) {
@@ -596,16 +578,10 @@ async function postReloadToChat(token, weapon, loadedEffectSource) {
     );
 }
 
-async function triggerCrossbowReloadEffects(actor, weapon, itemsToAdd, itemsToRemove) {
+async function triggerCrossbowReloadEffects(actor, weapon, updates) {
     const crossbowFeats = [
-        {
-            featId: Utils.CROSSBOW_ACE_FEAT_ID,
-            effectId: Utils.CROSSBOW_ACE_EFFECT_ID
-        },
-        {
-            featId: Utils.CROSSBOW_CRACK_SHOT_FEAT_ID,
-            effectId: Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID
-        }
+        { featId: Utils.CROSSBOW_ACE_FEAT_ID, effectId: Utils.CROSSBOW_ACE_EFFECT_ID },
+        { featId: Utils.CROSSBOW_CRACK_SHOT_FEAT_ID, effectId: Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID }
     ];
 
     // Handle crossbow effects that trigger on reload
@@ -617,13 +593,16 @@ async function triggerCrossbowReloadEffects(actor, weapon, itemsToAdd, itemsToRe
             if (Utils.actorHasItem(actor, featId)) {
                 // Remove any existing effects
                 const existing = Utils.getEffectFromActor(actor, effectId, weapon.id);
-                if (existing) itemsToRemove.push(existing);
+                if (existing) {
+                    updates.remove(existing);
+                }
 
                 // Add the new effect
                 const effect = await Utils.getItem(effectId);
                 Utils.setEffectTarget(effect, weapon);
+                effect.flags["pf2e-ranged-combat"].fired = false;
 
-                itemsToAdd.push(effect);
+                updates.add(effect);
             }
         }
     }
