@@ -10,6 +10,7 @@ export const RELOAD_ACTION_THREE_ID = "Compendium.pf2e-ranged-combat.actions.IOh
 export const RELOAD_ACTION_EXPLORE_ID = "Compendium.pf2e-ranged-combat.actions.t8xTgsZqOIW02suc";
 
 // Hunt Prey
+export const HUNT_PREY_FEATURE_ID = "Compendium.pf2e.classfeatures.0nIOGpHQNHsKSFKT";
 export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
 export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
 
@@ -22,7 +23,6 @@ export const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3
 export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
 
 // Images
-export const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
 export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammunition.webp";
 export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazine.webp";
 export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
@@ -31,9 +31,9 @@ export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consol
 export class Updates {
     constructor(actor) {
         this.actor = actor;
-        this.itemsToAdd = new [];
-        this.itemsToRemove = new [];
-        this.itemsToUpdate = new [];
+        this.itemsToAdd = [];
+        this.itemsToRemove = [];
+        this.itemsToUpdate = [];
     }
 
     add(item) {
@@ -46,6 +46,10 @@ export class Updates {
 
     update(update) {
         this.itemsToUpdate.push(update);
+    }
+
+    hasChanges() {
+        return this.itemsToAdd.length || this.itemsToUpdate.length || this.itemsToRemove.length;
     }
 
     async handleUpdates() {

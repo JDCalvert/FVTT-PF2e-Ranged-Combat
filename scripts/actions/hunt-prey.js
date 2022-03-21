@@ -9,8 +9,8 @@ export async function huntPrey() {
 
     const updates = new Updates(actor);
 
-    if (!Utils.actorHasItem(actor, Utils.HUNT_PREY_ACTION_ID)) {
-        ui.notifications.warn(`${token.name} does not have the Hunt Prey action.`);
+    if (!Utils.actorHasItem(actor, Utils.HUNT_PREY_FEATURE_ID)) {
+        ui.notifications.warn(`${token.name} does not have the Hunt Prey feature.`);
         return;
     }
 
@@ -29,13 +29,13 @@ export async function huntPrey() {
      * HUNT PREY ACTION AND EFFECT
      */
     {
-        const myHuntPreyAction = await Utils.getItemFromActor(actor, Utils.HUNT_PREY_ACTION_ID);
+        const huntPreyFeature = await Utils.getItemFromActor(actor, Utils.HUNT_PREY_FEATURE_ID);
         await Utils.postActionInChat(actor, Utils.HUNT_PREY_ACTION_ID);
         await Utils.postInChat(
             actor,
-            Utils.HUNT_PREY_IMG,
+            huntPreyFeature.img,
             `${token.name} makes ${target.name} their hunted prey.`,
-            myHuntPreyAction.name,
+            huntPreyFeature.name,
             1
         );
 
@@ -54,7 +54,7 @@ export async function huntPrey() {
         updates.add(huntedPreyEffect);
 
         // Set the Hunt Prey flag, since we're currently targetting our hunted prey
-        actor.setFlag("pf2e", "rollOptions.all.hunted-prey", true);
+        updates.update(() => actor.setFlag("pf2e", "rollOptions.all.hunted-prey", true));
     }
 
     /**
