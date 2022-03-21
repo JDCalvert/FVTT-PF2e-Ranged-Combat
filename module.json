@@ -31,12 +31,6 @@
     ],
     "packs": [
         {
-            "name": "actions",
-            "label": "Ranged Combat Actions",
-            "path": "./packs/actions.db",
-            "type": "Item"
-        },
-        {
             "name": "effects",
             "label": "Ranged Combat Effects",
             "path": "./packs/effects.db",
