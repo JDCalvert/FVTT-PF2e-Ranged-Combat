@@ -1,5 +1,6 @@
-import { Updates } from "../utils.js";
-import * as Utils from "../utils.js";
+import { Updates } from "../utils/utils.js";
+import * as Utils from "../utils/utils.js";
+import * as WeaponUtils from "../utils/weapon-utils.js";
 
 export async function reload() {
     const { actor, token } = Utils.getControlledActorAndToken();
@@ -7,7 +8,7 @@ export async function reload() {
         return;
     }
 
-    const weapon = await Utils.getSingleWeapon(getReloadableWeapons(actor));
+    const weapon = await WeaponUtils.getSingleWeapon(getReloadableWeapons(actor));
     if (!weapon) {
         return;
     }
@@ -42,7 +43,7 @@ export async function reload() {
             await postReloadToChat(token, weapon, loadedEffectSource);
         } else {
             // If we have no ammunition selected, or we don't have any left in the stack, we can't reload
-            const ammo = Utils.getAmmunition(weapon.value);
+            const ammo = weapon.ammunition;
             if (!ammo) {
                 ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
                 return;
@@ -130,7 +131,7 @@ export async function reloadMagazine() {
         }
     }
 
-    const weapon = await Utils.getSingleWeapon(getRepeatingWeapons(actor));
+    const weapon = await WeaponUtils.getWeapon(actor, weapon => weapon.isRepeating, "You have no repeating weapons.");
     if (!weapon) {
         return;
     }
@@ -138,7 +139,7 @@ export async function reloadMagazine() {
     const updates = new Updates(actor);
 
     // If we have no ammunition selected, or we have none left in the stack, we can't reload
-    const ammo = Utils.getAmmunition(weapon.value);
+    const ammo = weapon.ammunition;
     if (!ammo) {
         ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
         return;
@@ -316,7 +317,7 @@ export async function unload() {
         return;
     }
 
-    const weapon = await Utils.getSingleWeapon(getReloadableOrRepeatingWeapons(actor));
+    const weapon = await getLoadedWeapon(actor);
     if (!weapon) {
         return;
     }
@@ -472,13 +473,13 @@ function getTotalChargesForStack(stack) {
     return stack.quantity > 0 ? stack.charges.current + (stack.quantity - 1) * stack.charges.max : 0;
 }
 
-function getReloadableOrRepeatingWeapons(actor) {
-    return getWeapons(
+async function getLoadedWeapon(actor) {
+    return WeaponUtils.getWeapon(
         actor,
         weapon => {
-            if (Utils.isRepeating(weapon)) {
+            if (weapon.isRepeating) {
                 return Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-            } else if (Utils.requiresLoading(weapon)) {
+            } else if (weapon.requiresLoading) {
                 return Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
             }
             return false;
@@ -488,58 +489,7 @@ function getReloadableOrRepeatingWeapons(actor) {
 }
 
 function getReloadableWeapons(actor) {
-    return getWeapons(actor, weapon => Utils.requiresLoading(weapon), "You have no reloadable weapons.");
-}
-
-function getRepeatingWeapons(actor) {
-    return getWeapons(actor, weapon => Utils.isRepeating(weapon), "You have no repeating weapons.");
-}
-
-function getWeapons(actor, predicate, noResultsMessage) {
-    let weapons;
-
-    if (actor.type === "character") {
-        weapons = actor.itemTypes.weapon
-            .filter(predicate)
-            .map(characterWeaponTransform);
-    } else if (actor.type === "npc") {
-        weapons = actor.itemTypes.melee
-            .filter(predicate)
-            .map(npcWeaponTransform);
-    } else {
-        weapons = [];
-    }
-
-    if (!weapons.length) {
-        ui.notifications.warn(noResultsMessage);
-    }
-    return weapons;
-}
-
-function characterWeaponTransform(weapon) {
-    return {
-        value: weapon,
-        id: weapon.id,
-        name: weapon.name,
-        img: weapon.img,
-        reload: Utils.getReloadTime(weapon),
-        isRepeating: Utils.isRepeating(weapon),
-        isEquipped: weapon.isEquipped,
-        isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
-    };
-}
-
-function npcWeaponTransform(weapon) {
-    return {
-        value: weapon,
-        id: weapon.id,
-        name: weapon.name,
-        img: weapon.img,
-        reload: Utils.getReloadTime(weapon),
-        isRepeating: Utils.isRepeating(weapon),
-        isEquipped: true,
-        isCrossbow: false
-    };
+    return WeaponUtils.getWeapons(actor, weapon => weapon.requiresLoading, "You have no reloadable weapons.");
 }
 
 async function postReloadToChat(token, weapon, loadedEffectSource) {

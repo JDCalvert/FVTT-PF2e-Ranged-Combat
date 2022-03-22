@@ -1,4 +1,5 @@
-import * as Utils from "./utils.js";
+import * as Utils from "./utils/utils.js";
+import * as WeaponUtils from "./utils/weapon-utils.js";
 
 Hooks.on(
     "ready",
@@ -28,18 +29,20 @@ Hooks.on(
             async function(wrapper, ...args) {
                 const context = args[1];
                 const actor = context.actor;
-                const weapon = context.item; // Either WeaponPF2e (for a character) or MeleePF2e (for an NPC)
+                const contextWeapon = context.item; // Either WeaponPF2e (for a character) or MeleePF2e (for an NPC)
 
                 // If we don't have all the information we need, or this isn't an attack roll,
                 // then just call the actual function
-                if (!actor || !weapon || context.type !== "attack-roll") {
+                if (!actor || !contextWeapon || context.type !== "attack-roll") {
                     return wrapper(...args);
                 }
+
+                const weapon = WeaponUtils.transformWeapon(contextWeapon);
 
                 // If the weapon is repeating, check that it's loaded with a magazine, and there's still ammunition remaining
                 if (Utils.useAdvancedAmmunitionSystem(actor)) {
                     // If the weapon is repeating, check that it's loaded with a magazine, and there's still ammunition remaining.
-                    if (Utils.isRepeating(weapon)) {
+                    if (weapon.isRepeating) {
                         const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
                         if (!magazineLoadedEffect) {
                             Utils.showWarning(`${weapon.name} has no magazine loaded!`);
@@ -51,7 +54,7 @@ Hooks.on(
                     }
 
                     // If the weapon requires reloading, check that it has been loaded
-                    if (Utils.requiresLoading(weapon)) {
+                    if (weapon.requiresLoading) {
                         const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
                         if (!loadedEffect) {
                             Utils.showWarning(`${weapon.name} is not loaded!`);
@@ -61,8 +64,8 @@ Hooks.on(
 
                     // For non-repeating weapons that don't require loading, we need to have enough
                     // ammunition in our selected stack to fire
-                    if (Utils.usesAmmunition(weapon) && !Utils.isRepeating(weapon) && !Utils.requiresLoading(weapon)) {
-                        const ammunition = Utils.getAmmunition(weapon);
+                    if (weapon.usesAmmunition && !weapon.isRepeating && !weapon.requiresLoading) {
+                        const ammunition = weapon.ammunition;
                         if (!ammunition) {
                             Utils.showWarning(`${weapon.name} has no ammunition selected!`);
                             return;
@@ -74,7 +77,7 @@ Hooks.on(
                 } else {
                     // Use the standard system logic: allow the attack to be made if no ammo is selected,
                     // but not if ammo is selected and it is empty
-                    const ammunition = Utils.getAmmunition(weapon);
+                    const ammunition = weapon.ammunition;
                     if (ammunition && ammunition.quantity < 1) {
                         Utils.showWarning(game.i18n.localize("PF2E.ErrorMessage.NotEnoughAmmo"));
                         return;
@@ -82,7 +85,7 @@ Hooks.on(
 
                     // If the weapon requires loading and Prevent Fire if not Reloaded is enabled, check that is has been loaded
                     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                    if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && Utils.requiresLoading(weapon) && !loadedEffect) {
+                    if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading && !loadedEffect) {
                         Utils.showWarning(`${weapon.name} is not loaded!`);
                         return;
                     }
@@ -113,14 +116,14 @@ Hooks.on(
                 // Remove the loaded effect if the weapon requires reloading. It could have a loaded effect
                 // and not require reloading e.g. combination weapons
                 const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                if (loadedEffect && Utils.requiresLoading(weapon)) {
+                if (loadedEffect && weapon.requiresLoading) {
                     updates.remove(loadedEffect);
                 }
 
                 // If the advanced ammunition system is not enabled, consume a piece of ammunition
                 if (Utils.useAdvancedAmmunitionSystem(actor)) {
                     // Use up a round of the loaded magazine
-                    if (Utils.isRepeating(weapon)) {
+                    if (weapon.isRepeating) {
                         const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
                         const magazineCapacity = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "capacity");
                         const magazineRemaining = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining") - 1;
@@ -148,14 +151,14 @@ Hooks.on(
                             magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
                             `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
                         );
-                    } else if (Utils.requiresLoading(weapon)) {
+                    } else if (weapon.requiresLoading) {
                         Utils.postInChat(
                             actor,
                             loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
                             `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
                         );
-                    } else if (Utils.usesAmmunition(weapon)) {
-                        const ammo = Utils.getAmmunition(weapon);
+                    } else if (weapon.usesAmmunition) {
+                        const ammo = weapon.ammunition;
                         updates.update(async () => {
                             await ammo.update({
                                 "data.quantity": ammo.quantity - 1
@@ -164,7 +167,7 @@ Hooks.on(
                         Utils.postInChat(actor, ammo.img, `${actor.name} uses ${ammo.name}.`);
                     }
                 } else {
-                    weapon.ammo?.consume();
+                    weapon.ammunition?.consume();
                 }
 
                 updates.handleUpdates();
