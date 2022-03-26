@@ -1,5 +1,6 @@
 import { reload, unload, reloadMagazine, reloadAll, consolidateRepeatingWeaponAmmunition } from "./actions/reload.js";
 import { huntPrey } from "./actions/hunt-prey.js";
+import { loadAlchemicalCrossbow} from "./actions/alchemical-crossbow.js";
 
 Hooks.on(
     "init",
@@ -61,7 +62,8 @@ Hooks.on(
             reloadMagazine,
             reloadAll,
             consolidateRepeatingWeaponAmmunition,
-            huntPrey
+            huntPrey,
+            loadAlchemicalCrossbow
         };
     }
 );
