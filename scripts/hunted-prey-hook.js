@@ -1,4 +1,4 @@
-import * as Utils from "./utils.js";
+import * as Utils from "./utils/utils.js";
 
 Hooks.on(
     "targetToken",

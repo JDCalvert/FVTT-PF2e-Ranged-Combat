@@ -1,4 +1,3 @@
-import { ItemSelectDialog } from "./dialog.js";
 // Loaded
 export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
 export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
@@ -106,78 +105,9 @@ export function getTarget(notifyNoToken = true) {
 }
 
 /**
- * Find out if the weapon uses ammunition
- */
-export function usesAmmunition(item) {
-    if (item.actor.type === "character") {
-        return item.baseType === "blowgun" || ["firearm", "bow", "sling"].includes(item.group);
-    } else if (item.actor.type === "npc") {
-        return false; // TODO work this out
-    } else {
-        return false;
-    }
-}
-
-export function getAmmunition(item) {
-    if (!usesAmmunition(item)) {
-        return;
-    }
-
-    if (item.actor.type === "character") {
-        return item.ammo;
-    } else if (item.actor.type === "npc") {
-        return;
-    } else {
-        return;
-    }
-}
-
-/**
- * Find out if a weapon requires loading (e.g. has a reload time of greater than 0)
- * 
- * @param {WeaponPF2e | MeleePF2e} item
- * @returns true if the weapon has a non-zero reload time
- */
-export function requiresLoading(item) {
-    return getReloadTime(item) > 0;
-}
-
-/**
- * Check if a weapon is repeating
- * @param {WeaponPF2e | MeleePF2e} item
- * @returns true if the weapon is a repeating weapon
- */
-export function isRepeating(item) {
-    return item.traits.has("repeating");
-}
-
-/**
- * Find the reload time of a weapon
- * @param {WeaponPF2e | MeleePF2e} item
- * @returns the reload time of the weapon, or 0 if it doesn't have one
- */
-export function getReloadTime(item) {
-    if (item.actor.type === "character") {
-        return Number(item.reload || 0);
-    } else if (item.actor.type === "npc") {
-        const reloadTrait = item.data.data.traits.value.find(trait => trait.startsWith("reload-"));
-        if (reloadTrait) {
-            const reloadTime = reloadTrait.slice("reload-".length);
-            if (reloadTime === "1-min") {
-                return 30;
-            } else {
-                return parseInt(reloadTime);
-            }
-        }
-    }
-
-    return 0;
-}
-
-/**
  * Find whether the actor has the specified item
  */
-export function actorHasItem(actor, sourceId) {
+ export function actorHasItem(actor, sourceId) {
     return actor.items.some(item => item.getFlag("core", "sourceId") === sourceId);
 }
 
@@ -204,6 +134,7 @@ export function getEffectFromActor(actor, sourceId, targetId) {
     );
 }
 
+
 /**
  * Find the item with the given ID, and make a copy of it with a new ID
  */
@@ -215,26 +146,16 @@ export async function getItem(id) {
     return source;
 }
 
-export function setEffectTarget(effect, weapon) {
-    effect.name = `${effect.name} (${weapon.name})`;
+export function setEffectTarget(effect, item) {
+    effect.name = `${effect.name} (${item.name})`;
     effect.flags["pf2e-ranged-combat"] = {
-        targetId: weapon.id
+        targetId: item.id
     };
-    effect.data.target = weapon.id;
+    effect.data.target = item.id;
 
     // Remove the "effect target" rule so we skip the popup
     const rules = effect.data.rules;
     rules.splice(rules.findIndex(rule => rule.key === "EffectTarget"), 1);
-}
-
-export async function getSingleWeapon(weapons) {
-    if (!weapons.length) {
-        return;
-    } else if (weapons.length === 1) {
-        return weapons[0];
-    } else {
-        return await ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weapons);
-    }
 }
 
 export async function postActionInChat(actor, actionId) {

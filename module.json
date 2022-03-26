@@ -22,8 +22,9 @@
     "changelog": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/CHANGELOG.md",
     "esmodules": [
         "scripts/config.js",
-        "scripts/utils.js",
-        "scripts/dialog.js",
+        "scripts/utils/item-select-dialog.js",
+        "scripts/utils/utils.js",
+        "scripts/utils/weapon-utils.js",
         "scripts/actions/reload.js",
         "scripts/actions/hunt-prey.js",
         "scripts/hunted-prey-hook.js",

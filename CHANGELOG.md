@@ -1,5 +1,5 @@
 ## 2.1.7 - 2022-03-21 (Pathfinder 2e 3.7.2)
-- Automatically remove the Crossbow Ace and Crossbow Crack Shot effects upon dealing damage or making a second attack roll
+- Automatically remove the Crossbow Ace and Crossbow Crack Shot effects upon making a second attack roll
 - Remove separate reload actions
 
 ## 2.1.6 - 2022-03-18 (Pathfinder 2e 3.7.2)

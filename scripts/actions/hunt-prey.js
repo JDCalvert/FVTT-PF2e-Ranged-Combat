@@ -1,5 +1,6 @@
-import { Updates } from "../utils.js";
-import * as Utils from "../utils.js";
+import { Updates } from "../utils/utils.js";
+import * as Utils from "../utils/utils.js";
+import * as WeaponUtils from "../utils/weapon-utils.js";
 
 export async function huntPrey() {
     const { actor, token } = Utils.getControlledActorAndToken();
@@ -62,7 +63,7 @@ export async function huntPrey() {
      */
     {
         if (Utils.actorHasItem(actor, Utils.CROSSBOW_ACE_FEAT_ID)) {
-            let weapons = await getWieldedCrossbows(actor);
+            let weapons = WeaponUtils.getWeapons(actor, weapon => weapon.isEquipped && weapon.isCrossbow);
 
             for (const weapon of weapons) {
                 const existing = await Utils.getEffectFromActor(actor, Utils.CROSSBOW_ACE_EFFECT_ID, weapon.id);
@@ -80,16 +81,4 @@ export async function huntPrey() {
     }
 
     updates.handleUpdates();
-}
-
-function getWieldedCrossbows(actor) {
-    return actor.itemTypes.weapon
-        .filter(weapon => weapon.isEquipped)
-        .filter(weapon => weapon.data.data.traits.otherTags.includes("crossbow"))
-        .map(weapon => {
-            return {
-                id: weapon.id,
-                name: weapon.name
-            };
-        });
 }
