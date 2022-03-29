@@ -1,3 +1,7 @@
+## 2.2.0 - 2022-03-29 (Pathfinder 2e 3.7.2)
+- Add macro to load alchemical bombs into alchemical crossbows
+- Ignore stowed items when finding weapons
+
 ## 2.1.7 - 2022-03-21 (Pathfinder 2e 3.7.2)
 - Automatically remove the Crossbow Ace and Crossbow Crack Shot effects upon making a second attack roll
 - Remove separate reload actions
