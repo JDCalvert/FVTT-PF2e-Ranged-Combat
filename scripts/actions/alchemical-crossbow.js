@@ -1,9 +1,9 @@
-import { ItemSelectDialog } from "../utils/item-select-dialog.js";
+import { dialogPrompt } from "../utils/prompt-dialog.js";
 import * as Utils from "../utils/utils.js";
 import * as WeaponUtils from "../utils/weapon-utils.js";
 
-const ALCHEMICAL_CROSSBOW_ITEM_ID = "Compendium.pf2e.equipment-srd.loueS11Tfa9WD320";
 const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.cA9sBCFAxY2EJgrC";
+const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossbow.webp";
 
 const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
 
@@ -23,63 +23,37 @@ export async function loadAlchemicalCrossbow() {
         return;
     }
 
-    const existing = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
-    if (existing) {
-        const existingFlags = existing.data.flags["pf2e-ranged-combat"];
-        const hasMaxCharges = hasMaxCharges(existingFlags);
-        if (existingFlags.bombSourceId === bomb.sourceId && hasMaxCharges) {
-            ui.notifications.warn(`${token.name}'s ${weapon.name} is already loaded with ${existingFlags.bombName}.`);
-            return;
-        }
-
-        const existingResult = hasMaxCharges
-            ? `${existingFlags.bombName} will be returned to your inventory.`
-            : `The remaining uses of ${existingFlags.bombName} will be wasted.`;
-
-        const result = await new Dialog(
-            {
-                title: `${weapon.name} Already Loaded`,
-                content: `
-                    <p>${weapon.name} already has ${existingFlags.bombName} loaded with ${existingFlags.bombCharges} uses remaining.<p>
-                    <p>Would you like to load ${bomb.name} instead? ${existingResult}<p>
-                `,
-                "buttons": {
-                    "ok": {
-                        "label": "Load",
-                    },
-                    "cancel": {
-                        "label": "Do Not Load",
-                    }
-                }
-            }
-        ).render(true);
-
-        if (result === "cancel") {
-            return;
-        }
-
-        if (hasMaxCharges) {
-            const bombItem = Utils.findItemOnActor(actor, existingFlags.bombItemId, existingFlags.bombSourceId);
-            if (bombItem) {
-                // We found either the original bomb stack or a stack of the same type.
-                // Add one to the stack
-                updates.update(async () => {
-                    await bombItem.update({
-                        "data.quantity": bombItem.quantity + 1
-                    });
-                });
-            } else {
-                // Create a new stack containing only this bomb
-                const ammunitionSource = await Utils.getItem(loadedSourceId);
-                ammunitionSource.data.quantity = 1;
-                updates.add(ammunitionSource);
-            }
-        }
-
-        updates.remove(existing);
-    }
-
     const updates = new Utils.Updates(actor);
+
+    const loadedBombEffect = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    if (loadedBombEffect) {
+        const loadedBombFlags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
+        if (loadedBombFlags.bombCharges > 0) {
+            const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
+            if (loadedBombFlags.bombSourceId === bomb.sourceId && hasMaxCharges) {
+                ui.notifications.warn(`${token.name}'s ${weapon.name} is already loaded with ${loadedBombFlags.bombName}.`);
+                return;
+            }
+
+            const existingResult = hasMaxCharges
+                ? `${loadedBombFlags.bombName} will be returned to your inventory.`
+                : `The remaining uses of ${loadedBombFlags.bombName} will be wasted.`;
+
+            const shouldLoad = await dialogPrompt(
+                `${weapon.name} Already Loaded`,
+                `<p>${weapon.name} is loaded with ${loadedBombFlags.bombName} with ${loadedBombFlags.bombCharges}/${loadedBombFlags.bombMaxCharges} uses remaining.<p>
+                <p>Would you like to load ${bomb.name} instead? ${existingResult}<p>`,
+                "Load",
+                "Do Not Load"
+            );
+
+            if (!shouldLoad) {
+                return;
+            }
+        }
+
+        await unloadBomb(actor, loadedBombEffect, updates);
+    }
 
     const elementType = DAMAGE_TYPES.find(damageType => bomb.traits.has(damageType));
 
@@ -112,8 +86,6 @@ export async function loadAlchemicalCrossbow() {
         });
     });
 
-    await updates.handleUpdates();
-
     await Utils.postInChat(
         actor,
         bomb.img,
@@ -121,10 +93,65 @@ export async function loadAlchemicalCrossbow() {
         "Interact",
         "1"
     );
+
+    await updates.handleUpdates();
+}
+
+export async function unloadAlchemicalCrossbow() {
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
+        return;
+    }
+
+    const weapon = await getAlchemicalCrossbow(actor, token);
+    if (!weapon) {
+        return;
+    }
+
+    const loadedBombEffect = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    if (!loadedBombEffect) {
+        ui.notifications.warn(`${token.name}'s ${weapon.name} is not loaded with an alchemical bomb.`);
+        return;
+    }
+
+    const updates = new Utils.Updates(actor);
+
+    const loadedBombFlags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
+    const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
+
+    if (!hasMaxCharges && loadedBombFlags.bombCharges > 0) {
+        const shouldUnload = await dialogPrompt(
+            `${loadedBombFlags.bombName} Discard`,
+            `
+                <p>${weapon.name} is loaded with ${loadedBombFlags.bombName} with ${loadedBombFlags.bombCharges}/${loadedBombFlags.bombMaxCharges} uses remaining.
+                The remaining uses will be wasted</p>
+                <p>Are you sure you want to unload ${loadedBombFlags.bombName} from ${weapon.name}?</p>
+            `,
+            "Unload",
+            "Do Not Unload"
+        );
+        if (!shouldUnload) {
+            return;
+        }
+    }
+
+    await unloadBomb(actor, loadedBombEffect, updates);
+
+    if (loadedBombFlags.bombCharges > 0) {
+        await Utils.postInChat(
+            actor,
+            UNLOAD_BOMB_IMG,
+            `${token.name} unloads ${loadedBombFlags.bombName} from their ${weapon.name}.`,
+            "Interact",
+            "1"
+        );
+    }
+
+    await updates.handleUpdates();
 }
 
 export async function handleWeaponFired(actor, weapon, updates) {
-    if (weapon.sourceId !== ALCHEMICAL_CROSSBOW_ITEM_ID) {
+    if (!isAlchemicalCrossbow(weapon)) {
         return;
     }
 
@@ -142,7 +169,7 @@ export async function handleWeaponFired(actor, weapon, updates) {
             "name": flags.effectName + ` (${flags.bombCharges - 1}/${flags.bombMaxCharges})`
         };
 
-        if (flags.bombCharges === flags.bombMaxCharges) {
+        if (bombHasMaxCharges(flags)) {
             const initiative = game.combat?.turns[game.combat.turn]?.initiative ?? null;
             Object.assign(
                 update,
@@ -177,9 +204,13 @@ export async function handleWeaponFired(actor, weapon, updates) {
 function getAlchemicalCrossbow(actor, token) {
     return WeaponUtils.getWeapon(
         actor,
-        weapon => weapon.sourceId === ALCHEMICAL_CROSSBOW_ITEM_ID,
+        isAlchemicalCrossbow,
         `${token.name} has no Alchemical Crossbow.`
     );
+}
+
+function isAlchemicalCrossbow(weapon) {
+    return weapon.baseType === "alchemical-crossbow";
 }
 
 function getElementalBomb(actor, token) {
@@ -194,6 +225,29 @@ function getElementalBomb(actor, token) {
     );
 }
 
-function hasMaxCharges(flags) {
+async function unloadBomb(actor, bombLoadedEffect, updates) {
+    const bombLoadedFlags = bombLoadedEffect.data.flags["pf2e-ranged-combat"];
+    if (bombHasMaxCharges(bombLoadedFlags)) {
+        const bombItem = Utils.findItemOnActor(actor, bombLoadedFlags.bombItemId, bombLoadedFlags.bombSourceId);
+        if (bombItem) {
+            // We found either the original bomb stack or a stack of the same type.
+            // Add one to the stack
+            updates.update(async () => {
+                await bombItem.update({
+                    "data.quantity": bombItem.quantity + 1
+                });
+            });
+        } else {
+            // Create a new stack containing only this bomb
+            const bombSource = await Utils.getItem(bombLoadedFlags.bombSourceId);
+            bombSource.data.quantity = 1;
+            updates.add(bombSource);
+        }
+    }
+
+    updates.remove(bombLoadedEffect);
+}
+
+function bombHasMaxCharges(flags) {
     return flags.bombCharges === flags.bombMaxCharges;
 }

@@ -173,7 +173,7 @@ Hooks.on(
                     weapon.ammunition?.consume();
                 }
 
-                updates.handleUpdates();
+                await updates.handleUpdates();
 
                 return roll;
             },

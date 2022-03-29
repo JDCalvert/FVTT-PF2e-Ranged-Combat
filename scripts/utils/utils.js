@@ -182,14 +182,14 @@ export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
 
 export async function postActionInChat(actor, actionId) {
     if (game.settings.get("pf2e-ranged-combat", "postFullAction")) {
-        (await getItemFromActor(actor, actionId, true)).toMessage();
+        await (await getItemFromActor(actor, actionId, true)).toMessage();
     }
 }
 
 export async function postInChat(actor, img, message, actionName = "", numActions = "") {
     const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.html", { imgPath: img, message: message, });
     const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.html", { action: { title: actionName, typeNumber: String(numActions) } });
-    ChatMessage.create({
+    await ChatMessage.create({
         type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
         speaker: ChatMessage.getSpeaker({ actor }),
         flavor,
