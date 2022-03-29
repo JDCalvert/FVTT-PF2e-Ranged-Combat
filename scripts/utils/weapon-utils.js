@@ -19,6 +19,7 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
     if (actor.type === "character") {
         weapons = actor.itemTypes.weapon
             .map(characterWeaponTransform)
+            .filter(weapon => !weapon.isStowed)
             .filter(predicate);
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
@@ -48,14 +49,19 @@ function characterWeaponTransform(weapon) {
     return {
         value: weapon,
         id: weapon.id,
+        sourceId: weapon.sourceId,
+        baseType: weapon.baseType,
         name: weapon.name,
         img: weapon.img,
+        traits: weapon.traits,
+        quantity: weapon.quantity,
         usesAmmunition: usesAmmunition(weapon),
         ammunition: getAmmunition(weapon),
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
         isEquipped: weapon.isEquipped,
+        isStowed: weapon.isStowed,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
     };
 }
@@ -64,14 +70,19 @@ function npcWeaponTransform(weapon) {
     return {
         value: weapon,
         id: weapon.id,
+        sourceId: null,
+        baseType: null,
         name: weapon.name,
         img: weapon.img,
+        traits: weapon.traits,
+        quantity: weapon.quantity,
         usesAmmunition: usesAmmunition(weapon),
         ammunition: getAmmunition(weapon),
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
         isEquipped: true,
+        isStowed: false,
         isCrossbow: false
     };
 }

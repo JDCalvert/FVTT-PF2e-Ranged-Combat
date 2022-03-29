@@ -104,7 +104,7 @@ export async function reload() {
 
     await triggerCrossbowReloadEffects(actor, weapon, updates);
 
-    updates.handleUpdates();
+    await updates.handleUpdates();
 };
 
 /**
@@ -212,7 +212,7 @@ export async function reloadMagazine() {
         String(numActions)
     );
 
-    updates.handleUpdates();
+    await updates.handleUpdates();
 }
 
 async function unloadAmmunition(actor, loadedEffect, updates) {
@@ -308,7 +308,7 @@ export async function reloadAll() {
     }
 
     Utils.postInChat(actor, Utils.RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");
-    updates.handleUpdates();
+    await updates.handleUpdates();
 }
 
 export async function unload() {
@@ -362,7 +362,7 @@ export async function unload() {
         }
     }
 
-    updates.handleUpdates();
+    await updates.handleUpdates();
 }
 
 export async function consolidateRepeatingWeaponAmmunition() {
@@ -463,7 +463,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
             "Interact",
             ""
         );
-        updates.handleUpdates();
+        await updates.handleUpdates();
     } else {
         ui.notifications.info("Your repeating ammunition is already consolidated!");
     }

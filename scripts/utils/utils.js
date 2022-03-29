@@ -49,7 +49,7 @@ export class Updates {
         for (const update of this.itemsToUpdate) {
             await update();
         }
-    
+
         await this.actor.deleteEmbeddedDocuments("Item", this.itemsToRemove.map(item => item.id));
         await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
     }
@@ -71,7 +71,7 @@ export function getControlledActorAndToken() {
             const token = controlledTokens[0];
             const actor = token?.actor;
             if (actor && token) {
-                return {actor, token};
+                return { actor, token };
             }
         }
     } else {
@@ -107,8 +107,17 @@ export function getTarget(notifyNoToken = true) {
 /**
  * Find whether the actor has the specified item
  */
- export function actorHasItem(actor, sourceId) {
+export function actorHasItem(actor, sourceId) {
     return actor.items.some(item => item.getFlag("core", "sourceId") === sourceId);
+}
+
+/**
+ * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
+ * with the same source ID if one cannot be found
+ */
+export function findItemOnActor(actor, itemId, sourceId) {
+    return actor.items.find(item => item.id === itemId && !item.isStowed)
+        || actor.items.find(item => item.sourceId === sourceId && !item.isStowed);
 }
 
 /**
@@ -146,8 +155,10 @@ export async function getItem(id) {
     return source;
 }
 
-export function setEffectTarget(effect, item) {
-    effect.name = `${effect.name} (${item.name})`;
+export function setEffectTarget(effect, item, adjustName = true) {
+    if (adjustName) {
+        effect.name = `${effect.name} (${item.name})`;
+    }
     effect.flags["pf2e-ranged-combat"] = {
         targetId: item.id
     };
@@ -158,16 +169,27 @@ export function setEffectTarget(effect, item) {
     rules.splice(rules.findIndex(rule => rule.key === "EffectTarget"), 1);
 }
 
+export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
+    effect.name = `${effect.name} (${label})`;
+    effect.flags.pf2e ??= {};
+    effect.flags.pf2e.rulesSelections ??= {};
+    effect.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
+
+    // Remove the ChoiceSet rule since we've already made it
+    const rules = effect.data.rules;
+    rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag), 1);
+}
+
 export async function postActionInChat(actor, actionId) {
     if (game.settings.get("pf2e-ranged-combat", "postFullAction")) {
-        (await getItemFromActor(actor, actionId, true)).toMessage();
+        await (await getItemFromActor(actor, actionId, true)).toMessage();
     }
 }
 
 export async function postInChat(actor, img, message, actionName = "", numActions = "") {
     const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.html", { imgPath: img, message: message, });
     const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.html", { action: { title: actionName, typeNumber: String(numActions) } });
-    ChatMessage.create({
+    await ChatMessage.create({
         type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
         speaker: ChatMessage.getSpeaker({ actor }),
         flavor,

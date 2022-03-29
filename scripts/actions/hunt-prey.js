@@ -80,5 +80,5 @@ export async function huntPrey() {
         }
     }
 
-    updates.handleUpdates();
+    await updates.handleUpdates();
 }

@@ -1,5 +1,6 @@
 import * as Utils from "./utils/utils.js";
 import * as WeaponUtils from "./utils/weapon-utils.js";
+import { handleWeaponFired as alchemicalCrossbowHandleFired } from "./actions/alchemical-crossbow.js";
 
 Hooks.on(
     "ready",
@@ -100,6 +101,8 @@ Hooks.on(
 
                 const updates = new Utils.Updates(actor);
 
+                alchemicalCrossbowHandleFired(actor, weapon, updates);
+
                 // Crossbow Ace and Crossbow Crack Shot only apply to the next shot fired. If that shot hadn't
                 // already been fired, it has now. If it had already been fired, remove the effect.
                 for (const effectId of [Utils.CROSSBOW_ACE_EFFECT_ID, Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
@@ -170,7 +173,7 @@ Hooks.on(
                     weapon.ammunition?.consume();
                 }
 
-                updates.handleUpdates();
+                await updates.handleUpdates();
 
                 return roll;
             },
