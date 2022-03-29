@@ -62,7 +62,7 @@ function characterWeaponTransform(weapon) {
         isRepeating: isRepeating(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
-        isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow"),
+        isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
     };
 }
 
