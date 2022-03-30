@@ -23,17 +23,28 @@ export class ItemSelectDialog extends Dialog {
             <div class="item-buttons" style="max-width: max-content; justify-items: center; margin: auto;">
             <p>${header}</p>
         `
-        for (let item of items) {
+
+        for (const itemCategory of items.keys()) {
             content += `
-                <button class="item-button" type="button" value="${item.id}" style="display: flex; align-items: center; margin: 4px auto">
-                    <img src="${item.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
-                    <span>${item.name}</span>
-                </button>
+                <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
+                    <legend>${itemCategory}</legend>
             `
+            
+            for (let item of items.get(itemCategory)) {
+                content += `
+                    <button class="item-button" type="button" value="${item.id}" style="display: flex; align-items: center; margin: 4px auto">
+                        <img src="${item.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
+                        <span>${item.name}</span>
+                    </button>
+                `
+            }
+
+            content += `</fieldset>`;
         }
+
         content += `</div>`
         let itemId = await new this(title, content).getItemId();
-        return items.find(item => item.id === itemId);
+        return Array.from(items.values()).flat().find(item => item.id === itemId);
     }
 
     activateListeners(html) {

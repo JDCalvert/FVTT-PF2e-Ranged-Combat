@@ -5,12 +5,22 @@ export async function getWeapon(actor, predicate = () => true, noResultsMessage)
 }
 
 export async function getSingleWeapon(weapons) {
+    const weaponsByEquipped = new Map();
+    const equippedWeapons = weapons.filter(weapon => weapon.isEquipped);
+    const unequippedWeapons = weapons.filter(weapon => !weapon.isEquipped);
+    if (equippedWeapons.length) {
+        weaponsByEquipped.set("Equipped", equippedWeapons);
+    }
+    if (unequippedWeapons.length) {
+        weaponsByEquipped.set("Unequipped", unequippedWeapons);
+    }
+
     if (!weapons.length) {
         return;
     } else if (weapons.length === 1) {
         return weapons[0];
     } else {
-        return ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weapons);
+        return ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weaponsByEquipped);
     }
 }
 
