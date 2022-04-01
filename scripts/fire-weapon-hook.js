@@ -103,7 +103,7 @@ Hooks.on(
 
                 await alchemicalCrossbowHandleFired(actor, weapon, updates);
 
-                // Crossbow Ace and Crossbow Crack Shot only apply to the next shot fired. If that shot hadn't
+                // Some effects only apply to the next shot fired. If that shot hadn't
                 // already been fired, it has now. If it had already been fired, remove the effect.
                 for (const effectId of [Utils.CROSSBOW_ACE_EFFECT_ID, Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
                     const effect = Utils.getEffectFromActor(actor, effectId, weapon.id);
@@ -114,6 +114,11 @@ Hooks.on(
                             updates.update(() => effect.update({ "flags.pf2e-ranged-combat.fired": true }));
                         }
                     }
+                }
+
+                const ammunitionEffect = Utils.getEffectFromActor(actor, Utils.AMMUNITION_EFFECT_ID, weapon.id);
+                if (ammunitionEffect) {
+                    updates.remove(ammunitionEffect);
                 }
 
                 // Remove the loaded effect if the weapon requires reloading. It could have a loaded effect
@@ -162,16 +167,7 @@ Hooks.on(
                             );
                         }
 
-                        if (ammunition?.rules.length) {
-                            const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
-                            Utils.setEffectTarget(ammunitionEffectSource, weapon);
-                            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-                            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
-                            ammunitionEffectSource.img = ammunition.img;  
-                            ammunitionEffectSource.data.description = ammunition.data.description;
-                            ammunitionEffectSource.flags["pf2e-ranged-combat"].fired = false;
-                            updates.add(ammunitionEffectSource);
-                        }
+                        createAmmunitionEffect(weapon, ammunition, updates);
                     } else if (weapon.requiresLoading) {
                         const ammunitionItemId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"]
                         const ammunitionSourceId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
@@ -186,16 +182,7 @@ Hooks.on(
                             );
                         }
 
-                        if (ammunition?.rules.length) {
-                            const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
-                            Utils.setEffectTarget(ammunitionEffectSource, weapon);
-                            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-                            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
-                            ammunitionEffectSource.img = ammunition.img;  
-                            ammunitionEffectSource.data.description = ammunition.data.description;
-                            ammunitionEffectSource.flags["pf2e-ranged-combat"].fired = false;
-                            updates.add(ammunitionEffectSource);
-                        }
+                        createAmmunitionEffect(weapon, ammunition, updates);
                     } else if (weapon.usesAmmunition) {
                         const ammunition = weapon.ammunition;
                         updates.update(async () => {
@@ -210,16 +197,7 @@ Hooks.on(
                             Utils.postInChat(actor, ammunition.img, `${actor.name} uses ${ammunition.name}.`);
                         }
 
-                        if (ammunition.rules.length) {
-                            const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
-                            Utils.setEffectTarget(ammunitionEffectSource, weapon);
-                            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-                            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
-                            ammunitionEffectSource.img = ammunition.img;  
-                            ammunitionEffectSource.data.description = ammunition.data.description;
-                            ammunitionEffectSource.flags["pf2e-ranged-combat"].fired = false;
-                            updates.add(ammunitionEffectSource);
-                        }
+                        createAmmunitionEffect(weapon, ammunition, updates);
                     }
                 } else {
                     weapon.ammunition?.consume();
@@ -233,3 +211,15 @@ Hooks.on(
         );
     }
 );
+
+async function createAmmunitionEffect(weapon, ammunition, updates) {
+    if (ammunition?.rules.length) {
+        const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
+        Utils.setEffectTarget(ammunitionEffectSource, weapon);
+        ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
+        ammunitionEffectSource.data.rules = ammunition.data.data.rules;
+        ammunitionEffectSource.img = ammunition.img;
+        ammunitionEffectSource.data.description = ammunition.data.description;
+        updates.add(ammunitionEffectSource);
+    }
+}
