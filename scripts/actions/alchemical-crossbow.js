@@ -13,7 +13,7 @@ export async function loadAlchemicalCrossbow() {
         return;
     }
 
-    const weapon = await getAlchemicalCrossbow(actor, token);
+    const weapon = await getAlchemicalCrossbow(actor, token, true);
     if (!weapon) {
         return;
     }
@@ -103,7 +103,7 @@ export async function unloadAlchemicalCrossbow() {
         return;
     }
 
-    const weapon = await getAlchemicalCrossbow(actor, token);
+    const weapon = await getAlchemicalCrossbow(actor, token, false);
     if (!weapon) {
         return;
     }
@@ -201,11 +201,12 @@ export async function handleWeaponFired(actor, weapon, updates) {
     }
 }
 
-function getAlchemicalCrossbow(actor, token) {
+function getAlchemicalCrossbow(actor, token, prioritise) {
     return WeaponUtils.getWeapon(
         actor,
         isAlchemicalCrossbow,
-        `${token.name} has no Alchemical Crossbow.`
+        `${token.name} has no Alchemical Crossbow.`,
+        weapon => prioritise && !Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id)
     );
 }
 

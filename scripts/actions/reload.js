@@ -8,7 +8,10 @@ export async function reload() {
         return;
     }
 
-    const weapon = await WeaponUtils.getSingleWeapon(getReloadableWeapons(actor));
+    const weapon = await WeaponUtils.getSingleWeapon(
+        getReloadableWeapons(actor),
+        weapon => !Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id)
+    );
     if (!weapon) {
         return;
     }
@@ -131,7 +134,12 @@ export async function reloadMagazine() {
         }
     }
 
-    const weapon = await WeaponUtils.getWeapon(actor, weapon => weapon.isRepeating, "You have no repeating weapons.");
+    const weapon = await WeaponUtils.getWeapon(
+        actor,
+        weapon => weapon.isRepeating,
+        "You have no repeating weapons.",
+        weapon => !Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id)
+    );
     if (!weapon) {
         return;
     }
@@ -201,7 +209,7 @@ export async function reloadMagazine() {
         await ammo.update({
             "data.quantity": ammo.quantity - 1,
             "data.charges.value": ammo.charges.max,
-        })
+        });
     });
 
     await Utils.postInChat(

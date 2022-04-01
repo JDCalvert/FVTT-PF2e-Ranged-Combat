@@ -1,17 +1,40 @@
 import { ItemSelectDialog } from "./item-select-dialog.js";
 
-export async function getWeapon(actor, predicate = () => true, noResultsMessage) {
-    return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage));
+export async function getWeapon(actor, predicate, noResultsMessage, priorityPredicate) {
+    return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage), priorityPredicate);
 }
 
-export async function getSingleWeapon(weapons) {
+export async function getSingleWeapon(weapons, priorityPredicate = () => false) {
+    // If there are no weapons, then return nothing
     if (!weapons.length) {
         return;
-    } else if (weapons.length === 1) {
-        return weapons[0];
-    } else {
-        return ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weapons);
     }
+
+    // If there is only one weapon, we can return it
+    if (weapons.length === 1) {
+        return weapons[0];
+    }
+
+    // If the actor has equipped exactly one weapon with priority, we can return it
+    const priorityWeapons = weapons
+        .filter(weapon => weapon.isEquipped)
+        .filter(priorityPredicate);
+    if (priorityWeapons.length === 1) {
+        return priorityWeapons[0];
+    }
+
+    // We need to choose a weapon
+    const weaponsByEquipped = new Map();
+    const equippedWeapons = weapons.filter(weapon => weapon.isEquipped);
+    if (equippedWeapons.length) {
+        weaponsByEquipped.set("Equipped", equippedWeapons);
+    }
+    const unequippedWeapons = weapons.filter(weapon => !weapon.isEquipped);
+    if (unequippedWeapons.length) {
+        weaponsByEquipped.set("Unequipped", unequippedWeapons);
+    }
+
+    return ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weaponsByEquipped);
 }
 
 export function getWeapons(actor, predicate = () => true, noResultsMessage = null) {
@@ -20,11 +43,11 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
         weapons = actor.itemTypes.weapon
             .map(characterWeaponTransform)
             .filter(weapon => !weapon.isStowed)
-            .filter(predicate);
+            .filter(predicate)
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
             .map(npcWeaponTransform)
-            .filter(predicate);
+            .filter(predicate)
     } else {
         weapons = [];
     }

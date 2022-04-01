@@ -1,3 +1,7 @@
+## 2.2.1 - 2022-04-01 (Pathfinder 2e 3.7.2)
+- Separate equipped and unequipped weapons in the weapon select dialog
+- If there is a single equipped weapon available when reloading, select it automatically
+
 ## 2.2.0 - 2022-03-29 (Pathfinder 2e 3.7.2)
 - Add macro to load alchemical bombs into alchemical crossbows
 - Ignore stowed items when finding weapons
