@@ -20,6 +20,19 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "postFullAmmunition",
+            {
+                name: "Post Full Ammunition Description",
+                hint: "When firing a ranged weapon, post the ammunition item to chat",
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: false
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "preventFireNotLoaded",
             {
                 name: "Prevent Firing Weapon if not Loaded",

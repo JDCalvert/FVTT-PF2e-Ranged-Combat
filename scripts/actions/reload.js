@@ -382,7 +382,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
     // Find all the repeating ammunition stacks
     const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.charges.max > 1);
     const ammunitionStacksBySourceId = ammunitionStacks.reduce(
-        function(map, stack) {
+        function (map, stack) {
             const mapEntry = map[stack.sourceId];
             if (!mapEntry) {
                 map[stack.sourceId] = {

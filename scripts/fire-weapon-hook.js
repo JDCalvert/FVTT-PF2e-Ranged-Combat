@@ -8,7 +8,7 @@ Hooks.on(
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Actor.documentClasses.character.prototype.consumeAmmo",
-            function() {
+            function () {
                 return true;
             },
             "OVERRIDE"
@@ -17,7 +17,7 @@ Hooks.on(
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype.ammo",
-            function() {
+            function () {
                 const ammo = this.actor?.items.get(this.data.data.selectedAmmoId ?? "");
                 return ammo?.type === "consumable" ? ammo : null;
             },
@@ -27,7 +27,7 @@ Hooks.on(
         libWrapper.register(
             "pf2e-ranged-combat",
             "game.pf2e.Check.roll",
-            async function(wrapper, ...args) {
+            async function (wrapper, ...args) {
                 const context = args[1];
                 const actor = context.actor;
                 const contextWeapon = context.item; // Either WeaponPF2e (for a character) or MeleePF2e (for an NPC)
@@ -101,7 +101,7 @@ Hooks.on(
 
                 const updates = new Utils.Updates(actor);
 
-                alchemicalCrossbowHandleFired(actor, weapon, updates);
+                await alchemicalCrossbowHandleFired(actor, weapon, updates);
 
                 // Crossbow Ace and Crossbow Crack Shot only apply to the next shot fired. If that shot hadn't
                 // already been fired, it has now. If it had already been fired, remove the effect.
@@ -149,17 +149,31 @@ Hooks.on(
                         }
 
                         // Post in chat saying some ammunition was used
-                        Utils.postInChat(
-                            actor,
-                            magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
-                            `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
-                        );
+                        const ammunitionItemId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"]
+                        const ammunitionSourceId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
+                        const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
+                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
+                            ammunition.toMessage();
+                        } else {
+                            Utils.postInChat(
+                                actor,
+                                magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
+                                `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
+                            );
+                        }
                     } else if (weapon.requiresLoading) {
-                        Utils.postInChat(
-                            actor,
-                            loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
-                            `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
-                        );
+                        const ammunitionItemId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"]
+                        const ammunitionSourceId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
+                        const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
+                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
+                            ammunition.toMessage();
+                        } else {
+                            Utils.postInChat(
+                                actor,
+                                loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
+                                `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
+                            );
+                        }
                     } else if (weapon.usesAmmunition) {
                         const ammo = weapon.ammunition;
                         updates.update(async () => {
@@ -167,7 +181,12 @@ Hooks.on(
                                 "data.quantity": ammo.quantity - 1
                             });
                         });
-                        Utils.postInChat(actor, ammo.img, `${actor.name} uses ${ammo.name}.`);
+
+                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
+                            ammo.toMessage()
+                        } else {
+                            Utils.postInChat(actor, ammo.img, `${actor.name} uses ${ammo.name}.`);
+                        }
                     }
                 } else {
                     weapon.ammunition?.consume();
