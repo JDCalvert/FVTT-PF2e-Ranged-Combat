@@ -1,6 +1,7 @@
-// Loaded
+// Ammunition System
 export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
 export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
+export const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zVcsgX5KduyfBXRZ";
 
 // Hunt Prey
 export const HUNT_PREY_FEATURE_ID = "Compendium.pf2e.classfeatures.0nIOGpHQNHsKSFKT";

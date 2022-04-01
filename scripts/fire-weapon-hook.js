@@ -161,6 +161,17 @@ Hooks.on(
                                 `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
                             );
                         }
+
+                        if (ammunition?.rules.length) {
+                            const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
+                            Utils.setEffectTarget(ammunitionEffectSource, weapon);
+                            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
+                            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
+                            ammunitionEffectSource.img = ammunition.img;  
+                            ammunitionEffectSource.data.description = ammunition.data.description;
+                            ammunitionEffectSource.flags["pf2e-ranged-combat"].fired = false;
+                            updates.add(ammunitionEffectSource);
+                        }
                     } else if (weapon.requiresLoading) {
                         const ammunitionItemId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"]
                         const ammunitionSourceId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
@@ -174,18 +185,40 @@ Hooks.on(
                                 `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
                             );
                         }
+
+                        if (ammunition?.rules.length) {
+                            const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
+                            Utils.setEffectTarget(ammunitionEffectSource, weapon);
+                            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
+                            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
+                            ammunitionEffectSource.img = ammunition.img;  
+                            ammunitionEffectSource.data.description = ammunition.data.description;
+                            ammunitionEffectSource.flags["pf2e-ranged-combat"].fired = false;
+                            updates.add(ammunitionEffectSource);
+                        }
                     } else if (weapon.usesAmmunition) {
-                        const ammo = weapon.ammunition;
+                        const ammunition = weapon.ammunition;
                         updates.update(async () => {
-                            await ammo.update({
-                                "data.quantity": ammo.quantity - 1
+                            await ammunition.update({
+                                "data.quantity": ammunition.quantity - 1
                             });
                         });
 
                         if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
-                            ammo.toMessage()
+                            ammunition.toMessage()
                         } else {
-                            Utils.postInChat(actor, ammo.img, `${actor.name} uses ${ammo.name}.`);
+                            Utils.postInChat(actor, ammunition.img, `${actor.name} uses ${ammunition.name}.`);
+                        }
+
+                        if (ammunition.rules.length) {
+                            const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
+                            Utils.setEffectTarget(ammunitionEffectSource, weapon);
+                            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
+                            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
+                            ammunitionEffectSource.img = ammunition.img;  
+                            ammunitionEffectSource.data.description = ammunition.data.description;
+                            ammunitionEffectSource.flags["pf2e-ranged-combat"].fired = false;
+                            updates.add(ammunitionEffectSource);
                         }
                     }
                 } else {
