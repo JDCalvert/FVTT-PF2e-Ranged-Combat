@@ -37,7 +37,6 @@ export class ItemSelectDialog extends Dialog {
                         type="button"
                         value="${item.id}"
                         style="display: flex; align-items: center; margin: 4px auto"
-                        ${!item.enabled ? "disabled": ""}
                     >
                         <img src="${item.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
                         <span>${item.name}${item.reason ? ` (${item.reason})` : ""}</span>

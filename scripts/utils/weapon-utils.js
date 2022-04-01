@@ -16,7 +16,9 @@ export async function getSingleWeapon(weapons, priorityPredicate = () => false) 
     }
 
     // If the actor has equipped exactly one weapon with priority, we can return it
-    const priorityWeapons = equippedWeapons.filter(priorityPredicate);
+    const priorityWeapons = weapons
+        .filter(weapon => weapon.isEquipped)
+        .filter(priorityPredicate);
     if (priorityWeapons.length === 1) {
         return priorityWeapons[0];
     }
