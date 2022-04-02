@@ -220,7 +220,7 @@ async function createAmmunitionEffect(weapon, ammunition, updates) {
         ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
         ammunitionEffectSource.data.rules = ammunition.data.data.rules;
         ammunitionEffectSource.img = ammunition.img;
-        ammunitionEffectSource.data.description = ammunition.data.description;
+        ammunitionEffectSource.data.description.value = ammunition.description;
         updates.add(ammunitionEffectSource);
     }
 }
