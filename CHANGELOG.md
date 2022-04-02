@@ -1,5 +1,6 @@
 ## 2.3.0 - 2022-04-02 (Pathfinder 2e 3.7.2)
 - Add option to post full ammunition item to chat when firing a ranged weapon
+- Add ammunition effects, copying rules from ammunition to an effect targeting your weapon
 
 ## 2.2.1 - 2022-04-01 (Pathfinder 2e 3.7.2)
 - Separate equipped and unequipped weapons in the weapon select dialog
