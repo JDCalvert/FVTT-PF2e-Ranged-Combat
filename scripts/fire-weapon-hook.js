@@ -157,6 +157,7 @@ Hooks.on(
                         const ammunitionItemId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"]
                         const ammunitionSourceId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
                         const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
+
                         if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
                             ammunition.toMessage();
                         } else {

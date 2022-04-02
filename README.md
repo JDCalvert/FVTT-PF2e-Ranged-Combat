@@ -11,14 +11,11 @@ In summary, each release of this module only officially supports the latest rele
 ## Features
 
 ### Reloading System
-When you have a reloadable weapon (e.g. reload 1 or higher), you can use the <b>Reload</b> macro to choose a weapon to reload (if you have more than one) and give yourself the <b>Loaded</b> effect showing that the weapon has been loaded. If you have the feats, this also applies the effects of <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b>. Firing the weapon removes the <b>Loaded</b> effect.
+When you have a reloadable weapon (e.g. reload 1 or higher), you can use the <b>Reload</b> macro to reload your weapon, and give yourself the <b>Loaded</b> effect showing that the weapon is loaded. If you have the feats, this also applies the effects of <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b>. Firing the weapon removes the <b>Loaded</b> effect.
 
 You can also use the <b>Reload All</b> macro to reload all of your reloadable weapons at once. This is intended to be used outside of combat and so doesn't apply the <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> feat effects.
 
 If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> in the macro settings, then you <i>must</i> reload weapons before you can fire them.
-
-#### Actions
-Four <b>Reload</b> actions, for one- two-, three-action and "exploration" (more than three-action) reloads.
 
 #### Effects
 The <b>Loaded</b> effect targets a specific weapon and serves as a reminder that the weapon is loaded. This effect is removed if the weapon is fired and, optionally, the weapon cannot be fired if it isn't loaded.
@@ -51,7 +48,7 @@ You can also use the <b>Unload</b> macro to remove the loaded ammunition from th
 #### Repeating <small>(e.g. [Repeating Crossbow](https://2e.aonprd.com/Weapons.aspx?ID=176))</small>
 Repeating weapons work similarly to reloadable weapons, except you use the <b>Reload Magazine</b> to load a magazine, creating the <b>Magazine Loaded</b> effect.
 
-The <b>Magazine Loaded</b> works similarly to the <b>Loaded</b> effect, except the effect also tracks the number of rounds remaining in the magazine. Ammunition is consumed from the magazine when you fire the weapon. When the magazine is empty, it remains loaded (representing the need to remove the existing magazine before replacing it with a new one) but you cannot fire the weapon while the magazine is empty.
+The <b>Magazine Loaded</b> effect works similarly to the <b>Loaded</b> effect, except the effect also tracks the number of rounds remaining in the magazine. Ammunition is consumed from the magazine when you fire the weapon. When the magazine is empty, it remains loaded (representing the need to remove the existing magazine before replacing it with a new one) but you cannot fire the weapon while the magazine is empty.
 
 You can also use the <b>Reload Magazine</b> macro while a magazine is already loaded:
 - If you've changed the weapon's selected ammunition, the new magazine will be loaded. If the current magazine had any remaining ammunition, it is put back in your inventory.
@@ -69,11 +66,19 @@ The <b>Hunt Prey</b> macro applies the <b>Hunted Prey</b> effect to your charact
 
 While you have a hunted prey, the "Hunted Prey" toggle will automatically be enabled while you have your prey (and only your prey) targeted.
 
+### Alchemical Crossbow
+You can use the <b>Load Alchemical Crossbow</b> macro to load a lesser alchemical bomb into an Alchemical Crossbow. This will give your weapon the <b>Loaded Bomb</b> effect, granting an additional 1d6 damage (type depending on the loaded bomb) for the next three shots. As per the Alchemical Crossbow's description, once the first shot has been fired, you have only one minute to fire the remaining shots or they are wasted.
+
+You can use the <b>Unload Alchemical Crossbow</b> macro to unload the bomb from your Alchemical Crossbow. If you haven't fired the crossbow since loading the bomb, you'll get it back in your inventory, but if you've used at least one use, the remaining uses will be wasted.
+
 ## Configuration
 These are the settings available for the module (all world-scope).
 
 ### Post Full Action from Macros (default: enabled)
 If enabled, the action represented used by a macro is posted to chat, as well as the summary of what happened. If disabled, the summary is still posted.
+
+### Post Full Ammunition Description (default: disabled)
+If enabled, when you fire a weapon that uses ammunition, the ammunition item will be posted to chat instead of the compact "X has used Y" message.
 
 ### Prevent Firing Weapon if not Loaded (default: enabled)
 If enabled, weapons with a reload entry (or reload trait, for NPCs) cannot be fired unless they're loaded.
