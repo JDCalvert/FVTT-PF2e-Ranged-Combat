@@ -66,11 +66,14 @@ You add rule elements to your ammunition and, when you fire it, you will gain an
 
 ##### Example: Fire Arrow
 ![Fire Arrow Card](art/readme/fire-arrow-card.webp)
+
 This ammunition has a rule element to add 1d6 fire damage on an attack. Note that selector refers to a target, but there is no Effect Target rule element. The rule element will have no effect in this state.
 
 After firing this ammunition, we get an effect:
 ![Fire Arrow Effect Card](art/readme/fire-arrow-effect-card.webp)
+
 ![Fire Arrow Damage](art/readme/fire-arrow-damage.webp)
+
 This effect has the same rule element as the original ammunition, but the module has set the effect's target to be the character's Longbow, so the damage applies correctly.
 
 ### Hunt Prey
