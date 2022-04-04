@@ -15,6 +15,18 @@ Hooks.on(
     }
 );
 
+Hooks.on(
+    "renderChatMessage",
+    (message, html) => {
+        if (!message.data.flags["pf2e-ranged-combat"]) {
+            return;
+        }
+
+        html.removeClass("whisper");
+        message.data.whisper = [];
+    }
+)
+
 function setHuntedPrey() {
     const targetedIds = game.user.targets.ids;
 
