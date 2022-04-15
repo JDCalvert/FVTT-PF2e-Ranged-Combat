@@ -1,3 +1,6 @@
+## 2.3.1 - 2022-04-15
+- Fix an issue with firing an alchemical crossbow with no bomb loaded
+
 ## 2.3.0 - 2022-04-02 (Pathfinder 2e 3.7.2)
 - Add option to post full ammunition item to chat when firing a ranged weapon
 - Add ammunition effects, copying rules from ammunition to an effect targeting your weapon
