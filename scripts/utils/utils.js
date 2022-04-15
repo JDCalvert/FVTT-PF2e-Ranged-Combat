@@ -196,9 +196,10 @@ export async function postInChat(actor, img, message, actionName = "", numAction
         speaker: ChatMessage.getSpeaker({ actor }),
         flavor,
         content,
-        whisper: game.users.contents.filter(user => actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER)).map(user => user.id),
         flags: {
-            "pf2e-ranged-combat": true
+            "pf2e-ranged-combat": {
+                actorId: actor.id
+            }
         }
     });
 }

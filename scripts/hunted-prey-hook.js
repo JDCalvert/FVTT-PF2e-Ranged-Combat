@@ -18,9 +18,15 @@ Hooks.on(
 Hooks.on(
     "renderChatMessage",
     (message, html) => {
-        if (!message.data.flags["pf2e-ranged-combat"]) {
+        const flags = message.data.flags["pf2e-ranged-combat"];
+        if (!flags) {
             return;
         }
+
+        const actorId = flags.actorId;
+        const actor = game.actors
+
+        whisper: game.users.contents.filter(user => actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER)).map(user => user.id),
 
         html.removeClass("whisper");
         message.data.whisper = [];
