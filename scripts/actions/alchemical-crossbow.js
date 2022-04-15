@@ -156,8 +156,11 @@ export async function handleWeaponFired(actor, weapon, updates) {
     }
 
     const loadedBombEffect = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    if (!loadedBombEffect) {
+        return;
+    }
+    
     const flags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
-
     if (flags.bombCharges === 0) {
         // We've already fired three bombs, but we kept the effect around for the damage roll
         // Remove the effect now that we're making a fourth attack
