@@ -3,7 +3,7 @@
     "title": "PF2e Ranged Combat",
     "description": "Utilities for impriving ranged combat in Pathfinder 2e.",
     "author": "JDCalvert",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "minimumCoreVersion": "9",
     "compatibleCoreVersion": "9",
     "system": [
