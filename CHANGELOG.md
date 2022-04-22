@@ -1,3 +1,6 @@
+## 2.3.2 - 2022-04-22 (Pathfinder 2e 3.8.4)
+- Fix an issue with determining if a weapon requires ammunition
+
 ## 2.3.2 - 2022-04-16 (Pathfinder 2e 3.8.4)
 - Fix an issue with the Reload All macro not working correctly
 
