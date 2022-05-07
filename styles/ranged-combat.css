@@ -1,0 +1,4 @@
+/* Hide the message if the user isn't allowed to see it */
+.message.pf2e-ranged-combat.hide {
+	display: none !important;
+}

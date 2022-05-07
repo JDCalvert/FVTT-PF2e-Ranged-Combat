@@ -190,11 +190,17 @@ export async function postActionInChat(actor, actionId) {
 export async function postInChat(actor, img, message, actionName = "", numActions = "") {
     const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.html", { imgPath: img, message: message, });
     const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.html", { action: { title: actionName, typeNumber: String(numActions) } });
+
     await ChatMessage.create({
         type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
         speaker: ChatMessage.getSpeaker({ actor }),
         flavor,
-        content
+        content,
+        flags: {
+            "pf2e-ranged-combat": {
+                actorId: actor.id
+            }
+        }
     });
 }
 

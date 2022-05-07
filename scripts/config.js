@@ -59,6 +59,26 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "requiredPermissionToShowMessages",
+            {
+                name: "Minimum Permission to See Messages",
+                hint: `Several functions of this module send messages to chat, for example Reloading.
+                       This will hide those messages for players without the required permission over the actor performing the action.`,
+                scope: "world",
+                config: true,
+                type: Number,
+                choices: {
+                    0: "None",
+                    1: "Limited",
+                    2: "Observer",
+                    3: "Owner"
+                },
+                default: 0
+            }
+        )
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "doNotShowWarningAgain",
             {
                 name: "",
