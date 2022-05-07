@@ -15,24 +15,6 @@ Hooks.on(
     }
 );
 
-Hooks.on(
-    "renderChatMessage",
-    (message, html) => {
-        const flags = message.data.flags["pf2e-ranged-combat"];
-        if (!flags) {
-            return;
-        }
-
-        const actorId = flags.actorId;
-        const actor = game.actors
-
-        whisper: game.users.contents.filter(user => actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER)).map(user => user.id),
-
-        html.removeClass("whisper");
-        message.data.whisper = [];
-    }
-)
-
 function setHuntedPrey() {
     const targetedIds = game.user.targets.ids;
 
@@ -44,7 +26,7 @@ function setHuntedPrey() {
     for (const actor of controlledActors) {
         const huntedPreyEffect = actor.itemTypes.effect.find(effect =>
             effect.getFlag("core", "sourceId") === Utils.HUNTED_PREY_EFFECT_ID
-        )
+        );
 
         const huntedPreyId = huntedPreyEffect?.getFlag("pf2e-ranged-combat", "targetId");
         if (!huntedPreyId) {

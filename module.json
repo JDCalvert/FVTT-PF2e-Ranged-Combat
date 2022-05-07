@@ -23,7 +23,11 @@
     "esmodules": [
         "scripts/config.js",
         "scripts/fire-weapon-hook.js",
-        "scripts/hunted-prey-hook.js"
+        "scripts/hunted-prey-hook.js",
+        "scripts/chat-message-hook.js"
+    ],
+    "styles": [
+        "styles/ranged-combat.css"
     ],
     "packs": [
         {
