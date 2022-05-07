@@ -157,7 +157,7 @@ function getReloadTime(weapon) {
  */
 function usesAmmunition(weapon) {
     if (weapon.actor.type === "character") {
-        return weapon.baseType === "blowgun" || ["firearm", "bow", "sling"].includes(weapon.group);
+        return weapon.requiresAmmo;
     } else if (weapon.actor.type === "npc") {
         return false; // TODO work this out
     } else {

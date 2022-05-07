@@ -307,7 +307,7 @@ export async function reloadAll() {
         return;
     }
 
-    const updates = new Updates();
+    const updates = new Updates(actor);
 
     for (const weapon of weapons) {
         const loadedEffect = await Utils.getItem(Utils.LOADED_EFFECT_ID);
