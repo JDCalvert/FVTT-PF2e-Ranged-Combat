@@ -100,3 +100,6 @@ If enabled, weapons with a reload entry (or reload trait, for NPCs) cannot be fi
 
 ### Advanced Ammunition System (Player) (default: disabled)
 Enable the Advanced Ammunition System, as described above, for PCs.
+
+### Minimum Permission to See Messages (default: None)
+When the module generates a message for an action being performed (e.g. reload, hunt prey etc), the message will only appear for uses with at least the permission level set here.
