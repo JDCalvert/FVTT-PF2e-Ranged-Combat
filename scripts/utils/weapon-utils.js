@@ -83,6 +83,7 @@ function characterWeaponTransform(weapon) {
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
+        capacity: getCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
@@ -104,10 +105,18 @@ function npcWeaponTransform(weapon) {
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
+        capacity: getCapacity(weapon),
         isEquipped: true,
         isStowed: false,
         isCrossbow: false
     };
+}
+
+function getCapacity(weapon) {
+    return weapon.data.data.traits.value
+        .map(trait => trait.match(/capacity-(\d*)/))
+        .filter(match => !!match)
+        .map(match => match[1]) || 1;
 }
 
 /**
