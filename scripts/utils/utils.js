@@ -242,3 +242,7 @@ export function showWarning(warningMessage) {
         ).render(true);
     }
 }
+
+export function getFlag(item, flagName) {
+    return item.data.flags["pf2e-ranged-combat"][flagName];
+}

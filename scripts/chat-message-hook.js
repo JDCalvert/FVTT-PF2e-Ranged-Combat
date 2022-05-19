@@ -28,7 +28,7 @@ Hooks.on(
  */
 Hooks.on(
     "renderChatLog",
-    (html) => {
+    ({}, html) => {
         const chatLog = html.find("#chat-log");
         const rangedCombatMessages = chatLog.find(".message.pf2e-ranged-combat");
         rangedCombatMessages.filter(".hide").remove();

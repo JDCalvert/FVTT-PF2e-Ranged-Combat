@@ -43,11 +43,11 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
         weapons = actor.itemTypes.weapon
             .map(characterWeaponTransform)
             .filter(weapon => !weapon.isStowed)
-            .filter(predicate)
+            .filter(predicate);
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
             .map(npcWeaponTransform)
-            .filter(predicate)
+            .filter(predicate);
     } else {
         weapons = [];
     }
@@ -113,10 +113,11 @@ function npcWeaponTransform(weapon) {
 }
 
 function getCapacity(weapon) {
-    return weapon.data.data.traits.value
+    const match = weapon.data.data.traits.value
         .map(trait => trait.match(/capacity-(\d*)/))
-        .filter(match => !!match)
-        .map(match => match[1]) || 1;
+        .find(match => !!match);
+
+    return match ? Number(match[1]) : null;
 }
 
 /**
