@@ -140,7 +140,7 @@ export async function getItemFromActor(actor, sourceId, addIfNotPresent = false)
 export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
         effect.getFlag("core", "sourceId") === sourceId
-        && effect.getFlag("pf2e-ranged-combat", "targetId") === targetId
+        && Utils.getFlag(effect, "targetId") === targetId
     );
 }
 
@@ -241,4 +241,8 @@ export function showWarning(warningMessage) {
             }
         ).render(true);
     }
+}
+
+export function getFlag(item, flagName) {
+    return item.data.flags["pf2e-ranged-combat"][flagName];
 }
