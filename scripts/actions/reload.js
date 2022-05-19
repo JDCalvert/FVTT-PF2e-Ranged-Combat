@@ -37,7 +37,7 @@ export async function reload() {
             if (!magazineLoadedEffect) {
                 ui.notifications.warn(`${weapon.name} has no magazine loaded!`);
                 return;
-            } else if (magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining") < 1) {
+            } else if (Utils.getFlag(magazineLoadedEffect, "remaining") < 1) {
                 ui.notifications.warn(`${weapon.name}'s magazine is empty!`);
                 return;
             }
@@ -229,10 +229,10 @@ export async function reloadMagazine() {
     // we'll put it back in our inventory
     const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     if (magazineLoadedEffect) {
-        const magazineRemaining = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining");
-        const magazineCapacity = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "capacity");
+        const magazineRemaining = Utils.getFlag(magazineLoadedEffect, "remaining");
+        const magazineCapacity = Utils.getFlag(magazineLoadedEffect, "capacity");
 
-        const magazineSourceId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
+        const magazineSourceId = Utils.getFlag(magazineLoadedEffect, "ammunitionSourceId");
         const selectedAmmunitionSourceId = ammo.sourceId;
 
         if (magazineRemaining === magazineCapacity && magazineSourceId === selectedAmmunitionSourceId) {
@@ -292,7 +292,7 @@ export async function reloadMagazine() {
 
 async function unloadAmmunition(actor, loadedEffect, updates) {
     const loadedItemId = Utils.getFlag(loadedEffect, "ammunitionItemId");
-    const loadedSourceId = loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
+    const loadedSourceId = Utils.getFlag(loadedEffect, "ammunitionSourceId");
 
     // Try to find either the stack the loaded ammunition came from, or another stack of the same ammunition
     const ammunitionItem = actor.items.find(item => item.id === loadedItemId && !item.isStowed)
@@ -320,10 +320,10 @@ async function unloadAmmunition(actor, loadedEffect, updates) {
  * Remove the magazine effect and add the remaining ammunition back to the actor
  */
 async function unloadMagazine(actor, magazineLoadedEffect, updates) {
-    const ammunitionCapacity = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "capacity");
-    const ammunitionRemaining = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining");
+    const ammunitionCapacity = Utils.getFlag(magazineLoadedEffect, "capacity");
+    const ammunitionRemaining = Utils.getFlag(magazineLoadedEffect, "remaining");
 
-    const ammunitionItemId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionItemId");
+    const ammunitionItemId = Utils.getFlag(magazineLoadedEffect, "ammunitionItemId");
     const ammunitionItem = actor.items.find(item => item.id === ammunitionItemId && !item.isStowed);
 
     if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
@@ -335,7 +335,7 @@ async function unloadMagazine(actor, magazineLoadedEffect, updates) {
         });
     } else if (ammunitionRemaining > 0) {
         // The magazine still has some ammunition left, create a new item with the remaining ammunition
-        const itemSourceId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionSourceId");
+        const itemSourceId = Utils.getFlag(magazineLoadedEffect, "ammunitionSourceId");
         const ammunitionSource = await Utils.getItem(itemSourceId);
         ammunitionSource.data.charges.value = ammunitionRemaining;
         updates.add(ammunitionSource);
@@ -345,7 +345,7 @@ async function unloadMagazine(actor, magazineLoadedEffect, updates) {
     updates.remove(magazineLoadedEffect);
 
     // If the weapon was loaded, then remove the loaded status as well
-    const weaponId = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "targetId");
+    const weaponId = Utils.getFlag(magazineLoadedEffect, "targetId");
     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weaponId);
     if (loadedEffect) {
         updates.remove(loadedEffect);
@@ -415,7 +415,7 @@ export async function unload() {
                     Utils.postInChat(
                         actor,
                         magazineLoadedEffect.img,
-                        `${token.name} unloads ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} from their ${weapon.name}.`,
+                        `${token.name} unloads ${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} from their ${weapon.name}.`,
                         "Interact",
                         "1"
                     );
@@ -426,7 +426,7 @@ export async function unload() {
                     Utils.postInChat(
                         actor,
                         loadedEffect.img,
-                        `${token.name} unloads ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} from their ${weapon.name}.`,
+                        `${token.name} unloads ${Utils.getFlag(loadedEffect, "ammunitionName")} from their ${weapon.name}.`,
                         "Interact",
                         "1"
                     );

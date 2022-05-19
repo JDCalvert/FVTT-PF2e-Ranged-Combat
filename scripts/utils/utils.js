@@ -140,7 +140,7 @@ export async function getItemFromActor(actor, sourceId, addIfNotPresent = false)
 export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
         effect.getFlag("core", "sourceId") === sourceId
-        && effect.getFlag("pf2e-ranged-combat", "targetId") === targetId
+        && getFlag(effect, "targetId") === targetId
     );
 }
 

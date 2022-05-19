@@ -48,7 +48,7 @@ Hooks.on(
                         if (!magazineLoadedEffect) {
                             Utils.showWarning(`${weapon.name} has no magazine loaded!`);
                             return;
-                        } else if (magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining") < 1) {
+                        } else if (Utils.getFlag(magazineLoadedEffect, "remaining") < 1) {
                             Utils.showWarning(`${weapon.name}'s magazine is empty!`);
                             return;
                         }
@@ -153,14 +153,14 @@ Hooks.on(
                     // Use up a round of the loaded magazine
                     if (weapon.isRepeating) {
                         const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-                        const magazineCapacity = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "capacity");
-                        const magazineRemaining = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "remaining") - 1;
+                        const magazineCapacity = Utils.getFlag(magazineLoadedEffect, "capacity");
+                        const magazineRemaining = Utils.getFlag(magazineLoadedEffect, "remaining") - 1;
 
-                        magazineLoadedEffect.setFlag("pf2e-ranged-combat", "remaining", magazineRemaining);
-                        const magazineLoadedEffectName = magazineLoadedEffect.getFlag("pf2e-ranged-combat", "name");
+                        const magazineLoadedEffectName = Utils.getFlag(magazineLoadedEffect, "name");
                         updates.update(async () => {
                             await magazineLoadedEffect.update({
-                                "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`
+                                "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`,
+                                "flags.pf2e-ranged-combat.remaining": magazineRemaining
                             });
                         });
                         // Show floaty text with the new effect name
@@ -168,7 +168,7 @@ Hooks.on(
                         for (const token of tokens) {
                             token.showFloatyText({
                                 update: {
-                                    name: `${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`
+                                    name: `${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`
                                 }
                             });
                         }
@@ -183,8 +183,8 @@ Hooks.on(
                         } else {
                             Utils.postInChat(
                                 actor,
-                                magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
-                                `${actor.name} uses ${magazineLoadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
+                                Utils.getFlag(magazineLoadedEffect, "ammunitionImg"),
+                                `${actor.name} uses ${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
                             );
                         }
 
@@ -198,8 +198,8 @@ Hooks.on(
                         } else {
                             Utils.postInChat(
                                 actor,
-                                loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionImg"),
-                                `${actor.name} uses ${loadedEffect.getFlag("pf2e-ranged-combat", "ammunitionName")}.`
+                                Utils.getFlag(loadedEffect, "ammunitionImg"),
+                                `${actor.name} uses ${Utils.getFlag(loadedEffect, "ammunitionName")}.`
                             );
                         }
 
