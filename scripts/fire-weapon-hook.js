@@ -136,11 +136,11 @@ Hooks.on(
                         const magazineCapacity = Utils.getFlag(magazineLoadedEffect, "capacity");
                         const magazineRemaining = Utils.getFlag(magazineLoadedEffect, "remaining") - 1;
 
-                        magazineLoadedEffect.setFlag("pf2e-ranged-combat", "remaining", magazineRemaining);
                         const magazineLoadedEffectName = Utils.getFlag(magazineLoadedEffect, "name");
                         updates.update(async () => {
                             await magazineLoadedEffect.update({
-                                "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`
+                                "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`,
+                                "flags.pf2e-ranged-combat.remaining": magazineRemaining
                             });
                         });
                         // Show floaty text with the new effect name
