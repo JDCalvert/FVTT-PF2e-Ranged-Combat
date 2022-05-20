@@ -45,7 +45,7 @@ export class Updates {
     }
 
     floatyText(text) {
-        this.floatyTextToShow.push(this.text);
+        this.floatyTextToShow.push(text);
     }
 
     hasChanges() {
@@ -69,7 +69,7 @@ export class Updates {
                         token.showFloatyText({ update: { name: text } });
                     }
                 },
-                i * 500
+                i * 300
             )
             i++;
         }

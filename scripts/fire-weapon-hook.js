@@ -64,7 +64,8 @@ Hooks.on(
                         }
 
                         if (weapon.capacity) {
-                            if (!Utils.getFlag(loadedEffect, "currentChamberLoaded")) {
+                            const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                            if (!chamberLoadedEffect) {
                                 Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
                                 return;
                             }
@@ -129,12 +130,8 @@ Hooks.on(
                     updates.remove(ammunitionEffect);
                 }
 
-                // Remove the loaded effect if the weapon requires reloading. It could have a loaded effect
-                // and not require reloading e.g. combination weapons
-                const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                if (loadedEffect && weapon.requiresLoading) {
-                    removeAmmunition(actor, loadedEffect, updates);
-                }
+                // Handle removing the ammunition from the weapon now that it's been fired
+                removeAmmunition(actor, weapon, updates);
 
                 // If the advanced ammunition system is not enabled, consume a piece of ammunition
                 if (Utils.useAdvancedAmmunitionSystem(actor)) {
@@ -178,6 +175,8 @@ Hooks.on(
 
                         createAmmunitionEffect(weapon, ammunition, updates);
                     } else if (weapon.requiresLoading) {
+                        const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+                        
                         const ammunitionItemId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"];
                         const ammunitionSourceId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
                         const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);

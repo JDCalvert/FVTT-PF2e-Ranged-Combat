@@ -177,9 +177,12 @@ export async function reload() {
                 }));
                 updates.floatyText(`${Utils.getFlag("name")} (${loadedChambers + 1}/${loadedCapacity})`);
 
-                const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
-                Utils.setEffectTarget(chamberLoadedSource, weapon);
-
+                const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                if (!chamberLoadedEffect) {
+                    const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+                    Utils.setEffectTarget(chamberLoadedSource, weapon);
+                    updates.add(chamberLoadedSource);
+                }
             } else {
                 const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
                 Utils.setEffectTarget(loadedEffectSource, weapon);
@@ -192,6 +195,10 @@ export async function reload() {
                     capacity: weapon.capacity,
                     currentChamberLoaded: true
                 };
+
+                const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+                Utils.setEffectTarget(chamberLoadedSource, weapon);
+                updates.add(chamberLoadedSource);
 
                 await postReloadToChat(token, weapon);
             }
@@ -240,10 +247,25 @@ export async function nextChamber() {
         return;
     }
 
-    if (Utils.getFlag(loadedEffect, "currentChamberLoaded")) {
-        Utils.showWarning(`${weapon.name}'s current chamber is loaded!`);
+    const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+    if (chamberLoadedEffect) {
+        Utils.showWarning(`${weapon.name} already has a loaded chamber selected!`);
         return;
     }
+
+    const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+    Utils.setEffectTarget(chamberLoadedSource, weapon);
+    updates.add(chamberLoadedSource);
+
+    await Utils.postInChat(
+        token.actor,
+        Utils.NEXT_CHAMBER_IMG,
+        `${token.name} selects the next loaded chamber on their ${weapon.name}.`,
+        "Interact",
+        1,
+    );
+
+    updates.handleUpdates();
 }
 
 /**
@@ -382,25 +404,39 @@ async function unloadAmmunition(actor, loadedEffect, updates) {
         updates.add(ammunitionSource);
     }
 
-    removeAmmunition(actor, loadedEffect, updates);
+    removeAmmunition(actor, loadedEffect, updates, false);
 }
 
-export function removeAmmunition(actor, loadedEffect, updates) {
-    const loadedCapacity = Utils.getFlag(loadedEffect, "capacity");
-    const loadedChambers = Utils.getFlag(loadedEffect, "loadedChambers") - 1;
+export function removeAmmunition(actor, weapon, updates, unloadChamber = true) {
+    // If the weapon doesn't require loading (e.g. the melee usage of a combination weapon) then
+    // we don't need to do anything
+    if (!weapon.requiresLoading) {
+        return;
+    }
 
-    if (loadedCapacity && loadedChambers > 0) {
-        updates.update(async () =>
-            await loadedEffect.update({
-                "name": `${Utils.getFlag(loadedEffect, "name")} (${loadedChambers}/${loadedCapacity})`,
-                "flags.pf2e-ranged-combat.loadedChambers": loadedChambers,
-                "flags.pf2e-ranged-combat.currentChamberLoaded": false
-            })
-        );
-        updates.floatyText(`${Utils.getFlag(loadedEffect, "ammunitionName")} ${loadedChambers}/${loadedCapacity}`);
-    } else {
-        updates.update(() => loadedEffect.update({ "name": Utils.getFlag(loadedEffect, "name") }));
-        updates.remove(loadedEffect);
+    const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+    if (loadedEffect) {
+        const loadedCapacity = Utils.getFlag(loadedEffect, "capacity");
+        const loadedChambers = Utils.getFlag(loadedEffect, "loadedChambers") - 1;
+
+        if (loadedCapacity && loadedChambers > 0) {
+            updates.update(async () =>
+                await loadedEffect.update({
+                    "name": `${Utils.getFlag(loadedEffect, "name")} (${loadedChambers}/${loadedCapacity})`,
+                    "flags.pf2e-ranged-combat.loadedChambers": loadedChambers,
+                })
+            );
+
+            updates.floatyText(`${Utils.getFlag(loadedEffect, "ammunitionName")} ${loadedChambers}/${loadedCapacity}`);
+        } else {
+            updates.update(() => loadedEffect.update({ "name": Utils.getFlag(loadedEffect, "name") }));
+            updates.remove(loadedEffect);
+        }
+
+        const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+        if (chamberLoadedEffect && (loadedChambers === 0 || unloadChamber)) {
+            updates.remove(chamberLoadedEffect);
+        }
     }
 }
 
