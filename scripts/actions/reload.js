@@ -68,7 +68,7 @@ export async function reload() {
 
             const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
 
-            if (weapon.capacity > 1) {
+            if (weapon.capacity) {
                 // If some chambers are already loaded, we only want to load with the same type of ammunition
                 if (loadedEffect) {
                     const loadedChambers = Utils.getFlag(loadedEffect, "loadedChambers");
@@ -105,7 +105,7 @@ export async function reload() {
                     Utils.setEffectTarget(loadedEffectSource, weapon);
 
                     const loadedEffectName = `${loadedEffectSource.name} (${ammo.name})`;
-                    
+
                     loadedEffectSource.name = `${loadedEffectName} (1/${weapon.capacity})`;
                     loadedEffectSource.flags["pf2e-ranged-combat"] = {
                         ...loadedEffectSource.flags["pf2e-ranged-combat"],
@@ -116,7 +116,7 @@ export async function reload() {
                         ammunitionSourceId: ammo.sourceId,
                         loadedChambers: 1,
                         capacity: weapon.capacity
-                    }
+                    };
 
                     await postReloadToChat(token, weapon, ammo.name);
                 }
@@ -159,23 +159,64 @@ export async function reload() {
     } else {
         // If the weapon is already loaded, we don't need to do it again
         const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-        if (loadedEffect) {
-            ui.notifications.warn(`${weapon.name} is already loaded.`);
-            return;
+
+        if (weapon.capacity) {
+            if (loadedEffect) {
+                const loadedChambers = Utils.getFlag("loadedChambers");
+                const loadedCapacity = Utils.getFlag("capacity");
+                
+                if (loadedChambers === loadedCapacity) {
+                    ui.notifications.warn(`${weapon.name} is fully loaded.`);
+                    return;
+                }
+
+                updates.update(() => loadedEffect.update({
+                    "name": `${Utils.getFlag("name")} (${loadedChambers + 1}/${loadedCapacity})`,
+                    "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
+                }));
+                updates.floatyText(`${Utils.getFlag("name")} (${loadedChambers + 1}/${loadedCapacity})`);
+            } else {
+                const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
+                Utils.setEffectTarget(loadedEffectSource, weapon);
+                updates.add(loadedEffectSource);
+
+                loadedEffectSource.flags["pf2e-ranged-combat"] = {
+                    ...loadedEffectSource.flags["pf2e-ranged-combat"],
+                    name: loadedEffectSource.name,
+                    loadedChambers: 1,
+                    capacity: weapon.capacity
+                }
+
+                await postReloadToChat(token, weapon);
+            }
+        } else {
+            if (loadedEffect) {
+                ui.notifications.warn(`${weapon.name} is already loaded.`);
+                return;
+            }
+    
+            // Create the new loaded effect
+            const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
+            Utils.setEffectTarget(loadedEffectSource, weapon);
+            updates.add(loadedEffectSource);
+    
+            await postReloadToChat(token, weapon);
         }
-
-        // Create the new loaded effect
-        const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
-        Utils.setEffectTarget(loadedEffectSource, weapon);
-        updates.add(loadedEffectSource);
-
-        await postReloadToChat(token, weapon);
     }
 
     await triggerCrossbowReloadEffects(actor, weapon, updates);
 
     await updates.handleUpdates();
 };
+
+export async function nextChamber() {
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
+        return;
+    }
+
+    
+}
 
 /**
  * Replace the magazine in a repeating weapon.
@@ -313,7 +354,25 @@ async function unloadAmmunition(actor, loadedEffect, updates) {
         updates.add(ammunitionSource);
     }
 
-    updates.remove(loadedEffect);
+    removeAmmunition(actor, loadedEffect, updates);
+}
+
+export function removeAmmunition(actor, loadedEffect, updates) {
+    const loadedCapacity = Utils.getFlag(loadedEffect, "capacity");
+    const loadedChambers = Utils.getFlag(loadedEffect, "loadedChambers") - 1;
+
+    if (loadedCapacity && loadedChambers > 0) {
+        updates.update(async () =>
+            await loadedEffect.update({
+                "name": `${Utils.getFlag(loadedEffect, "name")} (${loadedChambers}/${loadedCapacity})`,
+                "flags.pf2e-ranged-combat.loadedChambers": loadedChambers
+            })
+        );
+        updates.floatyText(`${Utils.getFlag(loadedEffect, "ammunitionName")} ${loadedChambers}/${loadedCapacity}`);
+    } else {
+        updates.update(() => loadedEffect.update({ "name": Utils.getFlag(loadedEffect, "name") }));
+        updates.remove(loadedEffect);
+    }
 }
 
 /**

@@ -28,6 +28,7 @@ export class Updates {
         this.itemsToAdd = [];
         this.itemsToRemove = [];
         this.itemsToUpdate = [];
+        this.floatyTextToShow = [];
     }
 
     add(item) {
@@ -42,6 +43,10 @@ export class Updates {
         this.itemsToUpdate.push(update);
     }
 
+    floatyText(text) {
+        this.floatyTextToShow.push(this.text);
+    }
+
     hasChanges() {
         return this.itemsToAdd.length || this.itemsToUpdate.length || this.itemsToRemove.length;
     }
@@ -53,6 +58,20 @@ export class Updates {
 
         await this.actor.deleteEmbeddedDocuments("Item", this.itemsToRemove.map(item => item.id));
         await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
+
+        let i = 0;
+        for (const text of this.floatyTextToShow) {
+            const tokens = this.actor.getActiveTokens();
+            setTimeout(
+                () => {
+                    for (const token of tokens) {
+                        token.showFloatyText({ update: { name: text } });
+                    }
+                },
+                i * 500
+            )
+            i++;
+        }
     }
 }
 

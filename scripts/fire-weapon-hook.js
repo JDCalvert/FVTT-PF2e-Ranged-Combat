@@ -1,6 +1,7 @@
 import * as Utils from "./utils/utils.js";
 import * as WeaponUtils from "./utils/weapon-utils.js";
 import { handleWeaponFired as alchemicalCrossbowHandleFired } from "./actions/alchemical-crossbow.js";
+import { removeAmmunition } from "./actions/reload.js";
 
 Hooks.on(
     "ready",
@@ -125,27 +126,7 @@ Hooks.on(
                 // and not require reloading e.g. combination weapons
                 const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
                 if (loadedEffect && weapon.requiresLoading) {
-                    const loadedCapacity = Utils.getFlag(loadedEffect, "capacity");
-                    const loadedChambers = Utils.getFlag(loadedEffect, "loadedChambers");
-
-                    if (loadedCapacity > 1 && loadedChambers > 1) {
-                        updates.update(async () =>
-                            await loadedEffect.update({
-                                "flags.pf2e-ranged-combat.loadedChambers": loadedChambers - 1
-                            })
-                        );
-                        // Show floaty text with the new effect name
-                        const tokens = actor.getActiveTokens();
-                        for (const token of tokens) {
-                            token.showFloatyText({
-                                update: {
-                                    name: `${Utils.getFlag(loadedEffect, "ammunitionName")} ${loadedChambers - 1}/${loadedCapacity}`
-                                }
-                            });
-                        }
-                    } else {
-                        updates.remove(loadedEffect);
-                    }
+                    removeAmmunition(actor, loadedEffect, updates);
                 }
 
                 // If the advanced ammunition system is not enabled, consume a piece of ammunition
