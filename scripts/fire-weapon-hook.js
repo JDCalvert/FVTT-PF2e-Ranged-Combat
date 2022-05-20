@@ -62,6 +62,13 @@ Hooks.on(
                             Utils.showWarning(`${weapon.name} is not loaded!`);
                             return;
                         }
+
+                        if (weapon.capacity) {
+                            if (!Utils.getFlag(loadedEffect, "currentChamberLoaded")) {
+                                Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
+                                return;
+                            }
+                        }
                     }
 
                     // For non-repeating weapons that don't require loading, we need to have enough

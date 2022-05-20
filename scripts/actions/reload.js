@@ -115,7 +115,8 @@ export async function reload() {
                         ammunitionItemId: ammo.id,
                         ammunitionSourceId: ammo.sourceId,
                         loadedChambers: 1,
-                        capacity: weapon.capacity
+                        capacity: weapon.capacity,
+                        currentChamberLoaded: true
                     };
 
                     await postReloadToChat(token, weapon, ammo.name);
@@ -164,7 +165,7 @@ export async function reload() {
             if (loadedEffect) {
                 const loadedChambers = Utils.getFlag("loadedChambers");
                 const loadedCapacity = Utils.getFlag("capacity");
-                
+
                 if (loadedChambers === loadedCapacity) {
                     ui.notifications.warn(`${weapon.name} is fully loaded.`);
                     return;
@@ -175,6 +176,10 @@ export async function reload() {
                     "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
                 }));
                 updates.floatyText(`${Utils.getFlag("name")} (${loadedChambers + 1}/${loadedCapacity})`);
+
+                const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+                Utils.setEffectTarget(chamberLoadedSource, weapon);
+
             } else {
                 const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
                 Utils.setEffectTarget(loadedEffectSource, weapon);
@@ -184,8 +189,9 @@ export async function reload() {
                     ...loadedEffectSource.flags["pf2e-ranged-combat"],
                     name: loadedEffectSource.name,
                     loadedChambers: 1,
-                    capacity: weapon.capacity
-                }
+                    capacity: weapon.capacity,
+                    currentChamberLoaded: true
+                };
 
                 await postReloadToChat(token, weapon);
             }
@@ -194,12 +200,12 @@ export async function reload() {
                 ui.notifications.warn(`${weapon.name} is already loaded.`);
                 return;
             }
-    
+
             // Create the new loaded effect
             const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
             Utils.setEffectTarget(loadedEffectSource, weapon);
             updates.add(loadedEffectSource);
-    
+
             await postReloadToChat(token, weapon);
         }
     }
@@ -215,7 +221,29 @@ export async function nextChamber() {
         return;
     }
 
-    
+    const weapon = await WeaponUtils.getSingleWeapon(
+        getCapacityWeapons(actor),
+        weapon => {
+            const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+            return loadedEffect && !Utils.getFlag(loadedEffect, "currentChamberLoaded");
+        }
+    );
+    if (!weapon) {
+        return;
+    }
+
+    const updates = new Updates(actor);
+
+    const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+    if (!loadedEffect) {
+        Utils.showWarning(`${weapon.name} is not loaded!`);
+        return;
+    }
+
+    if (Utils.getFlag(loadedEffect, "currentChamberLoaded")) {
+        Utils.showWarning(`${weapon.name}'s current chamber is loaded!`);
+        return;
+    }
 }
 
 /**
@@ -365,7 +393,8 @@ export function removeAmmunition(actor, loadedEffect, updates) {
         updates.update(async () =>
             await loadedEffect.update({
                 "name": `${Utils.getFlag(loadedEffect, "name")} (${loadedChambers}/${loadedCapacity})`,
-                "flags.pf2e-ranged-combat.loadedChambers": loadedChambers
+                "flags.pf2e-ranged-combat.loadedChambers": loadedChambers,
+                "flags.pf2e-ranged-combat.currentChamberLoaded": false
             })
         );
         updates.floatyText(`${Utils.getFlag(loadedEffect, "ammunitionName")} ${loadedChambers}/${loadedCapacity}`);
@@ -624,6 +653,10 @@ async function getLoadedWeapon(actor) {
 
 function getReloadableWeapons(actor) {
     return WeaponUtils.getWeapons(actor, weapon => weapon.requiresLoading, "You have no reloadable weapons.");
+}
+
+function getCapacityWeapons(actor) {
+    return WeaponUtils.getWeapons(actor, weapon => weapon.capacity, "You have no weapons with the capacity trait.");
 }
 
 async function postReloadToChat(token, weapon, ammunitionName) {
