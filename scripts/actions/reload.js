@@ -259,7 +259,7 @@ export async function nextChamber() {
 
     await Utils.postInChat(
         token.actor,
-        Utils.NEXT_CHAMBER_IMG,
+        Utils.SELECT_NEXT_CHAMBER_IMG,
         `${token.name} selects the next loaded chamber on their ${weapon.name}.`,
         "Interact",
         1,

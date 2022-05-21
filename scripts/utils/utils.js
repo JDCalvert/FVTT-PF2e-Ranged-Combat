@@ -22,6 +22,7 @@ export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammu
 export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazine.webp";
 export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
 export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
+export const SELECT_NEXT_CHAMBER_IMG = "modules/pf2e-ranged-combat/art/select-next-chamber.webp";
 
 export class Updates {
     constructor(actor) {
