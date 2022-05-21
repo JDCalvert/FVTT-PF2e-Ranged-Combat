@@ -191,16 +191,7 @@ export async function handleWeaponFired(actor, weapon, updates) {
             );
         }
         updates.update(() => loadedBombEffect.update(update));
-
-        // Show floaty text with the new effect name
-        const tokens = actor.getActiveTokens();
-        for (const token of tokens) {
-            token.showFloatyText({
-                update: {
-                    name: `${flags.effectName} (${flags.bombCharges - 1}/${flags.bombMaxCharges})`
-                }
-            });
-        }
+        updates.floatyText(`${flags.effectName} (${flags.bombCharges - 1}/${flags.bombMaxCharges})`, false);
     }
 }
 

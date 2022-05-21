@@ -95,9 +95,17 @@ Hooks.on(
 
                     // If the weapon requires loading and Prevent Fire if not Reloaded is enabled, check that is has been loaded
                     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                    if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading && !loadedEffect) {
-                        Utils.showWarning(`${weapon.name} is not loaded!`);
-                        return;
+                    if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded")) {
+                        if (weapon.requiresLoading && !loadedEffect) {
+                            Utils.showWarning(`${weapon.name} is not loaded!`);
+                            return;
+                        }
+
+                        const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                        if (weapon.capacity && !chamberLoadedEffect) {
+                            Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
+                            return;
+                        }
                     }
                 }
 
@@ -148,15 +156,7 @@ Hooks.on(
                                 "flags.pf2e-ranged-combat.remaining": magazineRemaining
                             });
                         });
-                        // Show floaty text with the new effect name
-                        const tokens = actor.getActiveTokens();
-                        for (const token of tokens) {
-                            token.showFloatyText({
-                                update: {
-                                    name: `${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`
-                                }
-                            });
-                        }
+                        updates.floatyText(`${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`, false);
 
                         // Post in chat saying some ammunition was used
                         const ammunitionItemId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"];
@@ -176,7 +176,7 @@ Hooks.on(
                         createAmmunitionEffect(weapon, ammunition, updates);
                     } else if (weapon.requiresLoading) {
                         const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                        
+
                         const ammunitionItemId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"];
                         const ammunitionSourceId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
                         const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
@@ -209,6 +209,13 @@ Hooks.on(
                     }
                 } else {
                     weapon.ammunition?.consume();
+
+                    if (weapon.capacity) {
+                        const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                        if (chamberLoadedEffect) {
+                            updates.remove(chamberLoadedEffect);
+                        }
+                    }
                 }
 
                 await updates.handleUpdates();

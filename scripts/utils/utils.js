@@ -45,8 +45,8 @@ export class Updates {
         this.itemsToUpdate.push(update);
     }
 
-    floatyText(text) {
-        this.floatyTextToShow.push(text);
+    floatyText(text, up) {
+        this.floatyTextToShow.push({ text, up });
     }
 
     hasChanges() {
@@ -62,16 +62,18 @@ export class Updates {
         await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
 
         let i = 0;
-        for (const text of this.floatyTextToShow) {
+        for (const floatyText of this.floatyTextToShow) {
             const tokens = this.actor.getActiveTokens();
             setTimeout(
                 () => {
                     for (const token of tokens) {
-                        token.showFloatyText({ update: { name: text } });
+                        floatyText.up
+                            ? token.showFloatyText({ create: { name: floatyText.text } })
+                            : token.showFloatyText({ upadte: { name: floatyText.text } });
                     }
                 },
                 i * 300
-            )
+            );
             i++;
         }
     }
