@@ -15,7 +15,12 @@ When you have a reloadable weapon (e.g. reload 1 or higher), you can use the <b>
 
 You can also use the <b>Reload All</b> macro to reload all of your reloadable weapons at once. This is intended to be used outside of combat and so doesn't apply the <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> feat effects.
 
-If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> in the macro settings, then you <i>must</i> reload weapons before you can fire them.
+If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> in the module settings, then you <i>must</i> reload weapons before you can fire them.
+
+#### Capacity <small>(e.g. [Pepperbox](https://2e.aonprd.com/Weapons.aspx?ID=205))</small>
+Weapons with the capacity trait can be loaded and fired much like other reloadable weapons, however they can be loaded with more than one piece of ammunition, up to their capacity. After firing a capacity weapon, you can use the <b>Next Chamber</b> macro to switch to a loaded chamber, or the <b>Reload</b> macro to load another piece of ammunition. Both of these options will add the <b>Chamber Loaded</b> effect.
+
+If <b>Prevent Firing Weapon if not Loaded</b> is enabled, then you must also have the <b>Chamber Loaded</b> effect to fire a capacity weapon.
 
 #### Effects
 The <b>Loaded</b> effect targets a specific weapon and serves as a reminder that the weapon is loaded. This effect is removed if the weapon is fired and, optionally, the weapon cannot be fired if it isn't loaded.
