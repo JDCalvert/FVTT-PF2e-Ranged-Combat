@@ -17,10 +17,10 @@ You can also use the <b>Reload All</b> macro to reload all of your reloadable we
 
 If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> in the module settings, then you <i>must</i> reload weapons before you can fire them.
 
-#### Capacity <small>(e.g. [Pepperbox](https://2e.aonprd.com/Weapons.aspx?ID=205))</small>
-Weapons with the capacity trait can be loaded and fired much like other reloadable weapons, however they can be loaded with more than one piece of ammunition, up to their capacity. After firing a capacity weapon, you can use the <b>Next Chamber</b> macro to switch to a loaded chamber, or the <b>Reload</b> macro to load another piece of ammunition. Both of these options will add the <b>Chamber Loaded</b> effect.
+#### Capacity and Double Barrel <small>(e.g. [Pepperbox](https://2e.aonprd.com/Weapons.aspx?ID=205) and [Double-Barreled Musket](https://2e.aonprd.com/Weapons.aspx?ID=198))</small>
+Weapons with the capacity or double barrel trait can be loaded and fired much like other reloadable weapons, but they can be loaded with more than one round, up to their capacity (2 for double barrel).
 
-If <b>Prevent Firing Weapon if not Loaded</b> is enabled, then you must also have the <b>Chamber Loaded</b> effect to fire a capacity weapon.
+If <b>Prevent Firing Weapon if not Loaded</b> is enabled, then you must also have the <b>Chamber Loaded</b> effect to fire a capacity weapon. You can use either the <b>Next Chamber</b> macro to switch to a loaded chamber (if the weapon is already loaded with at least one round) or the <b>Reload</b> macro to load a new round. You can fire a double barrel weapon as long as at least one barrel is loaded.
 
 #### Effects
 The <b>Loaded</b> effect targets a specific weapon and serves as a reminder that the weapon is loaded. This effect is removed if the weapon is fired and, optionally, the weapon cannot be fired if it isn't loaded.

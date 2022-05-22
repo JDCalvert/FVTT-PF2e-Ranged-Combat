@@ -63,7 +63,7 @@ Hooks.on(
                             return;
                         }
 
-                        if (weapon.capacity) {
+                        if (weapon.isCapacity) {
                             const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
                             if (!chamberLoadedEffect) {
                                 Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
@@ -102,7 +102,7 @@ Hooks.on(
                         }
 
                         const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                        if (weapon.capacity && !chamberLoadedEffect) {
+                        if (weapon.isCapacity && !chamberLoadedEffect) {
                             Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
                             return;
                         }
@@ -125,7 +125,7 @@ Hooks.on(
                 for (const effectId of [Utils.CROSSBOW_ACE_EFFECT_ID, Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
                     const effect = Utils.getEffectFromActor(actor, effectId, weapon.id);
                     if (effect) {
-                        if (effect.data.flags["pf2e-ranged-combat"].fired) {
+                        if (Utils.getFlag(effect, "fired")) {
                             updates.remove(effect);
                         } else {
                             updates.update(() => effect.update({ "flags.pf2e-ranged-combat.fired": true }));
@@ -159,8 +159,8 @@ Hooks.on(
                         updates.floatyText(`${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`, false);
 
                         // Post in chat saying some ammunition was used
-                        const ammunitionItemId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"];
-                        const ammunitionSourceId = magazineLoadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
+                        const ammunitionItemId = Utils.getFlag(magazineLoadedEffect, "ammunitionItemId");
+                        const ammunitionSourceId = Utils.getFlag(magazineLoadedEffect, "ammunitionSourceId");
                         const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
 
                         if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
@@ -177,8 +177,8 @@ Hooks.on(
                     } else if (weapon.requiresLoading) {
                         const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
 
-                        const ammunitionItemId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionItemId"];
-                        const ammunitionSourceId = loadedEffect.data.flags["pf2e-ranged-combat"]["ammunitionSourceId"];
+                        const ammunitionItemId = Utils.getFlag(loadedEffect, "ammunitionItemId");
+                        const ammunitionSourceId = Utils.getFlag(loadedEffect, "ammunitionSourceId");
                         const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
                         if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
                             ammunition.toMessage();
@@ -210,11 +210,9 @@ Hooks.on(
                 } else {
                     weapon.ammunition?.consume();
 
-                    if (weapon.capacity) {
-                        const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                        if (chamberLoadedEffect) {
-                            updates.remove(chamberLoadedEffect);
-                        }
+                    const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                    if (chamberLoadedEffect) {
+                        updates.remove(chamberLoadedEffect);
                     }
                 }
 

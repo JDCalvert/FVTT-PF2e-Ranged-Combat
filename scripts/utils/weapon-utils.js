@@ -84,6 +84,8 @@ function characterWeaponTransform(weapon) {
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
         capacity: getCapacity(weapon),
+        isDoubleBarrel: isDoubleBarrel(weapon),
+        isCapacity: isCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
@@ -106,6 +108,8 @@ function npcWeaponTransform(weapon) {
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
         capacity: getCapacity(weapon),
+        isDoubleBarrel: isDoubleBarrel(weapon),
+        isCapacity: isCapacity(weapon),
         isEquipped: true,
         isStowed: false,
         isCrossbow: false
@@ -114,10 +118,22 @@ function npcWeaponTransform(weapon) {
 
 function getCapacity(weapon) {
     const match = weapon.data.data.traits.value
-        .map(trait => trait.match(/capacity-(\d*)/))
+        .map(trait => trait.match(/capacity-(\d+)/))
         .find(match => !!match);
 
-    return match ? Number(match[1]) : null;
+    return match
+        ? Number(match[1])
+        : isDoubleBarrel(weapon)
+            ? 2
+            : null;
+}
+
+function isDoubleBarrel(weapon) {
+    return weapon.traits.has("double-barrel");
+}
+
+function isCapacity(weapon) {
+    return weapon.data.data.traits.value.some(trait => !!trait.match(/capacity-\d+/));
 }
 
 /**
