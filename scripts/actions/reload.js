@@ -88,7 +88,7 @@ export async function reload() {
                     updates.update(async () => {
                         await loadedEffect.update({
                             "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1,
-                            "name": `${Utils.getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${weapon.capacity})`
+                            "name": `${Utils.getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`
                         });
                     });
                     updates.floatyText(`${Utils.getFlag(loadedEffect, "name")} ${loadedChambers + 1}/${loadedCapacity}`, true);
@@ -115,12 +115,14 @@ export async function reload() {
                     };
                 }
 
-                // If the selected chamber isn't loaded, assume the chamber being loaded is the selected one
-                const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                if (!chamberLoadedEffect) {
-                    const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
-                    Utils.setEffectTarget(chamberLoadedSource, weapon);
-                    updates.add(chamberLoadedSource);
+                if (weapon.isCapacity) {
+                    // If the selected chamber isn't loaded, assume the chamber being loaded is the selected one
+                    const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                    if (!chamberLoadedEffect) {
+                        const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+                        Utils.setEffectTarget(chamberLoadedSource, weapon);
+                        updates.add(chamberLoadedSource);
+                    }
                 }
 
                 await postReloadToChat(token, weapon, ammo.name);
@@ -180,11 +182,13 @@ export async function reload() {
                 }));
                 updates.floatyText(`${Utils.getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`, true);
 
-                const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                if (!chamberLoadedEffect) {
-                    const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
-                    Utils.setEffectTarget(chamberLoadedSource, weapon);
-                    updates.add(chamberLoadedSource);
+                if (weapon.isCapacity) {
+                    const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+                    if (!chamberLoadedEffect) {
+                        const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+                        Utils.setEffectTarget(chamberLoadedSource, weapon);
+                        updates.add(chamberLoadedSource);
+                    }
                 }
             } else {
                 const loadedEffectSource = await Utils.getItem(Utils.LOADED_EFFECT_ID);
@@ -201,9 +205,11 @@ export async function reload() {
                     currentChamberLoaded: true
                 };
 
-                const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
-                Utils.setEffectTarget(chamberLoadedSource, weapon);
-                updates.add(chamberLoadedSource);
+                if (weapon.isCapacity) {
+                    const chamberLoadedSource = await Utils.getItem(Utils.CHAMBER_LOADED_EFFECT_ID);
+                    Utils.setEffectTarget(chamberLoadedSource, weapon);
+                    updates.add(chamberLoadedSource);
+                }
             }
         } else {
             if (loadedEffect) {
@@ -234,7 +240,8 @@ export async function nextChamber() {
         getCapacityWeapons(actor),
         weapon => {
             const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-            return loadedEffect && !Utils.getFlag(loadedEffect, "currentChamberLoaded");
+            const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+            return loadedEffect && !chamberLoadedEffect;
         }
     );
     if (!weapon) {
@@ -703,7 +710,7 @@ function getReloadableWeapons(actor) {
 }
 
 function getCapacityWeapons(actor) {
-    return WeaponUtils.getWeapons(actor, weapon => weapon.capacity, "You have no weapons with the capacity trait.");
+    return WeaponUtils.getWeapons(actor, weapon => weapon.isCapacity, "You have no weapons with the capacity trait.");
 }
 
 async function postReloadToChat(token, weapon, ammunitionName) {
