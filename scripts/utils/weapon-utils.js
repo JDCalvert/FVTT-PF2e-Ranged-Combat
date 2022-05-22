@@ -43,11 +43,11 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
         weapons = actor.itemTypes.weapon
             .map(characterWeaponTransform)
             .filter(weapon => !weapon.isStowed)
-            .filter(predicate)
+            .filter(predicate);
     } else if (actor.type === "npc") {
         weapons = actor.itemTypes.melee
             .map(npcWeaponTransform)
-            .filter(predicate)
+            .filter(predicate);
     } else {
         weapons = [];
     }
@@ -83,6 +83,7 @@ function characterWeaponTransform(weapon) {
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
+        capacity: getCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
         isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
@@ -104,10 +105,19 @@ function npcWeaponTransform(weapon) {
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
         isRepeating: isRepeating(weapon),
+        capacity: getCapacity(weapon),
         isEquipped: true,
         isStowed: false,
         isCrossbow: false
     };
+}
+
+function getCapacity(weapon) {
+    const match = weapon.data.data.traits.value
+        .map(trait => trait.match(/capacity-(\d*)/))
+        .find(match => !!match);
+
+    return match ? Number(match[1]) : null;
 }
 
 /**

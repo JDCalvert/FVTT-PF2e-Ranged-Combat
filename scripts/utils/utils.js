@@ -2,6 +2,7 @@
 export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
 export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
 export const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zVcsgX5KduyfBXRZ";
+export const CHAMBER_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.3KT0VeuCOTy5K0lS";
 
 // Hunt Prey
 export const HUNT_PREY_FEATURE_ID = "Compendium.pf2e.classfeatures.0nIOGpHQNHsKSFKT";
@@ -21,6 +22,7 @@ export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammu
 export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazine.webp";
 export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
 export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
+export const SELECT_NEXT_CHAMBER_IMG = "modules/pf2e-ranged-combat/art/select-next-chamber.webp";
 
 export class Updates {
     constructor(actor) {
@@ -28,6 +30,7 @@ export class Updates {
         this.itemsToAdd = [];
         this.itemsToRemove = [];
         this.itemsToUpdate = [];
+        this.floatyTextToShow = [];
     }
 
     add(item) {
@@ -42,6 +45,10 @@ export class Updates {
         this.itemsToUpdate.push(update);
     }
 
+    floatyText(text, up) {
+        this.floatyTextToShow.push({ text, up });
+    }
+
     hasChanges() {
         return this.itemsToAdd.length || this.itemsToUpdate.length || this.itemsToRemove.length;
     }
@@ -53,6 +60,22 @@ export class Updates {
 
         await this.actor.deleteEmbeddedDocuments("Item", this.itemsToRemove.map(item => item.id));
         await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
+
+        let i = 0;
+        for (const floatyText of this.floatyTextToShow) {
+            const tokens = this.actor.getActiveTokens();
+            setTimeout(
+                () => {
+                    for (const token of tokens) {
+                        floatyText.up
+                            ? token.showFloatyText({ create: { name: floatyText.text } })
+                            : token.showFloatyText({ upadte: { name: floatyText.text } });
+                    }
+                },
+                i * 300
+            );
+            i++;
+        }
     }
 }
 
@@ -167,7 +190,7 @@ export function setEffectTarget(effect, item, adjustName = true) {
 
     // Remove the "effect target" rule so we skip the popup
     const rules = effect.data.rules;
-    rules.splice(rules.findIndex(rule => rule.key === "EffectTarget"), 1);
+    rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet"), 1);
 }
 
 export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
