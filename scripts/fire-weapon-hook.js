@@ -1,7 +1,7 @@
 import * as Utils from "./utils/utils.js";
 import * as WeaponUtils from "./utils/weapon-utils.js";
 import { handleWeaponFired as alchemicalCrossbowHandleFired } from "./actions/alchemical-crossbow.js";
-import { removeAmmunition } from "./actions/reload.js";
+import { fireWeapon } from "./actions/reload.js";
 
 Hooks.on(
     "ready",
@@ -58,7 +58,8 @@ Hooks.on(
                     // If the weapon requires reloading, check that it has been loaded
                     if (weapon.requiresLoading) {
                         const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                        if (!loadedEffect) {
+                        const conjuredRoundEffect = Utils.getEffectFromActor(actor, Utils.CONJURED_ROUND_EFFECT_ID, weapon.id);
+                        if (!(loadedEffect || conjuredRoundEffect)) {
                             Utils.showWarning(`${weapon.name} is not loaded!`);
                             return;
                         }
@@ -95,8 +96,9 @@ Hooks.on(
 
                     // If the weapon requires loading and Prevent Fire if not Reloaded is enabled, check that is has been loaded
                     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+                    const conjuredRoundEffect = Utils.getEffectFromActor(actor, Utils.CONJURED_ROUND_EFFECT_ID, weapon.id);
                     if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded")) {
-                        if (weapon.requiresLoading && !loadedEffect) {
+                        if (weapon.requiresLoading && !(loadedEffect || conjuredRoundEffect)) {
                             Utils.showWarning(`${weapon.name} is not loaded!`);
                             return;
                         }
@@ -139,7 +141,7 @@ Hooks.on(
                 }
 
                 // Handle removing the ammunition from the weapon now that it's been fired
-                removeAmmunition(actor, weapon, updates);
+                fireWeapon(actor, weapon, updates);
 
                 // If the advanced ammunition system is not enabled, consume a piece of ammunition
                 if (Utils.useAdvancedAmmunitionSystem(actor)) {
@@ -175,22 +177,26 @@ Hooks.on(
 
                         createAmmunitionEffect(weapon, ammunition, updates);
                     } else if (weapon.requiresLoading) {
-                        const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-
-                        const ammunitionItemId = Utils.getFlag(loadedEffect, "ammunitionItemId");
-                        const ammunitionSourceId = Utils.getFlag(loadedEffect, "ammunitionSourceId");
-                        const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
-                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
-                            ammunition.toMessage();
+                        const conjuredRoundEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+                        if (conjuredRoundEffect) {
+                            Utils.postInChat(actor, Utils.CONJURED_ROUND_IMG, `${actor.name} fires their conjured round.`);
                         } else {
-                            Utils.postInChat(
-                                actor,
-                                Utils.getFlag(loadedEffect, "ammunitionImg"),
-                                `${actor.name} uses ${Utils.getFlag(loadedEffect, "ammunitionName")}.`
-                            );
-                        }
+                            const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+                            const ammunitionItemId = Utils.getFlag(loadedEffect, "ammunitionItemId");
+                            const ammunitionSourceId = Utils.getFlag(loadedEffect, "ammunitionSourceId");
+                            const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
+                            if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
+                                ammunition.toMessage();
+                            } else {
+                                Utils.postInChat(
+                                    actor,
+                                    Utils.getFlag(loadedEffect, "ammunitionImg"),
+                                    `${actor.name} uses ${Utils.getFlag(loadedEffect, "ammunitionName")}.`
+                                );
+                            }
 
-                        createAmmunitionEffect(weapon, ammunition, updates);
+                            createAmmunitionEffect(weapon, ammunition, updates);
+                        }
                     } else if (weapon.usesAmmunition) {
                         const ammunition = weapon.ammunition;
                         updates.update(async () => {
@@ -208,7 +214,10 @@ Hooks.on(
                         createAmmunitionEffect(weapon, ammunition, updates);
                     }
                 } else {
-                    weapon.ammunition?.consume();
+                    const conjuredRoundEffect = Utils.getEffectFromActor(actor, Utils.CONJURED_ROUND_EFFECT_ID, weapon.id);
+                    if (!conjuredRoundEffect) {
+                        weapon.ammunition?.consume();
+                    }
 
                     const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
                     if (chamberLoadedEffect) {

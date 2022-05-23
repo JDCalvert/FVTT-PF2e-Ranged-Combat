@@ -1,4 +1,4 @@
-import { reload, unload, nextChamber, reloadMagazine, reloadAll, consolidateRepeatingWeaponAmmunition } from "./actions/reload.js";
+import { reload, unload, nextChamber, reloadMagazine, reloadAll, consolidateRepeatingWeaponAmmunition, conjureBullet } from "./actions/reload.js";
 import { huntPrey } from "./actions/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 
@@ -93,6 +93,7 @@ Hooks.on(
             reload,
             unload,
             nextChamber,
+            conjureBullet,
             reloadMagazine,
             reloadAll,
             consolidateRepeatingWeaponAmmunition,

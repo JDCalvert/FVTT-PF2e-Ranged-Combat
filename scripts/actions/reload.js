@@ -255,11 +255,35 @@ export async function conjureBullet() {
         return;
     }
 
+    // We can't conjure a bullet if the weapon is already (fully) loaded
     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
     if (loadedEffect) {
-        if (weapon.capacity && Utils.getFlag(loadedEffect, "loadedChambers") >= Utils.getFlag(loadedEffect, "capacity")) {
+        if (weapon.capacity) {
+            if (Utils.getFlag(loadedEffect, "loadedChambers") === Utils.getFlag(loadedEffect, "capacity")) {
+                ui.notifications.warn(`${weapon.name} is already fully loaded.`);
+                return;
+            }
+        } else {
+            ui.notifications.warn(`${weapon.name} is already loaded.`);
+            return;
         }
     }
+
+    const updates = new Updates(actor);
+
+    const conjuredRound = Utils.getItem(Utils.CONJURED_ROUND_EFFECT_ID);
+    Utils.setEffectTarget(conjuredRound, weapon);
+    updates.add(conjuredRound);
+
+    await Utils.postInChat(
+        token.actor,
+        Utils.CONJURED_ROUND_IMG,
+        `${token.name} uses Conjure Bullet to load their ${weapon.name}.`,
+        "Conjure Bullet",
+        1,
+    );
+
+    updates.handleUpdates();
 }
 
 export async function nextChamber() {
@@ -449,13 +473,27 @@ async function unloadAmmunition(actor, weapon, updates) {
     removeAmmunition(actor, weapon, updates);
 }
 
-export function removeAmmunition(actor, weapon, updates) {
+export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't require loading (e.g. the melee usage of a combination weapon) then
     // we don't need to do anything
     if (!weapon.requiresLoading) {
         return;
     }
 
+    const conjuredRoundEffect = Utils.getEffectFromActor(actor, Utils.CONJURED_ROUND_EFFECT_ID, weapon);
+    if (conjuredRoundEffect) {
+        updates.remove(conjuredRoundEffect);
+
+        const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
+        if (chamberLoadedEffect) {
+            updates.remove(chamberLoadedEffect);
+        }
+    } else {
+        removeAmmunition(actor, weapon, updates);
+    }
+}
+
+export function removeAmmunition(actor, weapon, updates) {
     const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
     if (!loadedEffect) {
         return;
