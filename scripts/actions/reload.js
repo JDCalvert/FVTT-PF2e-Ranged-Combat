@@ -230,6 +230,38 @@ export async function reload() {
     await updates.handleUpdates();
 };
 
+export async function conjureBullet() {
+    const { actor, token } = Utils.getControlledActorAndToken();
+    if (!actor) {
+        return;
+    }
+
+    const weapon = await WeaponUtils.getSingleWeapon(
+        WeaponUtils.getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, "You have no reloadable weapons."),
+        weapon => {
+            const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+            if (!loadedEffect) {
+                return true;
+            }
+            if (weapon.capacity) {
+                const loadedCapacity = Utils.getFlag(loadedEffect, "capacity");
+                const loadedChambers = Utils.getFlag(loadedEffect, "loadedChambers");
+                return loadedChambers < loadedCapacity;
+            }
+            return false;
+        }
+    );
+    if (!weapon) {
+        return;
+    }
+
+    const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
+    if (loadedEffect) {
+        if (weapon.capacity && Utils.getFlag(loadedEffect, "loadedChambers") >= Utils.getFlag(loadedEffect, "capacity")) {
+        }
+    }
+}
+
 export async function nextChamber() {
     const { actor, token } = Utils.getControlledActorAndToken();
     if (!actor) {
