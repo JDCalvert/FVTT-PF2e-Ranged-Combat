@@ -1,14 +1,3 @@
-// Ammunition System
-export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
-export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
-export const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zVcsgX5KduyfBXRZ";
-export const CHAMBER_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.3KT0VeuCOTy5K0lS";
-
-// Hunt Prey
-export const HUNT_PREY_FEATURE_ID = "Compendium.pf2e.classfeatures.0nIOGpHQNHsKSFKT";
-export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
-export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
-
 // Crossbow Ace
 export const CROSSBOW_ACE_FEAT_ID = "Compendium.pf2e.feats-srd.CpjN7v1QN8TQFcvI";
 export const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zP0vPd14V5OG9ZFv";
@@ -16,13 +5,6 @@ export const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zP0
 // Crossbow Crack Shot
 export const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3gecLk6";
 export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
-
-// Images
-export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammunition.webp";
-export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazine.webp";
-export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
-export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
-export const SELECT_NEXT_CHAMBER_IMG = "modules/pf2e-ranged-combat/art/select-next-chamber.webp";
 
 export class Updates {
     constructor(actor) {
@@ -58,7 +40,7 @@ export class Updates {
             await update();
         }
 
-        await this.actor.deleteEmbeddedDocuments("Item", this.itemsToRemove.map(item => item.id));
+        await this.actor.deleteEmbeddedDocuments("Item", [...new Set(this.itemsToRemove)].map(item => item.id));
         await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
 
         let i = 0;
@@ -129,13 +111,6 @@ export function getTarget(notifyNoToken = true) {
 }
 
 /**
- * Find whether the actor has the specified item
- */
-export function actorHasItem(actor, sourceId) {
-    return actor.items.some(item => item.getFlag("core", "sourceId") === sourceId);
-}
-
-/**
  * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
  * with the same source ID if one cannot be found
  */
@@ -147,14 +122,8 @@ export function findItemOnActor(actor, itemId, sourceId) {
 /**
  * Get a specific item from the actor, identified by its source ID. Optionally, add it if not already present
  */
-export async function getItemFromActor(actor, sourceId, addIfNotPresent = false) {
-    let item = actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
-    if (!item && addIfNotPresent) {
-        const newItem = await getItem(sourceId);
-        await actor.createEmbeddedDocuments("Item", [newItem]);
-        item = await getItemFromActor(actor, sourceId);
-    }
-    return item;
+export function getItemFromActor(actor, sourceId) {
+    return actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
 }
 
 /**
@@ -187,10 +156,13 @@ export function setEffectTarget(effect, item, adjustName = true) {
         targetId: item.id
     };
     effect.data.target = item.id;
-
+    
     // Remove the "effect target" rule so we skip the popup
     const rules = effect.data.rules;
-    rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet"), 1);
+    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
+    if (choiceSetIndex > -1) {
+        rules.splice(choiceSetIndex, 1);
+    }
 }
 
 export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
@@ -204,9 +176,9 @@ export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
     rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag), 1);
 }
 
-export async function postActionInChat(actor, actionId) {
+export async function postActionInChat(action) {
     if (game.settings.get("pf2e-ranged-combat", "postFullAction")) {
-        await (await getItemFromActor(actor, actionId, true)).toMessage();
+        await action.toMessage();
     }
 }
 

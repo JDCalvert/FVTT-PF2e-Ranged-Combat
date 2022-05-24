@@ -1,4 +1,10 @@
-import { reload, unload, nextChamber, reloadMagazine, reloadAll, consolidateRepeatingWeaponAmmunition, conjureBullet } from "./actions/reload.js";
+import { reload } from "./ammunition-system/actions/reload.js";
+import { unload } from "./ammunition-system/actions/unload.js";
+import { reloadAll } from "./ammunition-system/actions/reload.js";
+import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
+import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
+import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
+import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { huntPrey } from "./actions/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 
@@ -75,7 +81,7 @@ Hooks.on(
                 },
                 default: 0
             }
-        )
+        );
 
         game.settings.register(
             "pf2e-ranged-combat",
