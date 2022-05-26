@@ -88,7 +88,7 @@ export function clearLoadedChamber(actor, weapon, updates) {
     }
 }
 
-export async function triggerCrossbowReloadEffects(actor, weapon, updates) {
+export async function triggerCrossbowReloadEffects(actor, token, weapon, updates) {
     const crossbowFeats = [
         { featId: CROSSBOW_ACE_FEAT_ID, effectId: CROSSBOW_ACE_EFFECT_ID },
         { featId: CROSSBOW_CRACK_SHOT_FEAT_ID, effectId: CROSSBOW_CRACK_SHOT_EFFECT_ID }
