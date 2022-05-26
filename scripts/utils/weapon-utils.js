@@ -1,4 +1,5 @@
 import { ItemSelectDialog } from "./item-select-dialog.js";
+import { showWarning } from "./utils.js";
 
 export async function getWeapon(actor, predicate, noResultsMessage, priorityPredicate) {
     return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage), priorityPredicate);
@@ -53,7 +54,7 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
     }
 
     if (!weapons.length && noResultsMessage) {
-        ui.notifications.warn(noResultsMessage);
+        showWarning(noResultsMessage);
     }
     return weapons;
 }

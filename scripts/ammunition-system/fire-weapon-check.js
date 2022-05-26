@@ -1,5 +1,6 @@
 import { getEffectFromActor, getFlag, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { isLoaded } from "./utils.js";
 
 export function checkLoaded(actor, weapon) {
     if (useAdvancedAmmunitionSystem(actor)) {
@@ -68,9 +69,7 @@ function checkLoadedMagazine(actor, weapon) {
  * Check the weapon has a round loaded
  */
 function checkLoadedRound(actor, weapon) {
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
-    if (!(loadedEffect || conjuredRoundEffect)) {
+    if (!isLoaded(actor, weapon)) {
         showWarning(`${weapon.name} is not loaded!`);
         return false;
     }

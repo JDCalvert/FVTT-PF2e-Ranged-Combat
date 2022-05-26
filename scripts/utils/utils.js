@@ -89,7 +89,7 @@ export function getControlledActorAndToken() {
         }
     }
 
-    ui.notifications.warn("You must have a single character selected.");
+    showWarning("You must have a single character selected.");
     return { actor: null, token: null };
 }
 
@@ -100,9 +100,9 @@ export function getTarget(notifyNoToken = true) {
     const targetTokenIds = game.user.targets.ids;
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
     if (!targetTokens.length) {
-        if (notifyNoToken) ui.notifications.warn("No target selected.");
+        if (notifyNoToken) showWarning("No target selected.");
     } else if (targetTokens.length > 1) {
-        if (notifyNoToken) ui.notifications.warn("You must have only one target selected.");
+        if (notifyNoToken) showWarning("You must have only one target selected.");
     } else {
         return targetTokens[0];
     }

@@ -1,7 +1,8 @@
-import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postInChat, setEffectTarget, Updates } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postInChat, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
-import { isFullyLoaded } from "../utils.js";
+import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
+import { setLoadedChamber } from "./next-chamber.js";
 
 export async function conjureBullet() {
     const { actor, token } = getControlledActorAndToken();
@@ -11,7 +12,7 @@ export async function conjureBullet() {
 
     const conjureBulletAction = getItemFromActor(actor, CONJURE_BULLET_ACTION_ID);
     if (!conjureBulletAction) {
-        ui.notifications.warn(`${token.name} does not have the Conjure Bullet action.`);
+        showWarning(`${token.name} does not have the Conjure Bullet action.`);
         return;
     }
 
@@ -25,18 +26,12 @@ export async function conjureBullet() {
 
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
-        ui.notifications.warn(`${weapon.name} can only be loaded with one conjured round.`);
+        showWarning(`${weapon.name} can only be loaded with one conjured round.`);
         return;
     }
 
     // We can't conjure a bullet if the weapon is already (fully) loaded
-    const weaponFullyLoaded = isFullyLoaded(actor, weapon);
-    if (weaponFullyLoaded) {
-        if (weapon.capacity) {
-            ui.notifications.warn(`${weapon.name} is already fully loaded.`);
-        } else {
-            ui.notifications.warn(`${weapon.name} is already loaded.`);
-        }
+    if (checkFullyLoaded(actor, weapon)) {
         return;
     }
 
@@ -45,6 +40,10 @@ export async function conjureBullet() {
     const conjuredRoundSource = await getItem(CONJURED_ROUND_EFFECT_ID);
     setEffectTarget(conjuredRoundSource, weapon);
     updates.add(conjuredRoundSource);
+
+    if (weapon.isCapacity) {
+        await setLoadedChamber(actor, weapon, updates);
+    }
 
     // If we're not in combat, set the duration to one round so it doesn't expire immediately
     if (!token.inCombat) {

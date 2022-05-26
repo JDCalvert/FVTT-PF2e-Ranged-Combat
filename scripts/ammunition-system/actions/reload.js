@@ -1,7 +1,7 @@
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
-import { isFullyLoaded, triggerCrossbowReloadEffects } from "../utils.js";
+import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
+import { checkFullyLoaded, isFullyLoaded, triggerCrossbowReloadEffects } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 import { unloadAmmunition } from "./unload.js";
 
@@ -27,17 +27,17 @@ export async function reload() {
             // is still only consumed when we fire
             const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
             if (!magazineLoadedEffect) {
-                ui.notifications.warn(`${weapon.name} has no magazine loaded!`);
+                showWarning(`${weapon.name} has no magazine loaded!`);
                 return;
             } else if (getFlag(magazineLoadedEffect, "remaining") < 1) {
-                ui.notifications.warn(`${weapon.name}'s magazine is empty!`);
+                showWarning(`${weapon.name}'s magazine is empty!`);
                 return;
             }
 
             // If the weapon is already loaded, we don't need to do it again
             const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
             if (loadedEffect) {
-                ui.notifications.warn(`${weapon.name} is already loaded.`);
+                showWarning(`${weapon.name} is already loaded.`);
                 return;
             }
 
@@ -51,27 +51,26 @@ export async function reload() {
             // If we have no ammunition selected, or we don't have any left in the stack, we can't reload
             const ammo = weapon.ammunition;
             if (!ammo) {
-                ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
+                showWarning(`${weapon.name} has no ammunition selected.`);
                 return;
             } else if (ammo.quantity < 1) {
-                ui.notifications.warn(`Not enough ammunition to reload ${weapon.name}.`);
+                showWarning(`Not enough ammunition to reload ${weapon.name}.`);
                 return;
             }
 
-            const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-
             if (weapon.capacity) {
                 if (isFullyLoaded(actor, weapon)) {
-                    ui.notifications.warn(`${weapon.name} is already fully loaded.`);
+                    showWarning(`${weapon.name} is already fully loaded.`);
                     return;
                 }
 
                 // If some chambers are already loaded, we only want to load with the same type of ammunition
+                const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
                 if (loadedEffect) {
                     const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
                     const loadedAmmunitionName = getFlag(loadedEffect, "ammunitionName");
                     if (ammo.sourceId !== loadedSourceId) {
-                        ui.notifications.warn(`${weapon.name} is already loaded with ${loadedChambers} ${loadedAmmunitionName}.`);
+                        showWarning(`${weapon.name} is already loaded with ${loadedChambers} ${loadedAmmunitionName}.`);
                         return;
                     }
 
@@ -110,14 +109,15 @@ export async function reload() {
                 }
 
                 // For a capacity weapon, if the selected chamber isn't loaded, assume the chamber being loaded is the selected one
-                if (weapon.isCapacity && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
-                    await setLoadedChamber(weapon, updates);
+                if (weapon.isCapacity) {
+                    await setLoadedChamber(actor, weapon, updates);
                 }
 
                 await postReloadToChat(token, weapon, ammo.name);
             } else {
                 // If the weapon is already loaded with the same type of ammunition as we're loading, don't reload
                 // Otherwise, unload the existing round before loading the new one
+                const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
                 const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
                 if (conjuredRoundEffect) {
                     updates.remove(conjuredRoundEffect);
@@ -125,7 +125,7 @@ export async function reload() {
                     // If the selected ammunition is the same as what's already loaded, don't reload
                     const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
                     if (ammo.sourceId === loadedSourceId) {
-                        ui.notifications.warn(`${weapon.name} is already loaded with ${ammo.name}.`);
+                        showWarning(`${weapon.name} is already loaded with ${ammo.name}.`);
                         return;
                     }
                     await unloadAmmunition(actor, weapon, updates);
@@ -155,6 +155,10 @@ export async function reload() {
             });
         }
     } else {
+        if (checkFullyLoaded(actor, weapon)) {
+            return;
+        }
+
         // If the weapon is already loaded, we don't need to do it again
         const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
 
@@ -163,19 +167,14 @@ export async function reload() {
                 const loadedChambers = getFlag(loadedEffect, "loadedChambers");
                 const loadedCapacity = getFlag(loadedEffect, "capacity");
 
-                if (loadedChambers === loadedCapacity) {
-                    ui.notifications.warn(`${weapon.name} is fully loaded.`);
-                    return;
-                }
-
                 updates.update(() => loadedEffect.update({
                     "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`,
                     "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
                 }));
                 updates.floatyText(`${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`, true);
 
-                if (weapon.isCapacity && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
-                    await setLoadedChamber(weapon, updates);
+                if (weapon.isCapacity) {
+                    await setLoadedChamber(actor, weapon, updates);
                 }
             } else {
                 const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
@@ -193,15 +192,10 @@ export async function reload() {
                 };
 
                 if (weapon.isCapacity) {
-                    await setLoadedChamber(weapon, updates);
+                    await setLoadedChamber(actor, weapon, updates);
                 }
             }
         } else {
-            if (loadedEffect) {
-                ui.notifications.warn(`${weapon.name} is already loaded.`);
-                return;
-            }
-
             // Create the new loaded effect
             const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
             setEffectTarget(loadedEffectSource, weapon);
@@ -210,13 +204,13 @@ export async function reload() {
         await postReloadToChat(token, weapon);
     }
 
-    await triggerCrossbowReloadEffects(actor, weapon, updates);
+    await triggerCrossbowReloadEffects(actor, token, weapon, updates);
 
     updates.handleUpdates();
 };
 
 export async function reloadAll() {
-    ui.notifications.warn("Reload All is deprecated, will not work for capacity weapons, and will be removed in version 3.0.0");
+    showWarning("Reload All is deprecated, will not work for capacity weapons, and will be removed in version 3.0.0");
 
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -224,7 +218,7 @@ export async function reloadAll() {
     }
 
     if (useAdvancedAmmunitionSystem(actor)) {
-        ui.notifications.warn("You cannot use this macro with the Advanced Ammunition System active. Please reload each weapon individually.");
+        showWarning("You cannot use this macro with the Advanced Ammunition System active. Please reload each weapon individually.");
         return;
     }
 

@@ -1,4 +1,4 @@
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
 import { removeAmmunition } from "../utils.js";
@@ -19,7 +19,7 @@ export async function unload() {
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
     const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     if (!loadedEffect && !magazineLoadedEffect) {
-        ui.notifications.warn(`${weapon.name} is not loaded!`);
+        showWarning(`${weapon.name} is not loaded!`);
         return;
     }
 
@@ -66,7 +66,7 @@ function getLoadedWeapon(actor) {
     return getWeapon(
         actor,
         weapon => {
-            if (weapon.isRepeating) {
+            if (useAdvancedAmmunitionSystem(actor) && weapon.isRepeating) {
                 return getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
             } else if (weapon.requiresLoading) {
                 return getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);

@@ -14,10 +14,11 @@ Hooks.on(
 
         const actorId = flags.actorId;
         const actor = game.actors.find(actor => actor.id === actorId);
-
-        const hasPermission = actor.testUserPermission(game.user, game.settings.get("pf2e-ranged-combat", "requiredPermissionToShowMessages"));
-        if (!hasPermission) {
-            html.addClass("hide");
+        if (actor) {
+            const hasPermission = actor.testUserPermission(game.user, game.settings.get("pf2e-ranged-combat", "requiredPermissionToShowMessages"));
+            if (!hasPermission) {
+                html.addClass("hide");
+            }
         }
     }
 );

@@ -1,12 +1,6 @@
-import { clearLoadedChamber, removeAmmunition } from "./utils.js";
-import {
-    AMMUNITION_EFFECT_ID,
-    CONJURED_ROUND_EFFECT_ID,
-    CONJURE_BULLET_IMG,
-    LOADED_EFFECT_ID,
-    MAGAZINE_LOADED_EFFECT_ID
-} from "./constants.js";
 import { findItemOnActor, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { AMMUNITION_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { clearLoadedChamber, removeAmmunition } from "./utils.js";
 
 export function fireWeapon(actor, weapon, updates) {
     // If there's an ammunition effect from the previous shot, remove it now
@@ -25,8 +19,11 @@ export function fireWeapon(actor, weapon, updates) {
         if (conjuredRoundEffect) {
             postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`);
         } else {
-            updates.update(() => weapon.ammunition?.consume());
-            postInChat(actor, ammunition.img, `${actor.name} uses ${ammunition.name}.`);
+            const ammunition = weapon.ammunition;
+            if (ammunition) {
+                updates.update(() => ammunition.consume());
+                postInChat(actor, ammunition.img, `${actor.name} uses ${ammunition.name}.`);
+            }
         }
     }
 }

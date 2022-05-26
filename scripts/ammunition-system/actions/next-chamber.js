@@ -1,6 +1,7 @@
 import { getControlledActorAndToken, getEffectFromActor, getItem, postInChat, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
+import { isLoaded } from "../utils.js";
 
 export async function nextChamber() {
     const { actor, token } = getControlledActorAndToken();
@@ -10,20 +11,13 @@ export async function nextChamber() {
 
     const weapon = await getSingleWeapon(
         getWeapons(actor, weapon => weapon.isCapacity, "You have no weapons with the capacity trait."),
-        weapon => {
-            const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-            const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
-            return loadedEffect && !chamberLoadedEffect;
-        }
+        weapon => isLoaded(actor, weapon) && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)
     );
     if (!weapon) {
         return;
     }
 
-    const updates = new Updates(actor);
-
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-    if (!loadedEffect) {
+    if (!isLoaded(actor, weapon)) {
         showWarning(`${weapon.name} is not loaded!`);
         return;
     }
@@ -34,7 +28,9 @@ export async function nextChamber() {
         return;
     }
 
-    await setLoadedChamber(weapon, updates);
+    const updates = new Updates(actor);
+
+    await addChamberLoaded(weapon, updates);
 
     await postInChat(
         token.actor,
@@ -47,7 +43,13 @@ export async function nextChamber() {
     updates.handleUpdates();
 }
 
-export async function setLoadedChamber(weapon, updates) {
+export async function setLoadedChamber(actor, weapon, updates) {
+    if (!getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
+        await addChamberLoaded(weapon, updates);
+    }
+}
+
+async function addChamberLoaded(weapon, updates) {
     const chamberLoadedSource = await getItem(CHAMBER_LOADED_EFFECT_ID);
     setEffectTarget(chamberLoadedSource, weapon);
     updates.add(chamberLoadedSource);

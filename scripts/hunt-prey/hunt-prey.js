@@ -1,4 +1,4 @@
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, getTarget, postActionInChat, postInChat, setEffectTarget, Updates } from "../utils/utils.js";
+import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, getTarget, postActionInChat, postInChat, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
 export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
@@ -15,7 +15,7 @@ export async function huntPrey() {
 
     const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
     if (!huntPreyAction) {
-        ui.notifications.warn(`${token.name} does not have the Hunt Prey action.`);
+        showWarning(`${token.name} does not have the Hunt Prey action.`);
         return;
     }
 
@@ -26,7 +26,7 @@ export async function huntPrey() {
 
     // Check if the target is already hunted prey
     if (getEffectFromActor(actor, HUNTED_PREY_EFFECT_ID, target.id)) {
-        ui.notifications.warn(`${target.name} is already ${token.name}'s hunted prey.`);
+        showWarning(`${target.name} is already ${token.name}'s hunted prey.`);
         return;
     }
 
@@ -54,8 +54,13 @@ export async function huntPrey() {
         setEffectTarget(huntedPreyEffectSource, target);
         updates.add(huntedPreyEffectSource);
 
-        // Set the Hunt Prey flag, since we're currently targetting our hunted prey
-        updates.update(() => actor.setFlag("pf2e", "rollOptions.all.hunted-prey", true));
+        // Update the hunted prey flag to true
+        const rules = huntPreyAction.toObject().data.rules;
+        const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && !r.value);
+        if (rule) {
+            rule.value = true;
+            updates.update(() => huntPreyAction.update({ "data.rules": rules }))
+        }
     }
 
     /**

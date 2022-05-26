@@ -1,4 +1,4 @@
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
 import { triggerCrossbowReloadEffects } from "../utils.js";
@@ -20,10 +20,10 @@ export async function reloadMagazine() {
 
     if (!useAdvancedAmmunitionSystem(actor)) {
         if (actor.type === "character") {
-            ui.notifications.warn("PF2e Ranged Combat - Magazine Reload can only be used if the Advanced Ammunition System is enabled.");
+            showWarning("PF2e Ranged Combat - Magazine Reload can only be used if the Advanced Ammunition System is enabled.");
             return;
         } else if (actor.type === "npc") {
-            ui.notifications.warn("PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.");
+            showWarning("PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.");
             return;
         }
     }
@@ -43,10 +43,10 @@ export async function reloadMagazine() {
     // If we have no ammunition selected, or we have none left in the stack, we can't reload
     const ammo = weapon.ammunition;
     if (!ammo) {
-        ui.notifications.warn(`${weapon.name} has no ammunition selected.`);
+        showWarning(`${weapon.name} has no ammunition selected.`);
         return;
     } else if (ammo.quantity < 1) {
-        ui.notifications.warn(`You don't have enough ammunition to reload ${weapon.name}.`);
+        showWarning(`You don't have enough ammunition to reload ${weapon.name}.`);
         return;
     }
 
@@ -64,11 +64,11 @@ export async function reloadMagazine() {
 
         if (magazineRemaining === magazineCapacity && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is full, and the selected ammunition is the same
-            ui.notifications.warn(`${weapon.name} is already loaded with a full magazine.`);
+            showWarning(`${weapon.name} is already loaded with a full magazine.`);
             return;
         } else if (magazineRemaining === ammo.charges.current && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is the same, and has the same remaining ammunition, as the new one
-            ui.notifications.warn(`${weapon.name}'s current magazine is already loaded with as much ammunition as ${ammo.name}`);
+            showWarning(`${weapon.name}'s current magazine is already loaded with as much ammunition as ${ammo.name}`);
             return;
         } else {
             // We actually want to reload, either for a magazine with more ammunition remaining, or for a different type of ammunition
@@ -94,7 +94,7 @@ export async function reloadMagazine() {
 
     updates.add(magazineLoadedEffectSource);
 
-    await triggerCrossbowReloadEffects(actor, weapon, updates);
+    await triggerCrossbowReloadEffects(actor, token, weapon, updates);
 
     numActions += 2;
 
