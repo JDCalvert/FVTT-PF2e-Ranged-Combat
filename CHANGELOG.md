@@ -1,3 +1,7 @@
+## 2.5.0 - 2022-05-26 (Pathfinder 2e 3.10.4)
+- Add the Conjure Bullet action, allowing Spellshot gunslingers to fire without using ammunition
+- Fixed an issue which could cause the "Target is your Hunted Prey" checkbox to become stuck
+
 ## 2.4.1 - 2022-05-23 (Pathfinder 2e 3.10.3)
 - Fix an issue with using macros after manually applying some effects
 
