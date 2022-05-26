@@ -156,7 +156,7 @@ export function setEffectTarget(effect, item, adjustName = true) {
         targetId: item.id
     };
     effect.data.target = item.id;
-    
+
     // Remove the "effect target" rule so we skip the popup
     const rules = effect.data.rules;
     const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
