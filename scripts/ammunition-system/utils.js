@@ -1,4 +1,4 @@
-import { getEffectFromActor, getFlag } from "../utils/utils.js";
+import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 /**
@@ -39,6 +39,7 @@ export function removeAmmunition(actor, weapon, updates) {
 
     if (weapon.capacity) {
         const loadedChambers = getFlag(loadedEffect, "loadedChambers") - 1;
+        const loadedCapacity = getFlag(loadedEffect, "capacity");
         if (loadedChambers > 0) {
             updates.update(async () =>
                 await loadedEffect.update({
@@ -62,5 +63,35 @@ export function clearLoadedChamber(actor, weapon, updates) {
     const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
     if (chamberLoadedEffect) {
         updates.remove(chamberLoadedEffect);
+    }
+}
+
+export async function triggerCrossbowReloadEffects(actor, weapon, updates) {
+    const crossbowFeats = [
+        { featId: CROSSBOW_ACE_FEAT_ID, effectId: CROSSBOW_ACE_EFFECT_ID },
+        { featId: CROSSBOW_CRACK_SHOT_FEAT_ID, effectId: CROSSBOW_CRACK_SHOT_EFFECT_ID }
+    ];
+
+    // Handle crossbow effects that trigger on reload
+    if (weapon.isCrossbow && weapon.isEquipped) {
+        for (const crossbowFeat of crossbowFeats) {
+            const featId = crossbowFeat.featId;
+            const effectId = crossbowFeat.effectId;
+
+            if (getItemFromActor(actor, featId)) {
+                // Remove any existing effects
+                const existing = getEffectFromActor(actor, effectId, weapon.id);
+                if (existing) {
+                    updates.remove(existing);
+                }
+
+                // Add the new effect
+                const effect = await getItem(effectId);
+                setEffectTarget(effect, weapon);
+                effect.flags["pf2e-ranged-combat"].fired = false;
+
+                updates.add(effect);
+            }
+        }
     }
 }

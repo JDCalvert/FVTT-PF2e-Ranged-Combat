@@ -1,4 +1,4 @@
-import { getControlledActorAndToken, getItem, getItemFromActor, postInChat, setEffectTarget, Updates } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postInChat, setEffectTarget, Updates } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
 import { isFullyLoaded } from "../utils.js";
@@ -20,6 +20,12 @@ export async function conjureBullet() {
         weapon => !isFullyLoaded(actor, weapon)
     );
     if (!weapon) {
+        return;
+    }
+
+    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+    if (conjuredRoundEffect) {
+        ui.notifications.warn(`${weapon.name} can only be loaded with one conjured round.`);
         return;
     }
 

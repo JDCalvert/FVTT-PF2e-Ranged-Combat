@@ -1,9 +1,9 @@
 import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, getTarget, postActionInChat, postInChat, setEffectTarget, Updates } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
-const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
-const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
-const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
+export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
+export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
+export const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
 
 export async function huntPrey() {
     const { actor, token } = getControlledActorAndToken();
@@ -34,7 +34,7 @@ export async function huntPrey() {
      * HUNT PREY ACTION AND EFFECT
      */
     {
-        await postActionInChat(actor, huntPreyAction);
+        await postActionInChat(huntPreyAction);
         await postInChat(
             actor,
             HUNT_PREY_IMG,
@@ -50,7 +50,7 @@ export async function huntPrey() {
         }
 
         // Add the new effect
-        const huntedPreyEffectSource = await getItem(Utils.HUNTED_PREY_EFFECT_ID);
+        const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
         setEffectTarget(huntedPreyEffectSource, target);
         updates.add(huntedPreyEffectSource);
 

@@ -39,7 +39,7 @@ export function consumeLoadedRound(actor, weapon, updates) {
     }
 
     // If the weapon was loaded with a conjured round, consume that one first
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon);
+    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         updates.remove(conjuredRoundEffect);
     } else {

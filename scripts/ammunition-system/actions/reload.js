@@ -1,7 +1,7 @@
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postInChat, setEffectTarget, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
-import { isFullyLoaded } from "../utils.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
+import { isFullyLoaded, triggerCrossbowReloadEffects } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 import { unloadAmmunition } from "./unload.js";
 
@@ -61,20 +61,22 @@ export async function reload() {
             const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
 
             if (weapon.capacity) {
+                if (isFullyLoaded(actor, weapon)) {
+                    ui.notifications.warn(`${weapon.name} is already fully loaded.`);
+                    return;
+                }
+
                 // If some chambers are already loaded, we only want to load with the same type of ammunition
                 if (loadedEffect) {
-                    const loadedChambers = getFlag(loadedEffect, "loadedChambers");
-                    const loadedCapacity = getFlag(loadedEffect, "capacity");
                     const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
+                    const loadedAmmunitionName = getFlag(loadedEffect, "ammunitionName");
                     if (ammo.sourceId !== loadedSourceId) {
-                        ui.notifications.warn(`${weapon.name} is already loaded with ${loadedChambers} ${getFlag(loadedEffect, "ammunitionName")}.`);
+                        ui.notifications.warn(`${weapon.name} is already loaded with ${loadedChambers} ${loadedAmmunitionName}.`);
                         return;
                     }
 
-                    if (loadedChambers === loadedCapacity) {
-                        ui.notifications.warn(`${weapon.name} is already fully loaded.`);
-                        return;
-                    }
+                    const loadedChambers = getFlag(loadedEffect, "loadedChambers");
+                    const loadedCapacity = getFlag(loadedEffect, "capacity");
 
                     // Increase the number of loaded chambers by one
                     updates.update(async () => {
@@ -114,9 +116,12 @@ export async function reload() {
 
                 await postReloadToChat(token, weapon, ammo.name);
             } else {
-                // If the weapon is already loaded, then either unload the current ammunition (if different from the new ammunition)
-                // or don't reload at all
-                if (loadedEffect) {
+                // If the weapon is already loaded with the same type of ammunition as we're loading, don't reload
+                // Otherwise, unload the existing round before loading the new one
+                const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+                if (conjuredRoundEffect) {
+                    updates.remove(conjuredRoundEffect);
+                } else if (loadedEffect) {
                     // If the selected ammunition is the same as what's already loaded, don't reload
                     const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
                     if (ammo.sourceId === loadedSourceId) {
@@ -262,34 +267,4 @@ async function postReloadToChat(token, weapon, ammunitionName) {
         "Interact",
         reloadActions <= 3 ? String(reloadActions) : "",
     );
-}
-
-async function triggerCrossbowReloadEffects(actor, weapon, updates) {
-    const crossbowFeats = [
-        { featId: CROSSBOW_ACE_FEAT_ID, effectId: CROSSBOW_ACE_EFFECT_ID },
-        { featId: CROSSBOW_CRACK_SHOT_FEAT_ID, effectId: CROSSBOW_CRACK_SHOT_EFFECT_ID }
-    ];
-
-    // Handle crossbow effects that trigger on reload
-    if (weapon.isCrossbow && weapon.isEquipped) {
-        for (const crossbowFeat of crossbowFeats) {
-            const featId = crossbowFeat.featId;
-            const effectId = crossbowFeat.effectId;
-
-            if (getItemFromActor(actor, featId)) {
-                // Remove any existing effects
-                const existing = getEffectFromActor(actor, effectId, weapon.id);
-                if (existing) {
-                    updates.remove(existing);
-                }
-
-                // Add the new effect
-                const effect = await getItem(effectId);
-                setEffectTarget(effect, weapon);
-                effect.flags["pf2e-ranged-combat"].fired = false;
-
-                updates.add(effect);
-            }
-        }
-    }
 }

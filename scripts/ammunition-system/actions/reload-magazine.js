@@ -1,6 +1,7 @@
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
+import { triggerCrossbowReloadEffects } from "../utils.js";
 import { unloadMagazine } from "./unload.js";
 
 /**
