@@ -155,11 +155,13 @@ export function setEffectTarget(effect, item, adjustName = true) {
     effect.flags["pf2e-ranged-combat"] = {
         targetId: item.id
     };
-    effect.data.target = item.id;
+    effect.flags["pf2e"] ??= {};
+    effect.flags["pf2e"]["rulesSelections"] ??= {};
+    effect.flags["pf2e"]["rulesSelections"]["weapon"] = item.id;
 
     // Remove the "effect target" rule so we skip the popup
     const rules = effect.data.rules;
-    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
+    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === "weapon");
     if (choiceSetIndex > -1) {
         rules.splice(choiceSetIndex, 1);
     }
@@ -173,7 +175,10 @@ export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
 
     // Remove the ChoiceSet rule since we've already made it
     const rules = effect.data.rules;
-    rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag), 1);
+    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
+    if (choiceSetIndex > -1) {
+        rules.splice(choiceSetIndex, 1);
+    }
 }
 
 export async function postActionInChat(action) {
