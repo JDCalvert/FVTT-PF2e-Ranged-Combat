@@ -1,0 +1,17 @@
+// Effect IDs
+export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
+export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
+export const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zVcsgX5KduyfBXRZ";
+export const CHAMBER_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.3KT0VeuCOTy5K0lS";
+export const CONJURED_ROUND_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.psguBnq7jpbnYrhu";
+
+// Action IDs
+export const CONJURE_BULLET_ACTION_ID = "Compendium.pf2e.actionspf2e.KC6o1cvbr45xnMei";
+
+// Images
+export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammunition.webp";
+export const RELOAD_MAGAZINE_IMG = "modules/pf2e-ranged-combat/art/reload_magazine.webp";
+export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
+export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
+export const SELECT_NEXT_CHAMBER_IMG = "modules/pf2e-ranged-combat/art/select-next-chamber.webp";
+export const CONJURE_BULLET_IMG = "modules/pf2e-ranged-combat/art/conjure-bullet.webp";

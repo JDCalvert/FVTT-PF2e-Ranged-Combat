@@ -1,6 +1,6 @@
 import { dialogPrompt } from "../utils/prompt-dialog.js";
-import * as Utils from "../utils/utils.js";
-import * as WeaponUtils from "../utils/weapon-utils.js";
+import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postInChat, setChoice, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
+import { getWeapon } from "../utils/weapon-utils.js";
 
 const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.cA9sBCFAxY2EJgrC";
 const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossbow.webp";
@@ -8,7 +8,7 @@ const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossb
 const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
 
 export async function loadAlchemicalCrossbow() {
-    const { actor, token } = Utils.getControlledActorAndToken();
+    const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;
     }
@@ -23,15 +23,15 @@ export async function loadAlchemicalCrossbow() {
         return;
     }
 
-    const updates = new Utils.Updates(actor);
+    const updates = new Updates(actor);
 
-    const loadedBombEffect = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    const loadedBombEffect = getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
     if (loadedBombEffect) {
         const loadedBombFlags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
         if (loadedBombFlags.bombCharges > 0) {
             const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
             if (loadedBombFlags.bombSourceId === bomb.sourceId && hasMaxCharges) {
-                ui.notifications.warn(`${token.name}'s ${weapon.name} is already loaded with ${loadedBombFlags.bombName}.`);
+                showWarning(`${token.name}'s ${weapon.name} is already loaded with ${loadedBombFlags.bombName}.`);
                 return;
             }
 
@@ -60,9 +60,9 @@ export async function loadAlchemicalCrossbow() {
     const lesserIndex = bomb.name.indexOf(" (Lesser)");
     const bombName = lesserIndex > -1 ? bomb.name.substring(0, lesserIndex) : bomb.name;
 
-    const loadedBombEffectSource = await Utils.getItem(LOADED_BOMB_EFFECT_ID);
-    Utils.setEffectTarget(loadedBombEffectSource, weapon, false);
-    Utils.setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
+    const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
+    setEffectTarget(loadedBombEffectSource, weapon, false);
+    setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
     const loadedBombEffectSourceFlags = loadedBombEffectSource.flags["pf2e-ranged-combat"];
     Object.assign(
         loadedBombEffectSourceFlags,
@@ -86,7 +86,7 @@ export async function loadAlchemicalCrossbow() {
         });
     });
 
-    await Utils.postInChat(
+    await postInChat(
         actor,
         bomb.img,
         `${token.name} loads their ${weapon.name} with ${bomb.name}.`,
@@ -98,7 +98,7 @@ export async function loadAlchemicalCrossbow() {
 }
 
 export async function unloadAlchemicalCrossbow() {
-    const { actor, token } = Utils.getControlledActorAndToken();
+    const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;
     }
@@ -108,13 +108,13 @@ export async function unloadAlchemicalCrossbow() {
         return;
     }
 
-    const loadedBombEffect = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    const loadedBombEffect = getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
     if (!loadedBombEffect) {
-        ui.notifications.warn(`${token.name}'s ${weapon.name} is not loaded with an alchemical bomb.`);
+        showWarning(`${token.name}'s ${weapon.name} is not loaded with an alchemical bomb.`);
         return;
     }
 
-    const updates = new Utils.Updates(actor);
+    const updates = new Updates(actor);
 
     const loadedBombFlags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
     const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
@@ -138,7 +138,7 @@ export async function unloadAlchemicalCrossbow() {
     await unloadBomb(actor, loadedBombEffect, updates);
 
     if (loadedBombFlags.bombCharges > 0) {
-        await Utils.postInChat(
+        await postInChat(
             actor,
             UNLOAD_BOMB_IMG,
             `${token.name} unloads ${loadedBombFlags.bombName} from their ${weapon.name}.`,
@@ -155,7 +155,7 @@ export async function handleWeaponFired(actor, weapon, updates) {
         return;
     }
 
-    const loadedBombEffect = Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    const loadedBombEffect = getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
     if (!loadedBombEffect) {
         return;
     }
@@ -196,11 +196,11 @@ export async function handleWeaponFired(actor, weapon, updates) {
 }
 
 function getAlchemicalCrossbow(actor, token, prioritise) {
-    return WeaponUtils.getWeapon(
+    return getWeapon(
         actor,
         isAlchemicalCrossbow,
         `${token.name} has no Alchemical Crossbow.`,
-        weapon => prioritise && !Utils.getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id)
+        weapon => prioritise && !getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id)
     );
 }
 
@@ -209,7 +209,7 @@ function isAlchemicalCrossbow(weapon) {
 }
 
 function getElementalBomb(actor, token) {
-    return WeaponUtils.getWeapon(
+    return getWeapon(
         actor,
         weapon =>
             weapon.baseType === "alchemical-bomb"
@@ -223,7 +223,7 @@ function getElementalBomb(actor, token) {
 async function unloadBomb(actor, bombLoadedEffect, updates) {
     const bombLoadedFlags = bombLoadedEffect.data.flags["pf2e-ranged-combat"];
     if (bombHasMaxCharges(bombLoadedFlags)) {
-        const bombItem = Utils.findItemOnActor(actor, bombLoadedFlags.bombItemId, bombLoadedFlags.bombSourceId);
+        const bombItem = findItemOnActor(actor, bombLoadedFlags.bombItemId, bombLoadedFlags.bombSourceId);
         if (bombItem) {
             // We found either the original bomb stack or a stack of the same type.
             // Add one to the stack
@@ -234,7 +234,7 @@ async function unloadBomb(actor, bombLoadedEffect, updates) {
             });
         } else {
             // Create a new stack containing only this bomb
-            const bombSource = await Utils.getItem(bombLoadedFlags.bombSourceId);
+            const bombSource = await getItem(bombLoadedFlags.bombSourceId);
             bombSource.data.quantity = 1;
             updates.add(bombSource);
         }

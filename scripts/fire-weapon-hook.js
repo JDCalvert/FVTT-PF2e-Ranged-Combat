@@ -1,7 +1,8 @@
-import * as Utils from "./utils/utils.js";
-import * as WeaponUtils from "./utils/weapon-utils.js";
 import { handleWeaponFired as alchemicalCrossbowHandleFired } from "./actions/alchemical-crossbow.js";
-import { removeAmmunition } from "./actions/reload.js";
+import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
+import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
+import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, getEffectFromActor, getFlag, Updates } from "./utils/utils.js";
+import { transformWeapon } from "./utils/weapon-utils.js";
 
 Hooks.on(
     "ready",
@@ -39,74 +40,10 @@ Hooks.on(
                     return wrapper(...args);
                 }
 
-                const weapon = WeaponUtils.transformWeapon(contextWeapon);
+                const weapon = transformWeapon(contextWeapon);
 
-                // If the weapon is repeating, check that it's loaded with a magazine, and there's still ammunition remaining
-                if (Utils.useAdvancedAmmunitionSystem(actor)) {
-                    // If the weapon is repeating, check that it's loaded with a magazine, and there's still ammunition remaining.
-                    if (weapon.isRepeating) {
-                        const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-                        if (!magazineLoadedEffect) {
-                            Utils.showWarning(`${weapon.name} has no magazine loaded!`);
-                            return;
-                        } else if (Utils.getFlag(magazineLoadedEffect, "remaining") < 1) {
-                            Utils.showWarning(`${weapon.name}'s magazine is empty!`);
-                            return;
-                        }
-                    }
-
-                    // If the weapon requires reloading, check that it has been loaded
-                    if (weapon.requiresLoading) {
-                        const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                        if (!loadedEffect) {
-                            Utils.showWarning(`${weapon.name} is not loaded!`);
-                            return;
-                        }
-
-                        if (weapon.isCapacity) {
-                            const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                            if (!chamberLoadedEffect) {
-                                Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
-                                return;
-                            }
-                        }
-                    }
-
-                    // For non-repeating weapons that don't require loading, we need to have enough
-                    // ammunition in our selected stack to fire
-                    if (weapon.usesAmmunition && !weapon.isRepeating && !weapon.requiresLoading) {
-                        const ammunition = weapon.ammunition;
-                        if (!ammunition) {
-                            Utils.showWarning(`${weapon.name} has no ammunition selected!`);
-                            return;
-                        } else if (ammunition.quantity <= 0) {
-                            Utils.showWarning(`${weapon.name} has no ammunition remaining!`);
-                            return;
-                        }
-                    }
-                } else {
-                    // Use the standard system logic: allow the attack to be made if no ammo is selected,
-                    // but not if ammo is selected and it is empty
-                    const ammunition = weapon.ammunition;
-                    if (ammunition && ammunition.quantity < 1) {
-                        Utils.showWarning(game.i18n.localize("PF2E.ErrorMessage.NotEnoughAmmo"));
-                        return;
-                    }
-
-                    // If the weapon requires loading and Prevent Fire if not Reloaded is enabled, check that is has been loaded
-                    const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-                    if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded")) {
-                        if (weapon.requiresLoading && !loadedEffect) {
-                            Utils.showWarning(`${weapon.name} is not loaded!`);
-                            return;
-                        }
-
-                        const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                        if (weapon.isCapacity && !chamberLoadedEffect) {
-                            Utils.showWarning(`${weapon.name}'s current chamber is not loaded!`);
-                            return;
-                        }
-                    }
+                if (!checkLoaded(actor, weapon)) {
+                    return;
                 }
 
                 // Actually make the roll.
@@ -116,16 +53,16 @@ Hooks.on(
                     return;
                 }
 
-                const updates = new Utils.Updates(actor);
+                const updates = new Updates(actor);
 
                 await alchemicalCrossbowHandleFired(actor, weapon, updates);
 
                 // Some effects only apply to the next shot fired. If that shot hadn't
                 // already been fired, it has now. If it had already been fired, remove the effect.
-                for (const effectId of [Utils.CROSSBOW_ACE_EFFECT_ID, Utils.CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
-                    const effect = Utils.getEffectFromActor(actor, effectId, weapon.id);
+                for (const effectId of [CROSSBOW_ACE_EFFECT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
+                    const effect = getEffectFromActor(actor, effectId, weapon.id);
                     if (effect) {
-                        if (Utils.getFlag(effect, "fired")) {
+                        if (getFlag(effect, "fired")) {
                             updates.remove(effect);
                         } else {
                             updates.update(() => effect.update({ "flags.pf2e-ranged-combat.fired": true }));
@@ -133,88 +70,8 @@ Hooks.on(
                     }
                 }
 
-                const ammunitionEffect = Utils.getEffectFromActor(actor, Utils.AMMUNITION_EFFECT_ID, weapon.id);
-                if (ammunitionEffect) {
-                    updates.remove(ammunitionEffect);
-                }
-
                 // Handle removing the ammunition from the weapon now that it's been fired
-                removeAmmunition(actor, weapon, updates);
-
-                // If the advanced ammunition system is not enabled, consume a piece of ammunition
-                if (Utils.useAdvancedAmmunitionSystem(actor)) {
-                    // Use up a round of the loaded magazine
-                    if (weapon.isRepeating) {
-                        const magazineLoadedEffect = Utils.getEffectFromActor(actor, Utils.MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-                        const magazineCapacity = Utils.getFlag(magazineLoadedEffect, "capacity");
-                        const magazineRemaining = Utils.getFlag(magazineLoadedEffect, "remaining") - 1;
-
-                        const magazineLoadedEffectName = Utils.getFlag(magazineLoadedEffect, "name");
-                        updates.update(async () => {
-                            await magazineLoadedEffect.update({
-                                "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`,
-                                "flags.pf2e-ranged-combat.remaining": magazineRemaining
-                            });
-                        });
-                        updates.floatyText(`${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`, false);
-
-                        // Post in chat saying some ammunition was used
-                        const ammunitionItemId = Utils.getFlag(magazineLoadedEffect, "ammunitionItemId");
-                        const ammunitionSourceId = Utils.getFlag(magazineLoadedEffect, "ammunitionSourceId");
-                        const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
-
-                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
-                            ammunition.toMessage();
-                        } else {
-                            Utils.postInChat(
-                                actor,
-                                Utils.getFlag(magazineLoadedEffect, "ammunitionImg"),
-                                `${actor.name} uses ${Utils.getFlag(magazineLoadedEffect, "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
-                            );
-                        }
-
-                        createAmmunitionEffect(weapon, ammunition, updates);
-                    } else if (weapon.requiresLoading) {
-                        const loadedEffect = Utils.getEffectFromActor(actor, Utils.LOADED_EFFECT_ID, weapon.id);
-
-                        const ammunitionItemId = Utils.getFlag(loadedEffect, "ammunitionItemId");
-                        const ammunitionSourceId = Utils.getFlag(loadedEffect, "ammunitionSourceId");
-                        const ammunition = Utils.findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
-                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
-                            ammunition.toMessage();
-                        } else {
-                            Utils.postInChat(
-                                actor,
-                                Utils.getFlag(loadedEffect, "ammunitionImg"),
-                                `${actor.name} uses ${Utils.getFlag(loadedEffect, "ammunitionName")}.`
-                            );
-                        }
-
-                        createAmmunitionEffect(weapon, ammunition, updates);
-                    } else if (weapon.usesAmmunition) {
-                        const ammunition = weapon.ammunition;
-                        updates.update(async () => {
-                            await ammunition.update({
-                                "data.quantity": ammunition.quantity - 1
-                            });
-                        });
-
-                        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
-                            ammunition.toMessage();
-                        } else {
-                            Utils.postInChat(actor, ammunition.img, `${actor.name} uses ${ammunition.name}.`);
-                        }
-
-                        createAmmunitionEffect(weapon, ammunition, updates);
-                    }
-                } else {
-                    weapon.ammunition?.consume();
-
-                    const chamberLoadedEffect = Utils.getEffectFromActor(actor, Utils.CHAMBER_LOADED_EFFECT_ID, weapon.id);
-                    if (chamberLoadedEffect) {
-                        updates.remove(chamberLoadedEffect);
-                    }
-                }
+                fireWeapon(actor, weapon, updates);
 
                 await updates.handleUpdates();
 
@@ -224,15 +81,3 @@ Hooks.on(
         );
     }
 );
-
-async function createAmmunitionEffect(weapon, ammunition, updates) {
-    if (ammunition?.rules.length) {
-        const ammunitionEffectSource = await Utils.getItem(Utils.AMMUNITION_EFFECT_ID);
-        Utils.setEffectTarget(ammunitionEffectSource, weapon);
-        ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-        ammunitionEffectSource.data.rules = ammunition.data.data.rules;
-        ammunitionEffectSource.img = ammunition.img;
-        ammunitionEffectSource.data.description.value = ammunition.description;
-        updates.add(ammunitionEffectSource);
-    }
-}
