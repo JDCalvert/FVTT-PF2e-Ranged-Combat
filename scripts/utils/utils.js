@@ -155,13 +155,11 @@ export function setEffectTarget(effect, item, adjustName = true) {
     effect.flags["pf2e-ranged-combat"] = {
         targetId: item.id
     };
-    effect.flags["pf2e"] ??= {};
-    effect.flags["pf2e"]["rulesSelections"] ??= {};
-    effect.flags["pf2e"]["rulesSelections"]["weapon"] = item.id;
+    effect.data.target = item.id;
 
     // Remove the "effect target" rule so we skip the popup
     const rules = effect.data.rules;
-    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === "weapon");
+    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
     if (choiceSetIndex > -1) {
         rules.splice(choiceSetIndex, 1);
     }
