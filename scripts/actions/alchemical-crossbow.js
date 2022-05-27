@@ -62,7 +62,7 @@ export async function loadAlchemicalCrossbow() {
 
     const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
     setEffectTarget(loadedBombEffectSource, weapon, false);
-    setChoice(loadedBombEffectSource, "damage-type", elementType, bombName);
+    setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
     const loadedBombEffectSourceFlags = loadedBombEffectSource.flags["pf2e-ranged-combat"];
     Object.assign(
         loadedBombEffectSourceFlags,

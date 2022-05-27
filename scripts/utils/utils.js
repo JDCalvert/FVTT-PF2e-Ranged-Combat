@@ -173,10 +173,7 @@ export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
 
     // Remove the ChoiceSet rule since we've already made it
     const rules = effect.data.rules;
-    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
-    if (choiceSetIndex > -1) {
-        rules.splice(choiceSetIndex, 1);
-    }
+    rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag), 1);
 }
 
 export async function postActionInChat(action) {
