@@ -1,7 +1,7 @@
 {
     "name": "pf2e-ranged-combat",
     "title": "PF2e Ranged Combat",
-    "description": "Utilities for impriving ranged combat in Pathfinder 2e.",
+    "description": "Utilities for improving ranged combat in Pathfinder 2e.",
     "author": "JDCalvert",
     "version": "2.5.1",
     "minimumCoreVersion": "9",
