@@ -1,32 +1,25 @@
-import { getItem, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
-import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { getControlledActorAndToken, getItem, getItemFromActor, Updates } from "../../utils/utils.js";
 import { DOUBLE_BARREL_EFFECT_ID } from "../constants.js";
-import { isFullyLoaded } from "../utils.js";
 
 export async function fireBothBarrels() {
-    const { actor, token } = getControlledActorAndToken();
+    const { actor } = getControlledActorAndToken();
     if (!actor) {
-        return;
-    }
-
-    const weapon = getWeapon(
-        actor,
-        weapon => weapon.isDoubleBarrel && weapon.isEquipped,
-        `${token.name} is not wielding a double barrel weapon.`,
-        weapon => isFullyLoaded(weapon)
-    );
-    if (!weapon) {
-        return;
-    }
-
-    if (!isFullyLoaded(weapon)) {
-        showWarning(`${weapon.name} is not fully loaded.`);
         return;
     }
 
     const updates = new Updates(actor);
 
-    const doubleBarrelEffecctSource = await getItem(DOUBLE_BARREL_EFFECT_ID);
-    setEffectTarget()
-    updates.add(doubleBarrelEffecctSource);
+    const doubleBarrelEffect = getItemFromActor(actor, DOUBLE_BARREL_EFFECT_ID);
+    if (doubleBarrelEffect) {
+        updates.remove(doubleBarrelEffect);
+    } else {
+        const doubleBarrelEffecctSource = await getItem(DOUBLE_BARREL_EFFECT_ID);
+        updates.add(doubleBarrelEffecctSource);
+    }
+
+    updates.handleUpdates();
+}
+
+export function isFiringBothBarrels(actor, weapon) {
+    return weapon.isDoubleBarrel && getItemFromActor(actor, DOUBLE_BARREL_EFFECT_ID);
 }

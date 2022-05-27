@@ -4,6 +4,7 @@ import { reloadAll } from "./ammunition-system/actions/reload.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
+import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.js";
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
@@ -99,6 +100,7 @@ Hooks.on(
             reload,
             unload,
             nextChamber,
+            fireBothBarrels,
             conjureBullet,
             reloadMagazine,
             reloadAll,
