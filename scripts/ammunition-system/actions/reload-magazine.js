@@ -32,7 +32,10 @@ export async function reloadMagazine() {
         actor,
         weapon => weapon.isRepeating,
         "You have no repeating weapons.",
-        weapon => !getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id)
+        weapon => {
+            const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
+            return !magazineLoadedEffect || !getFlag(magazineLoadedEffect, "remaining");
+        }
     );
     if (!weapon) {
         return;

@@ -1,6 +1,7 @@
 import { getEffectFromActor, getFlag, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { isLoaded } from "./utils.js";
+import { isFullyLoaded, isLoaded } from "./utils.js";
 
 export function checkLoaded(actor, weapon) {
     if (useAdvancedAmmunitionSystem(actor)) {
@@ -21,14 +22,14 @@ export function checkLoaded(actor, weapon) {
         // For non-repeating weapons that don't require loading, we need to have enough
         // ammunition in our selected stack to fire
         if (weapon.usesAmmunition && !weapon.isRepeating && !weapon.requiresLoading) {
-            if (!checkAmmunition(weapon)) {
+            if (!checkAmmunition(actor, weapon)) {
                 return false;
             }
         }
     } else {
         // Check the weapon has ammunition to fire
         if (weapon.usesAmmunition) {
-            if (!checkAmmunition(weapon)) {
+            if (!checkAmmunition(actor, weapon)) {
                 return false;
             }
         }
@@ -80,6 +81,11 @@ function checkLoadedRound(actor, weapon) {
         }
     }
 
+    if (isFiringBothBarrels(actor, weapon) && !isFullyLoaded(actor, weapon)) {
+        showWarning(`${weapon.name} does not have both barrels loaded!`);
+        return false;
+    }
+
     return true;
 }
 
@@ -92,13 +98,16 @@ function checkChamberLoaded(actor, weapon) {
     return true;
 }
 
-function checkAmmunition(weapon) {
+function checkAmmunition(actor, weapon) {
     const ammunition = weapon.ammunition;
     if (!ammunition) {
         showWarning(`${weapon.name} has no ammunition selected!`);
         return false;
-    } else if (ammunition.quantity <= 0) {
+    } else if (ammunition.quantity < 1) {
         showWarning(`${weapon.name} has no ammunition remaining!`);
+        return false;
+    } else if (isFiringBothBarrels(actor, weapon) && ammunition.quantity < 2) {
+        showWarning(`${weapon.name} does not have enough ammunition to fire both barrels!`);
         return false;
     }
 

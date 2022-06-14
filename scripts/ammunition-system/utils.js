@@ -53,14 +53,14 @@ export function isFullyLoaded(actor, weapon) {
 /**
  * Remove a piece of ammunition from the weapon.
  */
-export function removeAmmunition(actor, weapon, updates) {
+export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1) {
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
     if (!loadedEffect) {
         return;
     }
 
     if (weapon.capacity) {
-        const loadedChambers = getFlag(loadedEffect, "loadedChambers") - 1;
+        const loadedChambers = getFlag(loadedEffect, "loadedChambers") - ammunitionToRemove;
         const loadedCapacity = getFlag(loadedEffect, "capacity");
         if (loadedChambers > 0) {
             updates.update(async () =>
@@ -77,7 +77,6 @@ export function removeAmmunition(actor, weapon, updates) {
         }
     } else {
         updates.remove(loadedEffect);
-        clearLoadedChamber(actor, weapon, updates);
     }
 }
 
