@@ -1,3 +1,6 @@
+## 2.6.0 - 2022-06-14 (Pathfinder 2e 3.11.1)
+- Add the ability to fire double-barreled weapons with both barrels to increase damage 
+
 ## 2.5.1 - 2022-05-27 (Pathfinder 2e 3.10.4)
 - Fix an issue preventing the Crossbow Ace and Crossbow Crack Shot effects being applied when reloading
 

@@ -22,6 +22,8 @@ Weapons with the capacity or double barrel trait can be loaded and fired much li
 
 If <b>Prevent Firing Weapon if not Loaded</b> is enabled, then you must also have the <b>Chamber Loaded</b> effect to fire a capacity weapon. You can use either the <b>Next Chamber</b> macro to switch to a loaded chamber (if the weapon is already loaded with at least one round) or the <b>Reload</b> macro to load a new round. You can fire a double barrel weapon as long as at least one barrel is loaded.
 
+You can use the <b>Fire Both Barrels</b> macro to switch to firing both barrels of weapons with the double barrel trait, to deal increased damage. While you have this enabled, you must have both barrels loaded to fire double-barreled weapons.
+
 #### Effects
 The <b>Loaded</b> effect targets a specific weapon and serves as a reminder that the weapon is loaded. This effect is removed if the weapon is fired and, optionally, the weapon cannot be fired if it isn't loaded.
 
