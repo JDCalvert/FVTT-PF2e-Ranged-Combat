@@ -69,13 +69,13 @@ export async function reload() {
                 if (loadedEffect) {
                     const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
                     const loadedAmmunitionName = getFlag(loadedEffect, "ammunitionName");
+                    const loadedChambers = getFlag(loadedEffect, "loadedChambers");
+                    const loadedCapacity = getFlag(loadedEffect, "capacity");
+
                     if (ammo.sourceId !== loadedSourceId) {
                         showWarning(`${weapon.name} is already loaded with ${loadedChambers} ${loadedAmmunitionName}.`);
                         return;
                     }
-
-                    const loadedChambers = getFlag(loadedEffect, "loadedChambers");
-                    const loadedCapacity = getFlag(loadedEffect, "capacity");
 
                     // Increase the number of loaded chambers by one
                     updates.update(async () => {
@@ -137,12 +137,13 @@ export async function reload() {
 
                 setEffectTarget(loadedEffectSource, weapon);
                 loadedEffectSource.name = `${loadedEffectSource.name} (${ammo.name})`;
-
-                const loadedEffectSourceFlags = loadedEffectSource.flags["pf2e-ranged-combat"];
-                loadedEffectSourceFlags.ammunitionName = ammo.name;
-                loadedEffectSourceFlags.ammunitionImg = ammo.img;
-                loadedEffectSourceFlags.ammunitionItemId = ammo.id;
-                loadedEffectSourceFlags.ammunitionSourceId = ammo.sourceId;
+                loadedEffectSource.flags["pf2e-ranged-combat"] = {
+                    ...loadedEffectSource.flags["pf2e-ranged-combat"],
+                    ammunitionName: ammo.name,
+                    ammunitionImg: ammo.img,
+                    ammunitionItemId: ammo.id,
+                    ammunitionSourceId: ammo.sourceId
+                };
 
                 await postReloadToChat(token, weapon, ammo.name);
             }
