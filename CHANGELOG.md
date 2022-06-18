@@ -1,3 +1,6 @@
+## Unreleased
+- Support loading capacity weapons with different ammunition types
+
 ## 2.6.1 - 2022-06-15 (Pathfinder 2e 3.11.1)
 - Display an error message when trying to reload a weapon with two different ammunition types
 
