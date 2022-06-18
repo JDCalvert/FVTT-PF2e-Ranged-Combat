@@ -1,7 +1,7 @@
 import { getEffectFromActor, getFlag, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { isFullyLoaded, isLoaded } from "./utils.js";
+import { getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
 export function checkLoaded(actor, weapon) {
     if (useAdvancedAmmunitionSystem(actor)) {
@@ -84,6 +84,15 @@ function checkLoadedRound(actor, weapon) {
     if (isFiringBothBarrels(actor, weapon) && !isFullyLoaded(actor, weapon)) {
         showWarning(`${weapon.name} does not have both barrels loaded!`);
         return false;
+    }
+
+    if (weapon.isDoubleBarrel && !isFiringBothBarrels(actor, weapon)) {
+        const selectedAmmunition = getSelectedAmmunition(actor, weapon);
+        if (!selectedAmmunition) {
+            return false;
+        }
+
+        weapon.selectedAmmunition = selectedAmmunition;
     }
 
     return true;

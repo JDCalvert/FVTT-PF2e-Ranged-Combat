@@ -1,7 +1,7 @@
 import { findItemOnActor, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
-import { AMMUNITION_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { clearLoadedChamber, removeAmmunition } from "./utils.js";
+import { AMMUNITION_EFFECT_ID, CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { buildLoadedEffectName, clearLoadedChamber, removeAmmunition } from "./utils.js";
 
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
@@ -86,7 +86,7 @@ function fireWeaponRepeating(actor, weapon, updates) {
 
 function fireWeaponReloadable(actor, weapon, updates) {
     if (weapon.isCapacity) {
-        clearLoadedChamber(actor, weapon, updates);
+        fireWeaponCapacity(actor, weapon, updates);
     }
 
     let ammunitionToRemove = 1;
@@ -121,6 +121,35 @@ function fireWeaponReloadable(actor, weapon, updates) {
         }
 
         createAmmunitionEffect(weapon, ammunition, updates);
+    }
+}
+
+function fireWeaponCapacity(actor, weapon, updates) {
+    clearLoadedChamber(actor, weapon, updates);
+
+    const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+    const chamberAmmunitionId = getFlag(chamberLoadedEffect, "ammunition");
+
+    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+    let loadedAmmunitions = getFlag(loadedEffect, "ammunition");
+    
+    const loadedAmmunition = loadedAmmunitions.findIndex(ammunition => ammunition.sourceId === chamberAmmunitionId.sourceId);
+    if (loadedAmmunition.quantity > 1) {
+        loadedAmmunition.quantity--;
+    } else {
+        loadedAmmunitions = loadedAmmunitions.filter(ammunition => ammunition.id !== loadedAmmunition.id);
+    }
+
+    if (loadedAmmunitions.length) {
+        // The weapon is still loaded with something, so update
+        updates.update(async () => {
+            await loadedEffect.update({
+                "flags.pf2e-ranged-combat.ammunition": loadedAmmunitions,
+                "name": buildLoadedEffectName(loadedEffect)
+            });
+        });
+    } else {
+        updates.remove(loadedEffect);
     }
 }
 

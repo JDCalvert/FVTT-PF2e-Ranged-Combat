@@ -1,7 +1,7 @@
-import { getControlledActorAndToken, getEffectFromActor, getItem, postInChat, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
-import { isLoaded } from "../utils.js";
+import { getSelectedAmmunition, isLoaded } from "../utils.js";
 
 export async function nextChamber() {
     const { actor, token } = getControlledActorAndToken();
@@ -22,35 +22,89 @@ export async function nextChamber() {
         return;
     }
 
-    const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
-    if (chamberLoadedEffect) {
-        showWarning(`${weapon.name} already has a loaded chamber selected!`);
-        return;
-    }
-
     const updates = new Updates(actor);
 
-    await addChamberLoaded(weapon, updates);
+    if (useAdvancedAmmunitionSystem(actor)) {
+        const selectedAmmunition = getSelectedAmmunition(actor, weapon);
+        if (!selectedAmmunition) {
+            return;
+        }
 
-    await postInChat(
-        token.actor,
-        SELECT_NEXT_CHAMBER_IMG,
-        `${token.name} selects the next loaded chamber on their ${weapon.name}.`,
-        "Interact",
-        1,
-    );
+        const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+        if (chamberLoadedEffect) {
+            const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
+            if (chamberAmmunition.sourceId === selectedAmmunition.sourceId) {
+                showWarning(`${weapon.name} already has a chamber loaded with ${selectedAmmunition.name} selected!`);
+                return;
+            }
+        }
+
+        await setLoadedChamber(actor, weapon, selectedAmmunition, updates);
+        await postInChat(
+            token.actor,
+            SELECT_NEXT_CHAMBER_IMG,
+            `${token.name} selects a chamber loaded with ${selectedAmmunition.name} on their ${weapon.name}.`,
+            "Interact",
+            1,
+        );
+    } else {
+        const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+        if (chamberLoadedEffect) {
+            showWarning(`${weapon.name} already has a loaded chamber selected!`);
+            return;
+        }
+
+        await addChamberLoaded(weapon, null, updates);
+        await postInChat(
+            token.actor,
+            SELECT_NEXT_CHAMBER_IMG,
+            `${token.name} selects the next loaded chamber on their ${weapon.name}.`,
+            "Interact",
+            1,
+        );
+    }
 
     updates.handleUpdates();
 }
 
-export async function setLoadedChamber(actor, weapon, updates) {
-    if (!getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
-        await addChamberLoaded(weapon, updates);
+export async function setLoadedChamber(actor, weapon, ammo, updates) {
+    const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+    if (chamberLoadedEffect) {
+        // If we're not setting some specific ammunition, then the presence of an effect means
+        // we don't need another
+        if (!ammo) {
+            return;
+        }
+
+        // If the ammunition we're selecting is already selected, we don't need a new effect
+        const ammunition = getFlag(chamberLoadedEffect, "ammunition");
+        if (ammunition.sourceId === ammo.sourceId) {
+            return;
+        }
+
+        // Remove the existing effect before creating the new one
+        updates.remove(chamberLoadedEffect);
     }
+
+    await addChamberLoaded(weapon, ammo, updates);
 }
 
-async function addChamberLoaded(weapon, updates) {
+async function addChamberLoaded(weapon, ammo, updates) {
     const chamberLoadedSource = await getItem(CHAMBER_LOADED_EFFECT_ID);
     setEffectTarget(chamberLoadedSource, weapon);
+
+    if (ammo) {
+        chamberLoadedSource.flags = {
+            ...chamberLoadedSource.flags,
+            ammunition: {
+                name: ammo.name,
+                img: ammo.img,
+                id: ammo.id,
+                sourceId: ammo.sourceId
+            }
+        };
+        chamberLoadedSource.name = `${chamberLoadedSource.name} (${ammo.name})`;
+    }
+
     updates.add(chamberLoadedSource);
 }

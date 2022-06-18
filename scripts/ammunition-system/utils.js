@@ -1,4 +1,4 @@
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget, showWarning } from "../utils/utils.js";
+import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 /**
@@ -47,6 +47,34 @@ export function isFullyLoaded(actor, weapon) {
         return roundsLoaded >= weapon.capacity;
     } else {
         return !!roundsLoaded;
+    }
+}
+
+export function getSelectedAmmunition(actor, weapon) {
+    const ammunitions = [];
+
+    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+    if (loadedEffect) {
+        const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
+        ammunitions.push(...loadedAmmunitions);
+    }
+
+    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+    if (conjuredRoundEffect) {
+        ammunitions.push(
+            {
+                name: "Conjured Round",
+                img: conjuredRoundEffect.img,
+                id: "conjuredRound",
+                sourceId: "conjuredRound"
+            }
+        )
+    }
+
+    if (ammunitions > 1) {
+        return await ItemSelectDialog.getItem("Ammunition Select", "Select which ammunition to switch to.", ammunitions);
+    } else {
+        return ammunitions[0];
     }
 }
 
@@ -117,5 +145,31 @@ export async function triggerCrossbowReloadEffects(actor, token, weapon, updates
                 updates.add(effect);
             }
         }
+    }
+}
+
+/**
+ * For weapons with a capacity of more than one, build the 
+ */
+export function buildLoadedEffectName(loadedEffect) {
+    const ammunitions = getFlag(loadedEffect, "ammunition");
+
+    // We're not tracking specific ammunition, either because it's for a repeating weapon or
+    // we're using the simple ammunition system
+    if (!ammunitions || !ammunitions.length) {
+        return loadedEffect.name;
+    }
+
+    const loadedChambers = getFlag(loadedChambers, "loadedChambers");
+    const capacity = getFlag(loadedEffect, "capacity");
+    const originalName = getFlag(loadedEffect, "originalName");
+
+    // We have exactly one type of ammunition, so the name is 
+    if (ammunitions.length === 1) {
+        const ammunition = ammunitions[0];
+        return `${originalName} (${ammunition.name}) (${ammunition.quantity}/${capacity})`;
+    } else {
+        const ammunitionsDescription = ammunitions.map(ammunition => `${ammunition.name} x${ammunition.quantity}`).join(", ");
+        return `${originalName} (${ammunitionsDescription}) (${loadedChambers}/${capacity})`;
     }
 }

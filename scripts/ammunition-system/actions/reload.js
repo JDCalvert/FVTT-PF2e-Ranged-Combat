@@ -1,7 +1,7 @@
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
-import { checkFullyLoaded, isFullyLoaded, triggerCrossbowReloadEffects } from "../utils.js";
+import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded, triggerCrossbowReloadEffects } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 import { unloadAmmunition } from "./unload.js";
 
@@ -67,24 +67,33 @@ export async function reload() {
                 // If some chambers are already loaded, we only want to load with the same type of ammunition
                 const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
                 if (loadedEffect) {
-                    const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
-                    const loadedAmmunitionName = getFlag(loadedEffect, "ammunitionName");
                     const loadedChambers = getFlag(loadedEffect, "loadedChambers");
                     const loadedCapacity = getFlag(loadedEffect, "capacity");
+                    const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
 
-                    if (ammo.sourceId !== loadedSourceId) {
-                        showWarning(`${weapon.name} is already loaded with ${loadedChambers} ${loadedAmmunitionName}.`);
-                        return;
+                    let loadedAmmunition = loadedAmmunitions.find(ammunition => ammunition.sourceId === ammo.sourceId);
+                    if (loadedAmmunition) {
+                        loadedAmmunition.quantity++;
+                    } else {
+                        loadedAmmunition = {
+                            name: ammo.name,
+                            img: ammo.img,
+                            id: ammo.id,
+                            sourceId: ammo.sourceId,
+                            quantity: 1
+                        };
+                        loadedAmmunitions.push(loadedAmmunition);
                     }
 
                     // Increase the number of loaded chambers by one
                     updates.update(async () => {
                         await loadedEffect.update({
                             "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1,
-                            "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`
+                            "flags.pf2e-ranged-combat.ammunition": loadedAmmunitions,
+                            "name": buildLoadedEffectName(loadedEffect)
                         });
                     });
-                    updates.floatyText(`${getFlag(loadedEffect, "name")} ${loadedChambers + 1}/${loadedCapacity}`, true);
+                    updates.floatyText(`${getFlag(loadedEffect, "originalName")} +${loadedAmmunition.name} ${loadedChambers + 1}/${loadedCapacity}`, true);
                 } else {
                     // No chambers are loaded, so create a new loaded effect
                     const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
@@ -92,25 +101,27 @@ export async function reload() {
 
                     setEffectTarget(loadedEffectSource, weapon);
 
-                    const loadedEffectName = `${loadedEffectSource.name} (${ammo.name})`;
-
-                    loadedEffectSource.name = `${loadedEffectName} (1/${weapon.capacity})`;
                     loadedEffectSource.flags["pf2e-ranged-combat"] = {
                         ...loadedEffectSource.flags["pf2e-ranged-combat"],
-                        name: loadedEffectName,
-                        ammunitionName: ammo.name,
-                        ammunitionImg: ammo.img,
-                        ammunitionItemId: ammo.id,
-                        ammunitionSourceId: ammo.sourceId,
+                        originalName: loadedEffectSource.name,
+                        ammunition: [
+                            {
+                                name: ammo.name,
+                                img: ammo.img,
+                                id: ammo.id,
+                                sourceId: ammo.sourceId,
+                                quantity: 1
+                            }
+                        ],
                         loadedChambers: 1,
-                        capacity: weapon.capacity,
-                        currentChamberLoaded: true
+                        capacity: weapon.capacity
                     };
+                    loadedEffectSource.name = `${loadedEffectSource.name} (${ammo.name}) (1/${weapon.capacity})`;
                 }
 
                 // For a capacity weapon, if the selected chamber isn't loaded, assume the chamber being loaded is the selected one
                 if (weapon.isCapacity) {
-                    await setLoadedChamber(actor, weapon, updates);
+                    await setLoadedChamber(actor, weapon, ammo, updates);
                 }
 
                 await postReloadToChat(token, weapon, ammo.name);
@@ -193,7 +204,7 @@ export async function reload() {
                 };
 
                 if (weapon.isCapacity) {
-                    await setLoadedChamber(actor, weapon, updates);
+                    await setLoadedChamber(actor, weapon, null, updates);
                 }
             }
         } else {
