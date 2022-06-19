@@ -25,7 +25,7 @@ export async function nextChamber() {
     const updates = new Updates(actor);
 
     if (useAdvancedAmmunitionSystem(actor)) {
-        const selectedAmmunition = getSelectedAmmunition(actor, weapon);
+        const selectedAmmunition = await getSelectedAmmunition(actor, weapon);
         if (!selectedAmmunition) {
             return;
         }
@@ -94,8 +94,8 @@ async function addChamberLoaded(weapon, ammo, updates) {
     setEffectTarget(chamberLoadedSource, weapon);
 
     if (ammo) {
-        chamberLoadedSource.flags = {
-            ...chamberLoadedSource.flags,
+        chamberLoadedSource.flags["pf2e-ranged-combat"] = {
+            ...chamberLoadedSource.flags["pf2e-ranged-combat"],
             ammunition: {
                 name: ammo.name,
                 img: ammo.img,

@@ -1,5 +1,6 @@
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
+import { ItemSelectDialog } from "../utils/item-select-dialog.js";
+import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getEffectFromActor, getFlag, getFlags, getItem, getItemFromActor, setEffectTarget, showWarning } from "../utils/utils.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 /**
  * Check if the weapon is fully loaded and, if it is, show a warning
@@ -50,7 +51,7 @@ export function isFullyLoaded(actor, weapon) {
     }
 }
 
-export function getSelectedAmmunition(actor, weapon) {
+export async function getSelectedAmmunition(actor, weapon) {
     const ammunitions = [];
 
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
@@ -65,14 +66,18 @@ export function getSelectedAmmunition(actor, weapon) {
             {
                 name: "Conjured Round",
                 img: conjuredRoundEffect.img,
-                id: "conjuredRound",
-                sourceId: "conjuredRound"
+                id: CONJURED_ROUND_ITEM_ID,
+                sourceId: CONJURED_ROUND_ITEM_ID
             }
-        )
+        );
     }
 
-    if (ammunitions > 1) {
-        return await ItemSelectDialog.getItem("Ammunition Select", "Select which ammunition to switch to.", ammunitions);
+    if (ammunitions.length > 1) {
+        return await ItemSelectDialog.getItem(
+            "Ammunition Select",
+            "Select which ammunition to switch to.",
+            new Map([["Loaded Ammunition", ammunitions]])
+        );
     } else {
         return ammunitions[0];
     }
@@ -104,6 +109,38 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
             clearLoadedChamber(actor, weapon, updates);
         }
     } else {
+        updates.remove(loadedEffect);
+    }
+}
+
+export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates) {
+    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+    const loadedFlags = getFlags(loadedEffect);
+
+    loadedFlags.loadedChambers--;
+
+    const loadedAmmunition = loadedFlags.ammunition.find(ammunitionType => ammunitionType.sourceId === ammunition.sourceId);
+    if (loadedAmmunition.quantity > 1) {
+        loadedAmmunition.quantity--;
+    } else {
+        loadedFlags.ammunition = loadedFlags.ammunition.filter(ammunition => ammunition.id !== loadedAmmunition.id);
+    }
+
+    // If the weapon is still loaded, update the effect, otherwise remove it
+    if (loadedFlags.ammunition.length) {
+        updates.update(async () => {
+            await loadedEffect.update({
+                "flags.pf2e-ranged-combat": loadedFlags,
+                "name": buildLoadedEffectName(loadedEffect)
+            });
+        });
+        updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} (${loadedFlags.loadedChambers}/${loadedFlags.capacity})`, false);
+    } else {
+        updates.update(async () => {
+            await loadedEffect.update({
+                "name": `${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} (0/${loadedFlags.capacity})`
+            });
+        });
         updates.remove(loadedEffect);
     }
 }
@@ -160,7 +197,6 @@ export function buildLoadedEffectName(loadedEffect) {
         return loadedEffect.name;
     }
 
-    const loadedChambers = getFlag(loadedChambers, "loadedChambers");
     const capacity = getFlag(loadedEffect, "capacity");
     const originalName = getFlag(loadedEffect, "originalName");
 
@@ -169,7 +205,8 @@ export function buildLoadedEffectName(loadedEffect) {
         const ammunition = ammunitions[0];
         return `${originalName} (${ammunition.name}) (${ammunition.quantity}/${capacity})`;
     } else {
+        const ammunitionCount = ammunitions.map(ammunition => ammunition.quantity).reduce((current, next) => current + next);
         const ammunitionsDescription = ammunitions.map(ammunition => `${ammunition.name} x${ammunition.quantity}`).join(", ");
-        return `${originalName} (${ammunitionsDescription}) (${loadedChambers}/${capacity})`;
+        return `${originalName} (${ammunitionsDescription}) (${ammunitionCount}/${capacity})`;
     }
 }

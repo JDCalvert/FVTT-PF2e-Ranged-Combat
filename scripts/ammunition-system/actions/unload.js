@@ -1,7 +1,7 @@
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
-import { LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
-import { removeAmmunition } from "../utils.js";
+import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
+import { getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity } from "../utils.js";
 
 export async function unload() {
     const { actor, token } = getControlledActorAndToken();
@@ -17,8 +17,9 @@ export async function unload() {
     const updates = new Updates(actor);
 
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-    if (!loadedEffect && !magazineLoadedEffect) {
+    if (!loadedEffect && !conjuredRoundEffect && !magazineLoadedEffect) {
         showWarning(`${weapon.name} is not loaded!`);
         return;
     }
@@ -38,12 +39,32 @@ export async function unload() {
                     "1"
                 );
             }
+        } else if (weapon.capacity) {
+            const ammunition = await getSelectedAmmunition(actor, weapon);
+            if (!ammunition) {
+                return;
+            }
+
+            if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
+                const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+                updates.remove(conjuredRoundEffect);
+            } else {
+                moveAmmunitionToInventory(actor, ammunition, updates);
+                removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
+            }
+            postInChat(
+                actor,
+                ammunition.img,
+                `${token.name} unloads ${ammunition.name} from their ${weapon.name}.`,
+                "Interact",
+                "1"
+            );
         } else {
             unloadAmmunition(actor, weapon, updates);
             postInChat(
                 actor,
                 loadedEffect.img,
-                `${token.name} unloads ${getFlag(loadedEffect, "ammunitionName")} from their ${weapon.name}.`,
+                `${token.name} unloads ${getFlag(loadedEffect, "ammunition").name} from their ${weapon.name}.`,
                 "Interact",
                 "1"
             );
@@ -69,7 +90,7 @@ function getLoadedWeapon(actor) {
             if (useAdvancedAmmunitionSystem(actor) && weapon.isRepeating) {
                 return getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
             } else if (weapon.requiresLoading) {
-                return getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+                return isLoaded(actor, weapon);
             }
             return false;
         },
@@ -115,12 +136,16 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
 
 export async function unloadAmmunition(actor, weapon, updates) {
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-    const loadedItemId = getFlag(loadedEffect, "ammunitionItemId");
-    const loadedSourceId = getFlag(loadedEffect, "ammunitionSourceId");
+    const loadedAmmunition = getFlag(loadedEffect, "ammunition");
 
+    moveAmmunitionToInventory(actor, loadedAmmunition, updates);
+    removeAmmunition(actor, weapon, updates);
+}
+
+export async function moveAmmunitionToInventory(actor, ammunition, updates) {
     // Try to find either the stack the loaded ammunition came from, or another stack of the same ammunition
-    const ammunitionItem = actor.items.find(item => item.id === loadedItemId && !item.isStowed)
-        || actor.items.find(item => item.sourceId === loadedSourceId && !item.isStowed);
+    const ammunitionItem = actor.items.find(item => item.id === ammunition.id && !item.isStowed)
+        || actor.items.find(item => item.sourceId === ammunition.sourceId && !item.isStowed);
 
     if (ammunitionItem) {
         // We still have the stack the ammunition originally came from, or another that's the same.
@@ -132,10 +157,8 @@ export async function unloadAmmunition(actor, weapon, updates) {
         });
     } else {
         // Create a new stack with one piece of ammunition in it
-        const ammunitionSource = await getItem(loadedSourceId);
+        const ammunitionSource = await getItem(ammunition.sourceId);
         ammunitionSource.data.quantity = 1;
         updates.add(ammunitionSource);
     }
-
-    removeAmmunition(actor, weapon, updates);
 }

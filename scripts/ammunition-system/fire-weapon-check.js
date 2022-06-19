@@ -3,7 +3,7 @@ import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
-export function checkLoaded(actor, weapon) {
+export async function checkLoaded(actor, weapon) {
     if (useAdvancedAmmunitionSystem(actor)) {
         // For repeating weapons, check that a magazine is loaded
         if (weapon.isRepeating) {
@@ -14,7 +14,7 @@ export function checkLoaded(actor, weapon) {
 
         // For reloadable weapons, check that the weapon is loaded
         if (weapon.requiresLoading) {
-            if (!checkLoadedRound(actor, weapon)) {
+            if (!await checkLoadedRound(actor, weapon)) {
                 return false;
             }
         }
@@ -36,7 +36,7 @@ export function checkLoaded(actor, weapon) {
 
         // If Prevent Firing Weapon if not Loaded is enabled, check the weapon is loaded
         if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading) {
-            if (!checkLoadedRound(actor, weapon)) {
+            if (!await checkLoadedRound(actor, weapon)) {
                 return false;
             }
         }
@@ -69,7 +69,7 @@ function checkLoadedMagazine(actor, weapon) {
 /**
  * Check the weapon has a round loaded
  */
-function checkLoadedRound(actor, weapon) {
+async function checkLoadedRound(actor, weapon) {
     if (!isLoaded(actor, weapon)) {
         showWarning(`${weapon.name} is not loaded!`);
         return false;
@@ -86,8 +86,8 @@ function checkLoadedRound(actor, weapon) {
         return false;
     }
 
-    if (weapon.isDoubleBarrel && !isFiringBothBarrels(actor, weapon)) {
-        const selectedAmmunition = getSelectedAmmunition(actor, weapon);
+    if (useAdvancedAmmunitionSystem(actor) && weapon.isDoubleBarrel && !isFiringBothBarrels(actor, weapon)) {
+        const selectedAmmunition = await getSelectedAmmunition(actor, weapon);
         if (!selectedAmmunition) {
             return false;
         }

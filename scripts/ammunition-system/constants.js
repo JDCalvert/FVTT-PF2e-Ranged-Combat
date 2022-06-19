@@ -16,3 +16,6 @@ export const UNLOAD_IMG = "modules/pf2e-ranged-combat/art/unload.webp";
 export const CONSOLIDATE_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/consolidate_ammunition.webp";
 export const SELECT_NEXT_CHAMBER_IMG = "modules/pf2e-ranged-combat/art/select-next-chamber.webp";
 export const CONJURE_BULLET_IMG = "modules/pf2e-ranged-combat/art/conjure-bullet.webp";
+
+// Other
+export const CONJURED_ROUND_ITEM_ID = "conjuredRound";
