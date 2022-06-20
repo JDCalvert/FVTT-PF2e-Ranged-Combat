@@ -222,6 +222,42 @@ export async function reload() {
     updates.handleUpdates();
 };
 
+export async function reloadAll() {
+    showWarning("Reload All is deprecated, will not work for capacity weapons, and will be removed in version 3.0.0");
+
+    const { actor, token } = getControlledActorAndToken();
+    if (!actor) {
+        return;
+    }
+
+    if (useAdvancedAmmunitionSystem(actor)) {
+        showWarning("You cannot use this macro with the Advanced Ammunition System active. Please reload each weapon individually.");
+        return;
+    }
+
+    let weapons = getWeapons(actor, weapon => weapon.requiresLoading, "You have no reloadable weapons.");
+    if (!weapons.length) {
+        return;
+    }
+
+    weapons = weapons.filter(weapon => !getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id));
+    if (!weapons.length) {
+        ui.notifications.info("All your weapons are already loaded.");
+        return;
+    }
+
+    const updates = new Updates(actor);
+
+    for (const weapon of weapons) {
+        const loadedEffect = await getItem(LOADED_EFFECT_ID);
+        setEffectTarget(loadedEffect, weapon);
+        updates.add(loadedEffect);
+    }
+
+    postInChat(actor, RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");
+    await updates.handleUpdates();
+}
+
 async function postReloadToChat(token, weapon, ammunitionName) {
     const reloadActions = weapon.reload;
     let desc = `${token.name} reloads their ${weapon.name}`;
