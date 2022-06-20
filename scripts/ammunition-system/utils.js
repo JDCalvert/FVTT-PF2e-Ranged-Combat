@@ -122,7 +122,7 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     const loadedAmmunition = loadedFlags.ammunition.find(ammunitionType => ammunitionType.sourceId === ammunition.sourceId);
     loadedAmmunition.quantity--;
     if (loadedAmmunition.quantity === 0) {
-        loadedFlags.ammunition = loadedFlags.ammunition.filter(ammunition => ammunition.id !== loadedAmmunition.id);
+        loadedFlags.ammunition.findSplice(ammunition => ammunition.id === loadedAmmunition.id)
         clearLoadedChamber(actor, weapon, loadedAmmunition, updates);
     }
 

@@ -13,6 +13,19 @@ Hooks.on(
     () => {
         game.settings.register(
             "pf2e-ranged-combat",
+            "schemaVersion",
+            {
+                name: "Schema Version",
+                hint: "The current version of the data related to this module",
+                scope: "world",
+                config: false,
+                type: Number,
+                default: 
+            }
+        )
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "postFullAction",
             {
                 name: "Post Full Action from Macros",
