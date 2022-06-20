@@ -1,6 +1,6 @@
 import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postInChat, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
+import { CONJURED_ROUND_ITEM_ID as CONJURED_ROUND_ITEM_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
 import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 
@@ -42,7 +42,17 @@ export async function conjureBullet() {
     updates.add(conjuredRoundSource);
 
     if (weapon.isCapacity) {
-        await setLoadedChamber(actor, weapon, updates);
+        await setLoadedChamber(
+            actor,
+            weapon,
+            {
+                name: conjuredRoundSource.name,
+                img: CONJURE_BULLET_IMG,
+                id: CONJURED_ROUND_ITEM_ID,
+                sourceId: CONJURED_ROUND_ITEM_ID
+            },
+            updates
+        );
     }
 
     // If we're not in combat, set the duration to one round so it doesn't expire immediately

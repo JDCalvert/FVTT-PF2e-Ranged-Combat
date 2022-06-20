@@ -133,6 +133,7 @@ export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
         effect.getFlag("core", "sourceId") === sourceId
         && getFlag(effect, "targetId") === targetId
+        && !effect.isExpired
     );
 }
 
@@ -236,6 +237,10 @@ export function showWarning(warningMessage) {
             }
         ).render(true);
     }
+}
+
+export function getFlags(item) {
+    return item.data.flags["pf2e-ranged-combat"];
 }
 
 export function getFlag(item, flagName) {

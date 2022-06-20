@@ -84,14 +84,16 @@ export async function reloadMagazine() {
     const magazineLoadedEffectSource = await getItem(MAGAZINE_LOADED_EFFECT_ID);
     setEffectTarget(magazineLoadedEffectSource, weapon);
 
-    const magazineLoadedEffectFlags = magazineLoadedEffectSource.flags["pf2e-ranged-combat"];
-    magazineLoadedEffectFlags.name = `${magazineLoadedEffectSource.name} (${ammo.name})`;
-    magazineLoadedEffectFlags.capacity = ammo.charges.max;
-    magazineLoadedEffectFlags.remaining = ammo.charges.current;
-    magazineLoadedEffectFlags.ammunitionName = ammo.name;
-    magazineLoadedEffectFlags.ammunitionImg = ammo.img;
-    magazineLoadedEffectFlags.ammunitionItemId = ammo.id;
-    magazineLoadedEffectFlags.ammunitionSourceId = ammo.sourceId;
+    magazineLoadedEffectSource.flags["pf2e-ranged-combat"] = {
+        ...magazineLoadedEffectSource.flags["pf2e-ranged-combat"],
+        name: `${magazineLoadedEffectSource.name} (${ammo.name})`,
+        capacity: ammo.charges.max,
+        remaining: ammo.charges.current,
+        ammunitionName: ammo.name,
+        ammunitionImg: ammo.img,
+        ammunitionItemId: ammo.id,
+        ammunitionSourceId: ammo.sourceId
+    };
 
     magazineLoadedEffectSource.name = `${magazineLoadedEffectSource.name} (${ammo.name}) (${ammo.charges.current}/${ammo.charges.max})`;
 

@@ -42,7 +42,7 @@ Hooks.on(
 
                 const weapon = transformWeapon(contextWeapon);
 
-                if (!checkLoaded(actor, weapon)) {
+                if (!await checkLoaded(actor, weapon)) {
                     return;
                 }
 

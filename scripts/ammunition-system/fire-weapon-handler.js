@@ -1,7 +1,7 @@
 import { findItemOnActor, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
-import { AMMUNITION_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { clearLoadedChamber, removeAmmunition } from "./utils.js";
+import { AMMUNITION_EFFECT_ID, CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
 
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
@@ -30,7 +30,7 @@ export function fireWeapon(actor, weapon, updates) {
 
 export function fireWeaponSimple(actor, weapon, updates) {
     if (weapon.isCapacity) {
-        clearLoadedChamber(actor, weapon, updates);
+        clearLoadedChamber(actor, weapon, null, updates);
     }
 
     let ammunitionToFire = 1;
@@ -38,10 +38,8 @@ export function fireWeaponSimple(actor, weapon, updates) {
         ammunitionToFire++;
     }
 
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
-    if (conjuredRoundEffect) {
-        updates.remove(conjuredRoundEffect);
-        postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`);
+    const consumedConjuredRound = consumeConjuredRound(actor, weapon, updates);
+    if (consumedConjuredRound) {
         ammunitionToFire--;
     }
 
@@ -86,55 +84,94 @@ function fireWeaponRepeating(actor, weapon, updates) {
 
 function fireWeaponReloadable(actor, weapon, updates) {
     if (weapon.isCapacity) {
-        clearLoadedChamber(actor, weapon, updates);
-    }
-
-    let ammunitionToRemove = 1;
-    if (isFiringBothBarrels(actor, weapon)) {
-        ammunitionToRemove++;
-    }
-
-    // If the weapon was loaded with a conjured round, consume that one first
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
-    if (conjuredRoundEffect) {
-        updates.remove(conjuredRoundEffect);
-        postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`);
-        ammunitionToRemove--;
-    }
-
-    if (ammunitionToRemove) {
-        removeAmmunition(actor, weapon, updates, ammunitionToRemove);
-
-        const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-        const ammunitionItemId = getFlag(loadedEffect, "ammunitionItemId");
-        const ammunitionSourceId = getFlag(loadedEffect, "ammunitionSourceId");
-        const ammunition = findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
-
-        if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
-            ammunition.toMessage();
-        } else {
-            postInChat(
-                actor,
-                getFlag(loadedEffect, "ammunitionImg"),
-                `${actor.name} uses ${getFlag(loadedEffect, "ammunitionName")}.`
-            );
+        fireWeaponCapacity(actor, weapon, updates);
+    } else if (weapon.isDoubleBarrel) {
+        fireWeaponDoubleBarrel(actor, weapon, updates);
+    } else {
+        const firedConjuredRound = consumeConjuredRound(actor, weapon, updates);
+        if (firedConjuredRound) {
+            return;
         }
 
-        createAmmunitionEffect(weapon, ammunition, updates);
+        const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+        updates.remove(loadedEffect);
+        postAmmunitionAndApplyEffect(actor, weapon, getFlag(loadedEffect, "ammunition"), updates);
+    }
+}
+
+function fireWeaponCapacity(actor, weapon, updates) {
+    const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+    updates.remove(chamberLoadedEffect);
+
+    const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
+
+    consumeAmmunition(actor, weapon, chamberAmmunition, updates);
+}
+
+function fireWeaponDoubleBarrel(actor, weapon, updates) {
+    if (isFiringBothBarrels(actor, weapon)) {
+        // Fire the conjured round, if there is one
+        consumeConjuredRound(actor, weapon, updates);
+
+        // Fire all the loaded ammunition
+        const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+        const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
+        for (const loadedAmmunition of loadedAmmunitions) {
+            postAmmunitionAndApplyEffect(actor, weapon, loadedAmmunition, updates);
+        }
+
+        updates.remove(loadedEffect);
+    } else {
+        consumeAmmunition(actor, weapon, weapon.selectedAmmunition, updates);
     }
 }
 
 function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
     const ammunition = weapon.ammunition;
+    if (!ammunition) {
+        return;
+    }
+
     updates.update(() => ammunition.update({ "data.quantity": ammunition.quantity - ammunitionToFire }));
 
     if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunition.toMessage();
     } else {
-        postInChat(actor, ammunition.img, `${actor.name} uses ${ammunition.name}.`);
+        postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);
     }
 
     createAmmunitionEffect(weapon, ammunition, updates);
+}
+
+/**
+ * Consume the given ammunition from a capacity weapon
+ */
+function consumeAmmunition(actor, weapon, ammunition, updates) {
+    if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
+        consumeConjuredRound(actor, weapon, updates);
+    } else {
+        removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
+        postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates);
+    }
+}
+
+function consumeConjuredRound(actor, weapon, updates) {
+    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+    if (conjuredRoundEffect) {
+        updates.remove(conjuredRoundEffect);
+        postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`);
+    }
+    return !!conjuredRoundEffect;
+}
+
+function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
+    const ammunitionItem = findItemOnActor(actor, ammunition.id, ammunition.sourceId);
+    if (ammunitionItem && game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
+        ammunitionItem.toMessage();
+    } else {
+        postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);
+    }
+    createAmmunitionEffect(weapon, ammunitionItem, updates);
 }
 
 function createAmmunitionEffect(weapon, ammunition, updates) {
