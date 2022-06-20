@@ -54,11 +54,6 @@ export class Migration001MultipleAmmunitions {
                         };
                     }
 
-                    delete loadedFlags.ammunitionName;
-                    delete loadedFlags.ammunitionImg;
-                    delete loadedFlags.ammunitionItemId;
-                    delete loadedFlags.ammunitionSourceId;
-
                     updates.update(() => {
                         loadedEffect.update({
                             "flags.pf2e-ranged-combat": loadedFlags
