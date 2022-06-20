@@ -36,7 +36,9 @@ export class Migration001MultipleAmmunitions {
 
                         loadedFlags = {
                             ...loadedFlags,
-                            ammunition: currentAmmunition
+                            ammunition: [
+                                currentAmmunition
+                            ]
                         };
                     }
 
