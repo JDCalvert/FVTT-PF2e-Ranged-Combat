@@ -8,10 +8,24 @@ import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.j
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
+import { runMigrations } from "./migrations/migration.js";
 
 Hooks.on(
     "init",
     () => {
+        game.settings.register(
+            "pf2e-ranged-combat",
+            "schemaVersion",
+            {
+                name: "Schema Version",
+                hint: "The current version of the data related to this module",
+                scope: "world",
+                config: false,
+                type: Number,
+                default: null
+            }
+        );
+
         game.settings.register(
             "pf2e-ranged-combat",
             "postFullAction",
@@ -111,3 +125,10 @@ Hooks.on(
         };
     }
 );
+
+Hooks.on(
+    "ready",
+    () => {
+        runMigrations();
+    }
+)
