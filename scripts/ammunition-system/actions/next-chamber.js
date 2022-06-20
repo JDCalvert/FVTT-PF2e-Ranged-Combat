@@ -1,6 +1,6 @@
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
 import { getSelectedAmmunition, isLoaded } from "../utils.js";
 
 export async function nextChamber() {
@@ -54,7 +54,7 @@ export async function nextChamber() {
             return;
         }
 
-        await addChamberLoaded(weapon, null, updates);
+        await addChamberLoaded(actor, weapon, null, updates);
         await postInChat(
             token.actor,
             SELECT_NEXT_CHAMBER_IMG,
@@ -86,10 +86,10 @@ export async function setLoadedChamber(actor, weapon, ammo, updates) {
         updates.remove(chamberLoadedEffect);
     }
 
-    await addChamberLoaded(weapon, ammo, updates);
+    await addChamberLoaded(actor, weapon, ammo, updates);
 }
 
-async function addChamberLoaded(weapon, ammo, updates) {
+async function addChamberLoaded(actor, weapon, ammo, updates) {
     const chamberLoadedSource = await getItem(CHAMBER_LOADED_EFFECT_ID);
     setEffectTarget(chamberLoadedSource, weapon);
 
@@ -104,6 +104,15 @@ async function addChamberLoaded(weapon, ammo, updates) {
             }
         };
         chamberLoadedSource.name = `${chamberLoadedSource.name} (${ammo.name})`;
+
+        if (ammo.sourceId === CONJURED_ROUND_ITEM_ID) {
+            chamberLoadedSource.data.duration = {
+                expiry: "turn-end",
+                sustained: false,
+                unit: "rounds",
+                value: actor.getActiveTokens().some(token => token.inCombat) ? 0 : 1
+            }
+        }
     }
 
     updates.add(chamberLoadedSource);

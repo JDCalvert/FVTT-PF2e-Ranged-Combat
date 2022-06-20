@@ -106,7 +106,7 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
         } else {
             updates.update(() => loadedEffect.update({ "name": `${getFlag(loadedEffect, "name")} (0/${loadedCapacity})` }));
             updates.remove(loadedEffect);
-            clearLoadedChamber(actor, weapon, updates);
+            clearLoadedChamber(actor, weapon, null, updates);
         }
     } else {
         updates.remove(loadedEffect);
@@ -120,10 +120,10 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     loadedFlags.loadedChambers--;
 
     const loadedAmmunition = loadedFlags.ammunition.find(ammunitionType => ammunitionType.sourceId === ammunition.sourceId);
-    if (loadedAmmunition.quantity > 1) {
-        loadedAmmunition.quantity--;
-    } else {
+    loadedAmmunition.quantity--;
+    if (loadedAmmunition.quantity === 0) {
         loadedFlags.ammunition = loadedFlags.ammunition.filter(ammunition => ammunition.id !== loadedAmmunition.id);
+        clearLoadedChamber(actor, weapon, loadedAmmunition, updates);
     }
 
     // If the weapon is still loaded, update the effect, otherwise remove it
@@ -145,10 +145,17 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     }
 }
 
-export function clearLoadedChamber(actor, weapon, updates) {
+export function clearLoadedChamber(actor, weapon, ammunition, updates) {
     const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
     if (chamberLoadedEffect) {
-        updates.remove(chamberLoadedEffect);
+        if (ammunition) {
+            const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
+            if (chamberAmmunition.sourceId === ammunition.sourceId) {
+                updates.remove(chamberLoadedEffect);
+            }
+        } else {
+            updates.remove(chamberLoadedEffect);
+        }
     }
 }
 
@@ -175,7 +182,7 @@ export async function triggerCrossbowReloadEffects(actor, token, weapon, updates
                 const effect = await getItem(effectId);
                 setEffectTarget(effect, weapon);
                 effect.flags["pf2e-ranged-combat"].fired = false;
-                if (!token.inCombat) {
+                if (!token.inCombat && effect.data.duration.value === 0) {
                     effect.data.duration.value = 1;
                 }
 

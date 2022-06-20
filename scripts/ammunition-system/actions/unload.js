@@ -1,7 +1,7 @@
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
-import { getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity } from "../utils.js";
+import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity } from "../utils.js";
 
 export async function unload() {
     const { actor, token } = getControlledActorAndToken();
@@ -48,6 +48,7 @@ export async function unload() {
             if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
                 const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
                 updates.remove(conjuredRoundEffect);
+                clearLoadedChamber(actor, weapon, ammunition, updates);
             } else {
                 moveAmmunitionToInventory(actor, ammunition, updates);
                 removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);

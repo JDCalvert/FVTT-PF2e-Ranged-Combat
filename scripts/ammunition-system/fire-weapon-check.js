@@ -28,7 +28,7 @@ export async function checkLoaded(actor, weapon) {
         }
     } else {
         // Check the weapon has ammunition to fire
-        if (weapon.usesAmmunition) {
+        if (weapon.requiresAmmunition) {
             if (!checkAmmunition(actor, weapon)) {
                 return false;
             }

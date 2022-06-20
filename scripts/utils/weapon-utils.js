@@ -80,6 +80,7 @@ function characterWeaponTransform(weapon) {
         traits: weapon.traits,
         quantity: weapon.quantity,
         usesAmmunition: usesAmmunition(weapon),
+        requiresAmmunition: requiresAmmunition(weapon),
         ammunition: getAmmunition(weapon),
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
@@ -104,6 +105,7 @@ function npcWeaponTransform(weapon) {
         traits: weapon.traits,
         quantity: weapon.quantity,
         usesAmmunition: usesAmmunition(weapon),
+        requiresAmmunition: requiresAmmunition(weapon),
         ammunition: getAmmunition(weapon),
         requiresLoading: requiresLoading(weapon),
         reload: getReloadTime(weapon),
@@ -186,7 +188,17 @@ function usesAmmunition(weapon) {
     if (weapon.actor.type === "character") {
         return weapon.requiresAmmo;
     } else if (weapon.actor.type === "npc") {
-        return false; // TODO work this out
+        return weapon.data.data.traits.value.some(trait => trait.startsWith("reload-"));
+    } else {
+        return false;
+    }
+}
+
+function requiresAmmunition(weapon) {
+    if (weapon.actor.type === "character") {
+        return usesAmmunition(weapon);
+    } else if (weapon.actor.type === "npc") {
+        return false;
     } else {
         return false;
     }

@@ -1,7 +1,7 @@
-import { findItemOnActor, getEffectFromActor, getFlag, getFlags, getItem, postInChat, setEffectTarget, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { findItemOnActor, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
-import { AMMUNITION_EFFECT_ID, CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { buildLoadedEffectName, clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
+import { AMMUNITION_EFFECT_ID, CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
 
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
@@ -30,7 +30,7 @@ export function fireWeapon(actor, weapon, updates) {
 
 export function fireWeaponSimple(actor, weapon, updates) {
     if (weapon.isCapacity) {
-        clearLoadedChamber(actor, weapon, updates);
+        clearLoadedChamber(actor, weapon, null, updates);
     }
 
     let ammunitionToFire = 1;
@@ -128,6 +128,10 @@ function fireWeaponDoubleBarrel(actor, weapon, updates) {
 
 function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
     const ammunition = weapon.ammunition;
+    if (!ammunition) {
+        return;
+    }
+
     updates.update(() => ammunition.update({ "data.quantity": ammunition.quantity - ammunitionToFire }));
 
     if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
