@@ -1,47 +1,99 @@
-import { LOADED_EFFECT_ID } from "../ammunition-system/constants.js";
-import { getFlags, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID } from "../ammunition-system/constants.js";
+import { getEffectFromActor, getFlags, Updates, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
-class Migration001MultipleAmmunitions {
+export class Migration001MultipleAmmunitions {
     version = 1;
 
     async runMigration() {
-        const actors = game.actors;
+        console.log("PF2e Ranged Combat - Running Migration 1: Multiple Ammunition Update");
+
+        const actors = game.actors.contents;
 
         for (const actor of actors) {
             if (!useAdvancedAmmunitionSystem(actor)) {
                 continue;
             }
-            
+
+            const updates = new Updates(actor);
+
             const weapons = getWeapons(actor);
-            const effects = actor.itemTypes.effect;
 
-            // Loaded Effects
-            const loadedEffects = effects.filter(effect => effect.sourceId === LOADED_EFFECT_ID);
-            for (const loadedEffect of loadedEffects) {
-                const loadedFlags = getFlags(loadedEffect);
-                const weapon = weapons.filter(weapon => weapon.id === loadedFlags.targetId);
+            for (const weapon of weapons) {
+                let currentAmmunition = null;
 
-                if (weapon.isCapacity) {
-                    loadedFlags = {
-                        ...loadedFlags,
-                        ammunition: [
-                            {
+                const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+                if (loadedEffect) {
+                    let loadedFlags = getFlags(loadedEffect);
+
+                    if (weapon.isCapacity) {
+                        currentAmmunition = {
+                            name: loadedFlags.ammunitionName,
+                            img: loadedFlags.ammunitionImg,
+                            id: loadedFlags.ammunitionItemId,
+                            sourceId: loadedFlags.ammunitionSourceId
+                        };
+
+                        loadedFlags = {
+                            ...loadedFlags,
+                            ammunition: currentAmmunition
+                        };
+                    }
+
+                    if (!weapon.isCapacity && !weapon.isRepeating) {
+                        loadedFlags = {
+                            ...loadedFlags,
+                            ammunition: {
                                 name: loadedFlags.ammunitionName,
                                 img: loadedFlags.ammunitionImg,
                                 id: loadedFlags.ammunitionItemId,
                                 sourceId: loadedFlags.ammunitionSourceId
                             }
-                        ]
-                    };
+                        };
+                    }
+
                     delete loadedFlags.ammunitionName;
                     delete loadedFlags.ammunitionImg;
                     delete loadedFlags.ammunitionItemId;
                     delete loadedFlags.ammunitionSourceId;
-                } else {
-                    
+
+                    updates.update(() => {
+                        loadedEffect.update({
+                            "flags.pf2e-ranged-combat": loadedFlags
+                        });
+                    });
+                }
+
+                // Chamber Loaded Effect
+                const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+                const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+
+                if (chamberLoadedEffect) {
+                    if (conjuredRoundEffect) {
+                        currentAmmunition = {
+                            name: "Conjured Round",
+                            img: CONJURE_BULLET_IMG,
+                            id: CONJURED_ROUND_ITEM_ID,
+                            sourceId: CONJURED_ROUND_ITEM_ID
+                        }
+                    }
+
+                    let chamberLoadedFlags = getFlags(chamberLoadedEffect);
+                    chamberLoadedFlags = {
+                        ...chamberLoadedFlags,
+                        ammunition: currentAmmunition
+                    };
+
+                    updates.update(() => {
+                        chamberLoadedEffect.update({
+                            "flags.pf2e-ranged-combat": chamberLoadedFlags,
+                            "name": `${chamberLoadedEffect.name} (${currentAmmunition.name})`
+                        });
+                    });
                 }
             }
+
+            updates.handleUpdates();
         }
     }
 }
