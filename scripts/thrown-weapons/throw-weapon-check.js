@@ -1,5 +1,5 @@
 import { showWarning } from "../utils/utils.js";
-import { removeDroppedState } from "./util.js";
+import { removeDroppedState } from "./utils.js";
 
 /**
  * Prevent rolling an attack with a weapon if the stack size is 0, the weapon is not drawn, or the weapon is a

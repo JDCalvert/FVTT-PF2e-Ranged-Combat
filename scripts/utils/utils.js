@@ -36,13 +36,12 @@ export class Updates {
     }
 
     async handleUpdates() {
-        await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
-        
         for (const update of this.itemsToUpdate) {
             await update();
         }
-        
+
         await this.actor.deleteEmbeddedDocuments("Item", [...new Set(this.itemsToRemove)].map(item => item.id));
+        await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
 
         let i = 0;
         for (const floatyText of this.floatyTextToShow) {
