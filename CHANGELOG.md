@@ -1,5 +1,5 @@
 ## 2.8.0 - 2022-06-24 (Pathfinder 2e 3.11.3)
-- Support advanced handling of thrown weapons
+- Implement the Advanced Thrown Weapon System
 
 ## 2.7.0 - 2022-06-21 (Pathfinder 2e 3.11.2)
 - Support loading capacity weapons with multiple ammunition types
