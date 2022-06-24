@@ -96,6 +96,13 @@ You can use the <b>Load Alchemical Crossbow</b> macro to load a lesser alchemica
 
 You can use the <b>Unload Alchemical Crossbow</b> macro to unload the bomb from your Alchemical Crossbow. If you haven't fired the crossbow since loading the bomb, you'll get it back in your inventory, but if you've used at least one use, the remaining uses will be wasted.
 
+### Advanced Thrown Weapon System
+This enhancement to thrown weapons handles the management of which weapons are worn, held, and dropped. A Game Master can enable or disable this system in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
+
+With the Advanced Thrown Weapon system, when you attack with a thrown weapon, it will be dropped. If the weapon is in a stack of more than one, then a separate stack will be created as the "dropped" stack, and the main stack will be set to worn (if the weapon must be drawn as a separate action from throwing it). Trying to change the dropped stack to held or worn will instead move one item back to the original stack, and change that stack to held or worn (if not already held).
+
+If the weapon has a reload of 0, then the weapon stack will remain held after the attack, although one item will still be dropped. If the weapon has a returning rune, then the weapon will remain held after the attack and no dropped stack will be created.
+
 ## Configuration
 These are the settings available for the module (all world-scope).
 
@@ -110,6 +117,9 @@ If enabled, weapons with a reload entry (or reload trait, for NPCs) cannot be fi
 
 ### Advanced Ammunition System (Player) (default: disabled)
 Enable the Advanced Ammunition System, as described above, for PCs.
+
+### Advanced Thrown Weapon System (Player) (default: enabled)
+Enable the Advanced Thrown Weapon System, as described above, for PCs.
 
 ### Minimum Permission to See Messages (default: None)
 When the module generates a message for an action being performed (e.g. reload, hunt prey etc), the message will only appear for uses with at least the permission level set here.

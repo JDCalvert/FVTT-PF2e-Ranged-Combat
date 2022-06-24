@@ -94,7 +94,7 @@ export async function loadAlchemicalCrossbow() {
         "1"
     );
 
-    await updates.handleUpdates();
+    updates.handleUpdates();
 }
 
 export async function unloadAlchemicalCrossbow() {
@@ -147,10 +147,10 @@ export async function unloadAlchemicalCrossbow() {
         );
     }
 
-    await updates.handleUpdates();
+    updates.handleUpdates();
 }
 
-export async function handleWeaponFired(actor, weapon, updates) {
+export function handleWeaponFired(actor, weapon, updates) {
     if (!isAlchemicalCrossbow(weapon)) {
         return;
     }

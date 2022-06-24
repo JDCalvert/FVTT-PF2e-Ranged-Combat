@@ -72,6 +72,7 @@ export function transformWeapon(weapon) {
 function characterWeaponTransform(weapon) {
     return {
         value: weapon,
+        actor: weapon.actor,
         id: weapon.id,
         sourceId: weapon.sourceId,
         baseType: weapon.baseType,
@@ -97,6 +98,7 @@ function characterWeaponTransform(weapon) {
 function npcWeaponTransform(weapon) {
     return {
         value: weapon,
+        actor: weapon.actor,
         id: weapon.id,
         sourceId: null,
         baseType: null,

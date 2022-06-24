@@ -8,7 +8,7 @@ import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.j
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
-import { runMigrations } from "./migrations/migration.js";
+import { runMigrations } from "./utils/migrations/migration.js";
 
 Hooks.on(
     "init",
@@ -80,6 +80,19 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "advancedThrownWeaponSystemPlayer",
+            {
+                name: "Advanced Thrown Weapon System (Player)",
+                hint: "Handle thrown weapons being dropped after use, and require another weapon to be drawn before another attack.",
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: true
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "requiredPermissionToShowMessages",
             {
                 name: "Minimum Permission to See Messages",
@@ -131,4 +144,4 @@ Hooks.on(
     () => {
         runMigrations();
     }
-)
+);
