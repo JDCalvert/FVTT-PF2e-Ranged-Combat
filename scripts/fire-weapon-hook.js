@@ -1,12 +1,28 @@
-import { handleWeaponFired as alchemicalCrossbowHandleFired } from "./actions/alchemical-crossbow.js";
+import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/alchemical-crossbow.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
+import { changeCarryType } from "./thrown-weapons/change-carry-type.js";
+import { checkThrownWeapon } from "./thrown-weapons/throw-weapon-check.js";
+import { handleThrownWeapon } from "./thrown-weapons/throw-weapon-handler.js";
 import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, getEffectFromActor, getFlag, Updates } from "./utils/utils.js";
 import { transformWeapon } from "./utils/weapon-utils.js";
 
 Hooks.on(
     "ready",
     () => {
+        /**
+         * Override the function for changing an items carrying position
+         */
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.character.prototype.adjustCarryType",
+            changeCarryType,
+            "MIXED"
+        );
+
+        /**
+         * Override the system function of consuming ammunition so we can handle it ourselves
+         */
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Actor.documentClasses.character.prototype.consumeAmmo",
@@ -16,6 +32,10 @@ Hooks.on(
             "OVERRIDE"
         );
 
+        /**
+         * Override the system function of determining a weapon's ammunition, so we still consider
+         * an empty stack as selected ammunition
+         */
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype.ammo",
@@ -26,6 +46,10 @@ Hooks.on(
             "OVERRIDE"
         );
 
+        /**
+         * Override rolling an attack, so we can make checks before the roll is made,
+         * and handle what happens after the roll
+         */
         libWrapper.register(
             "pf2e-ranged-combat",
             "game.pf2e.Check.roll",
@@ -45,6 +69,10 @@ Hooks.on(
                 if (!await checkLoaded(actor, weapon)) {
                     return;
                 }
+                
+                if (!await checkThrownWeapon(weapon)) {
+                    return;
+                }
 
                 // Actually make the roll.
                 // If for some reason the roll doesn't get made, don't do any of the post-roll stuff
@@ -54,8 +82,6 @@ Hooks.on(
                 }
 
                 const updates = new Updates(actor);
-
-                await alchemicalCrossbowHandleFired(actor, weapon, updates);
 
                 // Some effects only apply to the next shot fired. If that shot hadn't
                 // already been fired, it has now. If it had already been fired, remove the effect.
@@ -70,8 +96,10 @@ Hooks.on(
                     }
                 }
 
-                // Handle removing the ammunition from the weapon now that it's been fired
+                // Run the various handlers for the weapon being used
+                handleAlchemicalCrossbowFired(actor, weapon, updates);
                 fireWeapon(actor, weapon, updates);
+                handleThrownWeapon(weapon, updates);
 
                 await updates.handleUpdates();
 

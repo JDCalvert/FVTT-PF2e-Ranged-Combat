@@ -1,4 +1,4 @@
-import { getFlag, getItem, getItemFromActor, Updates } from "../utils/utils.js";
+import { getFlag, getItemFromActor } from "../utils/utils.js";
 import { HUNTED_PREY_EFFECT_ID, HUNT_PREY_ACTION_ID } from "./hunt-prey.js";
 
 Hooks.on(
@@ -41,7 +41,7 @@ function setHuntedPrey() {
         if (huntPreyAction) {
             const rules = huntPreyAction.toObject().data.rules;
             const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && r.value !== isHuntedPrey);
-            if (rule) {
+            if (rule && rule.value != isHuntedPrey) {
                 rule.value = isHuntedPrey;
                 huntPreyAction.update({"data.rules": rules});
             }
