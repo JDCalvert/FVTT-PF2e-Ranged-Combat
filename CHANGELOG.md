@@ -1,3 +1,6 @@
+## 2.8.1 - 2022-06-26 (Pathfinder 2e 3.11.3)
+- Add missing file, which caused various parts of the module to break
+
 ## 2.8.0 - 2022-06-24 (Pathfinder 2e 3.11.3)
 - Implement the Advanced Thrown Weapon System
 
