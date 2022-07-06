@@ -1,6 +1,7 @@
+import { handleReload } from "../../feats/crossbow-feats.js";
 import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postInChat, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CONJURED_ROUND_ITEM_ID as CONJURED_ROUND_ITEM_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
+import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
 import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 
@@ -67,6 +68,8 @@ export async function conjureBullet() {
         "Conjure Bullet",
         1,
     );
+
+    await handleReload(weapon, updates);
 
     updates.handleUpdates();
 }

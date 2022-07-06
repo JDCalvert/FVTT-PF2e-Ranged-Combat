@@ -1,3 +1,6 @@
+## 2.8.2 - 2022-07-06 (Pathfinder 2e 3.12.2)
+- Apply Crossbow Ace and Crossbow Crack Shot when using Conjure Bullet
+
 ## 2.8.1 - 2022-06-26 (Pathfinder 2e 3.11.3)
 - Add missing file, which caused various parts of the module to break
 

@@ -1,10 +1,11 @@
 import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/alchemical-crossbow.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
+import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
 import { changeCarryType } from "./thrown-weapons/change-carry-type.js";
 import { checkThrownWeapon } from "./thrown-weapons/throw-weapon-check.js";
 import { handleThrownWeapon } from "./thrown-weapons/throw-weapon-handler.js";
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, getEffectFromActor, getFlag, Updates } from "./utils/utils.js";
+import { Updates } from "./utils/utils.js";
 import { transformWeapon } from "./utils/weapon-utils.js";
 
 Hooks.on(
@@ -83,20 +84,8 @@ Hooks.on(
 
                 const updates = new Updates(actor);
 
-                // Some effects only apply to the next shot fired. If that shot hadn't
-                // already been fired, it has now. If it had already been fired, remove the effect.
-                for (const effectId of [CROSSBOW_ACE_EFFECT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
-                    const effect = getEffectFromActor(actor, effectId, weapon.id);
-                    if (effect) {
-                        if (getFlag(effect, "fired")) {
-                            updates.remove(effect);
-                        } else {
-                            updates.update(() => effect.update({ "flags.pf2e-ranged-combat.fired": true }));
-                        }
-                    }
-                }
-
                 // Run the various handlers for the weapon being used
+                crossbowFeatsHandleFired(weapon, updates);
                 handleAlchemicalCrossbowFired(actor, weapon, updates);
                 fireWeapon(actor, weapon, updates);
                 handleThrownWeapon(weapon, updates);
