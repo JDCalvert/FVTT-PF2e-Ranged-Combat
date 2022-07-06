@@ -1,5 +1,5 @@
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, getTarget, postActionInChat, postInChat, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
-import { getWeapons } from "../utils/weapon-utils.js";
+import { handleHuntPrey } from "../feats/crossbow-feats.js";
+import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, getTarget, postActionInChat, postInChat, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
 
 export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
 export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
@@ -63,26 +63,7 @@ export async function huntPrey() {
         }
     }
 
-    /**
-     * CROSSBOW ACE
-     */
-    {
-        if (getItemFromActor(actor, CROSSBOW_ACE_FEAT_ID)) {
-            const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.isCrossbow);
-            for (const weapon of weapons) {
-                const existing = getEffectFromActor(actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
-                if (existing) {
-                    updates.remove(existing);
-                }
-
-                const crossbowAceEffectSource = await getItem(CROSSBOW_ACE_EFFECT_ID);
-                setEffectTarget(crossbowAceEffectSource, weapon);
-                crossbowAceEffectSource.flags["pf2e-ranged-combat"].fired = false;
-
-                updates.add(crossbowAceEffectSource);
-            }
-        }
-    }
+    await handleHuntPrey(actor, updates);
 
     updates.handleUpdates();
 }

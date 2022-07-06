@@ -1,6 +1,6 @@
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
-import { CROSSBOW_ACE_EFFECT_ID, CROSSBOW_ACE_FEAT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID, CROSSBOW_CRACK_SHOT_FEAT_ID, getEffectFromActor, getFlag, getFlags, getItem, getItemFromActor, setEffectTarget, showWarning } from "../utils/utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
+import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 /**
  * Check if the weapon is fully loaded and, if it is, show a warning
@@ -155,39 +155,6 @@ export function clearLoadedChamber(actor, weapon, ammunition, updates) {
             }
         } else {
             updates.remove(chamberLoadedEffect);
-        }
-    }
-}
-
-export async function triggerCrossbowReloadEffects(actor, token, weapon, updates) {
-    const crossbowFeats = [
-        { featId: CROSSBOW_ACE_FEAT_ID, effectId: CROSSBOW_ACE_EFFECT_ID },
-        { featId: CROSSBOW_CRACK_SHOT_FEAT_ID, effectId: CROSSBOW_CRACK_SHOT_EFFECT_ID }
-    ];
-
-    // Handle crossbow effects that trigger on reload
-    if (weapon.isCrossbow && weapon.isEquipped) {
-        for (const crossbowFeat of crossbowFeats) {
-            const featId = crossbowFeat.featId;
-            const effectId = crossbowFeat.effectId;
-
-            if (getItemFromActor(actor, featId)) {
-                // Remove any existing effects
-                const existing = getEffectFromActor(actor, effectId, weapon.id);
-                if (existing) {
-                    updates.remove(existing);
-                }
-
-                // Add the new effect
-                const effect = await getItem(effectId);
-                setEffectTarget(effect, weapon);
-                effect.flags["pf2e-ranged-combat"].fired = false;
-                if (!token.inCombat && effect.data.duration.value === 0) {
-                    effect.data.duration.value = 1;
-                }
-
-                updates.add(effect);
-            }
         }
     }
 }

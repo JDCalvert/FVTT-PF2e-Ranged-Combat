@@ -1,7 +1,7 @@
+import { handleReload } from "../../feats/crossbow-feats.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
-import { triggerCrossbowReloadEffects } from "../utils.js";
 import { unloadMagazine } from "./unload.js";
 
 /**
@@ -99,7 +99,7 @@ export async function reloadMagazine() {
 
     updates.add(magazineLoadedEffectSource);
 
-    await triggerCrossbowReloadEffects(actor, token, weapon, updates);
+    await handleReload(weapon, updates);
 
     numActions += 2;
 

@@ -1,7 +1,8 @@
+import { handleReload } from "../../feats/crossbow-feats.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
-import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded, triggerCrossbowReloadEffects } from "../utils.js";
+import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 import { unloadAmmunition } from "./unload.js";
 
@@ -217,7 +218,7 @@ export async function reload() {
         await postReloadToChat(token, weapon);
     }
 
-    await triggerCrossbowReloadEffects(actor, token, weapon, updates);
+    await handleReload(weapon, updates);
 
     updates.handleUpdates();
 };
