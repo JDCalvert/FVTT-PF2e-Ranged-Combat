@@ -88,7 +88,7 @@ Hooks.on(
                 crossbowFeatsHandleFired(weapon, updates);
                 handleAlchemicalCrossbowFired(actor, weapon, updates);
                 fireWeapon(actor, weapon, updates);
-                handleThrownWeapon(weapon, updates);
+                handleThrownWeapon(weapon);
 
                 await updates.handleUpdates();
 
