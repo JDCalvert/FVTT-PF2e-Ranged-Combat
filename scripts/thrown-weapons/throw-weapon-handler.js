@@ -1,4 +1,4 @@
-import { createNewStack } from "./change-carry-type.js";
+import { createNewStack, findGroupStacks } from "./change-carry-type.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
 export async function handleThrownWeapon(weapon) {
@@ -27,9 +27,7 @@ export async function handleThrownWeapon(weapon) {
     // and place the thrown weapon into a "dropped" stack
 
     // Find the other stacks in this weapon's group
-    const groupIds = weapon.value.data.flags["pf2e-ranged-combat"]?.groupIds ?? [weapon.id];
-    const groupStacks = weapon.actor.items.filter(i => groupIds.includes(i.id));
-    const groupStackIds = groupStacks.map(stack => stack.id);
+    const { groupStacks, groupStackIds } = findGroupStacks(weapon.value);
 
     // Find the stack that has the carry type we're trying to set
     const targetStack = groupStacks.find(stack => stack.data.data.equipped.carryType === "dropped");

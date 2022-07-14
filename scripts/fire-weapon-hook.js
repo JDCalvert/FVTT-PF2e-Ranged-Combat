@@ -2,7 +2,7 @@ import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/al
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
 import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
-import { changeCarryType } from "./thrown-weapons/change-carry-type.js";
+import { changeCarryType, changeStowed } from "./thrown-weapons/change-carry-type.js";
 import { checkThrownWeapon } from "./thrown-weapons/throw-weapon-check.js";
 import { handleThrownWeapon } from "./thrown-weapons/throw-weapon-handler.js";
 import { Updates } from "./utils/utils.js";
@@ -18,6 +18,13 @@ Hooks.on(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Actor.documentClasses.character.prototype.adjustCarryType",
             changeCarryType,
+            "MIXED"
+        );
+
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.character.prototype.stowOrUnstow",
+            changeStowed,
             "MIXED"
         );
 
