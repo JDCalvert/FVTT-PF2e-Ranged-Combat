@@ -58,6 +58,8 @@ export async function changeStowed(wrapper, item, container) {
 
     const { groupStacks, groupStackIds } = findGroupStacks(item);
 
+    // If we're moving an empty stack, and there is another stack in the group, then just
+    // delete this stack (for example, sheathing a thrown weapon stack when they're all dropped)
     if (item.quantity === 0 && groupStacks.length > 1) {
         item.delete();
         return;
