@@ -6,11 +6,6 @@ export async function handleThrownWeapon(weapon) {
         return;
     }
 
-    // If the weapon is a consumable, then it gets destroyed on use, and we don't need to do anything else
-    if (weapon.traits.has("consumable")) {
-        return;
-    }
-
     // If the weapon isn't thrown, then we don't need to do anything
     const isThrownWeapon = weapon.value.isRanged && Array.from(weapon.traits).some(trait => trait.startsWith("thrown"));
     if (!isThrownWeapon) {

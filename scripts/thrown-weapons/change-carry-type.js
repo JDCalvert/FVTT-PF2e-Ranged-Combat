@@ -67,8 +67,8 @@ export async function changeStowed(wrapper, item, container) {
 
     const targetStack = container
         ? groupStacks.find(stack => stack.data.data.equipped.carryType === "stowed" && stack.data.data.containerId === container.id)
-        : groupStacks.find(stack => stack.data.data.equipped.carryType === "worn")
-    
+        : groupStacks.find(stack => stack.data.data.equipped.carryType === "worn");
+
     if (!targetStack) {
         if (item.quantity <= 1) {
             wrapper(item, container);
@@ -191,5 +191,5 @@ function moveBetweenStacks(item, targetStack) {
 function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
     return useAdvancedThrownWeaponSystem(item.actor)
         && item.type === "weapon"
-        && Array.from(item.data.data.traits.value).some(trait => trait.startsWith("thrown"));
+        && item.data.data.traits.value.some(trait => trait.startsWith("thrown") || trait === "consumable");
 }
