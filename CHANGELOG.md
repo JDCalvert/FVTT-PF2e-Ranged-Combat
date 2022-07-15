@@ -1,3 +1,6 @@
+## 2.8.3 - 2022-07-15 (Pathfinder 2e 3.12.2)
+- Rewrite the Advanced Thrown Weapon system
+
 ## 2.8.2 - 2022-07-06 (Pathfinder 2e 3.12.2)
 - Apply Crossbow Ace and Crossbow Crack Shot when using Conjure Bullet
 

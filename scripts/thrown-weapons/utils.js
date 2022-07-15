@@ -1,14 +1,12 @@
 /**
- * Remove the droppedFrom flag, and update the name to remove the " Updated" suffix
+ * For the given actor type, check if the advanced thrown weapon system is enabled
  */
-export async function removeDroppedState(item) {
-    const flags = item.data.flags["pf2e-ranged-combat"];
-    const droppedFromName = flags.droppedFrom.name;
-    delete flags.droppedFrom;
-    return await item.update(
-        {
-            name: droppedFromName,
-            "flags.pf2e-ranged-combat": flags
-        }
-    )
+export function useAdvancedThrownWeaponSystem(actor) {
+    if (actor.type === "character") {
+        return game.settings.get("pf2e-ranged-combat", "advancedThrownWeaponSystemPlayer");
+    } else if (actor.type === "npc") {
+        return false; // Placeholder for NPC advanced thrown weapon system
+    } else {
+        return false;
+    }
 }

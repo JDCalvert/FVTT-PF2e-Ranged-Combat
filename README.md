@@ -99,9 +99,9 @@ You can use the <b>Unload Alchemical Crossbow</b> macro to unload the bomb from 
 ### Advanced Thrown Weapon System
 This enhancement to thrown weapons handles the management of which weapons are worn, held, and dropped. A Game Master can enable or disable this system in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
 
-With the Advanced Thrown Weapon system, when you attack with a thrown weapon, it will be dropped. If the weapon is in a stack of more than one, then a separate stack will be created as the "dropped" stack, and the main stack will be set to worn (if the weapon must be drawn as a separate action from throwing it). Trying to change the dropped stack to held or worn will instead move one item back to the original stack, and change that stack to held or worn (if not already held).
+With the Advanced Thrown Weapon system, thrown weapons are treated as individual items even if they're part of the same stack. For example, if you have three throwing daggers in a stack which is set as "worn", drawing the weapon will instead create a new stack with one throwing dagger and set that one as held. The other two will remain in the original stack as "worn". This is the same for dropping, sheathing, stowing etc. Empty stacks are then removed.
 
-If the weapon has a reload of 0, then the weapon stack will remain held after the attack, although one item will still be dropped. If the weapon has a returning rune, then the weapon will remain held after the attack and no dropped stack will be created.
+When you attack with a thrown weapon, the weapon will be added to a "dropped" stack, however the original "held" stack will still be kept, even if it's empty. This is so the damage buttons are still usable, but you won't be able to roll another attack until you've drawn or picked up another one.
 
 ## Configuration
 These are the settings available for the module (all world-scope).
