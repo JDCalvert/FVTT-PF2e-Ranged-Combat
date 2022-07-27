@@ -8,6 +8,7 @@ import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.j
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
+import { alchemicalShot } from "./actions/alchemical-shot.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 Hooks.on(
@@ -134,7 +135,8 @@ Hooks.on(
             consolidateRepeatingWeaponAmmunition,
             huntPrey,
             loadAlchemicalCrossbow,
-            unloadAlchemicalCrossbow
+            unloadAlchemicalCrossbow,
+            alchemicalShot
         };
     }
 );

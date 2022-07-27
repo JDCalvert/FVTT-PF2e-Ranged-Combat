@@ -158,15 +158,26 @@ export function setEffectTarget(effect, item, adjustName = true) {
     }
 }
 
-export function setChoice(effect, choiceFlag, choiceValue, label = choice) {
-    effect.name = `${effect.name} (${label})`;
+export function setChoice(effect, choiceFlag, choiceValue, label = null) {
+    if (label) {
+        effect.name = `${effect.name} (${label})`;
+    }
     effect.flags.pf2e ??= {};
     effect.flags.pf2e.rulesSelections ??= {};
     effect.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
 
     // Remove the ChoiceSet rule since we've already made it
-    const rules = effect.data.rules;
-    rules.splice(rules.findIndex(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag), 1);
+    effect.data.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
+}
+
+/**
+ * If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
+ * To prevent this, set the duration to 1 round
+ */
+export function ensureDuration(actor, effect) {   
+    if (!actor.getActiveTokens().some(token => token.inCombat) && effect.data.duration.value === 0) {
+        effect.data.duration.value = 1;
+    }
 }
 
 export async function postActionInChat(action) {

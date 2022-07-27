@@ -1,4 +1,4 @@
-import { getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget } from "../utils/utils.js";
+import { ensureDuration, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
 // Crossbow Ace
@@ -61,13 +61,8 @@ async function applyFeatEffect(weapon, effectId, updates) {
     // Add the new effect
     const effect = await getItem(effectId);
     setEffectTarget(effect, weapon);
-    effect.flags["pf2e-ranged-combat"].fired = false;
-
-    // If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
-    // To prevent this, set the duration to 1 round
-    if (!weapon.actor.getActiveTokens().some(token => token.inCombat) && effect.data.duration.value === 0) {
-        effect.data.duration.value = 1;
-    }
+    ensureDuration(weapon.actor, effect);
+    effect.flags["pf2e-ranged-combat"].fired = false;    
 
     updates.add(effect);
 }
