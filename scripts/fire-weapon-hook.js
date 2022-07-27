@@ -1,4 +1,5 @@
 import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/alchemical-crossbow.js";
+import { handleWeaponFiredAlchemicalShot } from "./actions/alchemical-shot.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
 import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
@@ -99,6 +100,7 @@ Hooks.on(
                 handleAlchemicalCrossbowFired(actor, weapon, updates);
                 fireWeapon(actor, weapon, updates);
                 handleThrownWeapon(weapon);
+                handleWeaponFiredAlchemicalShot(weapon, updates);
 
                 await updates.handleUpdates();
 

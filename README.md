@@ -96,6 +96,9 @@ You can use the <b>Load Alchemical Crossbow</b> macro to load a lesser alchemica
 
 You can use the <b>Unload Alchemical Crossbow</b> macro to unload the bomb from your Alchemical Crossbow. If you haven't fired the crossbow since loading the bomb, you'll get it back in your inventory, but if you've used at least one use, the remaining uses will be wasted.
 
+### Alchemical Shot
+You can use the <b>Alchemical Shot</b> macro to pour an alchemical bomb into a firearm or crossbow. This will give your weapon the <b>Alchemical Shot</b> effect, changing its damage type, and adding roll notes to its damage rolls to apply persistent damage. It will also add a roll note to the weapon's attack rolls in case of a failure, informing you to take damage. The effect will be removed upon the end of your turn or firing another shot with that weapon.
+
 ### Advanced Thrown Weapon System
 This enhancement to thrown weapons handles the management of which weapons are worn, held, and dropped. A Game Master can enable or disable this system in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
 

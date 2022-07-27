@@ -1,3 +1,6 @@
+## 2.9.0 - 2022-07-27 (Pathfinder 2e 3.12.2)
+- Add the Alchemical Shot macro and effect, implementing automation for the Alchemical Shot feat
+
 ## 2.8.3 - 2022-07-15 (Pathfinder 2e 3.12.2)
 - Rewrite the Advanced Thrown Weapon system
 
