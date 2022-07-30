@@ -4,8 +4,6 @@ import { getWeapon } from "../utils/weapon-utils.js";
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Q1O4P1YIkCfeedHH";
 const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.IYcN1TxztAmnKXi4";
 
-const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
-
 export async function alchemicalShot() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -31,9 +29,8 @@ export async function alchemicalShot() {
         actor,
         weapon =>
             weapon.baseType === "alchemical-bomb"
-            && DAMAGE_TYPES.some(element => weapon.traits.has(element))
             && weapon.quantity > 0,
-        `${token.name} has no alchemical bombs that deal energy damage.`
+        `${token.name} has no alchemical bombs.`
     );
     if (!bomb) {
         return;
@@ -61,7 +58,7 @@ export async function alchemicalShot() {
             rulesSelections: {
                 ...alchemicalShotEffectSource.flags?.pf2e?.rulesSelections,
                 weapon: weapon.id,
-                damageType: DAMAGE_TYPES.find(damageType => bomb.traits.has(damageType)),
+                damageType:  bomb.value.data.data.damage.damageType,
                 persistentDamageDice: bomb.value.level >= 17 ? 3 : bomb.value.level >= 11 ? 2 : 1
             }
         },
