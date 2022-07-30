@@ -1,3 +1,6 @@
+## 2.9.1 - 2022-07-30 (Pathfinder 2e 3.13.2)
+- Add additional damage types to Alchemical Shot
+
 ## 2.9.0 - 2022-07-27 (Pathfinder 2e 3.12.2)
 - Add the Alchemical Shot macro and effect, implementing automation for the Alchemical Shot feat
 
