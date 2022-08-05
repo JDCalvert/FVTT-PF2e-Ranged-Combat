@@ -210,7 +210,7 @@ export function useAdvancedAmmunitionSystem(actor) {
     if (actor.type === "character") {
         return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
     } else if (actor.type === "npc") {
-        return false; // Placeholder for NPC advanced ammunition system
+        return getFlag(actor, "enableAdvancedAmmunitionSystem");
     } else {
         return false;
     }

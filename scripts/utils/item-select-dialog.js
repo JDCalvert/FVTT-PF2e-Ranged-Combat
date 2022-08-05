@@ -39,7 +39,7 @@ export class ItemSelectDialog extends Dialog {
                         style="display: flex; align-items: center; margin: 4px auto"
                     >
                         <img src="${item.img}" style="border: 1px solid #444; height: 1.6em; margin-right: 0.5em"/>
-                        <span>${item.name}${item.reason ? ` (${item.reason})` : ""}</span>
+                        <span>${item.name}</span>
                     </button>
                 `;
             }

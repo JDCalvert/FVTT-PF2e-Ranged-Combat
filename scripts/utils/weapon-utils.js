@@ -95,30 +95,58 @@ function characterWeaponTransform(weapon) {
     };
 }
 
-function npcWeaponTransform(weapon) {
-    return {
-        value: weapon,
-        actor: weapon.actor,
-        id: weapon.id,
-        sourceId: null,
-        baseType: null,
-        name: weapon.name,
-        img: weapon.img,
-        traits: weapon.traits,
-        quantity: weapon.quantity,
-        usesAmmunition: usesAmmunition(weapon),
-        requiresAmmunition: requiresAmmunition(weapon),
-        ammunition: getAmmunition(weapon),
-        requiresLoading: requiresLoading(weapon),
-        reload: getReloadTime(weapon),
-        isRepeating: isRepeating(weapon),
-        capacity: getCapacity(weapon),
-        isDoubleBarrel: isDoubleBarrel(weapon),
-        isCapacity: isCapacity(weapon),
-        isEquipped: true,
-        isStowed: false,
-        isCrossbow: false
-    };
+function npcWeaponTransform(melee) {
+    const weaponId = melee.data.flags["pf2e-ranged-combat"]?.weaponId;
+    const weapon = weaponId ? melee.actor.items.get(weaponId) : null;
+    if (weapon) {
+        return {
+            value: weapon,
+            actor: weapon.actor,
+            id: weapon.id,
+            sourceId: weapon.sourceId,
+            baseType: weapon.baseType,
+            name: weapon.name,
+            img: weapon.img,
+            traits: weapon.traits,
+            quantity: weapon.quantity,
+            usesAmmunition: usesAmmunition(weapon),
+            requiresAmmunition: requiresAmmunition(weapon),
+            ammunition: getAmmunition(melee),
+            requiresLoading: requiresLoading(weapon),
+            reload: getReloadTime(weapon),
+            isRepeating: isRepeating(weapon),
+            capacity: getCapacity(weapon),
+            isDoubleBarrel: isDoubleBarrel(weapon),
+            isCapacity: isCapacity(weapon),
+            isEquipped: weapon.isEquipped,
+            isStowed: weapon.isStowed,
+            isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
+        };
+    } else {
+        return {
+            value: melee,
+            actor: melee.actor,
+            id: melee.id,
+            sourceId: null,
+            baseType: null,
+            name: melee.name,
+            img: melee.img,
+            traits: melee.traits,
+            quantity: melee.quantity,
+            usesAmmunition: usesAmmunition(melee),
+            requiresAmmunition: requiresAmmunition(melee),
+            ammunition: getAmmunition(melee),
+            requiresLoading: requiresLoading(melee),
+            reload: getReloadTime(melee),
+            isRepeating: isRepeating(melee),
+            capacity: getCapacity(melee),
+            isDoubleBarrel: isDoubleBarrel(melee),
+            isCapacity: isCapacity(melee),
+            isEquipped: true,
+            isStowed: false,
+            isCrossbow: false
+        };
+    }
 }
 
 function getCapacity(weapon) {
@@ -169,13 +197,17 @@ function getReloadTime(weapon) {
     if (weapon.actor.type === "character") {
         return Number(weapon.reload || 0);
     } else if (weapon.actor.type === "npc") {
-        const reloadTrait = weapon.data.data.traits.value.find(trait => trait.startsWith("reload-"));
-        if (reloadTrait) {
-            const reloadTime = reloadTrait.slice("reload-".length);
-            if (reloadTime === "1-min") {
-                return 30;
-            } else {
-                return parseInt(reloadTime);
+        if (weapon.type === "weapon") {
+            return Number(weapon.reload || 0);
+        } else {
+            const reloadTrait = weapon.data.data.traits.value.find(trait => trait.startsWith("reload-"));
+            if (reloadTrait) {
+                const reloadTime = reloadTrait.slice("reload-".length);
+                if (reloadTime === "1-min") {
+                    return 30;
+                } else {
+                    return parseInt(reloadTime);
+                }
             }
         }
     }
@@ -187,10 +219,14 @@ function getReloadTime(weapon) {
  * Find out if the weapon uses ammunition
  */
 function usesAmmunition(weapon) {
-    if (weapon.actor.type === "character") {
+    if (weapon.type === "character") {
         return weapon.requiresAmmo;
     } else if (weapon.actor.type === "npc") {
-        return weapon.data.data.traits.value.some(trait => trait.startsWith("reload-"));
+        if (weapon.type === "weapon") {
+            return weapon.requiresAmmo;
+        } else {
+            return weapon.data.data.traits.value.some(trait => trait.startsWith("reload-"));
+        }
     } else {
         return false;
     }
@@ -200,7 +236,11 @@ function requiresAmmunition(weapon) {
     if (weapon.actor.type === "character") {
         return usesAmmunition(weapon);
     } else if (weapon.actor.type === "npc") {
-        return false;
+        if (weapon.type === "weapon") {
+            return usesAmmunition(weapon);
+        } else {
+            return false;
+        }
     } else {
         return false;
     }
@@ -212,7 +252,8 @@ function getAmmunition(weapon) {
     } else if (weapon.actor.type === "character") {
         return weapon.ammo;
     } else if (weapon.actor.type === "npc") {
-        return;
+        const ammoId = weapon.data.flags["pf2e-ranged-combat"]?.ammoId;
+        return ammoId ? weapon.actor.items.get(ammoId) : null;
     } else {
         return;
     }
