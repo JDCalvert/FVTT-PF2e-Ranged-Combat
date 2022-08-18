@@ -157,6 +157,10 @@ function moveBetweenStacks(item, targetStack) {
     const updates = [];
     const deletes = [];
 
+    // Return early if we're moving an item into itself
+    if (item.id === targetStack.id) {
+        return
+    }
     // If we have zero in this stack, just delete it and don't increase the other stack's quantity
     if (item.quantity === 0) {
         deletes.push(item.id);
