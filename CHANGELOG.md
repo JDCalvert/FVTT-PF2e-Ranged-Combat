@@ -1,3 +1,6 @@
+## 2.9.2 - 2022-08-22 (Pathfinder 2e 3.13.5)
+- Correct an error when crafting bombs with the Advanced Thrown Weapon System enabled
+
 ## 2.9.1 - 2022-07-30 (Pathfinder 2e 3.13.2)
 - Add additional damage types to Alchemical Shot
 
