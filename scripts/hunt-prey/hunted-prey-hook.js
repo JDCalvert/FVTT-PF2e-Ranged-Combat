@@ -39,7 +39,7 @@ function setHuntedPrey() {
 
         const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
         if (huntPreyAction) {
-            const rules = huntPreyAction.toObject().data.rules;
+            const rules = huntPreyAction.toObject().system.rules;
             const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && r.value !== isHuntedPrey);
             if (rule && rule.value != isHuntedPrey) {
                 rule.value = isHuntedPrey;

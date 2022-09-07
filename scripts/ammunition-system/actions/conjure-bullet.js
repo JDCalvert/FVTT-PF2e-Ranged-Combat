@@ -58,7 +58,7 @@ export async function conjureBullet() {
 
     // If we're not in combat, set the duration to one round so it doesn't expire immediately
     if (!token.inCombat) {
-        conjuredRoundSource.data.duration.value = 1;
+        conjuredRoundSource.system.duration.value = 1;
     }
 
     await postInChat(

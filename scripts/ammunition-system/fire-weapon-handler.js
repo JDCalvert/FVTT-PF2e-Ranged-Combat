@@ -180,9 +180,9 @@ function createAmmunitionEffect(weapon, ammunition, updates) {
             const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
             setEffectTarget(ammunitionEffectSource, weapon);
             ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
+            ammunitionEffectSource.system.rules = ammunition.system.rules;
             ammunitionEffectSource.img = ammunition.img;
-            ammunitionEffectSource.data.description.value = ammunition.description;
+            ammunitionEffectSource.system.description.value = ammunition.description;
             updates.add(ammunitionEffectSource);
         });
     }

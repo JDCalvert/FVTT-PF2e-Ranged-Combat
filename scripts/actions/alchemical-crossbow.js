@@ -27,7 +27,7 @@ export async function loadAlchemicalCrossbow() {
 
     const loadedBombEffect = getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
     if (loadedBombEffect) {
-        const loadedBombFlags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
+        const loadedBombFlags = loadedBombEffect.flags["pf2e-ranged-combat"];
         if (loadedBombFlags.bombCharges > 0) {
             const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
             if (loadedBombFlags.bombSourceId === bomb.sourceId && hasMaxCharges) {
@@ -116,7 +116,7 @@ export async function unloadAlchemicalCrossbow() {
 
     const updates = new Updates(actor);
 
-    const loadedBombFlags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
+    const loadedBombFlags = loadedBombEffect.flags["pf2e-ranged-combat"];
     const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
 
     if (!hasMaxCharges && loadedBombFlags.bombCharges > 0) {
@@ -160,7 +160,7 @@ export function handleWeaponFired(actor, weapon, updates) {
         return;
     }
     
-    const flags = loadedBombEffect.data.flags["pf2e-ranged-combat"];
+    const flags = loadedBombEffect.flags["pf2e-ranged-combat"];
     if (flags.bombCharges === 0) {
         // We've already fired three bombs, but we kept the effect around for the damage roll
         // Remove the effect now that we're making a fourth attack
@@ -221,7 +221,7 @@ function getElementalBomb(actor, token) {
 }
 
 async function unloadBomb(actor, bombLoadedEffect, updates) {
-    const bombLoadedFlags = bombLoadedEffect.data.flags["pf2e-ranged-combat"];
+    const bombLoadedFlags = bombLoadedEffect.flags["pf2e-ranged-combat"];
     if (bombHasMaxCharges(bombLoadedFlags)) {
         const bombItem = findItemOnActor(actor, bombLoadedFlags.bombItemId, bombLoadedFlags.bombSourceId);
         if (bombItem) {
@@ -235,7 +235,7 @@ async function unloadBomb(actor, bombLoadedEffect, updates) {
         } else {
             // Create a new stack containing only this bomb
             const bombSource = await getItem(bombLoadedFlags.bombSourceId);
-            bombSource.data.quantity = 1;
+            bombSource.system.quantity = 1;
             updates.add(bombSource);
         }
     }

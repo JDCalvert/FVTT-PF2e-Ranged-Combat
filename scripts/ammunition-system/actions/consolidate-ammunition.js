@@ -68,8 +68,8 @@ export async function consolidateRepeatingWeaponAmmunition() {
         if (remainingCharges) {
             if (index >= stacks.length) {
                 const newStackSource = await getItem(sourceId);
-                newStackSource.data.quantity = 1;
-                newStackSource.data.charges.value = remainingCharges;
+                newStackSource.system.quantity = 1;
+                newStackSource.system.charges.value = remainingCharges;
                 updates.add(newStackSource);
             } else {
                 const indexNow = index;

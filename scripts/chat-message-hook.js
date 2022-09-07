@@ -5,7 +5,7 @@
 Hooks.on(
     "renderChatMessage",
     (message, html) => {
-        const flags = message.data.flags["pf2e-ranged-combat"];
+        const flags = message.flags["pf2e-ranged-combat"];
         if (!flags) {
             return;
         }

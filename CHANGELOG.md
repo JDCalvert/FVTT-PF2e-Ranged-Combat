@@ -1,3 +1,6 @@
+## 3.0.0 - 2022-09-07 (Pathfinder 2e 4.0.0)
+- Foundry v10 compatibility
+
 ## 2.9.2 - 2022-08-22 (Pathfinder 2e 3.13.5)
 - Correct an error when crafting bombs with the Advanced Thrown Weapon System enabled
 
