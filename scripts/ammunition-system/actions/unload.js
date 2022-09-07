@@ -120,7 +120,7 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
         // The magazine still has some ammunition left, create a new item with the remaining ammunition
         const itemSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
         const ammunitionSource = await getItem(itemSourceId);
-        ammunitionSource.data.charges.value = ammunitionRemaining;
+        ammunitionSource.system.charges.value = ammunitionRemaining;
         updates.add(ammunitionSource);
     }
 
@@ -159,7 +159,7 @@ export async function moveAmmunitionToInventory(actor, ammunition, updates) {
     } else {
         // Create a new stack with one piece of ammunition in it
         const ammunitionSource = await getItem(ammunition.sourceId);
-        ammunitionSource.data.quantity = 1;
+        ammunitionSource.system.quantity = 1;
         updates.add(ammunitionSource);
     }
 }

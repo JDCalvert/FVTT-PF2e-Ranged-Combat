@@ -141,42 +141,42 @@ export async function getItem(id) {
     return source;
 }
 
-export function setEffectTarget(effect, item, adjustName = true) {
+export function setEffectTarget(effectSource, item, adjustName = true) {
     if (adjustName) {
-        effect.name = `${effect.name} (${item.name})`;
+        effectSource.name = `${effectSource.name} (${item.name})`;
     }
-    effect.flags["pf2e-ranged-combat"] = {
+    effectSource.flags["pf2e-ranged-combat"] = {
         targetId: item.id
     };
-    effect.data.target = item.id;
+    effectSource.system.target = item.id;
 
     // Remove the "effect target" rule so we skip the popup
-    const rules = effect.data.rules;
+    const rules = effectSource.system.rules;
     const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
     if (choiceSetIndex > -1) {
         rules.splice(choiceSetIndex, 1);
     }
 }
 
-export function setChoice(effect, choiceFlag, choiceValue, label = null) {
+export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
     if (label) {
-        effect.name = `${effect.name} (${label})`;
+        effectSource.name = `${effectSource.name} (${label})`;
     }
-    effect.flags.pf2e ??= {};
-    effect.flags.pf2e.rulesSelections ??= {};
-    effect.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
+    effectSource.flags.pf2e ??= {};
+    effectSource.flags.pf2e.rulesSelections ??= {};
+    effectSource.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
 
     // Remove the ChoiceSet rule since we've already made it
-    effect.data.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
+    effectSource.system.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
 }
 
 /**
  * If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
  * To prevent this, set the duration to 1 round
  */
-export function ensureDuration(actor, effect) {   
-    if (!actor.getActiveTokens().some(token => token.inCombat) && effect.data.duration.value === 0) {
-        effect.data.duration.value = 1;
+export function ensureDuration(actor, effectSource) {   
+    if (!actor.getActiveTokens().some(token => token.inCombat) && effectSource.system.duration.value === 0) {
+        effectSource.system.duration.value = 1;
     }
 }
 
@@ -243,9 +243,9 @@ export function showWarning(warningMessage) {
 }
 
 export function getFlags(item) {
-    return item.data.flags["pf2e-ranged-combat"];
+    return item.flags["pf2e-ranged-combat"];
 }
 
 export function getFlag(item, flagName) {
-    return item.data.flags["pf2e-ranged-combat"]?.[flagName];
+    return item.flags["pf2e-ranged-combat"]?.[flagName];
 }

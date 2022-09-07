@@ -106,7 +106,7 @@ async function addChamberLoaded(actor, weapon, ammo, updates) {
         chamberLoadedSource.name = `${chamberLoadedSource.name} (${ammo.name})`;
 
         if (ammo.sourceId === CONJURED_ROUND_ITEM_ID) {
-            chamberLoadedSource.data.duration = {
+            chamberLoadedSource.system.duration = {
                 expiry: "turn-end",
                 sustained: false,
                 unit: "rounds",

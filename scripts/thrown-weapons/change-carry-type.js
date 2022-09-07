@@ -14,7 +14,7 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
 
     // If we're keeping the same carry type (e.g. two-handed to one-handed) then call
     // the normal function
-    if (carryType === item.data.data.equipped.carryType) {
+    if (carryType === item.system.equipped.carryType) {
         return wrapper(item, carryType, handsHeld, inSlot);
     }
 
@@ -27,7 +27,7 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
     }
 
     // Find the stack that has the carry type we're trying to set
-    const targetStack = groupStacks.find(stack => stack.data.data.equipped.carryType === carryType);
+    const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === carryType);
 
     // - If there is no target stack then what we do depends on the size of our current stack:
     //   - If our stack size is one, then we can just call the normal function
@@ -66,8 +66,8 @@ export async function changeStowed(wrapper, item, container) {
     }
 
     const targetStack = container
-        ? groupStacks.find(stack => stack.data.data.equipped.carryType === "stowed" && stack.data.data.containerId === container.id)
-        : groupStacks.find(stack => stack.data.data.equipped.carryType === "worn");
+        ? groupStacks.find(stack => stack.system.equipped.carryType === "stowed" && stack.system.containerId === container.id)
+        : groupStacks.find(stack => stack.system.equipped.carryType === "worn");
 
     if (!targetStack) {
         if (item.quantity <= 1) {
@@ -82,7 +82,7 @@ export async function changeStowed(wrapper, item, container) {
 }
 
 export function findGroupStacks(item) {
-    const groupIds = item.data.flags["pf2e-ranged-combat"]?.groupIds ?? [item.id];
+    const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.id];
     const groupStacks = item.actor.items.filter(i => groupIds.includes(i.id));
     const groupStackIds = groupStacks.map(stack => stack.id);
 
@@ -98,7 +98,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
             {
                 ...itemSource,
                 data: {
-                    ...itemSource.data,
+                    ...itemSource.system,
                     containerId: container?.id ?? null,
                     quantity: 0
                 }
@@ -195,5 +195,5 @@ function moveBetweenStacks(item, targetStack) {
 function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
     return useAdvancedThrownWeaponSystem(item.actor)
         && item.type === "weapon"
-        && item.data.data.traits.value.some(trait => trait.startsWith("thrown") || trait === "consumable");
+        && item.system.traits.value.some(trait => trait.startsWith("thrown") || trait === "consumable");
 }

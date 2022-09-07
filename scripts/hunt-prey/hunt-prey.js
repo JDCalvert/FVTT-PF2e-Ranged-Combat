@@ -55,7 +55,7 @@ export async function huntPrey() {
         updates.add(huntedPreyEffectSource);
 
         // Update the hunted prey flag to true
-        const rules = huntPreyAction.toObject().data.rules;
+        const rules = huntPreyAction.toObject().system.rules;
         const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && !r.value);
         if (rule) {
             rule.value = true;

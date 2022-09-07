@@ -91,7 +91,7 @@ function characterWeaponTransform(weapon) {
         isCapacity: isCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
-        isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
+        isCrossbow: weapon.system.traits.otherTags.includes("crossbow")
     };
 }
 
@@ -122,7 +122,7 @@ function npcWeaponTransform(weapon) {
 }
 
 function getCapacity(weapon) {
-    const match = weapon.data.data.traits.value
+    const match = weapon.system.traits.value
         .map(trait => trait.match(/capacity-(\d+)/))
         .find(match => !!match);
 
@@ -138,7 +138,7 @@ function isDoubleBarrel(weapon) {
 }
 
 function isCapacity(weapon) {
-    return weapon.data.data.traits.value.some(trait => !!trait.match(/capacity-\d+/));
+    return weapon.system.traits.value.some(trait => !!trait.match(/capacity-\d+/));
 }
 
 /**
@@ -169,7 +169,7 @@ function getReloadTime(weapon) {
     if (weapon.actor.type === "character") {
         return Number(weapon.reload || 0);
     } else if (weapon.actor.type === "npc") {
-        const reloadTrait = weapon.data.data.traits.value.find(trait => trait.startsWith("reload-"));
+        const reloadTrait = weapon.system.traits.value.find(trait => trait.startsWith("reload-"));
         if (reloadTrait) {
             const reloadTime = reloadTrait.slice("reload-".length);
             if (reloadTime === "1-min") {
@@ -190,7 +190,7 @@ function usesAmmunition(weapon) {
     if (weapon.actor.type === "character") {
         return weapon.requiresAmmo;
     } else if (weapon.actor.type === "npc") {
-        return weapon.data.data.traits.value.some(trait => trait.startsWith("reload-"));
+        return weapon.system.traits.value.some(trait => trait.startsWith("reload-"));
     } else {
         return false;
     }
