@@ -1,3 +1,6 @@
+## 3.1.0 - 2022-09-22 (Pathfinder 2e 4.1.2)
+- Add macro to switch weapon ammunition
+
 ## 3.0.0 - 2022-09-07 (Pathfinder 2e 4.0.0)
 - Foundry v10 compatibility
 

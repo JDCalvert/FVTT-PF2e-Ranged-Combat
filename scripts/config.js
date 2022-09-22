@@ -1,5 +1,6 @@
 import { reload } from "./ammunition-system/actions/reload.js";
 import { unload } from "./ammunition-system/actions/unload.js";
+import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { reloadAll } from "./ammunition-system/actions/reload.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
@@ -127,6 +128,7 @@ Hooks.on(
         game.pf2eRangedCombat = {
             reload,
             unload,
+            switchAmmunition,
             nextChamber,
             fireBothBarrels,
             conjureBullet,
