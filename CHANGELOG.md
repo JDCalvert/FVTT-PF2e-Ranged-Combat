@@ -1,3 +1,6 @@
+## 3.1.1 - 2022-09-30 (Pathfinder 2e 4.1.3)
+- Fix issues reloading magazines
+
 ## 3.1.0 - 2022-09-22 (Pathfinder 2e 4.1.2)
 - Add macro to switch weapon ammunition
 
