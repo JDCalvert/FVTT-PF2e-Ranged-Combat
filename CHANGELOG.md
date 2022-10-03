@@ -1,3 +1,10 @@
+## Unreleased
+### Features
+- Support Double Prey and Triple Threat
+### Fixes
+- Migrate predicates to new structure
+- Fix several instances of manually-assigned effects not working
+
 ## 3.1.1 - 2022-09-30 (Pathfinder 2e 4.1.3)
 - Fix issues reloading magazines
 

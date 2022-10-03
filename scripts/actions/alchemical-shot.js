@@ -72,7 +72,7 @@ export async function alchemicalShot() {
     creates.push(alchemicalShotEffectSource);
     updates.push({
         _id: bomb.id,
-        data: {
+        system: {
             quantity: bomb.quantity - 1
         }
     });
@@ -106,7 +106,7 @@ export async function handleWeaponFiredAlchemicalShot(weapon, updates) {
             updates.update(() => alchemicalShotEffect.update(
                 {
                     "flags.pf2e-ranged-combat.fired": true,
-                    "data.rules": alchemicalShotEffect.system.rules
+                    "system.rules": alchemicalShotEffect.system.rules
                 }
             ));
         }
