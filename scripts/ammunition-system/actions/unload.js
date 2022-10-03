@@ -27,7 +27,7 @@ export async function unload() {
     if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             if (loadedEffect) {
-                updates.remove(loadedEffect);
+                updates.delete(loadedEffect);
             }
             if (magazineLoadedEffect) {
                 await unloadMagazine(actor, magazineLoadedEffect, updates);
@@ -47,7 +47,7 @@ export async function unload() {
 
             if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
                 const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
-                updates.remove(conjuredRoundEffect);
+                updates.delete(conjuredRoundEffect);
                 clearLoadedChamber(actor, weapon, ammunition, updates);
             } else {
                 moveAmmunitionToInventory(actor, ammunition, updates);
@@ -111,27 +111,23 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
 
     if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
         // We found the original stack of ammunition this
-        updates.update(() => {
-            ammunitionItem.update({
-                "system.quantity": ammunitionItem.quantity + 1
-            });
-        });
+        updates.update(ammunitionItem, { "system.quantity": ammunitionItem.quantity + 1 });
     } else if (ammunitionRemaining > 0) {
         // The magazine still has some ammunition left, create a new item with the remaining ammunition
         const itemSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
         const ammunitionSource = await getItem(itemSourceId);
         ammunitionSource.system.charges.value = ammunitionRemaining;
-        updates.add(ammunitionSource);
+        updates.create(ammunitionSource);
     }
 
     // Finally, remove the existing effect
-    updates.remove(magazineLoadedEffect);
+    updates.delete(magazineLoadedEffect);
 
     // If the weapon was loaded, then remove the loaded status as well
     const weaponId = getFlag(magazineLoadedEffect, "targetId");
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weaponId);
     if (loadedEffect) {
-        updates.remove(loadedEffect);
+        updates.delete(loadedEffect);
     }
 }
 
@@ -151,15 +147,11 @@ export async function moveAmmunitionToInventory(actor, ammunition, updates) {
     if (ammunitionItem) {
         // We still have the stack the ammunition originally came from, or another that's the same.
         // Add the currently loaded ammunition to the stack
-        updates.update(() => {
-            ammunitionItem.update({
-                "system.quantity": ammunitionItem.quantity + 1
-            });
-        });
+        updates.update(ammunitionItem, { "system.quantity": ammunitionItem.quantity + 1 });
     } else {
         // Create a new stack with one piece of ammunition in it
         const ammunitionSource = await getItem(ammunition.sourceId);
         ammunitionSource.system.quantity = 1;
-        updates.add(ammunitionSource);
+        updates.create(ammunitionSource);
     }
 }

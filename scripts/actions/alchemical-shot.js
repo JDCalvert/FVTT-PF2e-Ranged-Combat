@@ -100,15 +100,16 @@ export async function handleWeaponFiredAlchemicalShot(weapon, updates) {
     const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
     if (alchemicalShotEffect) {
         if (getFlag(alchemicalShotEffect, "fired")) {
-            updates.remove(alchemicalShotEffect);
+            updates.delete(alchemicalShotEffect);
         } else {
             alchemicalShotEffect.system.rules.findSplice(rule => rule.selector.endsWith("-attack"));
-            updates.update(() => alchemicalShotEffect.update(
+            updates.update(
+                alchemicalShotEffect,
                 {
                     "flags.pf2e-ranged-combat.fired": true,
                     "system.rules": alchemicalShotEffect.system.rules
                 }
-            ));
+            );
         }
     }
 }

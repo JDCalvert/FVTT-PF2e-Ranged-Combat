@@ -55,12 +55,17 @@ export async function consolidateRepeatingWeaponAmmunition() {
         // Make one stack of fully-charged items
         if (quantityFullCharges) {
             const indexNow = index;
-            updates.update(async () => {
-                await stacks[indexNow].update({
-                    "system.quantity": quantityFullCharges,
-                    "system.charges.value": maxChargesPerItem
-                });
-            });
+            updates.update(
+                stacks[indexNow],
+                {
+                    system: {
+                        quantity: quantityFullCharges,
+                        charges: {
+                            value: maxChargesPerItem
+                        }
+                    }
+                }
+            );
             index++;
         }
 
@@ -70,22 +75,27 @@ export async function consolidateRepeatingWeaponAmmunition() {
                 const newStackSource = await getItem(sourceId);
                 newStackSource.system.quantity = 1;
                 newStackSource.system.charges.value = remainingCharges;
-                updates.add(newStackSource);
+                updates.create(newStackSource);
             } else {
                 const indexNow = index;
-                updates.update(async () => {
-                    await stacks[indexNow].update({
-                        "system.quantity": 1,
-                        "system.charges.value": remainingCharges
-                    });
-                });
+                updates.update(
+                    stacks[indexNow],
+                    {
+                        system: {
+                            quantity: 1,
+                            charges: {
+                                value: remainingCharges
+                            }
+                        }
+                    }
+                );
                 index++;
             }
         }
 
         // Remove the rest of the stacks
         while (index < stacks.length) {
-            updates.remove(stacks[index]);
+            updates.delete(stacks[index]);
             index++;
         }
     }

@@ -11,10 +11,10 @@ export async function fireBothBarrels() {
 
     const doubleBarrelEffect = getItemFromActor(actor, DOUBLE_BARREL_EFFECT_ID);
     if (doubleBarrelEffect) {
-        updates.remove(doubleBarrelEffect);
+        updates.delete(doubleBarrelEffect);
     } else {
         const doubleBarrelEffecctSource = await getItem(DOUBLE_BARREL_EFFECT_ID);
-        updates.add(doubleBarrelEffecctSource);
+        updates.create(doubleBarrelEffecctSource);
     }
 
     updates.handleUpdates();
