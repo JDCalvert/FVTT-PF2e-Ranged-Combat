@@ -97,7 +97,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
         [
             {
                 ...itemSource,
-                data: {
+                system: {
                     ...itemSource.system,
                     containerId: container?.id ?? null,
                     quantity: 0
@@ -118,7 +118,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
         // that we were trying to update the original stack to
         updates.push({
             _id: targetStack.id,
-            data: {
+            system: {
                 containerId: container?.id ?? null,
                 equipped: {
                     carryType,
@@ -144,7 +144,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
         // Finally, reduce the quantity of the original stack by one
         updates.push({
             _id: item.id,
-            data: {
+            system: {
                 quantity: item.quantity - 1
             }
         });
@@ -171,7 +171,7 @@ function moveBetweenStacks(item, targetStack) {
         } else {
             updates.push({
                 _id: item.id,
-                data: {
+                system: {
                     quantity: item.quantity - 1
                 }
             });
@@ -181,7 +181,7 @@ function moveBetweenStacks(item, targetStack) {
         updates.push(
             {
                 _id: targetStack.id,
-                data: {
+                system: {
                     quantity: targetStack.quantity + 1
                 }
             }

@@ -59,7 +59,7 @@ export async function huntPrey() {
         const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && !r.value);
         if (rule) {
             rule.value = true;
-            updates.update(() => huntPreyAction.update({ "data.rules": rules }))
+            updates.update(() => huntPreyAction.update({ "system.rules": rules }))
         }
     }
 

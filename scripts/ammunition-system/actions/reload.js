@@ -165,7 +165,7 @@ export async function reload() {
             // Remove one piece of ammunition from the stack
             updates.update(async () => {
                 await ammo.update({
-                    "data.quantity": ammo.quantity - 1
+                    "system.quantity": ammo.quantity - 1
                 });
             });
         }

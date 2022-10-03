@@ -82,7 +82,7 @@ export async function loadAlchemicalCrossbow() {
     // Remove one bomb from the stack
     updates.update(async () => {
         await bomb.value.update({
-            "data.quantity": bomb.quantity - 1
+            "system.quantity": bomb.quantity - 1
         });
     });
 
@@ -177,13 +177,13 @@ export function handleWeaponFired(actor, weapon, updates) {
             Object.assign(
                 update,
                 {
-                    "data.duration": {
+                    "system.duration": {
                         value: 1,
                         unit: "minutes",
                         sustained: false,
                         expiry: "turn-start"
                     },
-                    "data.start": {
+                    "system.start": {
                         value: game.time.worldTime,
                         initiative: game.combat && game.combat.turns.length > game.combat.turn ? initiative : null
                     }
@@ -229,7 +229,7 @@ async function unloadBomb(actor, bombLoadedEffect, updates) {
             // Add one to the stack
             updates.update(async () => {
                 await bombItem.update({
-                    "data.quantity": bombItem.quantity + 1
+                    "system.quantity": bombItem.quantity + 1
                 });
             });
         } else {

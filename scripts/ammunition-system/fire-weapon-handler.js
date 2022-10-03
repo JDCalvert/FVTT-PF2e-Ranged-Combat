@@ -132,7 +132,7 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
         return;
     }
 
-    updates.update(() => ammunition.update({ "data.quantity": ammunition.quantity - ammunitionToFire }));
+    updates.update(() => ammunition.update({ "system.quantity": ammunition.quantity - ammunitionToFire }));
 
     if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunition.toMessage();

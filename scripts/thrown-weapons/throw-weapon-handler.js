@@ -34,13 +34,13 @@ export async function handleThrownWeapon(weapon) {
             [
                 {
                     _id: weapon.id,
-                    data: {
+                    system: {
                         quantity: weapon.quantity - 1
                     }
                 },
                 {
                     _id: targetStack.id,
-                    data: {
+                    system: {
                         quantity: targetStack.quantity + 1
                     }
                 }

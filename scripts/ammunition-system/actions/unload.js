@@ -113,7 +113,7 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
         // We found the original stack of ammunition this
         updates.update(() => {
             ammunitionItem.update({
-                "data.quantity": ammunitionItem.quantity + 1
+                "system.quantity": ammunitionItem.quantity + 1
             });
         });
     } else if (ammunitionRemaining > 0) {
@@ -153,7 +153,7 @@ export async function moveAmmunitionToInventory(actor, ammunition, updates) {
         // Add the currently loaded ammunition to the stack
         updates.update(() => {
             ammunitionItem.update({
-                "data.quantity": ammunitionItem.quantity + 1
+                "system.quantity": ammunitionItem.quantity + 1
             });
         });
     } else {
