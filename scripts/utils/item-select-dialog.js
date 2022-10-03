@@ -50,10 +50,13 @@ export class ItemSelectDialog extends Dialog {
     }
 
     activateListeners(html) {
-        html.find(".item-button").on("click", (event) => {
-            this.itemId = event.currentTarget.value;
-            this.close()    
-        });
+        html.find(".item-button").on(
+            "click",
+            (event) => {
+                this.itemId = event.currentTarget.value;
+                this.close();
+            }
+        );
         super.activateListeners(html);
     }
 
