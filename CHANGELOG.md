@@ -1,6 +1,4 @@
 ## Unreleased
-### Features
-- Support Double Prey and Triple Threat
 ### Fixes
 - Migrate predicates to new structure
 - Fix several instances of manually-assigned effects not working
