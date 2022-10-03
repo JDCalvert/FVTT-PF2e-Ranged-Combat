@@ -43,9 +43,9 @@ export function handleWeaponFired(weapon, updates) {
         const effect = getEffectFromActor(weapon.actor, effectId, weapon.id);
         if (effect) {
             if (getFlag(effect, "fired")) {
-                updates.remove(effect);
+                updates.delete(effect);
             } else {
-                updates.update(() => effect.update({ "flags.pf2e-ranged-combat.fired": true }));
+                updates.update(effect, { "flags.pf2e-ranged-combat.fired": true });
             }
         }
     }
@@ -55,14 +55,14 @@ async function applyFeatEffect(weapon, effectId, updates) {
     // Remove any existing effects
     const existing = getEffectFromActor(weapon.actor, effectId, weapon.id);
     if (existing) {
-        updates.remove(existing);
+        updates.delete(existing);
     }
 
     // Add the new effect
     const effect = await getItem(effectId);
     setEffectTarget(effect, weapon);
     ensureDuration(weapon.actor, effect);
-    effect.flags["pf2e-ranged-combat"].fired = false;    
+    effect.flags["pf2e-ranged-combat"].fired = false;
 
-    updates.add(effect);
+    updates.create(effect);
 }

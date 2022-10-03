@@ -40,7 +40,7 @@ export async function conjureBullet() {
 
     const conjuredRoundSource = await getItem(CONJURED_ROUND_EFFECT_ID);
     setEffectTarget(conjuredRoundSource, weapon);
-    updates.add(conjuredRoundSource);
+    updates.create(conjuredRoundSource);
 
     if (weapon.isCapacity) {
         await setLoadedChamber(

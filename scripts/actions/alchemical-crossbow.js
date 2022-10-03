@@ -63,28 +63,21 @@ export async function loadAlchemicalCrossbow() {
     const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
     setEffectTarget(loadedBombEffectSource, weapon, false);
     setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
-    const loadedBombEffectSourceFlags = loadedBombEffectSource.flags["pf2e-ranged-combat"];
-    Object.assign(
-        loadedBombEffectSourceFlags,
-        {
-            bombItemId: bomb.id,
-            bombSourceId: bomb.sourceId,
-            bombName: bomb.name,
-            bombCharges: 3,
-            bombMaxCharges: 3,
-            effectName: loadedBombEffectSource.name
-        }
-    );
-    loadedBombEffectSource.name += ` (${loadedBombEffectSourceFlags.bombCharges}/${loadedBombEffectSourceFlags.bombMaxCharges})`;
+    loadedBombEffectSource.flags["pf2e-ranged-combat"] = {
+        ...loadedBombEffectSource.flags["pf2e-ranged-combat"],
+        bombItemId: bomb.id,
+        bombSourceId: bomb.sourceId,
+        bombName: bomb.name,
+        bombCharges: 3,
+        bombMaxCharges: 3,
+        effectName: loadedBombEffectSource.name
+    };
+    loadedBombEffectSource.name += ` (3/3)`;
 
-    updates.add(loadedBombEffectSource);
+    updates.create(loadedBombEffectSource);
 
     // Remove one bomb from the stack
-    updates.update(async () => {
-        await bomb.value.update({
-            "data.quantity": bomb.quantity - 1
-        });
-    });
+    updates.update(bomb, { "system.quantity": bomb.quantity - 1 });
 
     await postInChat(
         actor,
@@ -159,12 +152,12 @@ export function handleWeaponFired(actor, weapon, updates) {
     if (!loadedBombEffect) {
         return;
     }
-    
+
     const flags = loadedBombEffect.flags["pf2e-ranged-combat"];
     if (flags.bombCharges === 0) {
         // We've already fired three bombs, but we kept the effect around for the damage roll
         // Remove the effect now that we're making a fourth attack
-        updates.remove(loadedBombEffect);
+        updates.delete(loadedBombEffect);
         return;
     } else {
         const update = {
@@ -174,23 +167,20 @@ export function handleWeaponFired(actor, weapon, updates) {
 
         if (bombHasMaxCharges(flags)) {
             const initiative = game.combat?.turns[game.combat.turn]?.initiative ?? null;
-            Object.assign(
-                update,
-                {
-                    "data.duration": {
-                        value: 1,
-                        unit: "minutes",
-                        sustained: false,
-                        expiry: "turn-start"
-                    },
-                    "data.start": {
-                        value: game.time.worldTime,
-                        initiative: game.combat && game.combat.turns.length > game.combat.turn ? initiative : null
-                    }
+            update.system = {
+                duration: {
+                    value: 1,
+                    unit: "minutes",
+                    sustained: false,
+                    expiry: "turn-start"
+                },
+                start: {
+                    value: game.time.worldTime,
+                    initiative: game.combat && game.combat.turns.length > game.combat.turn ? initiative : null
                 }
-            );
+            }
         }
-        updates.update(() => loadedBombEffect.update(update));
+        updates.update(loadedBombEffect, update);
         updates.floatyText(`${flags.effectName} (${flags.bombCharges - 1}/${flags.bombMaxCharges})`, false);
     }
 }
@@ -227,20 +217,16 @@ async function unloadBomb(actor, bombLoadedEffect, updates) {
         if (bombItem) {
             // We found either the original bomb stack or a stack of the same type.
             // Add one to the stack
-            updates.update(async () => {
-                await bombItem.update({
-                    "data.quantity": bombItem.quantity + 1
-                });
-            });
+            updates.update(bombItem, { "system.quantity": bombItem.quantity + 1 });
         } else {
             // Create a new stack containing only this bomb
             const bombSource = await getItem(bombLoadedFlags.bombSourceId);
             bombSource.system.quantity = 1;
-            updates.add(bombSource);
+            updates.create(bombSource);
         }
     }
 
-    updates.remove(bombLoadedEffect);
+    updates.delete(bombLoadedEffect);
 }
 
 function bombHasMaxCharges(flags) {

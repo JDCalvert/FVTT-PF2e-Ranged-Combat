@@ -46,20 +46,20 @@ export async function huntPrey() {
         // Remove any existing hunted prey effects
         const existing = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
         if (existing) {
-            updates.remove(existing);
+            updates.delete(existing);
         }
 
         // Add the new effect
         const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
         setEffectTarget(huntedPreyEffectSource, target);
-        updates.add(huntedPreyEffectSource);
+        updates.create(huntedPreyEffectSource);
 
         // Update the hunted prey flag to true
         const rules = huntPreyAction.toObject().system.rules;
         const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && !r.value);
         if (rule) {
             rule.value = true;
-            updates.update(() => huntPreyAction.update({ "data.rules": rules }))
+            updates.update(huntPreyAction, { "system.rules": rules });
         }
     }
 

@@ -96,20 +96,21 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
         const loadedChambers = getFlag(loadedEffect, "loadedChambers") - ammunitionToRemove;
         const loadedCapacity = getFlag(loadedEffect, "capacity");
         if (loadedChambers > 0) {
-            updates.update(async () =>
-                await loadedEffect.update({
+            updates.update(
+                loadedEffect,
+                {
                     "name": `${getFlag(loadedEffect, "name")} (${loadedChambers}/${loadedCapacity})`,
                     "flags.pf2e-ranged-combat.loadedChambers": loadedChambers,
-                })
+                }
             );
             updates.floatyText(`${getFlag(loadedEffect, "name")} (${loadedChambers}/${loadedCapacity})`, false);
         } else {
-            updates.update(() => loadedEffect.update({ "name": `${getFlag(loadedEffect, "name")} (0/${loadedCapacity})` }));
-            updates.remove(loadedEffect);
+            updates.update(loadedEffect, { "name": `${getFlag(loadedEffect, "name")} (0/${loadedCapacity})` });
+            updates.delete(loadedEffect);
             clearLoadedChamber(actor, weapon, null, updates);
         }
     } else {
-        updates.remove(loadedEffect);
+        updates.delete(loadedEffect);
     }
 }
 
@@ -122,26 +123,28 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     const loadedAmmunition = loadedFlags.ammunition.find(ammunitionType => ammunitionType.sourceId === ammunition.sourceId);
     loadedAmmunition.quantity--;
     if (loadedAmmunition.quantity === 0) {
-        loadedFlags.ammunition.findSplice(ammunition => ammunition.id === loadedAmmunition.id)
+        loadedFlags.ammunition.findSplice(ammunition => ammunition.id === loadedAmmunition.id);
         clearLoadedChamber(actor, weapon, loadedAmmunition, updates);
     }
 
     // If the weapon is still loaded, update the effect, otherwise remove it
     if (loadedFlags.ammunition.length) {
-        updates.update(async () => {
-            await loadedEffect.update({
+        updates.update(
+            loadedEffect,
+            {
                 "flags.pf2e-ranged-combat": loadedFlags,
                 "name": buildLoadedEffectName(loadedEffect)
-            });
-        });
+            }
+        );
         updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} (${loadedFlags.loadedChambers}/${loadedFlags.capacity})`, false);
     } else {
-        updates.update(async () => {
-            await loadedEffect.update({
+        updates.update(
+            loadedEffect,
+            {
                 "name": `${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} (0/${loadedFlags.capacity})`
-            });
-        });
-        updates.remove(loadedEffect);
+            }
+        );
+        updates.delete(loadedEffect);
     }
 }
 
@@ -151,10 +154,10 @@ export function clearLoadedChamber(actor, weapon, ammunition, updates) {
         if (ammunition) {
             const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
             if (chamberAmmunition.sourceId === ammunition.sourceId) {
-                updates.remove(chamberLoadedEffect);
+                updates.delete(chamberLoadedEffect);
             }
         } else {
-            updates.remove(chamberLoadedEffect);
+            updates.delete(chamberLoadedEffect);
         }
     }
 }

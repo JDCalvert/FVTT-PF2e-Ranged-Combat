@@ -1,7 +1,4 @@
 export class ItemSelectDialog extends Dialog {
-    itemId;
-    result;
-
     constructor(title, content) {
         super(
             {
@@ -53,18 +50,19 @@ export class ItemSelectDialog extends Dialog {
     }
 
     activateListeners(html) {
-        html.find(".item-button").click(this.clickItemButton.bind(this));
+        html.find(".item-button").on(
+            "click",
+            (event) => {
+                this.itemId = event.currentTarget.value;
+                this.close();
+            }
+        );
         super.activateListeners(html);
     }
 
-    clickItemButton(event) {
-        this.itemId = event.currentTarget.value;
-        this.close();
-    }
-
     async close() {
-        this.result?.(this.itemId);
         await super.close();
+        this.result?.(this.itemId);
     }
 
     async getItemId() {

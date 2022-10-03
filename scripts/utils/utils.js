@@ -1,22 +1,34 @@
 export class Updates {
     constructor(actor) {
         this.actor = actor;
-        this.itemsToAdd = [];
-        this.itemsToRemove = [];
-        this.itemsToUpdate = [];
+
+        this.creates = []; // Array of items to be created
+        this.deletes = []; // Set of IDs of items to be deleted
+        this.updates = []; // Array of updates to existing items
+        this.complexUpdates = []; // Array of functions to execute to perform complex updates
+
         this.floatyTextToShow = [];
     }
 
-    add(item) {
-        this.itemsToAdd.push(item);
+    create(item) {
+        this.creates.push(item);
     }
 
-    remove(item) {
-        this.itemsToRemove.push(item);
+    delete(item) {
+        this.deletes.push(item.id);
     }
 
-    update(update) {
-        this.itemsToUpdate.push(update);
+    update(item, update) {
+        this.updates.push(
+            {
+                ...update,
+                _id: item.id,
+            }
+        );
+    }
+
+    complexUpdate(update) {
+        this.complexUpdates.push(update);
     }
 
     floatyText(text, up) {
@@ -28,12 +40,13 @@ export class Updates {
     }
 
     async handleUpdates() {
-        for (const update of this.itemsToUpdate) {
-            await update();
-        }
+        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
+        if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates)
+        if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
 
-        await this.actor.deleteEmbeddedDocuments("Item", [...new Set(this.itemsToRemove)].map(item => item.id));
-        await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
+        for (const update of this.complexUpdates) {
+            update();
+        }
 
         let i = 0;
         for (const floatyText of this.floatyTextToShow) {
@@ -46,7 +59,7 @@ export class Updates {
                             : token.showFloatyText({ upadte: { name: floatyText.text } });
                     }
                 },
-                i * 300
+                i * 500
             );
             i++;
         }
@@ -145,23 +158,32 @@ export function setEffectTarget(effectSource, item, adjustName = true) {
     if (adjustName) {
         effectSource.name = `${effectSource.name} (${item.name})`;
     }
-    effectSource.flags["pf2e-ranged-combat"] = {
-        targetId: item.id
+
+    effectSource.flags = {
+        ...effectSource.flags,
+        "pf2e-ranged-combat": {
+            ...effectSource.flags?.["pf2e-ranged-combat"],
+            targetId: item.id
+        },
+        pf2e: {
+            ...effectSource.flags?.pf2e,
+            rulesSelections: {
+                ...effectSource.flags?.pf2e?.rulesSelections,
+                weapon: item.id
+            }
+        }
     };
-    effectSource.system.target = item.id;
 
     // Remove the "effect target" rule so we skip the popup
     const rules = effectSource.system.rules;
-    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
-    if (choiceSetIndex > -1) {
-        rules.splice(choiceSetIndex, 1);
-    }
+    rules.findSplice(rule => rule.key === "ChoiceSet");
 }
 
 export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
     if (label) {
         effectSource.name = `${effectSource.name} (${label})`;
     }
+
     effectSource.flags.pf2e ??= {};
     effectSource.flags.pf2e.rulesSelections ??= {};
     effectSource.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
@@ -174,7 +196,7 @@ export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
  * If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
  * To prevent this, set the duration to 1 round
  */
-export function ensureDuration(actor, effectSource) {   
+export function ensureDuration(actor, effectSource) {
     if (!actor.getActiveTokens().some(token => token.inCombat) && effectSource.system.duration.value === 0) {
         effectSource.system.duration.value = 1;
     }

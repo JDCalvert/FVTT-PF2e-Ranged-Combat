@@ -97,19 +97,24 @@ export async function reloadMagazine() {
 
     magazineLoadedEffectSource.name = `${magazineLoadedEffectSource.name} (${ammo.name}) (${ammo.system.charges.value}/${ammo.system.charges.max})`;
 
-    updates.add(magazineLoadedEffectSource);
+    updates.create(magazineLoadedEffectSource);
 
     await handleReload(weapon, updates);
 
     numActions += 2;
 
     // Remove that magazine from the stack
-    updates.update(async () => {
-        await ammo.update({
-            "system.quantity": ammo.quantity - 1,
-            "system.charges.value": ammo.system.charges.max,
-        });
-    });
+    updates.update(
+        ammo,
+        {
+            system: {
+                quantity: ammo.quantity - 1,
+                charges: {
+                    value: ammo.system.charges.max
+                }            
+            }
+        }
+    );
 
     await postInChat(
         actor,

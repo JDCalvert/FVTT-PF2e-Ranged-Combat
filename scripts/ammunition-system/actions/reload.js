@@ -45,7 +45,7 @@ export async function reload() {
             // Create the new loaded effect
             const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
             setEffectTarget(loadedEffectSource, weapon);
-            updates.add(loadedEffectSource);
+            updates.create(loadedEffectSource);
 
             await postReloadToChat(token, weapon);
         } else {
@@ -87,18 +87,23 @@ export async function reload() {
                     }
 
                     // Increase the number of loaded chambers by one
-                    updates.update(async () => {
-                        await loadedEffect.update({
-                            "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1,
-                            "flags.pf2e-ranged-combat.ammunition": loadedAmmunitions,
-                            "name": buildLoadedEffectName(loadedEffect)
-                        });
-                    });
+                    updates.update(
+                        loadedEffect,
+                        {
+                            name: buildLoadedEffectName(loadedEffect),
+                            flags: {
+                                "pf2e-ranged-combat": {
+                                    loadedChambers: loadedChambers + 1,
+                                    ammunition: loadedAmmunitions
+                                }
+                            }
+                        }
+                    );
                     updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} ${loadedChambers + 1}/${loadedCapacity}`, true);
                 } else {
                     // No chambers are loaded, so create a new loaded effect
                     const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
-                    updates.add(loadedEffectSource);
+                    updates.create(loadedEffectSource);
 
                     setEffectTarget(loadedEffectSource, weapon);
 
@@ -132,7 +137,7 @@ export async function reload() {
                 const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
                 const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
                 if (conjuredRoundEffect) {
-                    updates.remove(conjuredRoundEffect);
+                    updates.delete(conjuredRoundEffect);
                 } else if (loadedEffect) {
                     // If the selected ammunition is the same as what's already loaded, don't reload
                     const loadedAmmunition = getFlag(loadedEffect, "ammunition");
@@ -145,7 +150,7 @@ export async function reload() {
 
                 // Now we can load the new ammunition
                 const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
-                updates.add(loadedEffectSource);
+                updates.create(loadedEffectSource);
 
                 setEffectTarget(loadedEffectSource, weapon);
                 loadedEffectSource.name = `${loadedEffectSource.name} (${ammo.name})`;
@@ -163,11 +168,7 @@ export async function reload() {
             }
 
             // Remove one piece of ammunition from the stack
-            updates.update(async () => {
-                await ammo.update({
-                    "data.quantity": ammo.quantity - 1
-                });
-            });
+            updates.update(ammo, { "system.quantity": ammo.quantity - 1 });
         }
     } else {
         if (checkFullyLoaded(actor, weapon)) {
@@ -182,10 +183,13 @@ export async function reload() {
                 const loadedChambers = getFlag(loadedEffect, "loadedChambers");
                 const loadedCapacity = getFlag(loadedEffect, "capacity");
 
-                updates.update(() => loadedEffect.update({
-                    "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`,
-                    "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
-                }));
+                updates.update(
+                    loadedEffect,
+                    {
+                        "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`,
+                        "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
+                    }
+                );
                 updates.floatyText(`${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`, true);
 
                 if (weapon.isCapacity) {
@@ -194,7 +198,7 @@ export async function reload() {
             } else {
                 const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
                 setEffectTarget(loadedEffectSource, weapon);
-                updates.add(loadedEffectSource);
+                updates.create(loadedEffectSource);
 
                 const loadedEffectName = loadedEffectSource.name;
                 loadedEffectSource.name = `${loadedEffectName} (1/${weapon.capacity})`;
@@ -213,7 +217,7 @@ export async function reload() {
             // Create the new loaded effect
             const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
             setEffectTarget(loadedEffectSource, weapon);
-            updates.add(loadedEffectSource);
+            updates.create(loadedEffectSource);
         }
         await postReloadToChat(token, weapon);
     }
@@ -252,7 +256,7 @@ export async function reloadAll() {
     for (const weapon of weapons) {
         const loadedEffect = await getItem(LOADED_EFFECT_ID);
         setEffectTarget(loadedEffect, weapon);
-        updates.add(loadedEffect);
+        updates.create(loadedEffect);
     }
 
     postInChat(actor, RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");

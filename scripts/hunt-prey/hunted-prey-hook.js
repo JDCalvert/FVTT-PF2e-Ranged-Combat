@@ -29,7 +29,7 @@ function setHuntedPrey() {
         if (!huntedPreyEffect) {
             continue;
         }
-        
+
         const huntedPreyId = getFlag(huntedPreyEffect, "targetId");
         if (!huntedPreyId) {
             continue;
@@ -43,7 +43,7 @@ function setHuntedPrey() {
             const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && r.value !== isHuntedPrey);
             if (rule && rule.value != isHuntedPrey) {
                 rule.value = isHuntedPrey;
-                huntPreyAction.update({"data.rules": rules});
+                huntPreyAction.update({ "system.rules": rules });
             }
         }
     }
