@@ -1,6 +1,7 @@
 ## Unreleased
 ### Features
 - Allow characters with Double Prey and Triple Threat to select multiple hunted preys
+- Prompt to select ammunition when trying to reload a weapon with no or empty ammunition
 
 ### Fixes
 - Migrate predicates to new structure
