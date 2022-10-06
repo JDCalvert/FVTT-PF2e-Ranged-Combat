@@ -1,4 +1,7 @@
 ## Unreleased
+### Features
+- Allow characters with Double Prey and Triple Threat to select multiple hunted preys
+
 ### Fixes
 - Migrate predicates to new structure
 - Fix several instances of manually-assigned effects not working
