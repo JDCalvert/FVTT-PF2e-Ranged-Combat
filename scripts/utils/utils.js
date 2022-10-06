@@ -99,23 +99,6 @@ export function getControlledActorAndToken() {
 }
 
 /**
- * Find exactly one targeted token
- */
-export function getTarget(notifyNoToken = true) {
-    const targetTokenIds = game.user.targets.ids;
-    const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
-    if (!targetTokens.length) {
-        if (notifyNoToken) showWarning("No target selected.");
-    } else if (targetTokens.length > 1) {
-        if (notifyNoToken) showWarning("You must have only one target selected.");
-    } else {
-        return targetTokens[0];
-    }
-
-    return null;
-}
-
-/**
  * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
  * with the same source ID if one cannot be found
  */
