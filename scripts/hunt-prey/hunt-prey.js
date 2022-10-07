@@ -72,12 +72,13 @@ export async function huntPrey() {
 
         // Add the new effect
         const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
+        huntedPreyEffectSource.name = `${huntedPreyEffectSource.name} (${targets.map(target => target.name).join(", ")})`;
         huntedPreyEffectSource.flags = {
             ...huntedPreyEffectSource.flags,
             "pf2e-ranged-combat": {
                 "targetIds": targets.map(target => target.id)
             }
-        }
+        };
         updates.create(huntedPreyEffectSource);
 
         // Update the hunted prey flag to true
