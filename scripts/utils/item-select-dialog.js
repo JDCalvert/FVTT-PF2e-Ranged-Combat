@@ -20,7 +20,7 @@ export class ItemSelectDialog extends Dialog {
         return result?.item;
     }
 
-    static async getItemWithOptions(title, header, items, options) {    
+    static async getItemWithOptions(title, header, items, options) {
         let content = `
             <div class="item-buttons" style="min-width: 200px; max-width: max-content; justify-items: center; margin: auto;">
             <p style="width: 200px; min-width: 100%">${header}</p>
@@ -123,4 +123,4 @@ export class ItemSelectDialog extends Dialog {
             this.result = result;
         });
     }
-};
+}
