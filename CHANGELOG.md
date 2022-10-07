@@ -1,4 +1,4 @@
-## Unreleased
+## 3.2.0 - 2022-10-07 (Pathfinder 2e 4.2.3)
 ### Features
 - Allow characters with Double Prey and Triple Threat to select multiple hunted preys
 - Prompt to select ammunition when trying to reload a weapon with no or empty ammunition
