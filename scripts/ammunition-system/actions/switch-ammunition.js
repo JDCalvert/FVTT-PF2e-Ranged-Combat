@@ -1,6 +1,6 @@
 import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
-import { getControlledActorAndToken, showWarning } from "../../utils/utils.js";
-import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { getControlledActorAndToken, showWarning, Updates } from "../../utils/utils.js";
+import { getWeapon } from "../../utils/weapon-utils.js";
 
 export async function switchAmmunition() {
     const { actor } = getControlledActorAndToken();
@@ -8,49 +8,95 @@ export async function switchAmmunition() {
         return;
     }
 
-    const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.usesAmmunition, "You have no weapons that use ammunition.")
-    );
+    const weapon = await getWeapon(actor, weapon => weapon.usesAmmunition, "You have no weapons that use ammunition.");
     if (!weapon) {
         return;
     }
 
-    const availableAmmunition = actor.itemTypes.consumable
+    const updates = new Updates(actor);
+
+    await selectAmmunition(
+        weapon,
+        updates,
+        "You have no ammunition equipped.",
+        "Select the ammunition to switch to.",
+        true,
+        true
+    );
+
+    updates.handleUpdates();
+}
+
+export async function selectAmmunition(
+    weapon,
+    updates,
+    nonAvailableMessage,
+    selectNewMessage,
+    defaultSetAsAmmunition,
+    alwaysSetAsAmmunition
+) {
+    const availableAmmunition = weapon.actor.itemTypes.consumable
         .filter(item => item.consumableType === "ammo" && !item.isStowed)
+        .filter(ammo => ammo.quantity > 0)
         .filter(ammo => ammo.isAmmoFor(weapon.value));
+
     if (!availableAmmunition.length) {
-        showWarning("You have no ammunition equipped.");
+        showWarning(nonAvailableMessage);
         return;
     }
+
+    const availableAmmunitionChoices = availableAmmunition.map(
+        ammunition => {
+            return {
+                id: ammunition.id,
+                name: `${ammunition.name} (${ammunition.quantity})`,
+                img: ammunition.img
+            };
+        }
+    );
 
     const ammunitionMap = new Map();
     if (weapon.ammunition) {
-        availableAmmunition.findSplice(ammo => ammo.id === weapon.ammunition.id);
-        ammunitionMap.set("Current", [weapon.ammunition]);
+        const currentAmmunition = availableAmmunitionChoices.findSplice(ammo => ammo.id === weapon.ammunition.id);
+        if (currentAmmunition) {
+            ammunitionMap.set("Current", [currentAmmunition]);
+        }
     };
-    if (availableAmmunition.length) {
-        ammunitionMap.set("Equipped", availableAmmunition);
+    if (availableAmmunitionChoices.length) {
+        ammunitionMap.set("Equipped", availableAmmunitionChoices);
     }
 
-    const newAmmo = await ItemSelectDialog.getItem(
+    const result = await ItemSelectDialog.getItemWithOptions(
         "Ammunition Select",
-        "Select the ammunition to switch to.",
-        ammunitionMap
+        selectNewMessage,
+        ammunitionMap,
+        alwaysSetAsAmmunition
+            ? []
+            : [
+                {
+                    id: "set-as-ammunition",
+                    label: "Set as ammunition",
+                    defaultValue: defaultSetAsAmmunition
+                }
+            ]
     );
 
-    if (!newAmmo) {
+    if (!result) {
         return;
     }
 
-    await actor.updateEmbeddedDocuments(
-        "Item",
-        [
+    const selectedAmmunition = availableAmmunition.find(ammunition => ammunition.id === result.item.id);
+
+    if (alwaysSetAsAmmunition || result.options["set-as-ammunition"]) {
+        updates.update(
+            weapon,
             {
-                _id: weapon.id,
                 system: {
-                    selectedAmmoId: newAmmo.id
+                    selectedAmmoId: selectedAmmunition.id
                 }
             }
-        ]
-    );
+        );
+    }
+
+    return selectedAmmunition;
 }

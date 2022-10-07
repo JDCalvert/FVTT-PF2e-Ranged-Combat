@@ -2,6 +2,7 @@ import { handleReload } from "../../feats/crossbow-feats.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
+import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadMagazine } from "./unload.js";
 
 /**
@@ -44,12 +45,8 @@ export async function reloadMagazine() {
     const updates = new Updates(actor);
 
     // If we have no ammunition selected, or we have none left in the stack, we can't reload
-    const ammo = weapon.ammunition;
+    const ammo = await getAmmunition(weapon, updates);
     if (!ammo) {
-        showWarning(`${weapon.name} has no ammunition selected.`);
-        return;
-    } else if (ammo.quantity < 1) {
-        showWarning(`You don't have enough ammunition to reload ${weapon.name}.`);
         return;
     }
 
@@ -125,4 +122,30 @@ export async function reloadMagazine() {
     );
 
     await updates.handleUpdates();
+}
+
+async function getAmmunition(weapon, updates) {
+    const ammunition = weapon.ammunition;
+    
+    if (!ammunition) {
+        return await selectAmmunition(
+            weapon,
+            updates,
+            `You have no ammunition compatible with your ${weapon.name}.`,
+            `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`,
+            false,
+            false
+        )
+    } else if (ammunition.quantity < 1) {
+        return await selectAmmunition(
+            weapon,
+            updates,
+            `You don't have enough ammunition to reload your ${weapon.name}.`,
+            `Your selected ammunition for your ${weapon.name} is empty.</p><p>Select new ammunition to load.`,
+            true,
+            false
+        )
+    } else {
+        return ammunition;
+    }
 }

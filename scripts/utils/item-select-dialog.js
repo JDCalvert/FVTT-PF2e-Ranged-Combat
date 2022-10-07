@@ -23,7 +23,7 @@ export class ItemSelectDialog extends Dialog {
     static async getItemWithOptions(title, header, items, options) {    
         let content = `
             <div class="item-buttons" style="min-width: 200px; max-width: max-content; justify-items: center; margin: auto;">
-            <p style="max-width: 200px;">${header}</p>
+            <p style="width: 200px; min-width: 100%">${header}</p>
         `;
 
         for (const itemCategory of items.keys()) {
@@ -80,7 +80,7 @@ export class ItemSelectDialog extends Dialog {
         }
 
         let result = await itemSelectDialog.getItemId();
-        if (!result) {
+        if (!result?.itemId) {
             return null;
         }
 

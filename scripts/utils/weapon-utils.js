@@ -5,7 +5,7 @@ export async function getWeapon(actor, predicate, noResultsMessage, priorityPred
     return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage), priorityPredicate);
 }
 
-export async function getSingleWeapon(weapons, priorityPredicate = () => false) {
+export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     // If there are no weapons, then return nothing
     if (!weapons.length) {
         return;

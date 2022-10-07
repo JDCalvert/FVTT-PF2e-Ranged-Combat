@@ -1,10 +1,10 @@
 import { handleReload } from "../../feats/crossbow-feats.js";
-import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
-import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
 import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
+import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadAmmunition } from "./unload.js";
 
 export async function reload() {
@@ -13,8 +13,10 @@ export async function reload() {
         return;
     }
 
-    const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.requiresLoading, "You have no reloadable weapons."),
+    const weapon = await getWeapon(
+        actor,
+        weapon => weapon.requiresLoading,
+        "You have no reloadable weapons.",
         weapon => !isFullyLoaded(actor, weapon)
     );
     if (!weapon) {
@@ -264,82 +266,26 @@ async function getAmmunition(weapon, updates) {
     const ammunition = weapon.ammunition;
 
     if (!ammunition) {
-        return await selectNewAmmunition(
+        return await selectAmmunition(
             weapon,
             updates,
             `You have no ammunition compatible with ${weapon.name}.`,
             `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`,
+            false,
             false
         );
     } else if (ammunition.quantity < 1) {
-        return await selectNewAmmunition(
+        return await selectAmmunition(
             weapon,
             updates,
             `Not enough ammunition to reload ${weapon.name}.`,
             `Your selected ammunition for your ${weapon.name} is empty.</p><p>Select new ammunition to load.`,
-            true
+            true,
+            false
         );
     } else {
         return ammunition;
     }
-}
-
-async function selectNewAmmunition(weapon, updates, nonAvailableMessage, selectNewMessage, defaultSetAsAmmunition) {
-    const availableAmmunition = weapon.actor.itemTypes.consumable
-        .filter(item => item.consumableType === "ammo" && !item.isStowed)
-        .filter(ammo => ammo.isAmmoFor(weapon.value))
-        .filter(ammo => ammo.quantity > 0);
-
-    if (!availableAmmunition.length) {
-        showWarning(nonAvailableMessage);
-        return null;
-    }
-
-    const ammunitionMap = new Map();
-    ammunitionMap.set(
-        "Equipped",
-        availableAmmunition.map(
-            ammo => {
-                return {
-                    id: ammo.id,
-                    name: `${ammo.name} (${ammo.quantity})`,
-                    img: ammo.img
-                };
-            }
-        )
-    );
-
-    const result = await ItemSelectDialog.getItemWithOptions(
-        "Select Ammunition",
-        selectNewMessage,
-        ammunitionMap,
-        [
-            {
-                id: "set-as-ammunition",
-                label: "Set as ammunition",
-                defaultValue: defaultSetAsAmmunition
-            }
-        ]
-    );
-
-    if (!result) {
-        return null;
-    }
-
-    const selectedAmmunition = availableAmmunition.find(ammunition => ammunition.id === result.item.id);
-
-    if (result.options["set-as-ammunition"]) {
-        updates.update(
-            weapon,
-            {
-                system: {
-                    selectedAmmoId: selectedAmmunition.id
-                }
-            }
-        );
-    }
-
-    return selectedAmmunition;
 }
 
 async function postReloadToChat(token, weapon, ammunitionName) {
