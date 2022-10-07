@@ -269,7 +269,7 @@ async function getAmmunition(weapon, updates) {
         return await selectAmmunition(
             weapon,
             updates,
-            `You have no ammunition compatible with ${weapon.name}.`,
+            `You have no equipped ammunition compatible with ${weapon.name}.`,
             `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`,
             false,
             false
