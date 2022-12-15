@@ -62,7 +62,7 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
 export function transformWeapon(weapon) {
     if (weapon.actor.type === "character") {
         return characterWeaponTransform(weapon);
-    } else if (weapon.actor.type === "npc") {
+    } else if (["npc", "hazard"].includes(weapon.actor.type)) {
         return npcWeaponTransform(weapon);
     } else {
         return null;
