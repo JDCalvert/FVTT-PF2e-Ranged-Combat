@@ -1,3 +1,7 @@
+## 3.2.1 - 2022-12-15 (Pathfinder 2e 4.5.0)
+### Fixes
+- Fix hazards' attack rolls causing errors
+
 ## 3.2.0 - 2022-10-07 (Pathfinder 2e 4.2.3)
 ### Features
 - Allow characters with Double Prey and Triple Threat to select multiple hunted preys
