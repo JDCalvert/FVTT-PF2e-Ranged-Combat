@@ -1,3 +1,7 @@
+## 3.2.2 - 2023-01-01 (Pathfinder 2e 4.6.0)
+### Fixes
+- Correct references to templates which were renamed in the system
+
 ## 3.2.1 - 2022-12-15 (Pathfinder 2e 4.5.0)
 ### Fixes
 - Fix hazards' attack rolls causing errors
