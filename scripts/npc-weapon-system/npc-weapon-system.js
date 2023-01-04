@@ -29,7 +29,7 @@ export function mapNPCWeapons() {
 }
 
 function buildContent(actor) {
-    const enableAdvancedAmmunitionSystem = actor.data.flags["pf2e-ranged-combat"]?.enableAdvancedAmmunitionSystem;
+    const enableAdvancedAmmunitionSystem = actor.flags["pf2e-ranged-combat"]?.enableAdvancedAmmunitionSystem;
 
     const attacks = actor.itemTypes.melee;
     const weapons = actor.itemTypes.weapon;
@@ -65,8 +65,8 @@ function buildContent(actor) {
     `;
 
     for (const attack of attacks) {
-        const weaponId = attack.data.flags["pf2e-ranged-combat"]?.weaponId;
-        const ammoId = attack.data.flags["pf2e-ranged-combat"]?.ammoId;
+        const weaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
+        const ammoId = attack.flags["pf2e-ranged-combat"]?.ammoId;
 
         content += `
                 <div class="form-group">
@@ -79,8 +79,8 @@ function buildContent(actor) {
         }
         content += `</select>`;
 
-        const isRanged = attack.data.data.weaponType.value === "ranged";
-        const usesAmmunition = attack.data.data.traits.value.find(trait => trait.startsWith("reload-"));
+        const isRanged = attack.system.weaponType.value === "ranged";
+        const usesAmmunition = attack.system.traits.value.find(trait => trait.startsWith("reload-"));
         if (isRanged && usesAmmunition) {
             content += `
                     <select id="${attack.id}-ammo" name="${attack.id}-ammo">
@@ -114,7 +114,7 @@ function buildContent(actor) {
 function saveChanges($html, actor) {
     const updates = [];
 
-    const currentEnableAdvancedAmmunitionSystem = !!actor.data.flags["pf2e-ranged-combat"]?.enableAdvancedAmmunitionSystem;
+    const currentEnableAdvancedAmmunitionSystem = !!actor.flags["pf2e-ranged-combat"]?.enableAdvancedAmmunitionSystem;
     const enabledAdvancedAmmunitionSystem = $html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked");
 
     if (enabledAdvancedAmmunitionSystem != currentEnableAdvancedAmmunitionSystem) {
@@ -138,8 +138,8 @@ function saveChanges($html, actor) {
     }
 
     for (const attack of actor.itemTypes.melee) {
-        const currentWeaponId = attack.data.flags["pf2e-ranged-combat"]?.weaponId;
-        const currentAmmoId = attack.data.flags["pf2e-ranged-combat"]?.ammoId;
+        const currentWeaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
+        const currentAmmoId = attack.flags["pf2e-ranged-combat"]?.ammoId;
 
         const weaponId = $html.find(`[name="${attack.id}-weapon"`).val();
         const ammoId = $html.find(`[name="${attack.id}-ammo"]`).val();

@@ -96,7 +96,7 @@ function characterWeaponTransform(weapon) {
 }
 
 function npcWeaponTransform(melee) {
-    const weaponId = melee.data.flags["pf2e-ranged-combat"]?.weaponId;
+    const weaponId = melee.flags["pf2e-ranged-combat"]?.weaponId;
     const weapon = weaponId ? melee.actor.items.get(weaponId) : null;
     if (weapon) {
         return {
@@ -120,7 +120,7 @@ function npcWeaponTransform(melee) {
             isCapacity: isCapacity(weapon),
             isEquipped: weapon.isEquipped,
             isStowed: weapon.isStowed,
-            isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
+            isCrossbow: weapon.system.traits.otherTags.includes("crossbow")
         };
     } else {
         return {
@@ -252,7 +252,7 @@ function getAmmunition(weapon) {
     } else if (weapon.actor.type === "character") {
         return weapon.ammo;
     } else if (weapon.actor.type === "npc") {
-        const ammoId = weapon.data.flags["pf2e-ranged-combat"]?.ammoId;
+        const ammoId = weapon.flags["pf2e-ranged-combat"]?.ammoId;
         return ammoId ? weapon.actor.items.get(ammoId) : null;
     } else {
         return;
