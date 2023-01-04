@@ -40,13 +40,13 @@ export class Updates {
     }
 
     async handleUpdates() {
-        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
-        if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates)
-        if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
-
         for (const update of this.complexUpdates) {
-            update();
+            await update();
         }
+
+        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
+        if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates);
+        if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
 
         let i = 0;
         for (const floatyText of this.floatyTextToShow) {

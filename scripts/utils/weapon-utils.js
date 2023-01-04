@@ -219,7 +219,7 @@ function getReloadTime(weapon) {
  * Find out if the weapon uses ammunition
  */
 function usesAmmunition(weapon) {
-    if (weapon.type === "character") {
+    if (weapon.actor.type === "character") {
         return weapon.requiresAmmo;
     } else if (weapon.actor.type === "npc") {
         if (weapon.type === "weapon") {
