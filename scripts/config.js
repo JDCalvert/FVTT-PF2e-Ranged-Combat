@@ -115,6 +115,19 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "hideTokenIcons",
+            {
+                name: "Hide Token Effect Icons",
+                hint: "Hide the token icons for effects created by this module.",
+                scope: "client",
+                config: true,
+                type: Boolean,
+                default: false
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "doNotShowWarningAgain",
             {
                 name: "",

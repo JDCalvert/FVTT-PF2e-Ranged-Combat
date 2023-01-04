@@ -157,6 +157,10 @@ export function setEffectTarget(effectSource, item, adjustName = true) {
         }
     };
 
+    if (game.settings.get("pf2e-ranged-combat", "hideTokenIcons")) {
+        effectSource.system.tokenIcon.show = false;
+    }
+    
     // Remove the "effect target" rule so we skip the popup
     const rules = effectSource.system.rules;
     rules.findSplice(rule => rule.key === "ChoiceSet");
