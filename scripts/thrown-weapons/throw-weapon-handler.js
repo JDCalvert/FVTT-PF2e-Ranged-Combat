@@ -13,7 +13,7 @@ export async function handleThrownWeapon(weapon) {
     }
 
     // If the weapon has a returning rune, then we don't need to do anything
-    if (weapon.value.data.data.runes.property.includes("returning")) {
+    if (weapon.value.system.runes.property.includes("returning")) {
         return;
     }
 
@@ -25,7 +25,7 @@ export async function handleThrownWeapon(weapon) {
     const { groupStacks, groupStackIds } = findGroupStacks(weapon.value);
 
     // Find the stack that has the carry type we're trying to set
-    const targetStack = groupStacks.find(stack => stack.data.data.equipped.carryType === "dropped");
+    const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === "dropped");
 
     if (targetStack) {
         // We have a dropped stack already
@@ -34,13 +34,13 @@ export async function handleThrownWeapon(weapon) {
             [
                 {
                     _id: weapon.id,
-                    data: {
+                    system: {
                         quantity: weapon.quantity - 1
                     }
                 },
                 {
                     _id: targetStack.id,
-                    data: {
+                    system: {
                         quantity: targetStack.quantity + 1
                     }
                 }

@@ -5,7 +5,7 @@ export async function getWeapon(actor, predicate, noResultsMessage, priorityPred
     return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage), priorityPredicate);
 }
 
-export async function getSingleWeapon(weapons, priorityPredicate = () => false) {
+export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     // If there are no weapons, then return nothing
     if (!weapons.length) {
         return;
@@ -62,7 +62,7 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
 export function transformWeapon(weapon) {
     if (weapon.actor.type === "character") {
         return characterWeaponTransform(weapon);
-    } else if (weapon.actor.type === "npc") {
+    } else if (["npc", "hazard"].includes(weapon.actor.type)) {
         return npcWeaponTransform(weapon);
     } else {
         return null;
@@ -91,7 +91,7 @@ function characterWeaponTransform(weapon) {
         isCapacity: isCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
-        isCrossbow: weapon.data.data.traits.otherTags.includes("crossbow")
+        isCrossbow: weapon.system.traits.otherTags.includes("crossbow")
     };
 }
 
@@ -150,7 +150,7 @@ function npcWeaponTransform(melee) {
 }
 
 function getCapacity(weapon) {
-    const match = weapon.data.data.traits.value
+    const match = weapon.system.traits.value
         .map(trait => trait.match(/capacity-(\d+)/))
         .find(match => !!match);
 
@@ -166,7 +166,7 @@ function isDoubleBarrel(weapon) {
 }
 
 function isCapacity(weapon) {
-    return weapon.data.data.traits.value.some(trait => !!trait.match(/capacity-\d+/));
+    return weapon.system.traits.value.some(trait => !!trait.match(/capacity-\d+/));
 }
 
 /**
@@ -200,7 +200,7 @@ function getReloadTime(weapon) {
         if (weapon.type === "weapon") {
             return Number(weapon.reload || 0);
         } else {
-            const reloadTrait = weapon.data.data.traits.value.find(trait => trait.startsWith("reload-"));
+            const reloadTrait = weapon.system.traits.value.find(trait => trait.startsWith("reload-"));
             if (reloadTrait) {
                 const reloadTime = reloadTrait.slice("reload-".length);
                 if (reloadTime === "1-min") {
@@ -225,7 +225,7 @@ function usesAmmunition(weapon) {
         if (weapon.type === "weapon") {
             return weapon.requiresAmmo;
         } else {
-            return weapon.data.data.traits.value.some(trait => trait.startsWith("reload-"));
+            return weapon.system.traits.value.some(trait => trait.startsWith("reload-"));
         }
     } else {
         return false;

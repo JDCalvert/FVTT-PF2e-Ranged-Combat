@@ -14,7 +14,7 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
 
     // If we're keeping the same carry type (e.g. two-handed to one-handed) then call
     // the normal function
-    if (carryType === item.data.data.equipped.carryType) {
+    if (carryType === item.system.equipped.carryType) {
         return wrapper(item, carryType, handsHeld, inSlot);
     }
 
@@ -27,7 +27,7 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
     }
 
     // Find the stack that has the carry type we're trying to set
-    const targetStack = groupStacks.find(stack => stack.data.data.equipped.carryType === carryType);
+    const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === carryType);
 
     // - If there is no target stack then what we do depends on the size of our current stack:
     //   - If our stack size is one, then we can just call the normal function
@@ -66,8 +66,8 @@ export async function changeStowed(wrapper, item, container) {
     }
 
     const targetStack = container
-        ? groupStacks.find(stack => stack.data.data.equipped.carryType === "stowed" && stack.data.data.containerId === container.id)
-        : groupStacks.find(stack => stack.data.data.equipped.carryType === "worn");
+        ? groupStacks.find(stack => stack.system.equipped.carryType === "stowed" && stack.system.containerId === container.id)
+        : groupStacks.find(stack => stack.system.equipped.carryType === "worn");
 
     if (!targetStack) {
         if (item.quantity <= 1) {
@@ -82,7 +82,7 @@ export async function changeStowed(wrapper, item, container) {
 }
 
 export function findGroupStacks(item) {
-    const groupIds = item.data.flags["pf2e-ranged-combat"]?.groupIds ?? [item.id];
+    const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.id];
     const groupStacks = item.actor.items.filter(i => groupIds.includes(i.id));
     const groupStackIds = groupStacks.map(stack => stack.id);
 
@@ -97,8 +97,8 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
         [
             {
                 ...itemSource,
-                data: {
-                    ...itemSource.data,
+                system: {
+                    ...itemSource.system,
                     containerId: container?.id ?? null,
                     quantity: 0
                 }
@@ -118,7 +118,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
         // that we were trying to update the original stack to
         updates.push({
             _id: targetStack.id,
-            data: {
+            system: {
                 containerId: container?.id ?? null,
                 equipped: {
                     carryType,
@@ -144,7 +144,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
         // Finally, reduce the quantity of the original stack by one
         updates.push({
             _id: item.id,
-            data: {
+            system: {
                 quantity: item.quantity - 1
             }
         });
@@ -157,6 +157,10 @@ function moveBetweenStacks(item, targetStack) {
     const updates = [];
     const deletes = [];
 
+    // Return early if we're moving an item into itself
+    if (item.id === targetStack.id) {
+        return;
+    }
     // If we have zero in this stack, just delete it and don't increase the other stack's quantity
     if (item.quantity === 0) {
         deletes.push(item.id);
@@ -167,7 +171,7 @@ function moveBetweenStacks(item, targetStack) {
         } else {
             updates.push({
                 _id: item.id,
-                data: {
+                system: {
                     quantity: item.quantity - 1
                 }
             });
@@ -177,7 +181,7 @@ function moveBetweenStacks(item, targetStack) {
         updates.push(
             {
                 _id: targetStack.id,
-                data: {
+                system: {
                     quantity: targetStack.quantity + 1
                 }
             }
@@ -191,5 +195,5 @@ function moveBetweenStacks(item, targetStack) {
 function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
     return useAdvancedThrownWeaponSystem(item.actor)
         && item.type === "weapon"
-        && item.data.data.traits.value.some(trait => trait.startsWith("thrown") || trait === "consumable");
+        && item.system.traits.value.some(trait => trait.startsWith("thrown") || trait === "consumable");
 }

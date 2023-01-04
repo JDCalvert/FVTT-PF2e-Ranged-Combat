@@ -29,21 +29,21 @@ function setHuntedPrey() {
         if (!huntedPreyEffect) {
             continue;
         }
-        
-        const huntedPreyId = getFlag(huntedPreyEffect, "targetId");
-        if (!huntedPreyId) {
+
+        const huntedPreyIds = getFlag(huntedPreyEffect, "targetIds");
+        if (!huntedPreyIds?.length) {
             continue;
         }
 
-        const isHuntedPrey = targetedIds.length === 1 && targetedIds.includes(huntedPreyId);
+        const areAllTargetsHuntedPrey = !!targetedIds.length && targetedIds.every(targetedId => huntedPreyIds.includes(targetedId));
 
         const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
         if (huntPreyAction) {
-            const rules = huntPreyAction.toObject().data.rules;
-            const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && r.value !== isHuntedPrey);
-            if (rule && rule.value != isHuntedPrey) {
-                rule.value = isHuntedPrey;
-                huntPreyAction.update({"data.rules": rules});
+            const rules = huntPreyAction.system.rules;
+            const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && r.value !== areAllTargetsHuntedPrey);
+            if (rule && rule.value != areAllTargetsHuntedPrey) {
+                rule.value = areAllTargetsHuntedPrey;
+                huntPreyAction.update({ "system.rules": rules });
             }
         }
     }

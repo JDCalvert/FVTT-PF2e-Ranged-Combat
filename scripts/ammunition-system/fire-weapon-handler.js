@@ -12,7 +12,7 @@ export function fireWeapon(actor, weapon, updates) {
     // If there's an ammunition effect from the previous shot, remove it now
     const ammunitionEffect = getEffectFromActor(actor, AMMUNITION_EFFECT_ID, weapon.id);
     if (ammunitionEffect) {
-        updates.remove(ammunitionEffect);
+        updates.delete(ammunitionEffect);
     }
 
     if (useAdvancedAmmunitionSystem(actor)) {
@@ -55,12 +55,13 @@ function fireWeaponRepeating(actor, weapon, updates) {
     const magazineRemaining = getFlag(magazineLoadedEffect, "remaining") - 1;
 
     const magazineLoadedEffectName = getFlag(magazineLoadedEffect, "name");
-    updates.update(async () => {
-        await magazineLoadedEffect.update({
+    updates.update(
+        magazineLoadedEffect,
+        {
             "name": `${magazineLoadedEffectName} (${magazineRemaining}/${magazineCapacity})`,
             "flags.pf2e-ranged-combat.remaining": magazineRemaining
-        });
-    });
+        }
+    );
     updates.floatyText(`${getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`, false);
     removeAmmunition(actor, weapon, updates);
 
@@ -94,14 +95,14 @@ function fireWeaponReloadable(actor, weapon, updates) {
         }
 
         const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-        updates.remove(loadedEffect);
+        updates.delete(loadedEffect);
         postAmmunitionAndApplyEffect(actor, weapon, getFlag(loadedEffect, "ammunition"), updates);
     }
 }
 
 function fireWeaponCapacity(actor, weapon, updates) {
     const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
-    updates.remove(chamberLoadedEffect);
+    updates.delete(chamberLoadedEffect);
 
     const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
 
@@ -120,7 +121,7 @@ function fireWeaponDoubleBarrel(actor, weapon, updates) {
             postAmmunitionAndApplyEffect(actor, weapon, loadedAmmunition, updates);
         }
 
-        updates.remove(loadedEffect);
+        updates.delete(loadedEffect);
     } else {
         consumeAmmunition(actor, weapon, weapon.selectedAmmunition, updates);
     }
@@ -132,7 +133,7 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
         return;
     }
 
-    updates.update(() => ammunition.update({ "data.quantity": ammunition.quantity - ammunitionToFire }));
+    updates.update(ammunition, { "system.quantity": ammunition.quantity - ammunitionToFire });
 
     if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunition.toMessage();
@@ -158,7 +159,7 @@ function consumeAmmunition(actor, weapon, ammunition, updates) {
 function consumeConjuredRound(actor, weapon, updates) {
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
-        updates.remove(conjuredRoundEffect);
+        updates.delete(conjuredRoundEffect);
         postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`);
     }
     return !!conjuredRoundEffect;
@@ -176,14 +177,14 @@ function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
 
 function createAmmunitionEffect(weapon, ammunition, updates) {
     if (ammunition?.rules.length) {
-        updates.update(async () => {
+        updates.complexUpdate(async () => {
             const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
             setEffectTarget(ammunitionEffectSource, weapon);
             ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-            ammunitionEffectSource.data.rules = ammunition.data.data.rules;
+            ammunitionEffectSource.system.rules = ammunition.system.rules;
             ammunitionEffectSource.img = ammunition.img;
-            ammunitionEffectSource.data.description.value = ammunition.description;
-            updates.add(ammunitionEffectSource);
+            ammunitionEffectSource.system.description.value = ammunition.description;
+            updates.create(ammunitionEffectSource);
         });
     }
 }

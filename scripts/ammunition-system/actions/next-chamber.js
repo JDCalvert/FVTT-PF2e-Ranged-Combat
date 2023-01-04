@@ -83,7 +83,7 @@ export async function setLoadedChamber(actor, weapon, ammo, updates) {
         }
 
         // Remove the existing effect before creating the new one
-        updates.remove(chamberLoadedEffect);
+        updates.delete(chamberLoadedEffect);
     }
 
     await addChamberLoaded(actor, weapon, ammo, updates);
@@ -106,7 +106,7 @@ async function addChamberLoaded(actor, weapon, ammo, updates) {
         chamberLoadedSource.name = `${chamberLoadedSource.name} (${ammo.name})`;
 
         if (ammo.sourceId === CONJURED_ROUND_ITEM_ID) {
-            chamberLoadedSource.data.duration = {
+            chamberLoadedSource.system.duration = {
                 expiry: "turn-end",
                 sustained: false,
                 unit: "rounds",
@@ -115,5 +115,5 @@ async function addChamberLoaded(actor, weapon, ammo, updates) {
         }
     }
 
-    updates.add(chamberLoadedSource);
+    updates.create(chamberLoadedSource);
 }

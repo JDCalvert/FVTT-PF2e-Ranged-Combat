@@ -52,7 +52,7 @@ Hooks.on(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype.ammo",
             function() {
-                const ammo = this.actor?.items.get(this.data.data.selectedAmmoId ?? "");
+                const ammo = this.actor?.items.get(this.system.selectedAmmoId ?? "");
                 return ammo?.type === "consumable" ? ammo : null;
             },
             "OVERRIDE"
@@ -77,6 +77,9 @@ Hooks.on(
                 }
 
                 const weapon = transformWeapon(contextWeapon);
+                if (!weapon) {
+                    return wrapper(...args);
+                }
 
                 if (!await checkLoaded(actor, weapon)) {
                     return;

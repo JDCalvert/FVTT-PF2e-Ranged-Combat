@@ -18,7 +18,7 @@ export async function alchemicalShot() {
 
     const weapon = await getWeapon(
         actor,
-        weapon => weapon.isEquipped && (weapon.value.data.data.group === "firearm" || weapon.isCrossbow),
+        weapon => weapon.isEquipped && (weapon.value.system.group === "firearm" || weapon.isCrossbow),
         `${token.name} is not wielding a firearm or crossbow.`
     );
     if (!weapon) {
@@ -58,7 +58,7 @@ export async function alchemicalShot() {
             rulesSelections: {
                 ...alchemicalShotEffectSource.flags?.pf2e?.rulesSelections,
                 weapon: weapon.id,
-                damageType:  bomb.value.data.data.damage.damageType,
+                damageType:  bomb.value.system.damage.damageType,
                 persistentDamageDice: bomb.value.level >= 17 ? 3 : bomb.value.level >= 11 ? 2 : 1
             }
         },
@@ -67,12 +67,12 @@ export async function alchemicalShot() {
             fired: false
         }
     };
-    alchemicalShotEffectSource.data.rules = alchemicalShotEffectSource.data.rules.filter(rule => rule.key != "ChoiceSet");
+    alchemicalShotEffectSource.system.rules = alchemicalShotEffectSource.system.rules.filter(rule => rule.key != "ChoiceSet");
 
     creates.push(alchemicalShotEffectSource);
     updates.push({
         _id: bomb.id,
-        data: {
+        system: {
             quantity: bomb.quantity - 1
         }
     });
@@ -100,15 +100,16 @@ export async function handleWeaponFiredAlchemicalShot(weapon, updates) {
     const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
     if (alchemicalShotEffect) {
         if (getFlag(alchemicalShotEffect, "fired")) {
-            updates.remove(alchemicalShotEffect);
+            updates.delete(alchemicalShotEffect);
         } else {
-            alchemicalShotEffect.data.data.rules.findSplice(rule => rule.selector.endsWith("-attack"));
-            updates.update(() => alchemicalShotEffect.update(
+            alchemicalShotEffect.system.rules.findSplice(rule => rule.selector.endsWith("-attack"));
+            updates.update(
+                alchemicalShotEffect,
                 {
                     "flags.pf2e-ranged-combat.fired": true,
-                    "data.rules": alchemicalShotEffect.data.data.rules
+                    "system.rules": alchemicalShotEffect.system.rules
                 }
-            ));
+            );
         }
     }
 }

@@ -1,9 +1,10 @@
 import { handleReload } from "../../feats/crossbow-feats.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
-import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
 import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
+import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadAmmunition } from "./unload.js";
 
 export async function reload() {
@@ -12,8 +13,10 @@ export async function reload() {
         return;
     }
 
-    const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.requiresLoading, "You have no reloadable weapons."),
+    const weapon = await getWeapon(
+        actor,
+        weapon => weapon.requiresLoading,
+        "You have no reloadable weapons.",
         weapon => !isFullyLoaded(actor, weapon)
     );
     if (!weapon) {
@@ -45,17 +48,13 @@ export async function reload() {
             // Create the new loaded effect
             const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
             setEffectTarget(loadedEffectSource, weapon);
-            updates.add(loadedEffectSource);
+            updates.create(loadedEffectSource);
 
             await postReloadToChat(token, weapon);
         } else {
             // If we have no ammunition selected, or we don't have any left in the stack, we can't reload
-            const ammo = weapon.ammunition;
+            const ammo = await getAmmunition(weapon, updates);
             if (!ammo) {
-                showWarning(`${weapon.name} has no ammunition selected.`);
-                return;
-            } else if (ammo.quantity < 1) {
-                showWarning(`Not enough ammunition to reload ${weapon.name}.`);
                 return;
             }
 
@@ -87,18 +86,23 @@ export async function reload() {
                     }
 
                     // Increase the number of loaded chambers by one
-                    updates.update(async () => {
-                        await loadedEffect.update({
-                            "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1,
-                            "flags.pf2e-ranged-combat.ammunition": loadedAmmunitions,
-                            "name": buildLoadedEffectName(loadedEffect)
-                        });
-                    });
+                    updates.update(
+                        loadedEffect,
+                        {
+                            name: buildLoadedEffectName(loadedEffect),
+                            flags: {
+                                "pf2e-ranged-combat": {
+                                    loadedChambers: loadedChambers + 1,
+                                    ammunition: loadedAmmunitions
+                                }
+                            }
+                        }
+                    );
                     updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} ${loadedChambers + 1}/${loadedCapacity}`, true);
                 } else {
                     // No chambers are loaded, so create a new loaded effect
                     const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
-                    updates.add(loadedEffectSource);
+                    updates.create(loadedEffectSource);
 
                     setEffectTarget(loadedEffectSource, weapon);
 
@@ -132,7 +136,7 @@ export async function reload() {
                 const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
                 const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
                 if (conjuredRoundEffect) {
-                    updates.remove(conjuredRoundEffect);
+                    updates.delete(conjuredRoundEffect);
                 } else if (loadedEffect) {
                     // If the selected ammunition is the same as what's already loaded, don't reload
                     const loadedAmmunition = getFlag(loadedEffect, "ammunition");
@@ -145,7 +149,7 @@ export async function reload() {
 
                 // Now we can load the new ammunition
                 const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
-                updates.add(loadedEffectSource);
+                updates.create(loadedEffectSource);
 
                 setEffectTarget(loadedEffectSource, weapon);
                 loadedEffectSource.name = `${loadedEffectSource.name} (${ammo.name})`;
@@ -163,11 +167,7 @@ export async function reload() {
             }
 
             // Remove one piece of ammunition from the stack
-            updates.update(async () => {
-                await ammo.update({
-                    "data.quantity": ammo.quantity - 1
-                });
-            });
+            updates.update(ammo, { "system.quantity": ammo.quantity - 1 });
         }
     } else {
         if (checkFullyLoaded(actor, weapon)) {
@@ -182,10 +182,13 @@ export async function reload() {
                 const loadedChambers = getFlag(loadedEffect, "loadedChambers");
                 const loadedCapacity = getFlag(loadedEffect, "capacity");
 
-                updates.update(() => loadedEffect.update({
-                    "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`,
-                    "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
-                }));
+                updates.update(
+                    loadedEffect,
+                    {
+                        "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`,
+                        "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
+                    }
+                );
                 updates.floatyText(`${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`, true);
 
                 if (weapon.isCapacity) {
@@ -194,7 +197,7 @@ export async function reload() {
             } else {
                 const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
                 setEffectTarget(loadedEffectSource, weapon);
-                updates.add(loadedEffectSource);
+                updates.create(loadedEffectSource);
 
                 const loadedEffectName = loadedEffectSource.name;
                 loadedEffectSource.name = `${loadedEffectName} (1/${weapon.capacity})`;
@@ -213,7 +216,7 @@ export async function reload() {
             // Create the new loaded effect
             const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
             setEffectTarget(loadedEffectSource, weapon);
-            updates.add(loadedEffectSource);
+            updates.create(loadedEffectSource);
         }
         await postReloadToChat(token, weapon);
     }
@@ -252,11 +255,37 @@ export async function reloadAll() {
     for (const weapon of weapons) {
         const loadedEffect = await getItem(LOADED_EFFECT_ID);
         setEffectTarget(loadedEffect, weapon);
-        updates.add(loadedEffect);
+        updates.create(loadedEffect);
     }
 
     postInChat(actor, RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");
     await updates.handleUpdates();
+}
+
+async function getAmmunition(weapon, updates) {
+    const ammunition = weapon.ammunition;
+
+    if (!ammunition) {
+        return await selectAmmunition(
+            weapon,
+            updates,
+            `You have no equipped ammunition compatible with ${weapon.name}.`,
+            `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`,
+            false,
+            false
+        );
+    } else if (ammunition.quantity < 1) {
+        return await selectAmmunition(
+            weapon,
+            updates,
+            `Not enough ammunition to reload ${weapon.name}.`,
+            `Your selected ammunition for your ${weapon.name} is empty.</p><p>Select new ammunition to load.`,
+            true,
+            false
+        );
+    } else {
+        return ammunition;
+    }
 }
 
 async function postReloadToChat(token, weapon, ammunitionName) {

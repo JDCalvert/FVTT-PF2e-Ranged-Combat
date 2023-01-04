@@ -1,5 +1,6 @@
 import { reload } from "./ammunition-system/actions/reload.js";
 import { unload } from "./ammunition-system/actions/unload.js";
+import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { reloadAll } from "./ammunition-system/actions/reload.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
@@ -115,6 +116,19 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "hideTokenIcons",
+            {
+                name: "Hide Token Effect Icons",
+                hint: "Hide the token icons for effects created by this module.",
+                scope: "client",
+                config: true,
+                type: Boolean,
+                default: false
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "doNotShowWarningAgain",
             {
                 name: "",
@@ -128,6 +142,7 @@ Hooks.on(
         game.pf2eRangedCombat = {
             reload,
             unload,
+            switchAmmunition,
             nextChamber,
             fireBothBarrels,
             conjureBullet,

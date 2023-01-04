@@ -1,22 +1,34 @@
 export class Updates {
     constructor(actor) {
         this.actor = actor;
-        this.itemsToAdd = [];
-        this.itemsToRemove = [];
-        this.itemsToUpdate = [];
+
+        this.creates = []; // Array of items to be created
+        this.deletes = []; // Set of IDs of items to be deleted
+        this.updates = []; // Array of updates to existing items
+        this.complexUpdates = []; // Array of functions to execute to perform complex updates
+
         this.floatyTextToShow = [];
     }
 
-    add(item) {
-        this.itemsToAdd.push(item);
+    create(item) {
+        this.creates.push(item);
     }
 
-    remove(item) {
-        this.itemsToRemove.push(item);
+    delete(item) {
+        this.deletes.push(item.id);
     }
 
-    update(update) {
-        this.itemsToUpdate.push(update);
+    update(item, update) {
+        this.updates.push(
+            {
+                ...update,
+                _id: item.id,
+            }
+        );
+    }
+
+    complexUpdate(update) {
+        this.complexUpdates.push(update);
     }
 
     floatyText(text, up) {
@@ -28,12 +40,13 @@ export class Updates {
     }
 
     async handleUpdates() {
-        for (const update of this.itemsToUpdate) {
-            await update();
-        }
+        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
+        if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates)
+        if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
 
-        await this.actor.deleteEmbeddedDocuments("Item", [...new Set(this.itemsToRemove)].map(item => item.id));
-        await this.actor.createEmbeddedDocuments("Item", this.itemsToAdd);
+        for (const update of this.complexUpdates) {
+            update();
+        }
 
         let i = 0;
         for (const floatyText of this.floatyTextToShow) {
@@ -46,7 +59,7 @@ export class Updates {
                             : token.showFloatyText({ upadte: { name: floatyText.text } });
                     }
                 },
-                i * 300
+                i * 500
             );
             i++;
         }
@@ -83,23 +96,6 @@ export function getControlledActorAndToken() {
 
     showWarning("You must have a single character selected.");
     return { actor: null, token: null };
-}
-
-/**
- * Find exactly one targeted token
- */
-export function getTarget(notifyNoToken = true) {
-    const targetTokenIds = game.user.targets.ids;
-    const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
-    if (!targetTokens.length) {
-        if (notifyNoToken) showWarning("No target selected.");
-    } else if (targetTokens.length > 1) {
-        if (notifyNoToken) showWarning("You must have only one target selected.");
-    } else {
-        return targetTokens[0];
-    }
-
-    return null;
 }
 
 /**
@@ -141,42 +137,55 @@ export async function getItem(id) {
     return source;
 }
 
-export function setEffectTarget(effect, item, adjustName = true) {
+export function setEffectTarget(effectSource, item, adjustName = true) {
     if (adjustName) {
-        effect.name = `${effect.name} (${item.name})`;
+        effectSource.name = `${effectSource.name} (${item.name})`;
     }
-    effect.flags["pf2e-ranged-combat"] = {
-        targetId: item.id
-    };
-    effect.data.target = item.id;
 
-    // Remove the "effect target" rule so we skip the popup
-    const rules = effect.data.rules;
-    const choiceSetIndex = rules.findIndex(rule => rule.key === "ChoiceSet");
-    if (choiceSetIndex > -1) {
-        rules.splice(choiceSetIndex, 1);
+    effectSource.flags = {
+        ...effectSource.flags,
+        "pf2e-ranged-combat": {
+            ...effectSource.flags?.["pf2e-ranged-combat"],
+            targetId: item.id
+        },
+        pf2e: {
+            ...effectSource.flags?.pf2e,
+            rulesSelections: {
+                ...effectSource.flags?.pf2e?.rulesSelections,
+                weapon: item.id
+            }
+        }
+    };
+
+    if (game.settings.get("pf2e-ranged-combat", "hideTokenIcons")) {
+        effectSource.system.tokenIcon.show = false;
     }
+    
+    // Remove the "effect target" rule so we skip the popup
+    const rules = effectSource.system.rules;
+    rules.findSplice(rule => rule.key === "ChoiceSet");
 }
 
-export function setChoice(effect, choiceFlag, choiceValue, label = null) {
+export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
     if (label) {
-        effect.name = `${effect.name} (${label})`;
+        effectSource.name = `${effectSource.name} (${label})`;
     }
-    effect.flags.pf2e ??= {};
-    effect.flags.pf2e.rulesSelections ??= {};
-    effect.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
+
+    effectSource.flags.pf2e ??= {};
+    effectSource.flags.pf2e.rulesSelections ??= {};
+    effectSource.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
 
     // Remove the ChoiceSet rule since we've already made it
-    effect.data.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
+    effectSource.system.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
 }
 
 /**
  * If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
  * To prevent this, set the duration to 1 round
  */
-export function ensureDuration(actor, effect) {   
-    if (!actor.getActiveTokens().some(token => token.inCombat) && effect.data.duration.value === 0) {
-        effect.data.duration.value = 1;
+export function ensureDuration(actor, effectSource) {
+    if (!actor.getActiveTokens().some(token => token.inCombat) && effectSource.system.duration.value === 0) {
+        effectSource.system.duration.value = 1;
     }
 }
 
@@ -187,8 +196,8 @@ export async function postActionInChat(action) {
 }
 
 export async function postInChat(actor, img, message, actionName = "", numActions = "") {
-    const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.html", { imgPath: img, message: message, });
-    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.html", { action: { title: actionName, typeNumber: String(numActions) } });
+    const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.hbs", { imgPath: img, message: message, });
+    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: { title: actionName, typeNumber: String(numActions) } });
 
     await ChatMessage.create({
         type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
@@ -243,9 +252,9 @@ export function showWarning(warningMessage) {
 }
 
 export function getFlags(item) {
-    return item.data.flags["pf2e-ranged-combat"];
+    return item.flags["pf2e-ranged-combat"];
 }
 
 export function getFlag(item, flagName) {
-    return item.data.flags["pf2e-ranged-combat"]?.[flagName];
+    return item.flags["pf2e-ranged-combat"]?.[flagName];
 }

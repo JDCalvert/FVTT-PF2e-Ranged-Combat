@@ -57,11 +57,7 @@ export class Migration001MultipleAmmunitions {
                         };
                     }
 
-                    updates.update(() => {
-                        loadedEffect.update({
-                            "flags.pf2e-ranged-combat": loadedFlags
-                        });
-                    });
+                    updates.update(loadedEffect, { "flags.pf2e-ranged-combat": loadedFlags });
                 }
 
                 // Chamber Loaded Effect
@@ -75,7 +71,7 @@ export class Migration001MultipleAmmunitions {
                             img: CONJURE_BULLET_IMG,
                             id: CONJURED_ROUND_ITEM_ID,
                             sourceId: CONJURED_ROUND_ITEM_ID
-                        }
+                        };
                     }
 
                     let chamberLoadedFlags = getFlags(chamberLoadedEffect);
@@ -84,12 +80,13 @@ export class Migration001MultipleAmmunitions {
                         ammunition: currentAmmunition
                     };
 
-                    updates.update(() => {
-                        chamberLoadedEffect.update({
+                    updates.update(
+                        chamberLoadedEffect,
+                        {
                             "flags.pf2e-ranged-combat": chamberLoadedFlags,
                             "name": `${chamberLoadedEffect.name} (${currentAmmunition.name})`
-                        });
-                    });
+                        }
+                    );
                 }
             }
 

@@ -1,7 +1,4 @@
 export class ItemSelectDialog extends Dialog {
-    itemId;
-    result;
-
     constructor(title, content) {
         super(
             {
@@ -19,9 +16,14 @@ export class ItemSelectDialog extends Dialog {
     }
 
     static async getItem(title, header, items) {
+        const result = await this.getItemWithOptions(title, header, items, []);
+        return result?.item;
+    }
+
+    static async getItemWithOptions(title, header, items, options) {
         let content = `
-            <div class="item-buttons" style="max-width: max-content; justify-items: center; margin: auto;">
-            <p>${header}</p>
+            <div class="item-buttons" style="min-width: 200px; max-width: max-content; justify-items: center; margin: auto;">
+            <p style="width: 200px; min-width: 100%">${header}</p>
         `;
 
         for (const itemCategory of items.keys()) {
@@ -47,24 +49,72 @@ export class ItemSelectDialog extends Dialog {
             content += `</fieldset>`;
         }
 
-        content += `</div>`;
-        let itemId = await new this(title, content).getItemId();
-        return Array.from(items.values()).flat().find(item => item.id === itemId);
+        if (options.length) {
+            content += `
+                <fieldset style="border: 1px solid #a1a1a1; paddng: 5px;">
+                    <legend>Options</legend>
+                    <form>
+            `;
+
+            for (const option of options) {
+                content += `
+                    <div class="form-group">
+                        <input class="option-checkbox" type="checkbox" id="${option.id}" name="${option.id}" ${option.defaultValue ? "checked" : ""}>
+                        <label for="${option.id}">${option.label}</label>
+                    </div>
+                `;
+            }
+
+            content += `
+                    </form >
+                </fieldset >
+            `;
+        }
+
+        content += `</div > `;
+
+        const itemSelectDialog = new this(title, content);
+        itemSelectDialog.selectionOptions = {};
+        for (const option of options) {
+            itemSelectDialog.selectionOptions[option.id] = option.defaultValue;
+        }
+
+        let result = await itemSelectDialog.getItemId();
+        if (!result?.itemId) {
+            return null;
+        }
+
+        return {
+            item: Array.from(items.values()).flat().find(item => item.id === result.itemId),
+            options: result.options
+        };
     }
 
     activateListeners(html) {
-        html.find(".item-button").click(this.clickItemButton.bind(this));
+        html.find(".item-button").on(
+            "click",
+            (event) => {
+                this.itemId = event.currentTarget.value;
+                this.close();
+            }
+        );
+
+        html.find(".option-checkbox").on(
+            "change",
+            (event) => this.selectionOptions[event.currentTarget.id] = event.currentTarget.checked
+        );
+
         super.activateListeners(html);
     }
 
-    clickItemButton(event) {
-        this.itemId = event.currentTarget.value;
-        this.close();
-    }
-
     async close() {
-        this.result?.(this.itemId);
         await super.close();
+        this.result?.(
+            {
+                itemId: this.itemId,
+                options: this.selectionOptions
+            }
+        );
     }
 
     async getItemId() {
