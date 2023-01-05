@@ -102,7 +102,7 @@ function npcWeaponTransform(melee) {
         return {
             value: weapon,
             actor: weapon.actor,
-            id: weapon.id,
+            id: melee.id,
             sourceId: weapon.sourceId,
             baseType: weapon.baseType,
             name: weapon.name,
@@ -252,7 +252,7 @@ function getAmmunition(weapon) {
     } else if (weapon.actor.type === "character") {
         return weapon.ammo;
     } else if (weapon.actor.type === "npc") {
-        const ammoId = weapon.flags["pf2e-ranged-combat"]?.ammoId;
+        const ammoId = weapon.system.selectedAmmoId;
         return ammoId ? weapon.actor.items.get(ammoId) : null;
     } else {
         return;

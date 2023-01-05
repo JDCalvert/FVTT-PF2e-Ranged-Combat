@@ -66,41 +66,45 @@ function buildContent(actor) {
 
     for (const attack of attacks) {
         const weaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
-        const ammoId = attack.flags["pf2e-ranged-combat"]?.ammoId;
+        const ammoId = attack.system.selectedAmmoId;
 
         content += `
+            <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
+                <legend>${attack.name}</legend>
                 <div class="form-group">
-                    <label>${attack.name}</label>
+                    <label>Weapon</label>
                     <select id="${attack.id}-weapon" name="${attack.id}-weapon">
                         <option/>
         `;
         for (const weapon of weapons) {
             content += `<option value="${weapon.id}" ${weaponId === weapon.id ? `selected="selected"` : ``}>${weapon.name}</option>`;
         }
-        content += `</select>`;
+        content += `
+                    </select>
+                </div>
+        `;
 
         const isRanged = attack.system.weaponType.value === "ranged";
         const usesAmmunition = attack.system.traits.value.find(trait => trait.startsWith("reload-"));
         if (isRanged && usesAmmunition) {
             content += `
+                <div class="form-group">
+                    <label>Ammunition</label>
                     <select id="${attack.id}-ammo" name="${attack.id}-ammo">
                         <option/>`;
 
             for (const ammo of ammos) {
                 content += `<option value="${ammo.id}" ${ammoId === ammo.id ? `selected="selected"` : ``}>${ammo.name}</option>`;
             }
-            content += `</select>`;
-        } else {
             content += `
-                <select id="${attack.id}-ammo" name="${attack.id}-ammo">
-                    <option/>
-                </select>
+                    </select>
+                </div>
             `;
         }
 
         content += `
-                </div>
-            `;
+            </fieldset>
+        `;
     }
 
     content += `
@@ -139,7 +143,7 @@ function saveChanges($html, actor) {
 
     for (const attack of actor.itemTypes.melee) {
         const currentWeaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
-        const currentAmmoId = attack.flags["pf2e-ranged-combat"]?.ammoId;
+        const currentAmmoId = attack.system.selectedAmmoId;
 
         const weaponId = $html.find(`[name="${attack.id}-weapon"`).val();
         const ammoId = $html.find(`[name="${attack.id}-ammo"]`).val();
@@ -168,9 +172,13 @@ function saveChanges($html, actor) {
 
             if (changedAmmoId) {
                 if (ammoId) {
-                    flags.ammoId = ammoId;
+                    update.system = {
+                        selectedAmmoId: ammoId
+                    };
                 } else {
-                    flags["-=ammoId"] = null;
+                    update.system = {
+                        "-=selectedAmmoId": null
+                    };
                 }
             }
 
