@@ -1,7 +1,7 @@
 import { getControlledActorAndToken } from "../utils/utils.js";
 
-export function mapNPCWeapons() {
-    const { actor, token } = getControlledActorAndToken();
+export function npcWeaponConfiguration() {
+    const { actor } = getControlledActorAndToken();
     if (!actor) {
         return;
     }

@@ -11,7 +11,7 @@ import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot } from "./actions/alchemical-shot.js";
 import { runMigrations } from "./utils/migrations/migration.js";
-import { mapNPCWeapons } from "./npc-weapon-system/npc-weapon-system.js";
+import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
 
 Hooks.on(
     "init",
@@ -47,7 +47,7 @@ Hooks.on(
             "postFullAmmunition",
             {
                 name: "Post Full Ammunition Description",
-                hint: "When firing a ranged weapon, post the ammunition item to chat",
+                hint: "When firing a ranged weapon, post the ammunition item to chat.",
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -77,7 +77,7 @@ Hooks.on(
                 scope: "world",
                 config: true,
                 type: Boolean,
-                default: false
+                default: true
             }
         );
 
@@ -153,7 +153,7 @@ Hooks.on(
             loadAlchemicalCrossbow,
             unloadAlchemicalCrossbow,
             alchemicalShot,
-            mapNPCWeapons
+            npcWeaponConfiguration
         };
     }
 );
