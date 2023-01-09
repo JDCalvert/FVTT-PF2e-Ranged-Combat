@@ -18,7 +18,7 @@ export async function switchAmmunition() {
     await selectAmmunition(
         weapon,
         updates,
-        `You have equipped ammunition compatible with your ${weapon.name}.`,
+        `You have no equipped ammunition compatible with your ${weapon.name}.`,
         "Select the ammunition to switch to.",
         true,
         true

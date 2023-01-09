@@ -40,13 +40,13 @@ export class Updates {
     }
 
     async handleUpdates() {
-        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
-        if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates)
-        if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
-
         for (const update of this.complexUpdates) {
-            update();
+            await update();
         }
+
+        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
+        if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates);
+        if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
 
         let i = 0;
         for (const floatyText of this.floatyTextToShow) {
@@ -64,6 +64,15 @@ export class Updates {
             i++;
         }
     }
+}
+
+export function getControlledActor() {
+    const sheetActors = Object.values(ui.windows).map(window => window.actor).filter(actor => !!actor);
+    if (sheetActors.length === 1) {
+        return sheetActors[0];
+    }
+
+    return getControlledActorAndToken().actor;
 }
 
 /**
@@ -219,7 +228,7 @@ export function useAdvancedAmmunitionSystem(actor) {
     if (actor.type === "character") {
         return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
     } else if (actor.type === "npc") {
-        return false; // Placeholder for NPC advanced ammunition system
+        return getFlag(actor, "enableAdvancedAmmunitionSystem");
     } else {
         return false;
     }

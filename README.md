@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/latest/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.4.0/total)
 
 ## Issues and System Compatibility
 This module is built for the Pathfinder 2e system, which receives regular updates, and some of those updates may occassionally break the functionality of this module. I will do my best to fix issues caused by updates, but this may require losing support for earlier versions of the system.
@@ -105,6 +105,12 @@ This enhancement to thrown weapons handles the management of which weapons are w
 With the Advanced Thrown Weapon system, thrown weapons are treated as individual items even if they're part of the same stack. For example, if you have three throwing daggers in a stack which is set as "worn", drawing the weapon will instead create a new stack with one throwing dagger and set that one as held. The other two will remain in the original stack as "worn". This is the same for dropping, sheathing, stowing etc. Empty stacks are then removed.
 
 When you attack with a thrown weapon, the weapon will be added to a "dropped" stack, however the original "held" stack will still be kept, even if it's empty. This is so the damage buttons are still usable, but you won't be able to roll another attack until you've drawn or picked up another one.
+
+### NPC Weapon & Ammunition System
+You can use the <b>NPC Weapon Configuration</b> macro with an NPC selected to map their attacks onto weapons and ammunition in their inventory, and enable the Advanced Ammunition System for that NPC. Assigning ammunition to an attack will cause the ammunition to be consumed when fired, and enabling the Advanced Ammunition System will allow the NPC to take full advantage of the feature detailed above.
+
+#### Tip
+For NPCs which will have tokens which are <i>not</i> linked to their actor, open their character sheet from the Actors directory and configure their weapons before placing the tokens. The tokens will inherit the configuration from the actor and can then be tweaked as necessary by selecting the token and using the <b>NPC Weapon Configuration</b> macro again.
 
 ## Configuration
 These are the settings available for the module (all world-scope).
