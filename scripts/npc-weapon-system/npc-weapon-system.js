@@ -1,7 +1,7 @@
-import { getControlledActorAndToken } from "../utils/utils.js";
+import { getControlledActor, getControlledActorAndToken } from "../utils/utils.js";
 
 export function npcWeaponConfiguration() {
-    const { actor } = getControlledActorAndToken();
+    const actor = getControlledActor();
     if (!actor) {
         return;
     }

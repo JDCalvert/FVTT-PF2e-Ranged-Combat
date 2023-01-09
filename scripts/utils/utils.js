@@ -68,10 +68,8 @@ export class Updates {
 
 export function getControlledActor() {
     const sheetActors = Object.values(ui.windows).map(window => window.actor).filter(actor => !!actor);
-    if (sheetActors.length) {
-        if (sheetActors.length === 1) {
-            return actor;
-        }
+    if (sheetActors.length === 1) {
+        return sheetActors[0];
     }
 
     return getControlledActorAndToken().actor;

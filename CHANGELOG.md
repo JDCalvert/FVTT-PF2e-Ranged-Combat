@@ -1,4 +1,4 @@
-## 3.4.0 - 2023-01-05 (Pathfinder 2e 4.6.3)
+## 3.4.0 - 2023-01-09 (Pathfinder 2e 4.6.5)
 ### Feature
 - Implement the NPC Weapon and Ammunition System
 - Set the Advanced Ammunition System to be enabled by default

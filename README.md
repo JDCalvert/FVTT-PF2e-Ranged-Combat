@@ -110,7 +110,7 @@ When you attack with a thrown weapon, the weapon will be added to a "dropped" st
 You can use the <b>NPC Weapon Configuration</b> macro with an NPC selected to map their attacks onto weapons and ammunition in their inventory, and enable the Advanced Ammunition System for that NPC. Assigning ammunition to an attack will cause the ammunition to be consumed when fired, and enabling the Advanced Ammunition System will allow the NPC to take full advantage of the feature detailed above.
 
 #### Tip
-For NPCs whose tokens are <i>not</i> linked to their actor, it's easiest to open their 
+For NPCs which will have tokens which are <i>not</i> linked to their actor, open their character sheet from the Actors directory and configure their weapons before placing the tokens. The tokens will inherit the configuration from the actor and can then be tweaked as necessary by selecting the token and using the <b>NPC Weapon Configuration</b> macro again.
 
 ## Configuration
 These are the settings available for the module (all world-scope).
