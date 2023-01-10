@@ -1,3 +1,7 @@
+## 3.4.1 - 2023-01-10 (Pathfinder 2e 4.6.5)
+### Fixes
+- Ignore strikes that originate from rule elements
+
 ## 3.4.0 - 2023-01-09 (Pathfinder 2e 4.6.5)
 ### Feature
 - Implement the NPC Weapon and Ammunition System
