@@ -1,3 +1,4 @@
+import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { getControlledActor, getControlledActorAndToken } from "../utils/utils.js";
 
 export function npcWeaponConfiguration() {
@@ -34,8 +35,8 @@ function buildContent(actor) {
     const enableAdvancedThrownWeaponSystem = flags?.enableAdvancedThrownWeaponSystem;
 
     const attacks = actor.itemTypes.melee;
-    const weapons = actor.itemTypes.weapon;
-    const ammos = actor.itemTypes.consumable.filter((i) => i.consumableType === "ammo" && !i.isStowed);
+    const weapons = actor.itemTypes.weapon.filter(weapon => weapon === findGroupStacks(weapon)[0]);
+    const ammunitions = actor.itemTypes.consumable.filter((i) => i.consumableType === "ammo" && !i.isStowed);
 
     let content = "";
 
@@ -78,7 +79,7 @@ function buildContent(actor) {
 
         content += `
             <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
-                <legend>${attack.name}</legend>
+                <legend>${attack.name} [${attack.system.weaponType.value === "melee" ? "Melee" : "Ranged"}]</legend>
                 <div class="form-group">
                     <label>Weapon</label>
                     <select id="${attack.id}-weapon" name="${attack.id}-weapon">
@@ -101,9 +102,11 @@ function buildContent(actor) {
                     <select id="${attack.id}-ammo" name="${attack.id}-ammo">
                         <option/>`;
 
-            for (const ammo of ammos) {
-                content += `<option value="${ammo.id}" ${ammoId === ammo.id ? `selected="selected"` : ``}>${ammo.name}</option>`;
-            }
+            ammunitions
+                .filter(ammunition => attack.traits.has("repeating") === (ammunition.uses.max > 1))
+                .map(ammunition => `<option value="${ammunition.id}" ${ammoId === ammunition.id ? `selected="selected"` : ``}>${ammunition.name}</option>`)
+                .forEach(ammunition => content += ammunition);
+
             content += `
                     </select>
                 </div>

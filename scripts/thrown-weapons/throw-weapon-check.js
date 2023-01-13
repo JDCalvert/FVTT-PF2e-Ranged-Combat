@@ -19,7 +19,7 @@ export async function checkThrownWeapon(weapon) {
         return false;
     }
 
-    if (!equippedWeapons.filter(stack => stack.quantity)) {
+    if (!equippedWeapons.filter(stack => stack.quantity).length) {
         showWarning(`You have no ${weapon.name} left!`);
         return false;
     }

@@ -3,10 +3,10 @@ import { handleWeaponFiredAlchemicalShot } from "./actions/alchemical-shot.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
 import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
-import { changeCarryType, changeStowed } from "./thrown-weapons/change-carry-type.js";
+import { changeCarryType, changeStowed, findGroupStacks } from "./thrown-weapons/change-carry-type.js";
 import { checkThrownWeapon } from "./thrown-weapons/throw-weapon-check.js";
 import { handleThrownWeapon } from "./thrown-weapons/throw-weapon-handler.js";
-import { Updates } from "./utils/utils.js";
+import { getFlag, Updates } from "./utils/utils.js";
 import { transformWeapon } from "./utils/weapon-utils.js";
 
 Hooks.on(
@@ -72,6 +72,52 @@ Hooks.on(
             "OVERRIDE"
         );
 
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",
+            function(wrapper, ...args) {
+                const updates = new Updates(this.actor);
+
+                const groupStacks = findGroupStacks(this);
+                const groupStackIds = groupStacks.map(stack => stack.id);
+
+                // Update all the weapons in the group to remove this item's ID
+                groupStacks.forEach(stack =>
+                    updates.update(
+                        stack,
+                        {
+                            flags: {
+                                "pf2e-ranged-combat": {
+                                    groupIds: groupStackIds
+                                }
+                            }
+                        }
+                    )
+                );
+
+                if (groupStacks.length) {
+                    this.actor.itemTypes.melee.filter(melee => getFlag(melee, "weaponId") === this.id)
+                        .forEach(melee =>
+                            updates.update(
+                                melee,
+                                {
+                                    flags: {
+                                        "pf2e-ranged-combat": {
+                                            weaponId: groupStackIds[0]
+                                        }
+                                    }
+                                }
+                            )
+                        );
+                }
+
+                updates.handleUpdates();
+
+                wrapper(args);
+            },
+            "WRAPPER"
+        );
+
         /**
          * Override rolling an attack, so we can make checks before the roll is made,
          * and handle what happens after the roll
@@ -98,7 +144,7 @@ Hooks.on(
                 if (!await checkLoaded(actor, weapon)) {
                     return;
                 }
-                
+
                 if (!await checkThrownWeapon(weapon)) {
                     return;
                 }
