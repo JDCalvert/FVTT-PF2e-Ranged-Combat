@@ -1,4 +1,5 @@
 import { showWarning } from "../utils/utils.js";
+import { findGroupStacks } from "./change-carry-type.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
 /**
@@ -10,12 +11,15 @@ export async function checkThrownWeapon(weapon) {
         return true;
     }
 
-    if (!weapon.isEquipped) {
+    // Find a weapon in the target weapon's group which is equipped
+    const groupStacks = findGroupStacks(weapon);
+    const equippedWeapons = groupStacks.filter(stack => stack.isEquipped);
+    if (!equippedWeapons.length) {
         showWarning(`${weapon.name} is not equipped!`);
         return false;
     }
 
-    if (weapon.value.quantity === 0) {
+    if (!equippedWeapons.filter(stack => stack.quantity)) {
         showWarning(`You have no ${weapon.name} left!`);
         return false;
     }

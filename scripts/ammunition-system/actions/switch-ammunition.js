@@ -38,7 +38,7 @@ export async function selectAmmunition(
     const availableAmmunition = weapon.actor.itemTypes.consumable
         .filter(item => item.consumableType === "ammo" && !item.isStowed)
         .filter(ammo => ammo.quantity > 0)
-        .filter(ammo => ammo.isAmmoFor(weapon.value));
+        .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
 
     if (!availableAmmunition.length) {
         showWarning(nonAvailableMessage);

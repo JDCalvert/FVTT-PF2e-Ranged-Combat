@@ -22,12 +22,26 @@ Hooks.on(
             "MIXED"
         );
 
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.npc.prototype.adjustCarryType",
+            changeCarryType,
+            "MIXED"
+        );
+
         /** 
          * Override the function for stowing or unstowing an item
          */
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Actor.documentClasses.character.prototype.stowOrUnstow",
+            changeStowed,
+            "MIXED"
+        );
+
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.npc.prototype.stowOrUnstow",
             changeStowed,
             "MIXED"
         );
