@@ -1,4 +1,4 @@
-## 3.5.0 - TBD
+## 3.5.0 - 2023-01-13 (Pathfinder 2e 4.6.5)
 ### Feature
 - Implement the NPC Advanced Thrown Weapon System
 
