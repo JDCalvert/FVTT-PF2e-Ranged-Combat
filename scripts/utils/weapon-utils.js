@@ -61,7 +61,7 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
 
 export function transformWeapon(weapon) {
     const originalItem = weapon.actor.items.get(weapon.id)
-    if (!["weapon", "melee"].includes(originalItem.type)) {
+    if (!["weapon", "melee"].includes(originalItem?.type)) {
         return null;
     }
 
