@@ -1,3 +1,7 @@
+## 3.5.0 - 2023-01-13 (Pathfinder 2e 4.6.5)
+### Feature
+- Implement the NPC Advanced Thrown Weapon System
+
 ## 3.4.2 - 2023-01-13 (Pathfinder 2e 4.6.5)
 ### Fixes
 - Fix error that occurred when rolling the default fist attack, due to the previous fix

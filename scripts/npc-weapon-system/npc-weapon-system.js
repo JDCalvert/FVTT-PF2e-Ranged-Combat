@@ -1,3 +1,4 @@
+import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { getControlledActor, getControlledActorAndToken } from "../utils/utils.js";
 
 export function npcWeaponConfiguration() {
@@ -29,11 +30,13 @@ export function npcWeaponConfiguration() {
 }
 
 function buildContent(actor) {
-    const enableAdvancedAmmunitionSystem = actor.flags["pf2e-ranged-combat"]?.enableAdvancedAmmunitionSystem;
+    const flags = actor.flags["pf2e-ranged-combat"];
+    const enableAdvancedAmmunitionSystem = flags?.enableAdvancedAmmunitionSystem;
+    const enableAdvancedThrownWeaponSystem = flags?.enableAdvancedThrownWeaponSystem;
 
     const attacks = actor.itemTypes.melee;
-    const weapons = actor.itemTypes.weapon;
-    const ammos = actor.itemTypes.consumable.filter((i) => i.consumableType === "ammo" && !i.isStowed);
+    const weapons = actor.itemTypes.weapon.filter(weapon => weapon === findGroupStacks(weapon)[0]);
+    const ammunitions = actor.itemTypes.consumable.filter((i) => i.consumableType === "ammo" && !i.isStowed);
 
     let content = "";
 
@@ -48,6 +51,12 @@ function buildContent(actor) {
                 <div class = "form-group">
                     <input type="checkbox" id="enableAdvancedAmmunitionSystem" name="enableAdvancedAmmunitionSystem" ${enableAdvancedAmmunitionSystem ? `checked` : ``}>
                     <label>Enable Advanced Ammunition System</label>
+                </div>
+            </form>
+            <form>
+                <div class = "form-group">
+                    <input type="checkbox" id="enableAdvancedThrownWeaponSystem" name="enableAdvancedThrownWeaponSystem" ${enableAdvancedThrownWeaponSystem ? `checked` : ``}>
+                    <label>Enable Advanced Thrown Weapon System</label>
                 </div>
             </form>
         </fieldset>
@@ -70,7 +79,7 @@ function buildContent(actor) {
 
         content += `
             <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
-                <legend>${attack.name}</legend>
+                <legend>${attack.name} [${attack.system.weaponType.value === "melee" ? "Melee" : "Ranged"}]</legend>
                 <div class="form-group">
                     <label>Weapon</label>
                     <select id="${attack.id}-weapon" name="${attack.id}-weapon">
@@ -93,9 +102,11 @@ function buildContent(actor) {
                     <select id="${attack.id}-ammo" name="${attack.id}-ammo">
                         <option/>`;
 
-            for (const ammo of ammos) {
-                content += `<option value="${ammo.id}" ${ammoId === ammo.id ? `selected="selected"` : ``}>${ammo.name}</option>`;
-            }
+            ammunitions
+                .filter(ammunition => attack.traits.has("repeating") === (ammunition.uses.max > 1))
+                .map(ammunition => `<option value="${ammunition.id}" ${ammoId === ammunition.id ? `selected="selected"` : ``}>${ammunition.name}</option>`)
+                .forEach(ammunition => content += ammunition);
+
             content += `
                     </select>
                 </div>
@@ -117,29 +128,17 @@ function buildContent(actor) {
 
 function saveChanges($html, actor) {
     const updates = [];
+    const enableAdvancedAmmunitionSystem = !!$html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked");
+    const enableAdvancedThrownWeaponSystem = !!$html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked");
 
-    const currentEnableAdvancedAmmunitionSystem = !!actor.flags["pf2e-ranged-combat"]?.enableAdvancedAmmunitionSystem;
-    const enabledAdvancedAmmunitionSystem = $html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked");
-
-    if (enabledAdvancedAmmunitionSystem != currentEnableAdvancedAmmunitionSystem) {
-        if (enabledAdvancedAmmunitionSystem) {
-            actor.update(
-                {
-                    "flags.pf2e-ranged-combat.enableAdvancedAmmunitionSystem": true
-                }
-            );
-        } else {
-            actor.update(
-                {
-                    flags: {
-                        "pf2e-ranged-combat": {
-                            "-=enableAdvancedAmmunitionSystem": null
-                        }
-                    }
-                }
-            );
+    actor.update({
+        flags: {
+            "pf2e-ranged-combat": {
+                enableAdvancedAmmunitionSystem,
+                enableAdvancedThrownWeaponSystem
+            }
         }
-    }
+    });
 
     for (const attack of actor.itemTypes.melee) {
         const currentWeaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;

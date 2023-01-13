@@ -7,13 +7,13 @@ export async function handleThrownWeapon(weapon) {
     }
 
     // If the weapon isn't thrown, then we don't need to do anything
-    const isThrownWeapon = weapon.value.isRanged && Array.from(weapon.traits).some(trait => trait.startsWith("thrown"));
+    const isThrownWeapon = weapon.isRanged && Array.from(weapon.traits).some(trait => trait.startsWith("thrown"));
     if (!isThrownWeapon) {
         return;
     }
 
     // If the weapon has a returning rune, then we don't need to do anything
-    if (weapon.value.system.runes.property.includes("returning")) {
+    if (weapon.propertyRunes.includes("returning")) {
         return;
     }
 
@@ -22,7 +22,11 @@ export async function handleThrownWeapon(weapon) {
     // and place the thrown weapon into a "dropped" stack
 
     // Find the other stacks in this weapon's group
-    const { groupStacks, groupStackIds } = findGroupStacks(weapon.value);
+    const groupStacks = findGroupStacks(weapon);
+
+    const sourceStack = weapon.isEquipped
+        ? weapon.actor.items.find(i => i.id === weapon.weaponId)
+        : groupStacks.find(stack => stack.isEquipped);
 
     // Find the stack that has the carry type we're trying to set
     const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === "dropped");
@@ -33,9 +37,9 @@ export async function handleThrownWeapon(weapon) {
             "Item",
             [
                 {
-                    _id: weapon.id,
+                    _id: sourceStack.id,
                     system: {
-                        quantity: weapon.quantity - 1
+                        quantity: sourceStack.quantity - 1
                     }
                 },
                 {
@@ -47,7 +51,6 @@ export async function handleThrownWeapon(weapon) {
             ]
         );
     } else {
-        const originalWeapon = weapon.actor.items.find(i => i.id === weapon.id);
-        createNewStack(originalWeapon, groupStackIds, groupStacks, "dropped", 0, false);
+        createNewStack(sourceStack, groupStacks, "dropped", 0, false);
     }
 }

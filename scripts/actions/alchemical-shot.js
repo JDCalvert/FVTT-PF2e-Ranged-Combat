@@ -18,7 +18,7 @@ export async function alchemicalShot() {
 
     const weapon = await getWeapon(
         actor,
-        weapon => weapon.isEquipped && (weapon.value.system.group === "firearm" || weapon.isCrossbow),
+        weapon => weapon.isEquipped && (weapon.group === "firearm" || weapon.isCrossbow),
         `${token.name} is not wielding a firearm or crossbow.`
     );
     if (!weapon) {

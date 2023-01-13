@@ -1,3 +1,4 @@
+import { Updates } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
 /**
@@ -19,9 +20,9 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
     }
 
     // Find the other stacks in this weapon's group
-    const { groupStacks, groupStackIds } = findGroupStacks(item);
+    const groupStacks = findGroupStacks(item);
 
-    if (item.quantity === 0 && groupStackIds.length > 1) {
+    if (item.quantity === 0 && groupStacks.length > 1) {
         item.delete();
         return [];
     }
@@ -38,7 +39,7 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
         if (item.quantity <= 1) {
             return wrapper(item, carryType, handsHeld, inSlot);
         } else {
-            createNewStack(item, groupStackIds, groupStacks, carryType, handsHeld, inSlot);
+            createNewStack(item, groupStacks, carryType, handsHeld, inSlot);
         }
     } else {
         moveBetweenStacks(item, targetStack);
@@ -56,7 +57,7 @@ export async function changeStowed(wrapper, item, container) {
         return;
     }
 
-    const { groupStacks, groupStackIds } = findGroupStacks(item);
+    const groupStacks = findGroupStacks(item);
 
     // If we're moving an empty stack, and there is another stack in the group, then just
     // delete this stack (for example, sheathing a thrown weapon stack when they're all dropped)
@@ -74,7 +75,7 @@ export async function changeStowed(wrapper, item, container) {
             wrapper(item, container);
             return;
         } else {
-            createNewStack(item, groupStackIds, groupStacks, container ? "stowed" : "worn", 0, false, container);
+            createNewStack(item, groupStacks, container ? "stowed" : "worn", 0, false, container);
         }
     } else {
         moveBetweenStacks(item, targetStack);
@@ -82,14 +83,11 @@ export async function changeStowed(wrapper, item, container) {
 }
 
 export function findGroupStacks(item) {
-    const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.id];
-    const groupStacks = item.actor.items.filter(i => groupIds.includes(i.id));
-    const groupStackIds = groupStacks.map(stack => stack.id);
-
-    return { groupStacks, groupStackIds };
+    const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.type === "weapon" ? item.id : item.weaponId];
+    return item.actor.items.filter(i => groupIds.includes(i.id));
 }
 
-export async function createNewStack(item, groupStackIds, groupStacks, carryType, handsHeld, inSlot, container = null) {
+export async function createNewStack(item, groupStacks, carryType, handsHeld, inSlot, container = null) {
     // Make a copy of this item, with a quantity of zero
     const itemSource = item.toObject();
     const [targetStack] = await item.actor.createEmbeddedDocuments(
@@ -110,7 +108,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
     // stacks in the group to add this one.
     if (targetStack) {
         groupStacks.push(targetStack);
-        groupStackIds.push(targetStack.id);
+        const groupStackIds = groupStacks.map(stack => stack.id);
 
         const updates = [];
 
@@ -154,8 +152,7 @@ export async function createNewStack(item, groupStackIds, groupStacks, carryType
 }
 
 function moveBetweenStacks(item, targetStack) {
-    const updates = [];
-    const deletes = [];
+    const updates = new Updates(item.actor);
 
     // Return early if we're moving an item into itself
     if (item.id === targetStack.id) {
@@ -163,24 +160,26 @@ function moveBetweenStacks(item, targetStack) {
     }
     // If we have zero in this stack, just delete it and don't increase the other stack's quantity
     if (item.quantity === 0) {
-        deletes.push(item.id);
+        updates.delete(item);
     } else {
         // If we have only one in this stack, delete the stack. Otherwise, reduce the quantity by one
         if (item.quantity === 1) {
-            deletes.push(item.id);
+            updates.delete(item);
         } else {
-            updates.push({
-                _id: item.id,
-                system: {
-                    quantity: item.quantity - 1
+            updates.update(
+                item,
+                {
+                    system: {
+                        quantity: item.quantity - 1
+                    }
                 }
-            });
+            );
         }
 
         // Increase the target's stack quantity by one
-        updates.push(
+        updates.update(
+            targetStack,
             {
-                _id: targetStack.id,
                 system: {
                     quantity: targetStack.quantity + 1
                 }
@@ -188,8 +187,7 @@ function moveBetweenStacks(item, targetStack) {
         );
     }
 
-    item.actor.updateEmbeddedDocuments("Item", updates);
-    item.actor.deleteEmbeddedDocuments("Item", deletes);
+    updates.handleUpdates();
 }
 
 function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
