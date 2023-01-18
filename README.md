@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.5.0/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.5.1/total)
 
 ## Issues and System Compatibility
 This module is built for the Pathfinder 2e system, which receives regular updates, and some of those updates may occassionally break the functionality of this module. I will do my best to fix issues caused by updates, but this may require losing support for earlier versions of the system.
@@ -97,7 +97,7 @@ You can use the <b>Load Alchemical Crossbow</b> macro to load a lesser alchemica
 You can use the <b>Unload Alchemical Crossbow</b> macro to unload the bomb from your Alchemical Crossbow. If you haven't fired the crossbow since loading the bomb, you'll get it back in your inventory, but if you've used at least one use, the remaining uses will be wasted.
 
 ### Alchemical Shot
-You can use the <b>Alchemical Shot</b> macro to pour an alchemical bomb into a firearm or crossbow. This will give your weapon the <b>Alchemical Shot</b> effect, changing its damage type, and adding roll notes to its damage rolls to apply persistent damage. It will also add a roll note to the weapon's attack rolls in case of a failure, informing you to take damage. The effect will be removed upon the end of your turn or firing another shot with that weapon.
+You can use the <b>Alchemical Shot</b> macro to pour an alchemical bomb into a firearm or crossbow. This will give your weapon the <b>Alchemical Shot</b> effect, changing its damage type, and adding persistent damage to its damage rolls. It will also add a roll note to the weapon's attack rolls in case of a failure, informing you to take damage. The effect will be removed upon the end of your turn or firing another shot with that weapon.
 
 ### Advanced Thrown Weapon System
 This enhancement to thrown weapons handles the management of which weapons are worn, held, and dropped. A Game Master can enable or disable this system in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.

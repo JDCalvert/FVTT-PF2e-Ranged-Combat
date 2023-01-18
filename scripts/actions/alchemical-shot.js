@@ -58,8 +58,8 @@ export async function alchemicalShot() {
             rulesSelections: {
                 ...alchemicalShotEffectSource.flags?.pf2e?.rulesSelections,
                 weapon: weapon.id,
-                damageType:  bomb.value.system.damage.damageType,
-                persistentDamageDice: bomb.value.level >= 17 ? 3 : bomb.value.level >= 11 ? 2 : 1
+                damageType:  bomb.damageType,
+                persistentDamageDice: bomb.level >= 17 ? 3 : bomb.level >= 11 ? 2 : 1
             }
         },
         "pf2e-ranged-combat": {
