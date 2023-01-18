@@ -82,6 +82,8 @@ function characterWeaponTransform(weapon) {
         sourceId: weapon.sourceId,
         baseType: weapon.baseType,
         name: weapon.name,
+        level: weapon.level,
+        damageType: weapon.system.damage.damageType,
         img: weapon.img,
         flags: weapon.flags,
         group: weapon.system.group,

@@ -1,3 +1,8 @@
+## 3.5.1 - 2023-01-18 (Pathfinder 2e 4.6.8)
+### Fixes
+- Fix Alchemical Shot macro not working
+- Add codified persistent damage to Alchemical Shot instead of a note
+
 ## 3.5.0 - 2023-01-13 (Pathfinder 2e 4.6.5)
 ### Feature
 - Implement the NPC Advanced Thrown Weapon System
