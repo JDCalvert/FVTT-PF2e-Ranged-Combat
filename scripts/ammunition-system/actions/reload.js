@@ -224,6 +224,7 @@ export async function reload() {
     await handleReload(weapon, updates);
 
     updates.handleUpdates();
+    Hooks.callAll("pf2eRangedCombatReload", actor, token, weapon);
 };
 
 export async function reloadAll() {

@@ -121,7 +121,8 @@ export async function reloadMagazine() {
         String(numActions)
     );
 
-    await updates.handleUpdates();
+    updates.handleUpdates();
+    Hooks.callAll("pf2eRangedCombatReloadMagazine", actor, token, weapon);
 }
 
 async function getAmmunition(weapon, updates) {
