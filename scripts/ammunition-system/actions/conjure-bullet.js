@@ -72,4 +72,5 @@ export async function conjureBullet() {
     await handleReload(weapon, updates);
 
     updates.handleUpdates();
+    Hooks.callAll("pf2eRangedCombatConjureBullet", actor, token, weapon);
 }

@@ -65,6 +65,7 @@ export async function nextChamber() {
     }
 
     updates.handleUpdates();
+    Hooks.callAll("pf2eRangedCombatNextChamber", actor, token, weapon);
 }
 
 export async function setLoadedChamber(actor, weapon, ammo, updates) {

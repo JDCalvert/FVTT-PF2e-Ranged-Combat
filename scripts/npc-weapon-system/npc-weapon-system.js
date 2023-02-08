@@ -36,7 +36,7 @@ function buildContent(actor) {
 
     const attacks = actor.itemTypes.melee;
     const weapons = actor.itemTypes.weapon.filter(weapon => weapon === findGroupStacks(weapon)[0]);
-    const ammunitions = actor.itemTypes.consumable.filter((i) => i.consumableType === "ammo" && !i.isStowed);
+    const ammunitions = actor.itemTypes.consumable.filter((i) => i.isAmmunition && !i.isStowed);
 
     let content = "";
 

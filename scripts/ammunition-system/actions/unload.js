@@ -82,6 +82,7 @@ export async function unload() {
     }
 
     updates.handleUpdates();
+    Hooks.callAll("pf2eRangedCombatUnload", actor, token, weapon);
 }
 
 function getLoadedWeapon(actor) {

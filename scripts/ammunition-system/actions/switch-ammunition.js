@@ -3,7 +3,7 @@ import { getControlledActorAndToken, showWarning, Updates } from "../../utils/ut
 import { getWeapon } from "../../utils/weapon-utils.js";
 
 export async function switchAmmunition() {
-    const { actor } = getControlledActorAndToken();
+    const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;
     }
@@ -25,6 +25,7 @@ export async function switchAmmunition() {
     );
 
     updates.handleUpdates();
+    Hooks.callAll("pf2eRangedCombatSwitchAmmunition", actor, token, weapon);
 }
 
 export async function selectAmmunition(
@@ -36,7 +37,7 @@ export async function selectAmmunition(
     alwaysSetAsAmmunition
 ) {
     const availableAmmunition = weapon.actor.itemTypes.consumable
-        .filter(item => item.consumableType === "ammo" && !item.isStowed)
+        .filter(item => item.isAmmunition && !item.isStowed)
         .filter(ammo => ammo.quantity > 0)
         .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
 

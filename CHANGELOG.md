@@ -1,3 +1,16 @@
+## 3.6.0 - 2023-02-08 (Pathfinder 2e 4.7.2)
+### Feature
+- Add hooks for the following macros:
+  - Reload (`pf2eRangedCombatReload`)
+  - Reload Magazine (`pf2eRangedCombatReloadMagazine`)
+  - Unload (`pf2eRangedCombatUnload`)
+  - Switch Ammunition (`pf2eRangedCombatSwitchAmmunition`)
+  - Next Chamber (`pf2eRangedCombatNextChamber`)
+  - Conjure Bullet (`pf2eRangedCombatConjurBullet`)
+
+### Fixes
+- Fix detection of whether an item is ammunition, which was changed in a recent system update
+
 ## 3.5.1 - 2023-01-18 (Pathfinder 2e 4.6.8)
 ### Fixes
 - Fix Alchemical Shot macro not working
