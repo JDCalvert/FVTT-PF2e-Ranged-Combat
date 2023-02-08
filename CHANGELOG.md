@@ -6,7 +6,7 @@
   - Unload (`pf2eRangedCombatUnload`)
   - Switch Ammunition (`pf2eRangedCombatSwitchAmmunition`)
   - Next Chamber (`pf2eRangedCombatNextChamber`)
-  - Conjure Bullet (`pf2eRangedCombatConjurBullet`)
+  - Conjure Bullet (`pf2eRangedCombatConjureBullet`)
 
 ### Fixes
 - Fix detection of whether an item is ammunition, which was changed in a recent system update
