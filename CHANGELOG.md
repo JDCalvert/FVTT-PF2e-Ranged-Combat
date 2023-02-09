@@ -1,3 +1,7 @@
+## 3.6.1 - 2023-02-09 (Pathfinder 2e 4.7.2)
+### Fix
+- Fix deleting weapons from the Items directory causing errors
+
 ## 3.6.0 - 2023-02-08 (Pathfinder 2e 4.7.2)
 ### Feature
 - Add hooks for the following macros:
