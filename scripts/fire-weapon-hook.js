@@ -76,42 +76,44 @@ Hooks.on(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",
             function(wrapper, ...args) {
-                const updates = new Updates(this.actor);
+                if (this.actor) {
+                    const updates = new Updates(this.actor);
 
-                const groupStacks = findGroupStacks(this);
-                const groupStackIds = groupStacks.map(stack => stack.id);
+                    const groupStacks = findGroupStacks(this);
+                    const groupStackIds = groupStacks.map(stack => stack.id);
 
-                // Update all the weapons in the group to remove this item's ID
-                groupStacks.forEach(stack =>
-                    updates.update(
-                        stack,
-                        {
-                            flags: {
-                                "pf2e-ranged-combat": {
-                                    groupIds: groupStackIds
-                                }
-                            }
-                        }
-                    )
-                );
-
-                if (groupStacks.length) {
-                    this.actor.itemTypes.melee.filter(melee => getFlag(melee, "weaponId") === this.id)
-                        .forEach(melee =>
-                            updates.update(
-                                melee,
-                                {
-                                    flags: {
-                                        "pf2e-ranged-combat": {
-                                            weaponId: groupStackIds[0]
-                                        }
+                    // Update all the weapons in the group to remove this item's ID
+                    groupStacks.forEach(stack =>
+                        updates.update(
+                            stack,
+                            {
+                                flags: {
+                                    "pf2e-ranged-combat": {
+                                        groupIds: groupStackIds
                                     }
                                 }
-                            )
-                        );
-                }
+                            }
+                        )
+                    );
 
-                updates.handleUpdates();
+                    if (groupStacks.length) {
+                        this.actor.itemTypes.melee.filter(melee => getFlag(melee, "weaponId") === this.id)
+                            .forEach(melee =>
+                                updates.update(
+                                    melee,
+                                    {
+                                        flags: {
+                                            "pf2e-ranged-combat": {
+                                                weaponId: groupStackIds[0]
+                                            }
+                                        }
+                                    }
+                                )
+                            );
+                    }
+
+                    updates.handleUpdates();
+                }
 
                 wrapper(args);
             },

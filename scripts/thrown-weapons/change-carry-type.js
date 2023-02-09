@@ -84,7 +84,7 @@ export async function changeStowed(wrapper, item, container) {
 
 export function findGroupStacks(item) {
     const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.type === "weapon" ? item.id : item.weaponId];
-    return item.actor?.items.filter(i => groupIds.includes(i.id)) ?? [];
+    return item.actor.items.filter(i => groupIds.includes(i.id));
 }
 
 export async function createNewStack(item, groupStacks, carryType, handsHeld, inSlot, container = null) {
