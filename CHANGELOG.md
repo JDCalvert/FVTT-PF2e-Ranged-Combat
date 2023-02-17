@@ -1,3 +1,7 @@
+## 3.6.2 - 2023-02-17 (Pathfinder 2e 4.7.4)
+### Fix
+- The Hunt Prey effect and message will now respect the system's settings around hiding token names
+
 ## 3.6.1 - 2023-02-09 (Pathfinder 2e 4.7.2)
 ### Fix
 - Fix deleting weapons from the Items directory causing errors

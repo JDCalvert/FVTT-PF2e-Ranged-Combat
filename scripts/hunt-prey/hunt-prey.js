@@ -50,15 +50,18 @@ export async function huntPrey() {
                 ? ", and can share the effect with one ally"
                 : "";
 
+        const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
+        const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : "Unknown Token");
+
         await postActionInChat(huntPreyAction);
         await postInChat(
             actor,
             HUNT_PREY_IMG,
             targets.length === 3
-                ? `${token.name} makes ${targets[0].name}, ${targets[1].name}, and ${targets[2].name} their hunted prey.`
+                ? `${token.name} makes ${targetNames[0]}, ${targetNames[1]}, and ${targetNames[2]} their hunted prey.`
                 : targets.length === 2
-                    ? `${token.name} makes ${targets[0].name} and ${targets[1].name} their hunted prey${remainingTargetsText}.`
-                    : `${token.name} makes ${targets[0].name} their hunted prey${remainingTargetsText}.`
+                    ? `${token.name} makes ${targetNames[0]} and ${targetNames[1]} their hunted prey${remainingTargetsText}.`
+                    : `${token.name} makes ${targetNames[0]} their hunted prey${remainingTargetsText}.`
             ,
             huntPreyAction.name,
             1
@@ -72,7 +75,7 @@ export async function huntPrey() {
 
         // Add the new effect
         const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
-        huntedPreyEffectSource.name = `${huntedPreyEffectSource.name} (${targets.map(target => target.name).join(", ")})`;
+        huntedPreyEffectSource.name = `${huntedPreyEffectSource.name} (${targetNames.join(", ")})`;
         huntedPreyEffectSource.flags = {
             ...huntedPreyEffectSource.flags,
             "pf2e-ranged-combat": {
