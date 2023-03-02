@@ -47,7 +47,7 @@ Hooks.on(
             "postFullAmmunition",
             {
                 name: "Post Full Ammunition Description",
-                hint: "When firing a ranged weapon, post the ammunition item to chat.",
+                hint: "When firing a ranged weapon with non-standard ammunition, post the ammunition item to chat.",
                 scope: "world",
                 config: true,
                 type: Boolean,

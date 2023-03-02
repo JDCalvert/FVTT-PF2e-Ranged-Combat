@@ -167,7 +167,7 @@ function consumeConjuredRound(actor, weapon, updates) {
 
 function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
     const ammunitionItem = findItemOnActor(actor, ammunition.id, ammunition.sourceId);
-    if (ammunitionItem && game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
+    if (ammunitionItem && ammunitionItem.level > 0 && game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunitionItem.toMessage();
     } else {
         postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);

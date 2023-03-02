@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.6.2/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.6.3/total)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jdcalvert)
 
@@ -121,7 +121,7 @@ These are the settings available for the module (all world-scope).
 If enabled, the action represented used by a macro is posted to chat, as well as the summary of what happened. If disabled, the summary is still posted.
 
 ### Post Full Ammunition Description (default: disabled)
-If enabled, when you fire a weapon that uses ammunition, the ammunition item will be posted to chat instead of the compact "X has used Y" message.
+If enabled, when you fire a weapon while using non-standard ammunition, the ammunition item will be posted to chat instead of the compact "X has used Y" message.
 
 ### Prevent Firing Weapon if not Loaded (default: enabled)
 If enabled, weapons with a reload entry (or reload trait, for NPCs) cannot be fired unless they're loaded.

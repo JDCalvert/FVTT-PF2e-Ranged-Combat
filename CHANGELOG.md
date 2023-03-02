@@ -1,3 +1,7 @@
+## 3.6.3 - 2023-03-02 (Pathfinder 2e 4.8.3)
+### Feature/Fix
+- Alter the "Post Full Ammunition Description" option to only post the ammunition description for non-standard ammunition
+
 ## 3.6.2 - 2023-02-17 (Pathfinder 2e 4.7.4)
 ### Fix
 - The Hunt Prey effect and message will now respect the system's settings around hiding token names
