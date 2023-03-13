@@ -1,4 +1,7 @@
 ## Unreleased
+### Feature
+- Add a "Prey" effect to the target(s) of the Hunt Prey macro to clarify which token is designated
+
 ### Removed
 - Rule elements on ammunition will no longer spawn an effect applied to the weapon that fired it. A better version of this functionality has been added to the Pathfinder 2e system as of version 4.9.0.
 
