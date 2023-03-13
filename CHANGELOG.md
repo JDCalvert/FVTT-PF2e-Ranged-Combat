@@ -1,4 +1,4 @@
-## Unreleased
+## 3.7.0 - 2023-03-13 (Pathfinder 2e 4.9.1)
 ### Feature
 - Add a "Prey" effect to the target(s) of the Hunt Prey macro to clarify which token is designated
 
