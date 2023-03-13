@@ -1,4 +1,4 @@
-import { getFlag, getItem, getItemFromActor, Updates } from "../utils/utils.js";
+import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
 import { HUNTED_PREY_EFFECT_ID, HUNT_PREY_ACTION_ID, PREY_EFFECT_ID } from "./hunt-prey.js";
 
 Hooks.on(
