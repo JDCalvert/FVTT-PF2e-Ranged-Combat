@@ -115,7 +115,7 @@ Hooks.on(
                     updates.handleUpdates();
                 }
 
-                wrapper(args);
+                wrapper(...args);
             },
             "WRAPPER"
         );

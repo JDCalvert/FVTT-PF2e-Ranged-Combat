@@ -74,7 +74,7 @@ When a magazine with remaining (but not full) ammunition is removed from a weapo
 Repeating weapons that still require reloading work almost identically to other repeating weapons, with the extra step that you must use the <b>Reload</b> macro before firing each shot. The ammunition is still only consumed when you fire the weapon. Using the <b>Unload</b> macro will also remove the <b>Loaded</b> effect.
 
 ### Hunt Prey
-The <b>Hunt Prey</b> macro applies the <b>Hunted Prey</b> effect to your character, with the name of your current target, as a reminder of who your hunted prey is. It also applies the <b>Crossbow Ace</b> effect for your equipped crossbow(s) if you have the feat.
+The <b>Hunt Prey</b> macro applies the <b>Hunted Prey</b> effect to your character, and (as long as a GM is connected) the <b>Prey</b> effect to your prey, to make it clear who your prey is. If you have the <b>Crossbow Ace</b> feat, its effect is automatically applied to your character.
 
 While you have a hunted prey, the "Hunted Prey" toggle will automatically be enabled while you have your prey (and only your prey) targeted.
 
