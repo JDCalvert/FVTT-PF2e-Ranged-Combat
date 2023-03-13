@@ -1,3 +1,7 @@
+## Unreleased
+### Removed
+- Rule elements on ammunition will no longer spawn an effect applied to the weapon that fired it. A better version of this functionality has been added to the Pathfinder 2e system as of version 4.9.0.
+
 ## 3.6.3 - 2023-03-02 (Pathfinder 2e 4.8.3)
 ### Feature/Fix
 - Alter the "Post Full Ammunition Description" option to only post the ammunition description for non-standard ammunition

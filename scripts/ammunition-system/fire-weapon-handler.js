@@ -1,18 +1,12 @@
-import { findItemOnActor, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
-import { AMMUNITION_EFFECT_ID, CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
 
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
         return;
-    }
-
-    // If there's an ammunition effect from the previous shot, remove it now
-    const ammunitionEffect = getEffectFromActor(actor, AMMUNITION_EFFECT_ID, weapon.id);
-    if (ammunitionEffect) {
-        updates.delete(ammunitionEffect);
     }
 
     if (useAdvancedAmmunitionSystem(actor)) {
@@ -79,8 +73,6 @@ function fireWeaponRepeating(actor, weapon, updates) {
             `${actor.name} uses ${getFlag(magazineLoadedEffect, "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
         );
     }
-
-    createAmmunitionEffect(weapon, ammunition, updates);
 }
 
 function fireWeaponReloadable(actor, weapon, updates) {
@@ -140,8 +132,6 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
     } else {
         postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);
     }
-
-    createAmmunitionEffect(weapon, ammunition, updates);
 }
 
 /**
@@ -171,20 +161,5 @@ function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
         ammunitionItem.toMessage();
     } else {
         postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);
-    }
-    createAmmunitionEffect(weapon, ammunitionItem, updates);
-}
-
-function createAmmunitionEffect(weapon, ammunition, updates) {
-    if (ammunition?.rules.length) {
-        updates.complexUpdate(async () => {
-            const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
-            setEffectTarget(ammunitionEffectSource, weapon);
-            ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-            ammunitionEffectSource.system.rules = ammunition.system.rules;
-            ammunitionEffectSource.img = ammunition.img;
-            ammunitionEffectSource.system.description.value = ammunition.description;
-            updates.create(ammunitionEffectSource);
-        });
     }
 }

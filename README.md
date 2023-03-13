@@ -73,21 +73,6 @@ When a magazine with remaining (but not full) ammunition is removed from a weapo
 #### Repeating and Reload 1+ <small>(e.g. [Repeating Heavy Crossbow](https://2e.aonprd.com/Weapons.aspx?ID=178))</small>
 Repeating weapons that still require reloading work almost identically to other repeating weapons, with the extra step that you must use the <b>Reload</b> macro before firing each shot. The ammunition is still only consumed when you fire the weapon. Using the <b>Unload</b> macro will also remove the <b>Loaded</b> effect.
 
-#### Ammunition Effects
-You can add rule elements to your ammunition and, when you fire it, you will gain an effect with a copy of those rule elements. The effect will only apply to the fired weapon, and remove itself when you fire the weapon again.
-
-##### Example: Fire Arrow
-This ammunition has a rule element to add 1d6 fire damage on an attack. Note that selector refers to a target, but there is no Effect Target rule element. The rule element will have no effect in this state.
-
-![Fire Arrow Card](art/readme/fire-arrow-card.webp)
-
-After firing this ammunition, we get an effect:
-![Fire Arrow Effect Card](art/readme/fire-arrow-effect-card.webp)
-
-This effect has the same rule element as the original ammunition, but the module has set the effect's target to be the character's Longbow, so the damage applies correctly.
-
-![Fire Arrow Damage](art/readme/fire-arrow-damage.webp)
-
 ### Hunt Prey
 The <b>Hunt Prey</b> macro applies the <b>Hunted Prey</b> effect to your character, with the name of your current target, as a reminder of who your hunted prey is. It also applies the <b>Crossbow Ace</b> effect for your equipped crossbow(s) if you have the feat.
 
