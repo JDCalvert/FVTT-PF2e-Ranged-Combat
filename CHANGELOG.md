@@ -1,3 +1,10 @@
+## 3.8.0 - 2023-03-15 (Pathfinder 2e 4.9.2) 
+### Feature
+- New <b>Reload NPCs</b> macro to reload all NPCs on the scene.
+
+### Removed
+- <b>Reload All</b> macro, which didn't work with most configurations, has been removed.
+
 ## 3.7.0 - 2023-03-13 (Pathfinder 2e 4.9.1)
 ### Feature
 - Add a "Prey" effect to the target(s) of the Hunt Prey macro to clarify which token is designated

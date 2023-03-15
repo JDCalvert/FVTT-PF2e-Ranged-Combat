@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.7.0/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/3.8.0/total)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jdcalvert)
 
@@ -18,7 +18,7 @@ In summary, each release of this module only officially supports the latest rele
 ### Reloading System
 When you have a reloadable weapon (e.g. reload 1 or higher), you can use the <b>Reload</b> macro to reload your weapon, and give yourself the <b>Loaded</b> effect showing that the weapon is loaded. If you have the feats, this also applies the effects of <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b>. Firing the weapon removes the <b>Loaded</b> effect.
 
-You can also use the <b>Reload All</b> macro to reload all of your reloadable weapons at once. This is intended to be used outside of combat and so doesn't apply the <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> feat effects.
+You can also use the <b>Reload NPCs</b> macro to reload all NPCs on the scene. This will reload all the NPCs' weapons (if required) as long as no further input is required, such as selecting ammunition.
 
 If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> in the module settings, then you <i>must</i> reload weapons before you can fire them.
 

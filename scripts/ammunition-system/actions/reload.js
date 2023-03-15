@@ -25,6 +25,38 @@ export async function reload() {
 
     const updates = new Updates(actor);
 
+    await performReload(actor, token, weapon, updates);
+
+    updates.handleUpdates();
+}
+
+export async function reloadNPCs() {
+    try {
+        CONFIG.pf2eRangedCombat.silent = true;
+                
+        const nonPlayerTokens = Array.from(canvas.scene.tokens).filter(token => !token.actor.hasPlayerOwner);
+        for (const token of nonPlayerTokens) {
+            const actor = token.actor;
+            const weapons = await getWeapons(
+                actor,
+                weapon => weapon.requiresLoading,
+                "You have no reloadable weapons."
+            );
+
+            const updates = new Updates(actor);
+
+            for (const weapon of weapons) {
+                await performReload(actor, token, weapon, updates);
+            }
+
+            updates.handleUpdates();
+        }
+    } finally {
+        CONFIG.pf2eRangedCombat.silent = false;
+    }
+}
+
+async function performReload(actor, token, weapon, updates) {
     if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             // With a repeating weapon, we only need to have a magazine loaded with at least one ammunition remaining. The ammunition itself
@@ -222,46 +254,8 @@ export async function reload() {
     }
 
     await handleReload(weapon, updates);
-
-    updates.handleUpdates();
     Hooks.callAll("pf2eRangedCombatReload", actor, token, weapon);
 };
-
-export async function reloadAll() {
-    showWarning("Reload All is deprecated, will not work for capacity weapons, and will be removed in version 3.0.0");
-
-    const { actor, token } = getControlledActorAndToken();
-    if (!actor) {
-        return;
-    }
-
-    if (useAdvancedAmmunitionSystem(actor)) {
-        showWarning("You cannot use this macro with the Advanced Ammunition System active. Please reload each weapon individually.");
-        return;
-    }
-
-    let weapons = getWeapons(actor, weapon => weapon.requiresLoading, "You have no reloadable weapons.");
-    if (!weapons.length) {
-        return;
-    }
-
-    weapons = weapons.filter(weapon => !getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id));
-    if (!weapons.length) {
-        ui.notifications.info("All your weapons are already loaded.");
-        return;
-    }
-
-    const updates = new Updates(actor);
-
-    for (const weapon of weapons) {
-        const loadedEffect = await getItem(LOADED_EFFECT_ID);
-        setEffectTarget(loadedEffect, weapon);
-        updates.create(loadedEffect);
-    }
-
-    postInChat(actor, RELOAD_AMMUNITION_IMG, `${token.name} reloads their weapons.`, "Reload", "");
-    await updates.handleUpdates();
-}
 
 async function getAmmunition(weapon, updates) {
     const ammunition = weapon.ammunition;

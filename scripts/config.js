@@ -1,7 +1,7 @@
 import { reload } from "./ammunition-system/actions/reload.js";
 import { unload } from "./ammunition-system/actions/unload.js";
 import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
-import { reloadAll } from "./ammunition-system/actions/reload.js";
+import { reloadNPCs } from "./ammunition-system/actions/reload.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
@@ -16,6 +16,10 @@ import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js
 Hooks.on(
     "init",
     () => {
+        CONFIG.pf2eRangedCombat = {
+            silent: false
+        };
+
         game.settings.register(
             "pf2e-ranged-combat",
             "schemaVersion",
@@ -147,7 +151,7 @@ Hooks.on(
             fireBothBarrels,
             conjureBullet,
             reloadMagazine,
-            reloadAll,
+            reloadNPCs,
             consolidateRepeatingWeaponAmmunition,
             huntPrey,
             loadAlchemicalCrossbow,

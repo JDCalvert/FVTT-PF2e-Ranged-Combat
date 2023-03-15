@@ -21,6 +21,10 @@ export class ItemSelectDialog extends Dialog {
     }
 
     static async getItemWithOptions(title, header, items, options) {
+        if (CONFIG.pf2eRangedCombat.silent) {
+            return null;
+        }
+
         let content = `
             <div class="item-buttons" style="min-width: 200px; max-width: max-content; justify-items: center; margin: auto;">
             <p style="width: 200px; min-width: 100%">${header}</p>
