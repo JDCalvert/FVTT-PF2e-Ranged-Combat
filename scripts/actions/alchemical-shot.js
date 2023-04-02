@@ -12,14 +12,14 @@ export async function alchemicalShot() {
 
     const alchemicalShotFeat = getItemFromActor(actor, ALCHEMICAL_SHOT_FEAT_ID);
     if (!alchemicalShotFeat) {
-        showWarning(`${token.name} does not have the Alchemical Shot feat.`);
+        showWarning(`${token.name} does not have the Alchemical Shot feat.`); /*Localization?*/
         return;
     }
 
     const weapon = await getWeapon(
         actor,
         weapon => weapon.isEquipped && (weapon.group === "firearm" || weapon.isCrossbow),
-        `${token.name} is not wielding a firearm or crossbow.`
+        `${token.name} is not wielding a firearm or crossbow.` /*Localization?*/
     );
     if (!weapon) {
         return;
@@ -30,7 +30,7 @@ export async function alchemicalShot() {
         weapon =>
             weapon.baseType === "alchemical-bomb"
             && weapon.quantity > 0,
-        `${token.name} has no alchemical bombs.`
+        `${token.name} has no alchemical bombs.` /*Localization?*/
     );
     if (!bomb) {
         return;
@@ -81,8 +81,8 @@ export async function alchemicalShot() {
     await postInChat(
         actor,
         bomb.img,
-        `${token.name} pours the contents of ${bomb.name} into their ${weapon.name}.`,
-        "Alchemical Shot",
+        `${token.name} pours the contents of ${bomb.name} into their ${weapon.name}.`, /*Localization?*/
+        game.i18n.localize("pf2e-ranged-combat.basic-terms.alchemical-shot"),
         2
     );
 

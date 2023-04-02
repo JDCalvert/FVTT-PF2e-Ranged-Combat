@@ -21,10 +21,10 @@ export async function reloadMagazine() {
 
     if (!useAdvancedAmmunitionSystem(actor)) {
         if (actor.type === "character") {
-            showWarning("PF2e Ranged Combat - Magazine Reload can only be used if the Advanced Ammunition System is enabled.");
+            showWarning(game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.reload-magazine.character-warning"));
             return;
         } else if (actor.type === "npc") {
-            showWarning("PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.");
+            showWarning(game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.reload-magazine.npc-warning"));
             return;
         }
     }
@@ -32,7 +32,7 @@ export async function reloadMagazine() {
     const weapon = await getWeapon(
         actor,
         weapon => weapon.isRepeating,
-        "You have no repeating weapons.",
+        game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.reload-magazine.no-repeating"),
         weapon => {
             const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
             return !magazineLoadedEffect || !getFlag(magazineLoadedEffect, "remaining");
@@ -64,11 +64,11 @@ export async function reloadMagazine() {
 
         if (magazineRemaining === magazineCapacity && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is full, and the selected ammunition is the same
-            showWarning(`${weapon.name} is already loaded with a full magazine.`);
+            showWarning(`${weapon.name} is already loaded with a full magazine.`); /*Localization?*/
             return;
         } else if (magazineRemaining === ammo.system.charges.value && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is the same, and has the same remaining ammunition, as the new one
-            showWarning(`${weapon.name}'s current magazine is already loaded with as much ammunition as ${ammo.name}`);
+            showWarning(`${weapon.name}'s current magazine is already loaded with as much ammunition as ${ammo.name}`); /*Localization?*/
             return;
         } else {
             // We actually want to reload, either for a magazine with more ammunition remaining, or for a different type of ammunition
@@ -116,8 +116,8 @@ export async function reloadMagazine() {
     await postInChat(
         actor,
         RELOAD_MAGAZINE_IMG,
-        `${token.name} loads their ${weapon.name} with ${ammo.name} (${ammo.system.charges.value}/${ammo.system.charges.max}).`,
-        "Interact",
+        `${token.name} loads their ${weapon.name} with ${ammo.name} (${ammo.system.charges.value}/${ammo.system.charges.max}).`, /*Localization?*/
+        game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
         String(numActions)
     );
 
@@ -132,8 +132,8 @@ async function getAmmunition(weapon, updates) {
         return await selectAmmunition(
             weapon,
             updates,
-            `You have no equipped ammunition compatible with your ${weapon.name}.`,
-            `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`,
+            `You have no equipped ammunition compatible with your ${weapon.name}.`, /*Localization?*/
+            `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`, /*Localization?*/
             false,
             false
         )
@@ -141,8 +141,8 @@ async function getAmmunition(weapon, updates) {
         return await selectAmmunition(
             weapon,
             updates,
-            `You don't have enough ammunition to reload your ${weapon.name}.`,
-            `Your selected ammunition for your ${weapon.name} is empty.</p><p>Select new ammunition to load.`,
+            `You don't have enough ammunition to reload your ${weapon.name}.`, /*Localization?*/
+            `Your selected ammunition for your ${weapon.name} is empty.</p><p>Select new ammunition to load.`, /*Localization?*/
             true,
             false
         )

@@ -1,0 +1,211 @@
+{
+    "pf2e-ranged-combat": {
+        "basic-terms": {
+            "interact": "Interact",
+            "alchemical-shot": "Alchemical Shot",
+            "conjure-bullet": "Conjure Bullet"
+        },
+        "actions": {
+            "alchemical-crossbow": {
+                "load": {
+                    "warning-load": "",
+                    "return-bomb": "",
+                    "warhing-wasted": "",
+                    "already": "",
+                    "already-hint": "",
+                    "load": "Load",
+                    "not-load": "Do Not Load"
+                },
+                "unload": {
+                    "unload": "Unload",
+                    "not-unload": "Do Not Unload"
+                },
+                "alchemicalCrossbow": {},
+                "elementalBomb": {
+                    "lesser": "Lesser"
+                }
+            },
+            "alchemical-shot": {
+                "warning-feat": "",
+                "warning-weapon": "",
+                "warning-bomb": "",
+                "post-chat": ""
+            }
+        },
+        "ammunition-system": {
+            "actions": {
+                "conjure-bullet": {
+                    "warning-bullet-action": "",
+                    "reloadable": "You have no reloadable weapons.",
+                    "warning-round-effect": "",
+                    "post-chat": ""
+                },
+                "consolidate-ammunition": {
+                    "post-chat": "",
+                    "ui-notification": "Your repeating ammunition is already consolidated!"
+                },
+                "next-chamber": {
+                    "capacity-trait": "You have no weapons with the capacity trait.",
+                    "not-loaded": "",
+                    "already-loaded": "",
+                    "select-chamber": "",
+                    "already-select": "",
+                    "next-chamber": ""
+                },
+                "reload": {
+                    "not-reloadable": "You have no reloadable weapons.",
+                    "magazine-unload": "",
+                    "magazine-empty": "",
+                    "already-loaded": "",
+                    "capacity-fully": "",
+                    "already-ammo": "",
+                    "not-ammunition": "",
+                    "select-ammunition": "",
+                    "enough-ammunition": "",
+                    "selected-ammunition": "",
+                    "reload": "",
+                    "desc-ammunition": ""
+                },
+                "reload-magazine": {
+                    "character-warning": "PF2e Ranged Combat - Magazine Reload can only be used if the Advanced Ammunition System is enabled.",
+                    "npc-warning": "PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.",
+                    "no-repeating": "You have no repeating weapons.",
+                    "already-warning": "",
+                    "current-warning": "",
+                    "not-ammunition": "",
+                    "select-ammunition": "",
+                    "enough-ammunition": "",
+                    "selected-ammunition": ""
+                },
+                "switch-ammunition": {
+                    "no-weapon": "You have no weapons that use ammunition.",
+                    "no-ammunition": "",
+                    "switch-ammunition": "Select the ammunition to switch to.",
+                    "current": "Current",
+                    "equipped": "Equipped",
+                    "ammunition-select": "Ammunition Select",
+                    "set-as": "Set as ammunition"
+                },
+                "unload": {
+                    "not-loaded": "",
+                    "unload-magazine": "",
+                    "unload-ammunition": "",
+                    "unload-ammunition-effect": "",
+                    "token-unload": "",
+                    "weapon": "You have no loaded weapons."
+                }
+            },
+            "fire-weapon-check": {
+                "magazine-loaded": "",
+                "magazine-empty": "",
+                "not-loaded": "",
+                "both-barrels": "",
+                "chamber-loaded": "",
+                "ammunition-selected": "",
+                "ammunition-remaining": "",
+                "enough-ammunition": ""
+            },
+            "fire-weapon-handler": {
+                "post-chat": "",
+                "conjure-bullet": "",
+                "fires": ""
+            },
+            "utils": {
+                "warning-fully": "",
+                "warning-loaded": "",
+                "conjured-name": "Conjured Round",
+                "ammunition-select": "Ammunition Select",
+                "select": "Select which ammunition to switch to."
+            }
+        },
+        "hunt-prey": {
+            "action-warning": "",
+            "two-allies": ", and can share the effect with two allies",
+            "one-ally": ", and can share the effect with one ally",
+            "targets-three": "",
+            "targets-two": "",
+            "target": "",
+            "no-target": "No target selected.",
+            "targets-max": ""
+        },
+        "npc-weapon-system": {
+            "ui-notification": "You can only use this on NPCs.",
+            "title": "NPC Weapon Configuration",
+            "ok": "Done",
+            "cancel": "Cancel",
+            "hint": "Here, you can configure the NPC to be used by the PF2e Ranged Combat module.",
+            "general": "General",
+            "adv-ammunition": "Enable Advanced Ammunition System",
+            "adv-thrown": "Enable Advanced Thrown Weapon System",
+            "mapping": "Weapon Mapping",
+            "mapping-hint": "You can map each of your NPC's attacks to a weapon and ammunition, so it is treated like a PC's weapon by the module.",
+            "weapon-label": "Weapon",
+            "ammunition-label": "Ammunition"
+        },
+        "thrown-weapon": {
+            "thrown-weapon-check": {
+                "not-equipped": "",
+                "left": ""
+            }
+        },
+        "utils": {
+            "migration": {
+                "multiple-ammunitions": {
+                    "console-info": "PF2e Ranged Combat - Running Migration 1: Multiple Ammunition Update",
+                    "conjured-round": "Conjured Round"
+                },
+                "thrown-weapon-groups": {
+                    "console-info": "PF2e Ranged Combat - Running Migration 2: Thrown Weapon Groups"
+                },
+                "hunted-prey": {
+                    "console-info": "PF2e Ranged Combat - Running Migration 3: Hunted Prey Array"
+                }
+            },
+            "utils": {
+                "warning-single": "You must have a single character selected.",
+                "dialog-title": "PF2e Ranged Combat",
+                "dialog-content": "",
+                "buttons-ok": "OK",
+                "buttons-doNot": "OK (Do not show again)"
+            }
+        },
+        "config": {
+            "schema-version": {
+                "name": "Schema Version",
+                "hint": "The current version of the data related to this module"
+            },
+            "post-full-action": {
+                "name": "Post Full Action from Macros",
+                "hint": "When running macros that simulate taking actions, post the full action description to chat."
+            },
+            "post-full-ammunition": {
+                "name": "Post Full Ammunition Description",
+                "hint": "When firing a ranged weapon with non-standard ammunition, post the ammunition item to chat."
+            },
+            "prevent-fire": {
+                "name": "Prevent Firing Weapon if not Loaded",
+                "hint": "For weapons with a reload of at least 1, prevent attack rolls using that weapon unless you have the loaded effect for that weapon."
+            },
+            "advanced-ammunition": {
+                "name": "Advanced Ammunition System (Player)",
+                "hint": "Track loaded ammunition for reloadable and repeating weapons. This overrides Prevent Firing Weapon if not Loaded."
+            },
+            "advanced-thrown-weapon": {
+                "name": "Advanced Thrown Weapon System (Player)",
+                "hint": "Handle thrown weapons being dropped after use, and require another weapon to be drawn before another attack."
+            },
+            "required-permission": {
+                "name": "Minimum Permission to See Messages",
+                "hint": "Several functions of this module send messages to chat, for example Reloading. This will hide those messages for players without the required permission over the actor performing the action.",
+                "none": "None",
+                "limited": "Limited",
+                "observer": "Observer",
+                "owner": "Owner"
+            },
+            "hide-token": {
+                "name": "Hide Token Effect Icons",
+                "hint": "Hide the token icons for effects created by this module."
+            }
+        }
+    }
+}

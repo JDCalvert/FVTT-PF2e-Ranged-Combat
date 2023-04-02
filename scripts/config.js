@@ -24,8 +24,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "schemaVersion",
             {
-                name: "Schema Version",
-                hint: "The current version of the data related to this module",
+                name: game.i18n.localize("pf2e-ranged-combat.config.schema-version.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.schema-version.hint"),
                 scope: "world",
                 config: false,
                 type: Number,
@@ -37,8 +37,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "postFullAction",
             {
-                name: "Post Full Action from Macros",
-                hint: "When running macros that simulate taking actions, post the full action description to chat.",
+                name: game.i18n.localize("pf2e-ranged-combat.config.post-full-action.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.post-full-action.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -50,8 +50,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "postFullAmmunition",
             {
-                name: "Post Full Ammunition Description",
-                hint: "When firing a ranged weapon with non-standard ammunition, post the ammunition item to chat.",
+                name: game.i18n.localize("pf2e-ranged-combat.config.post-full-ammunition.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.post-full-ammunition.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -63,8 +63,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "preventFireNotLoaded",
             {
-                name: "Prevent Firing Weapon if not Loaded",
-                hint: "For weapons with a reload of at least 1, prevent attack rolls using that weapon unless you have the loaded effect for that weapon.",
+                name: game.i18n.localize("pf2e-ranged-combat.config.prevent-fire.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.prevent-fire.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -76,8 +76,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "advancedAmmunitionSystemPlayer",
             {
-                name: "Advanced Ammunition System (Player)",
-                hint: "Track loaded ammunition for reloadable and repeating weapons. This overrides Prevent Firing Weapon if not Loaded.",
+                name: game.i18n.localize("pf2e-ranged-combat.config.advanced-ammunition.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.advanced-ammunition.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -89,8 +89,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "advancedThrownWeaponSystemPlayer",
             {
-                name: "Advanced Thrown Weapon System (Player)",
-                hint: "Handle thrown weapons being dropped after use, and require another weapon to be drawn before another attack.",
+                name: game.i18n.localize("pf2e-ranged-combat.config.advanced-thrown-weapon.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.advanced-thrown-weapon.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -102,17 +102,16 @@ Hooks.on(
             "pf2e-ranged-combat",
             "requiredPermissionToShowMessages",
             {
-                name: "Minimum Permission to See Messages",
-                hint: `Several functions of this module send messages to chat, for example Reloading.
-                       This will hide those messages for players without the required permission over the actor performing the action.`,
+                name: game.i18n.localize("pf2e-ranged-combat.config.required-permission.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.required-permission.hint"),
                 scope: "world",
                 config: true,
                 type: Number,
                 choices: {
-                    0: "None",
-                    1: "Limited",
-                    2: "Observer",
-                    3: "Owner"
+                    0: game.i18n.localize("pf2e-ranged-combat.config.required-permission.none"),
+                    1: game.i18n.localize("pf2e-ranged-combat.config.required-permission.limited"),
+                    2: game.i18n.localize("pf2e-ranged-combat.config.required-permission.observer"),
+                    3: game.i18n.localize("pf2e-ranged-combat.config.required-permission.owner")
                 },
                 default: 0
             }
@@ -122,8 +121,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "hideTokenIcons",
             {
-                name: "Hide Token Effect Icons",
-                hint: "Hide the token icons for effects created by this module.",
+                name: game.i18n.localize("pf2e-ranged-combat.config.hide-token.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.hide-token.hint"),
                 scope: "client",
                 config: true,
                 type: Boolean,

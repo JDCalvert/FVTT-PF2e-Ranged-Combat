@@ -10,7 +10,7 @@ export async function nextChamber() {
     }
 
     const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.isCapacity, "You have no weapons with the capacity trait."),
+        getWeapons(actor, weapon => weapon.isCapacity, game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.next-chamber.capacity-trait")),
         weapon => isLoaded(actor, weapon) && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)
     );
     if (!weapon) {
@@ -18,7 +18,7 @@ export async function nextChamber() {
     }
 
     if (!isLoaded(actor, weapon)) {
-        showWarning(`${weapon.name} is not loaded!`);
+        showWarning(`${weapon.name} is not loaded!`); /*Localization?*/
         return;
     }
 
@@ -34,7 +34,7 @@ export async function nextChamber() {
         if (chamberLoadedEffect) {
             const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
             if (chamberAmmunition.sourceId === selectedAmmunition.sourceId) {
-                showWarning(`${weapon.name} already has a chamber loaded with ${selectedAmmunition.name} selected!`);
+                showWarning(`${weapon.name} already has a chamber loaded with ${selectedAmmunition.name} selected!`); /*Localization?*/
                 return;
             }
         }
@@ -43,14 +43,14 @@ export async function nextChamber() {
         await postInChat(
             token.actor,
             SELECT_NEXT_CHAMBER_IMG,
-            `${token.name} selects a chamber loaded with ${selectedAmmunition.name} on their ${weapon.name}.`,
-            "Interact",
+            `${token.name} selects a chamber loaded with ${selectedAmmunition.name} on their ${weapon.name}.`, /*Localization?*/
+            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
             1,
         );
     } else {
         const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
         if (chamberLoadedEffect) {
-            showWarning(`${weapon.name} already has a loaded chamber selected!`);
+            showWarning(`${weapon.name} already has a loaded chamber selected!`); /*Localization?*/
             return;
         }
 
@@ -58,8 +58,8 @@ export async function nextChamber() {
         await postInChat(
             token.actor,
             SELECT_NEXT_CHAMBER_IMG,
-            `${token.name} selects the next loaded chamber on their ${weapon.name}.`,
-            "Interact",
+            `${token.name} selects the next loaded chamber on their ${weapon.name}.`, /*Localization?*/
+            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
             1,
         );
     }

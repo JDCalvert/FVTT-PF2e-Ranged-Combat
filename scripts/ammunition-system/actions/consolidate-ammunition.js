@@ -105,12 +105,12 @@ export async function consolidateRepeatingWeaponAmmunition() {
             actor,
             ammunitionStacks[0].img,
             `${token.name} consolidates their ammunition.`,
-            "Interact",
+            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
             ""
         );
         await updates.handleUpdates();
     } else {
-        ui.notifications.info("Your repeating ammunition is already consolidated!");
+        ui.notifications.info(game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.consolidate-ammunition.ui-notification"));
     }
 }
 

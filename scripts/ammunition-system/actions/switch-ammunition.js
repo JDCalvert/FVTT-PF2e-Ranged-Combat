@@ -8,7 +8,7 @@ export async function switchAmmunition() {
         return;
     }
 
-    const weapon = await getWeapon(actor, weapon => weapon.usesAmmunition, "You have no weapons that use ammunition.");
+    const weapon = await getWeapon(actor, weapon => weapon.usesAmmunition, game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.switch-ammunition.no-weapon"));
     if (!weapon) {
         return;
     }
@@ -18,8 +18,8 @@ export async function switchAmmunition() {
     await selectAmmunition(
         weapon,
         updates,
-        `You have no equipped ammunition compatible with your ${weapon.name}.`,
-        "Select the ammunition to switch to.",
+        `You have no equipped ammunition compatible with your ${weapon.name}.`, /*Localization?*/
+        game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.switch-ammunition.switch-ammunition"),
         true,
         true
     );
@@ -60,15 +60,15 @@ export async function selectAmmunition(
     if (weapon.ammunition) {
         const currentAmmunition = availableAmmunitionChoices.findSplice(ammo => ammo.id === weapon.ammunition.id);
         if (currentAmmunition) {
-            ammunitionMap.set("Current", [currentAmmunition]);
+            ammunitionMap.set(game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.switch-ammunition.current"), [currentAmmunition]);
         }
     };
     if (availableAmmunitionChoices.length) {
-        ammunitionMap.set("Equipped", availableAmmunitionChoices);
+        ammunitionMap.set(game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.switch-ammunition.equipped"), availableAmmunitionChoices);
     }
 
     const result = await ItemSelectDialog.getItemWithOptions(
-        "Ammunition Select",
+        game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.switch-ammunition.ammunition-select"),
         selectNewMessage,
         ammunitionMap,
         alwaysSetAsAmmunition
@@ -76,7 +76,7 @@ export async function selectAmmunition(
             : [
                 {
                     id: "set-as-ammunition",
-                    label: "Set as ammunition",
+                    label: game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.switch-ammunition.set-as"),
                     defaultValue: defaultSetAsAmmunition
                 }
             ]

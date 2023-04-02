@@ -150,7 +150,7 @@ function consumeConjuredRound(actor, weapon, updates) {
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         updates.delete(conjuredRoundEffect);
-        postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`);
+        postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`); /*Localization?*/
     }
     return !!conjuredRoundEffect;
 }
@@ -160,6 +160,6 @@ function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
     if (ammunitionItem && ammunitionItem.level > 0 && game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunitionItem.toMessage();
     } else {
-        postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);
+        postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`); /*Localization?*/
     }
 }

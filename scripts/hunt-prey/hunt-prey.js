@@ -19,7 +19,7 @@ export async function huntPrey() {
 
     const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
     if (!huntPreyAction) {
-        showWarning(`${token.name} does not have the Hunt Prey action.`);
+        showWarning(`${token.name} does not have the Hunt Prey action.`); /*Localization?*/
         return;
     }
 
@@ -46,9 +46,9 @@ export async function huntPrey() {
     {
         const remainingTargets = maxTargets.num - targets.length;
         const remainingTargetsText = remainingTargets === 2
-            ? ", and can share the effect with two allies"
+            ? game.i18n.localize("pf2e-ranged-combat.hunt-prey.two-allies")
             : remainingTargets === 1 && hasSharedPrey
-                ? ", and can share the effect with one ally"
+                ? game.i18n.localize("pf2e-ranged-combat.hunt-prey.one-ally")
                 : "";
 
         const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
@@ -59,10 +59,10 @@ export async function huntPrey() {
             actor,
             HUNT_PREY_IMG,
             targets.length === 3
-                ? `${token.name} makes ${targetNames[0]}, ${targetNames[1]}, and ${targetNames[2]} their hunted prey.`
+                ? `${token.name} makes ${targetNames[0]}, ${targetNames[1]}, and ${targetNames[2]} their hunted prey.` /*Localization?*/
                 : targets.length === 2
-                    ? `${token.name} makes ${targetNames[0]} and ${targetNames[1]} their hunted prey${remainingTargetsText}.`
-                    : `${token.name} makes ${targetNames[0]} their hunted prey${remainingTargetsText}.`
+                    ? `${token.name} makes ${targetNames[0]} and ${targetNames[1]} their hunted prey${remainingTargetsText}.` /*Localization?*/
+                    : `${token.name} makes ${targetNames[0]} their hunted prey${remainingTargetsText}.` /*Localization?*/
             ,
             huntPreyAction.name,
             1
@@ -104,10 +104,10 @@ function getTargets(maxTargets) {
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
 
     if (!targetTokens.length) {
-        showWarning("No target selected.");
+        showWarning(game.i18n.localize("pf2e-ranged-combat.hunt-prey.no-target"));
         return [];
     } else if (targetTokens.length > maxTargets.num) {
-        showWarning(`You may only have ${maxTargets.word} hunted prey.`);
+        showWarning(`You may only have ${maxTargets.word} hunted prey.`); /*Localization?*/
         return [];
     } else {
         return targetTokens;

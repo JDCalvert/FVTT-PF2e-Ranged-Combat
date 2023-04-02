@@ -20,7 +20,7 @@ export async function unload() {
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     if (!loadedEffect && !conjuredRoundEffect && !magazineLoadedEffect) {
-        showWarning(`${weapon.name} is not loaded!`);
+        showWarning(`${weapon.name} is not loaded!`); /*Localization?*/
         return;
     }
 
@@ -34,8 +34,8 @@ export async function unload() {
                 postInChat(
                     actor,
                     magazineLoadedEffect.img,
-                    `${token.name} unloads ${getFlag(magazineLoadedEffect, "ammunitionName")} from their ${weapon.name}.`,
-                    "Interact",
+                    `${token.name} unloads ${getFlag(magazineLoadedEffect, "ammunitionName")} from their ${weapon.name}.`, /*Localization?*/
+                    game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
                     "1"
                 );
             }
@@ -56,8 +56,8 @@ export async function unload() {
             postInChat(
                 actor,
                 ammunition.img,
-                `${token.name} unloads ${ammunition.name} from their ${weapon.name}.`,
-                "Interact",
+                `${token.name} unloads ${ammunition.name} from their ${weapon.name}.`, /*Localization?*/
+                game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
                 "1"
             );
         } else {
@@ -65,8 +65,8 @@ export async function unload() {
             postInChat(
                 actor,
                 loadedEffect.img,
-                `${token.name} unloads ${getFlag(loadedEffect, "ammunition").name} from their ${weapon.name}.`,
-                "Interact",
+                `${token.name} unloads ${getFlag(loadedEffect, "ammunition").name} from their ${weapon.name}.`, /*Localization?*/
+                game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
                 "1"
             );
         }
@@ -75,8 +75,8 @@ export async function unload() {
         postInChat(
             actor,
             loadedEffect.img,
-            `${token.name} unloads their ${weapon.name}`,
-            "Interact",
+            `${token.name} unloads their ${weapon.name}`, /*Localization?*/
+            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
             "1"
         );
     }
@@ -96,7 +96,7 @@ function getLoadedWeapon(actor) {
             }
             return false;
         },
-        "You have no loaded weapons."
+        game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.unload.weapon")
     );
 }
 

@@ -64,7 +64,7 @@ export async function getSelectedAmmunition(actor, weapon) {
     if (conjuredRoundEffect) {
         ammunitions.push(
             {
-                name: "Conjured Round",
+                name: game.i18n.localize("pf2e-ranged-combat.amunnition-system.utils.conjured-name"),
                 img: conjuredRoundEffect.img,
                 id: CONJURED_ROUND_ITEM_ID,
                 sourceId: CONJURED_ROUND_ITEM_ID
@@ -74,8 +74,8 @@ export async function getSelectedAmmunition(actor, weapon) {
 
     if (ammunitions.length > 1) {
         return await ItemSelectDialog.getItem(
-            "Ammunition Select",
-            "Select which ammunition to switch to.",
+            game.i18n.localize("pf2e-ranged-combat.amunnition-system.utils.ammunition-select"),
+            game.i18n.localize("pf2e-ranged-combat.amunnition-system.utils.select"),
             new Map([["Loaded Ammunition", ammunitions]])
         );
     } else {

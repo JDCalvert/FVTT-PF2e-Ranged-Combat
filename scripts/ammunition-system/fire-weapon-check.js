@@ -53,13 +53,13 @@ function checkLoadedMagazine(actor, weapon) {
 
     // Check the weapon has a magazine loaded
     if (!magazineLoadedEffect) {
-        showWarning(`${weapon.name} has no magazine loaded!`);
+        showWarning(`${weapon.name} has no magazine loaded!`); /*Localization?*/
         return false;
     }
 
     // Check the magazine has at least one round remaining
     if (getFlag(magazineLoadedEffect, "remaining") < 1) {
-        showWarning(`${weapon.name}'s magazine is empty!`);
+        showWarning(`${weapon.name}'s magazine is empty!`); /*Localization?*/
         return false;
     }
 
@@ -71,7 +71,7 @@ function checkLoadedMagazine(actor, weapon) {
  */
 async function checkLoadedRound(actor, weapon) {
     if (!isLoaded(actor, weapon)) {
-        showWarning(`${weapon.name} is not loaded!`);
+        showWarning(`${weapon.name} is not loaded!`); /*Localization?*/
         return false;
     }
 
@@ -82,7 +82,7 @@ async function checkLoadedRound(actor, weapon) {
     }
 
     if (isFiringBothBarrels(actor, weapon) && !isFullyLoaded(actor, weapon)) {
-        showWarning(`${weapon.name} does not have both barrels loaded!`);
+        showWarning(`${weapon.name} does not have both barrels loaded!`); /*Localization?*/
         return false;
     }
 
@@ -100,7 +100,7 @@ async function checkLoadedRound(actor, weapon) {
 
 function checkChamberLoaded(actor, weapon) {
     if (!getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
-        showWarning(`${weapon.name}'s current chamber is not loaded!`);
+        showWarning(`${weapon.name}'s current chamber is not loaded!`); /*Localization?*/
         return false;
     }
 
@@ -110,13 +110,13 @@ function checkChamberLoaded(actor, weapon) {
 function checkAmmunition(actor, weapon) {
     const ammunition = weapon.ammunition;
     if (!ammunition) {
-        showWarning(`${weapon.name} has no ammunition selected!`);
+        showWarning(`${weapon.name} has no ammunition selected!`); /*Localization?*/
         return false;
     } else if (ammunition.quantity < 1) {
-        showWarning(`${weapon.name} has no ammunition remaining!`);
+        showWarning(`${weapon.name} has no ammunition remaining!`); /*Localization?*/
         return false;
     } else if (isFiringBothBarrels(actor, weapon) && ammunition.quantity < 2) {
-        showWarning(`${weapon.name} does not have enough ammunition to fire both barrels!`);
+        showWarning(`${weapon.name} does not have enough ammunition to fire both barrels!`); /*Localization?*/
         return false;
     }
 

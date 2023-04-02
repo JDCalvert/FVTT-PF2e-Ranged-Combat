@@ -8,21 +8,21 @@ export function npcWeaponConfiguration() {
     }
 
     if (actor.type !== "npc") {
-        ui.notifications.warn("You can only use this on NPCs.");
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.ui-notification"));
         return;
     }
 
     new Dialog(
         {
-            title: "NPC Weapon Configuration",
+            title: game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.title"),
             content: buildContent(actor),
             buttons: {
                 ok: {
-                    label: "Done",
+                    label: game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.ok"),
                     callback: ($html) => saveChanges($html, actor)
                 },
                 cancel: {
-                    label: "Cancel"
+                    label: game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.cancel")
                 }
             }
         }
@@ -61,7 +61,7 @@ function buildContent(actor) {
             </form>
         </fieldset>
         <hr/>
-    `;
+    `; /*Localization?*/
 
     content += `
         <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
@@ -71,7 +71,7 @@ function buildContent(actor) {
             </div>
         
             <form>
-    `;
+    `; 
 
     for (const attack of attacks) {
         const weaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;

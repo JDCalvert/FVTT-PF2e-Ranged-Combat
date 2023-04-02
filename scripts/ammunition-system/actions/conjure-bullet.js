@@ -13,12 +13,12 @@ export async function conjureBullet() {
 
     const conjureBulletAction = getItemFromActor(actor, CONJURE_BULLET_ACTION_ID);
     if (!conjureBulletAction) {
-        showWarning(`${token.name} does not have the Conjure Bullet action.`);
+        showWarning(`${token.name} does not have the Conjure Bullet action.`); /*Localization?*/
         return;
     }
 
     const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, "You have no reloadable weapons."),
+        getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, game.i18n.localize("pf2e-ranged-combat.ammunition-system,actions.conjure-bullet.reloadable")),
         weapon => !isFullyLoaded(actor, weapon)
     );
     if (!weapon) {
@@ -27,7 +27,7 @@ export async function conjureBullet() {
 
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
-        showWarning(`${weapon.name} can only be loaded with one conjured round.`);
+        showWarning(`${weapon.name} can only be loaded with one conjured round.`); /*Localization?*/
         return;
     }
 
@@ -64,8 +64,8 @@ export async function conjureBullet() {
     await postInChat(
         token.actor,
         CONJURE_BULLET_IMG,
-        `${token.name} uses Conjure Bullet to load their ${weapon.name}.`,
-        "Conjure Bullet",
+        `${token.name} uses Conjure Bullet to load their ${weapon.name}.`, /*Localization?*/
+        game.i18n.localize("pf2e-ranged-combat.basic-terms.conjure-bullet"),
         1,
     );
 
