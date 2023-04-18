@@ -7,6 +7,9 @@ const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossb
 
 const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalCrossbow." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalCrossbow." + key, data)
+
 export async function loadAlchemicalCrossbow() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -31,20 +34,20 @@ export async function loadAlchemicalCrossbow() {
         if (loadedBombFlags.bombCharges > 0) {
             const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
             if (loadedBombFlags.bombSourceId === bomb.sourceId && hasMaxCharges) {
-                showWarning(`${token.name}'s ${weapon.name} is already loaded with ${loadedBombFlags.bombName}.`); /*Localization?*/
+                showWarning(format("warningAlreadyLoaded", { token: token.name, weapon: weapon.name, bomb: loadedBombFlags.bombName }));
                 return;
             }
 
             const existingResult = hasMaxCharges
-                ? `${loadedBombFlags.bombName} will be returned to your inventory.` /*Localization?*/
-                : `The remaining uses of ${loadedBombFlags.bombName} will be wasted.`; /*Localization?*/
+                ? format("bombWillBeReturned", { bomb: loadedBombFlags.bombName })
+                : format("usesWillBeWasted", { bomb: loadedBombFlags.bombName });
 
             const shouldLoad = await dialogPrompt(
-                `${weapon.name} Already Loaded`, /*Localization?*/
-                `<p>${weapon.name} is loaded with ${loadedBombFlags.bombName} with ${loadedBombFlags.bombCharges}/${loadedBombFlags.bombMaxCharges} uses remaining.<p> 
-                <p>Would you like to load ${bomb.name} instead? ${existingResult}<p>`, /*Localization?*/
-                game.i18n.localize("pf2e-ranged-combat.actions.alchemical-crossbow.load.load"),
-                game.i18n.localize("pf2e-ranged-combat.actions.alchemical-crossbow.load.not-load")
+                format("loadInsteadDialogTitle", { weapon: weapon.name }),
+                `<p>${format("weaponIsLoadedWithCharges", { weapon: weapon.name, bomb: loadedBombFlags.bombName, bombCharges: loadedBombFlags.bombCharges, bombMaxCharges: loadedBombFlags.bombMaxCharges })}<p>
+                <p>${format("loadInstead", { bomb: bomb.name })} ${existingResult}<p>`,
+                localize("buttonLoad"),
+                localize("buttonDoNotLoad")
             );
 
             if (!shouldLoad) {
@@ -57,7 +60,7 @@ export async function loadAlchemicalCrossbow() {
 
     const elementType = DAMAGE_TYPES.find(damageType => bomb.traits.has(damageType));
 
-    const lesserIndex = bomb.name.indexOf(" (Lesser)");
+    const lesserIndex = bomb.name.indexOf(` (${localize("lesser")})`);
     const bombName = lesserIndex > -1 ? bomb.name.substring(0, lesserIndex) : bomb.name;
 
     const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
@@ -82,8 +85,8 @@ export async function loadAlchemicalCrossbow() {
     await postInChat(
         actor,
         bomb.img,
-        `${token.name} loads their ${weapon.name} with ${bomb.name}.`, /*Localization?*/
-        game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+        format("tokenLoadsWeaponWithBomb", { token: token.name, weapon: weapon.name, bomb: bomb.name }),
+        game.i18n.localize("PF2E.Actions.Interact.Title"),
         "1"
     );
 
@@ -103,7 +106,7 @@ export async function unloadAlchemicalCrossbow() {
 
     const loadedBombEffect = getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
     if (!loadedBombEffect) {
-        showWarning(`${token.name}'s ${weapon.name} is not loaded with an alchemical bomb.`); /*Localization?*/
+        showWarning(format("warningWeaponNotLoaded", { token: token.name, wepaon: weapon.name }));
         return;
     }
 
@@ -114,14 +117,14 @@ export async function unloadAlchemicalCrossbow() {
 
     if (!hasMaxCharges && loadedBombFlags.bombCharges > 0) {
         const shouldUnload = await dialogPrompt(
-            `${loadedBombFlags.bombName} Discard`,
+            format("shouldUnloadDialogTitle", { bomb: loadedBombFlags.bombName }),
             `
-                <p>${weapon.name} is loaded with ${loadedBombFlags.bombName} with ${loadedBombFlags.bombCharges}/${loadedBombFlags.bombMaxCharges} uses remaining.
-                The remaining uses will be wasted</p>
-                <p>Are you sure you want to unload ${loadedBombFlags.bombName} from ${weapon.name}?</p>
-            `, /*Localization?*/
-            game.i18n.localize("pf2e-ranged-combat.actions.alchemical-crossbow.unload.unload"),
-            game.i18n.localize("pf2e-ranged-combat.actions.alchemical-crossbow.unload.not-unload")
+                <p>${format("weaponIsLoadedWithCharges", { weapon: weapon.name, bomb: loadedBombFlags.bombName, charges: loadedBombFlags.bombCharges, maxCharges: loadedBombFlags.bombMaxCharges })}
+                ${localize("shouldUnloadDialogRestWasted")}</p>
+                <p>${format("shouldUnloadInstead", { bomb: loadedBombFlags.bombName, weapon: weapon.name })}</p>
+            `,
+            localize("buttonUnload"),
+            localize("buttonDoNotUnload")
         );
         if (!shouldUnload) {
             return;
@@ -134,8 +137,8 @@ export async function unloadAlchemicalCrossbow() {
         await postInChat(
             actor,
             UNLOAD_BOMB_IMG,
-            `${token.name} unloads ${loadedBombFlags.bombName} from their ${weapon.name}.`, /*Localization?*/
-            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+            format("tokenUnloadsBombFromWeapon", { token: token.name, weapon: weapon.name, bomb: bomb.name }),
+            game.i18n.localize("PF2E.Actions.Interact.Title"),
             "1"
         );
     }
@@ -189,7 +192,7 @@ function getAlchemicalCrossbow(actor, token, prioritise) {
     return getWeapon(
         actor,
         isAlchemicalCrossbow,
-        `${token.name} has no Alchemical Crossbow.`, /*Localization?*/
+        format("warningNoAlchemicalCrossbow", { token: token.name }),
         weapon => prioritise && !getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id)
     );
 }
@@ -204,9 +207,9 @@ function getElementalBomb(actor, token) {
         weapon =>
             weapon.baseType === "alchemical-bomb"
             && DAMAGE_TYPES.some(element => weapon.traits.has(element))
-            && weapon.name.includes(game.i18n.localize("pf2e-ranged-combat.actions.alchemical-crossbow.elementalBomb.lesser"))
+            && weapon.name.includes(localize("lesser"))
             && weapon.quantity > 0,
-        `${token.name} has no lesser alchemical bombs that deal energy damage.` /*Localization?*/
+        format("warningNoLesserAlchemicalBombs", { token: token.name })
     );
 }
 

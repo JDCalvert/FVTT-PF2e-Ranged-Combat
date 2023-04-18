@@ -5,7 +5,7 @@ export class Migration003HuntedPreyArray {
     version = 3;
 
     async runMigration() {
-        console.info(game.i18n.localize("pf2e-ranged-combat.utils.migration.hunted-prey.console-info"));
+        console.info(game.i18n.localize("pf2e-ranged-combat.utils.migration.huntedPrey.consoleInfo"));
 
         const actors = game.actors.contents;
 

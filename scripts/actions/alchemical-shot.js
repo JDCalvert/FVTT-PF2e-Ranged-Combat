@@ -4,6 +4,9 @@ import { getWeapon } from "../utils/weapon-utils.js";
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Q1O4P1YIkCfeedHH";
 const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.IYcN1TxztAmnKXi4";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalShot." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data)
+
 export async function alchemicalShot() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -12,14 +15,14 @@ export async function alchemicalShot() {
 
     const alchemicalShotFeat = getItemFromActor(actor, ALCHEMICAL_SHOT_FEAT_ID);
     if (!alchemicalShotFeat) {
-        showWarning(`${token.name} does not have the Alchemical Shot feat.`); /*Localization?*/
+        showWarning(format("warningNoFeat", { token: token.name }));
         return;
     }
 
     const weapon = await getWeapon(
         actor,
         weapon => weapon.isEquipped && (weapon.group === "firearm" || weapon.isCrossbow),
-        `${token.name} is not wielding a firearm or crossbow.` /*Localization?*/
+        showWarning(format("warningNotWieldingProperWeapon", { token: token.name }))
     );
     if (!weapon) {
         return;
@@ -30,7 +33,7 @@ export async function alchemicalShot() {
         weapon =>
             weapon.baseType === "alchemical-bomb"
             && weapon.quantity > 0,
-        `${token.name} has no alchemical bombs.` /*Localization?*/
+        format("warningNoAlchemicalBombs", { token: token.name })
     );
     if (!bomb) {
         return;
@@ -58,7 +61,7 @@ export async function alchemicalShot() {
             rulesSelections: {
                 ...alchemicalShotEffectSource.flags?.pf2e?.rulesSelections,
                 weapon: weapon.id,
-                damageType:  bomb.damageType,
+                damageType: bomb.damageType,
                 persistentDamageDice: bomb.level >= 17 ? 3 : bomb.level >= 11 ? 2 : 1
             }
         },
@@ -81,8 +84,8 @@ export async function alchemicalShot() {
     await postInChat(
         actor,
         bomb.img,
-        `${token.name} pours the contents of ${bomb.name} into their ${weapon.name}.`, /*Localization?*/
-        game.i18n.localize("pf2e-ranged-combat.basic-terms.alchemical-shot"),
+        format("tokenPoursBombIntoWeapon", { token: token.name, weapon: weapon.name, bomb: bomb.name }),
+        localize("alchemicalShot"),
         2
     );
 

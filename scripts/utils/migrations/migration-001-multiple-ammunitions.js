@@ -6,7 +6,7 @@ export class Migration001MultipleAmmunitions {
     version = 1;
 
     async runMigration() {
-        console.info(game.i18n.localize("pf2e-ranged-combat.utils.migration.multiple-ammunitions.console-info"));
+        console.info(game.i18n.localize("pf2e-ranged-combat.utils.migration.multipleAmmunitions.consoleInfo"));
 
         const actors = game.actors.contents;
 
@@ -67,7 +67,7 @@ export class Migration001MultipleAmmunitions {
                 if (chamberLoadedEffect) {
                     if (conjuredRoundEffect) {
                         currentAmmunition = {
-                            name: game.i18n.localize("pf2e-ranged-combat.utils.migration.multiple-ammunitions.conjured-round"),
+                            name: "Conjured Round",
                             img: CONJURE_BULLET_IMG,
                             id: CONJURED_ROUND_ITEM_ID,
                             sourceId: CONJURED_ROUND_ITEM_ID

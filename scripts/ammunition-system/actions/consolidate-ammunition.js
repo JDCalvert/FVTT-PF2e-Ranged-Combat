@@ -1,5 +1,9 @@
 import { getControlledActorAndToken, getItem, postInChat, Updates } from "../../utils/utils.js";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key, data)
+
+
 export async function consolidateRepeatingWeaponAmmunition() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -9,7 +13,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
     // Find all the repeating ammunition stacks
     const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.system.charges.max > 1);
     const ammunitionStacksBySourceId = ammunitionStacks.reduce(
-        function(map, stack) {
+        function (map, stack) {
             const mapEntry = map[stack.sourceId];
             if (!mapEntry) {
                 map[stack.sourceId] = {
@@ -104,13 +108,13 @@ export async function consolidateRepeatingWeaponAmmunition() {
         postInChat(
             actor,
             ammunitionStacks[0].img,
-            `${token.name} consolidates their ammunition.`,
-            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+            format("chatMessage", { token: token.name }),
+            game.i18n.localize("PF2E.Actions.Interact.Title"),
             ""
         );
         await updates.handleUpdates();
     } else {
-        ui.notifications.info(game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.consolidate-ammunition.ui-notification"));
+        ui.notifications.info(localize("infoAlreadyConsolidated"));
     }
 }
 

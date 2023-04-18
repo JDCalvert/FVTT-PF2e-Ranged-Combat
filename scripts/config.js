@@ -24,8 +24,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "schemaVersion",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.schema-version.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.schema-version.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.schemaVersion.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.schemaVersion.hint"),
                 scope: "world",
                 config: false,
                 type: Number,
@@ -37,8 +37,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "postFullAction",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.post-full-action.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.post-full-action.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.postFullAction.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.postFullAction.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -50,8 +50,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "postFullAmmunition",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.post-full-ammunition.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.post-full-ammunition.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.postFullAmmunition.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.postFullAmmunition.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -63,8 +63,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "preventFireNotLoaded",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.prevent-fire.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.prevent-fire.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -76,8 +76,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "advancedAmmunitionSystemPlayer",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.advanced-ammunition.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.advanced-ammunition.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.advancedAmmunitionSystemPlayer.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.advancedAmmunitionSystemPlayer.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -89,8 +89,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "advancedThrownWeaponSystemPlayer",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.advanced-thrown-weapon.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.advanced-thrown-weapon.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.advancedThrownWeaponSystemPlayer.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.advancedThrownWeaponSystemPlayer.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -102,16 +102,16 @@ Hooks.on(
             "pf2e-ranged-combat",
             "requiredPermissionToShowMessages",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.required-permission.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.required-permission.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.requiredPermissionToShowMessages.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.requiredPermissionToShowMessages.hint"),
                 scope: "world",
                 config: true,
                 type: Number,
                 choices: {
-                    0: game.i18n.localize("pf2e-ranged-combat.config.required-permission.none"),
-                    1: game.i18n.localize("pf2e-ranged-combat.config.required-permission.limited"),
-                    2: game.i18n.localize("pf2e-ranged-combat.config.required-permission.observer"),
-                    3: game.i18n.localize("pf2e-ranged-combat.config.required-permission.owner")
+                    0: game.i18n.localize("OWNERSHIP.NONE"),
+                    1: game.i18n.localize("OWNERSHIP.LIMITED"),
+                    2: game.i18n.localize("OWNERSHIP.OBSERVER"),
+                    3: game.i18n.localize("OWNERSHIP.OWNER")
                 },
                 default: 0
             }
@@ -121,8 +121,8 @@ Hooks.on(
             "pf2e-ranged-combat",
             "hideTokenIcons",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.hide-token.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.hide-token.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.hideTokenIcons.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.hideTokenIcons.hint"),
                 scope: "client",
                 config: true,
                 type: Boolean,

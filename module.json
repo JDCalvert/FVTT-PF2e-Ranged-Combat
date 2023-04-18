@@ -57,11 +57,11 @@
             "system": "pf2e"
         }
     ],
-    "language": [
+    "languages": [
         {
             "lang": "en",
             "name": "English",
-            "path": "languages/en.json",
+            "path": "lang/en.json",
             "flags": {}
         }
     ]

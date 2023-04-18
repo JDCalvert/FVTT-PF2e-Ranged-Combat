@@ -3,6 +3,8 @@ import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
 
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data)
+
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
@@ -130,7 +132,7 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
     if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunition.toMessage();
     } else {
-        postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`);
+        postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));
     }
 }
 
@@ -150,7 +152,7 @@ function consumeConjuredRound(actor, weapon, updates) {
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         updates.delete(conjuredRoundEffect);
-        postInChat(actor, CONJURE_BULLET_IMG, `${actor.name} fires their conjured round.`); /*Localization?*/
+        postInChat(actor, CONJURE_BULLET_IMG, format("fireConjuredRound", { actor: actor.name }));
     }
     return !!conjuredRoundEffect;
 }
@@ -160,6 +162,6 @@ function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
     if (ammunitionItem && ammunitionItem.level > 0 && game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunitionItem.toMessage();
     } else {
-        postInChat(actor, ammunition.img, `${actor.name} fires ${ammunition.name}.`); /*Localization?*/
+        postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));
     }
 }
