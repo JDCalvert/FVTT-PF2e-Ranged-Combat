@@ -1,11 +1,11 @@
-import { ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, setEffectTarget, showWarning } from "../utils/utils.js";
+import { Updates, ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, setEffectTarget, showWarning } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Q1O4P1YIkCfeedHH";
 const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.IYcN1TxztAmnKXi4";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalShot." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalShot." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data);
 
 export async function alchemicalShot() {
     const { actor, token } = getControlledActorAndToken();
@@ -22,7 +22,7 @@ export async function alchemicalShot() {
     const weapon = await getWeapon(
         actor,
         weapon => weapon.isEquipped && (weapon.group === "firearm" || weapon.isCrossbow),
-        showWarning(format("warningNotWieldingProperWeapon", { token: token.name }))
+        format("warningNotWieldingProperWeapon", { token: token.name })
     );
     if (!weapon) {
         return;
@@ -39,14 +39,12 @@ export async function alchemicalShot() {
         return;
     }
 
-    const creates = [];
-    const updates = [];
-    const deletes = [];
+    const updates = new Updates(actor);
 
     // If there's an existing alchemical shot effect for this weapon, remove it
     const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
     if (alchemicalShotEffect) {
-        deletes.push(alchemicalShotEffect.id);
+        updates.delete(alchemicalShotEffect);
     }
 
     // Create the new effect, and set all the choices using the weapon and bomb
@@ -72,13 +70,15 @@ export async function alchemicalShot() {
     };
     alchemicalShotEffectSource.system.rules = alchemicalShotEffectSource.system.rules.filter(rule => rule.key != "ChoiceSet");
 
-    creates.push(alchemicalShotEffectSource);
-    updates.push({
-        _id: bomb.id,
-        system: {
-            quantity: bomb.quantity - 1
+    updates.create(alchemicalShotEffectSource);
+    updates.update(
+        bomb,
+        {
+            system: {
+                quantity: bomb.quantity - 1
+            }
         }
-    });
+    );
 
     await postActionInChat(alchemicalShotFeat);
     await postInChat(
@@ -89,9 +89,7 @@ export async function alchemicalShot() {
         2
     );
 
-    await actor.createEmbeddedDocuments("Item", creates);
-    await actor.updateEmbeddedDocuments("Item", updates);
-    await actor.deleteEmbeddedDocuments("Item", deletes);
+    updates.handleUpdates();
 }
 
 /**

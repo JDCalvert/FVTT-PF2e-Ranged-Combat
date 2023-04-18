@@ -7,8 +7,8 @@ const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossb
 
 const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalCrossbow." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalCrossbow." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalCrossbow." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalCrossbow." + key, data);
 
 export async function loadAlchemicalCrossbow() {
     const { actor, token } = getControlledActorAndToken();
@@ -137,7 +137,14 @@ export async function unloadAlchemicalCrossbow() {
         await postInChat(
             actor,
             UNLOAD_BOMB_IMG,
-            format("tokenUnloadsBombFromWeapon", { token: token.name, weapon: weapon.name, bomb: bomb.name }),
+            format(
+                "tokenUnloadsBombFromWeapon",
+                {
+                    token: token.name,
+                    weapon: weapon.name,
+                    bomb: loadedBombFlags.bombName
+                }
+            ),
             game.i18n.localize("PF2E.Actions.Interact.Title"),
             "1"
         );
@@ -181,7 +188,7 @@ export function handleWeaponFired(actor, weapon, updates) {
                     value: game.time.worldTime,
                     initiative: game.combat && game.combat.turns.length > game.combat.turn ? initiative : null
                 }
-            }
+            };
         }
         updates.update(loadedBombEffect, update);
         updates.floatyText(`${flags.effectName} (${flags.bombCharges - 1}/${flags.bombMaxCharges})`, false);

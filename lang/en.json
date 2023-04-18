@@ -39,11 +39,11 @@
             "maxTargetsOne": "one",
             "maxTargetsTwo": "two",
             "maxTargetsThree": "three",
-            "shareWithTwo": ", and can share the effect with two allies",
-            "shareWithOne": ", and can share the effect with one ally",
+            "shareWithTwo": "They can share the effect with two allies.",
+            "shareWithOne": "They can share the effect with one ally.",
             "huntThreeTargets": "{tokenName} makes {target1}, {target2}, and {target3} their hunted prey.",
-            "huntTwoTargets": "{tokenName} makes {target1} and {target2} their hunted prey",
-            "huntOneTarget": "{tokenName} makes {target1} their hunted prey",
+            "huntTwoTargets": "{tokenName} makes {target1} and {target2} their hunted prey.",
+            "huntOneTarget": "{tokenName} makes {target1} their hunted prey.",
             "warningNoTarget": "No target selected.",
             "warningTooManyTargets": "You may only have {maxTargets} hunted prey."
         },
@@ -71,13 +71,30 @@
         },
         "ammunitionSystem": {
             "fireWeapon": "{actor} fires {ammunition}.",
+            "fireWeaponRepeating": "{actor} uses {ammunition} ({remaining}/{capacity} remaining).",
             "fireConjuredRound": "{actor} fires their conjured round.",
             "utils": {
                 "warningFullyLoaded": "{weapon} is already fully loaded.",
                 "warningLoaded": "{weapon} is already loaded."
             },
+            "ammunitionSelect": {
+                "title": "Ammunition Select",
+                "header": "Select which ammunition to switch to.",
+                "loadedAmmunition": "Loaded Ammunition"
+            },
+            "check": {
+                "weaponNotLoaded": "{weapon} is not loaded.",
+                "magazineNotLoaded": "{weapon} has no magazine loaded.",
+                "magazineEmpty": "{weapon}'s magazine is empty.",
+                "chamberNotLoaded": "{weapon}'s current chamber is not loaded.",
+                "bothBarrelsNotLoaded": "{weapon} does not have both barrels loaded.",
+                "bothBarrelsNotEnough": "{weapon} does not have enough ammunition to fire both barrels.",
+                "noAmmunitionSelected": "{weapon} has no ammunition selected",
+                "noAmmunitionRemaining": "{weapon} has no ammunition remaining"
+            },
             "actions": {
                 "conjureBullet": {
+                    "conjuredRound": "Conjured Round",
                     "warningNoAction": "{token} does not have the Conjure Bullet action.",
                     "noReloadableWeapons": "You have no reloadable weapons.",
                     "warningSingleRound": "{weapon} can only be loaded with one conjured round.",
@@ -138,6 +155,7 @@
             }
         },
         "utils": {
+            "singleCharacterSelected": "You must have a single character selected.",
             "warningDialog1": "You cannot fire this weapon because:",
             "warningDialog2": "This is a feature of the PF2e Ranged Combat module.",
             "warningDialog3": "You can learn how to use the module <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">here</a>.",

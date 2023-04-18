@@ -38,7 +38,7 @@ export class Updates {
     }
 
     hasChanges() {
-        return this.itemsToAdd.length || this.itemsToUpdate.length || this.itemsToRemove.length;
+        return this.creates.length || this.deletes.length || this.updates.length || this.complexUpdates.length;
     }
 
     async handleUpdates() {
@@ -105,7 +105,7 @@ export function getControlledActorAndToken() {
         }
     }
 
-    showWarning("You must have a single character selected.");
+    showWarning(localize("singleCharacterSelected"));
     return { actor: null, token: null };
 }
 

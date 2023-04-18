@@ -3,7 +3,7 @@ import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
 
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
 
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
@@ -72,7 +72,15 @@ function fireWeaponRepeating(actor, weapon, updates) {
         postInChat(
             actor,
             getFlag(magazineLoadedEffect, "ammunitionImg"),
-            `${actor.name} uses ${getFlag(magazineLoadedEffect, "ammunitionName")} (${magazineRemaining}/${magazineCapacity} remaining).`
+            game.i18n.format(
+                "pf2e-ranged-combat.ammunitionSystem.fireWeaponRepeating",
+                {
+                    actor: actor.name,
+                    ammunition: getFlag(magazineLoadedEffect, "ammunitionName"),
+                    remaining: magazineRemaining,
+                    capacity: magazineCapacity
+                }
+            )
         );
     }
 }

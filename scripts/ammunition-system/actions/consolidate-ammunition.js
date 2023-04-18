@@ -109,8 +109,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
             actor,
             ammunitionStacks[0].img,
             format("chatMessage", { token: token.name }),
-            game.i18n.localize("PF2E.Actions.Interact.Title"),
-            ""
+            game.i18n.localize("PF2E.Actions.Interact.Title")
         );
         await updates.handleUpdates();
     } else {

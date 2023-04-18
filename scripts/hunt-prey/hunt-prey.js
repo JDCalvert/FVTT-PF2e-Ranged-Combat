@@ -61,8 +61,8 @@ export async function huntPrey() {
             targets.length === 3
                 ? game.i18n.format("pf2e-ranged-combat.huntPrey.huntThreeTargets", targetData)
                 : targets.length === 2
-                    ? game.i18n.format("pf2e-ranged-combat.huntPrey.huntTwoTargets", targetData) + remainingTargetsText + "."
-                    : game.i18n.format("pf2e-ranged-combat.huntPrey.huntOneTarget", targetData) + remainingTargetsText + "."
+                    ? `${game.i18n.format("pf2e-ranged-combat.huntPrey.huntTwoTargets", targetData)} ${remainingTargetsText}`
+                    : `${game.i18n.format("pf2e-ranged-combat.huntPrey.huntOneTarget", targetData)} ${remainingTargetsText}`
             ,
             huntPreyAction.name,
             1
