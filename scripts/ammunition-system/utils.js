@@ -2,6 +2,9 @@ import { ItemSelectDialog } from "../utils/item-select-dialog.js";
 import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.utils." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.utils." + key, data)
+
 /**
  * Check if the weapon is fully loaded and, if it is, show a warning
  */
@@ -9,9 +12,9 @@ export function checkFullyLoaded(actor, weapon) {
     const weaponFullyLoaded = isFullyLoaded(actor, weapon);
     if (weaponFullyLoaded) {
         if (weapon.capacity) {
-            showWarning(`${weapon.name} is already fully loaded.`);
+            showWarning(format("warningFullyLoaded", { weapon: weapon.name }));
         } else {
-            showWarning(`${weapon.name} is already loaded.`);
+            showWarning(format("warningLoaded", { weapon: weapon.name }));
         }
     }
     return weaponFullyLoaded;
@@ -64,7 +67,7 @@ export async function getSelectedAmmunition(actor, weapon) {
     if (conjuredRoundEffect) {
         ammunitions.push(
             {
-                name: game.i18n.localize("pf2e-ranged-combat.amunnition-system.utils.conjured-name"),
+                name: "Conjured Round",
                 img: conjuredRoundEffect.img,
                 id: CONJURED_ROUND_ITEM_ID,
                 sourceId: CONJURED_ROUND_ITEM_ID
@@ -74,8 +77,8 @@ export async function getSelectedAmmunition(actor, weapon) {
 
     if (ammunitions.length > 1) {
         return await ItemSelectDialog.getItem(
-            game.i18n.localize("pf2e-ranged-combat.amunnition-system.utils.ammunition-select"),
-            game.i18n.localize("pf2e-ranged-combat.amunnition-system.utils.select"),
+            "Ammunition Select",
+            "Select which ammunition to switch to.",
             new Map([["Loaded Ammunition", ammunitions]])
         );
     } else {

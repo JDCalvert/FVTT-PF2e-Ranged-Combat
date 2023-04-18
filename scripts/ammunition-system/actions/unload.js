@@ -3,6 +3,9 @@ import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
 import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity } from "../utils.js";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key, data)
+
 export async function unload() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -20,7 +23,7 @@ export async function unload() {
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     if (!loadedEffect && !conjuredRoundEffect && !magazineLoadedEffect) {
-        showWarning(`${weapon.name} is not loaded!`); /*Localization?*/
+        showWarning(format("warningNotLoaded", { weapon: weapon.name }));
         return;
     }
 
@@ -34,8 +37,8 @@ export async function unload() {
                 postInChat(
                     actor,
                     magazineLoadedEffect.img,
-                    `${token.name} unloads ${getFlag(magazineLoadedEffect, "ammunitionName")} from their ${weapon.name}.`, /*Localization?*/
-                    game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+                    format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(magazineLoadedEffect, "ammunitionName"), weapon: weapon.name }),
+                    game.i18n.localize("PF2E.Actions.Interact.Title"),
                     "1"
                 );
             }
@@ -56,8 +59,8 @@ export async function unload() {
             postInChat(
                 actor,
                 ammunition.img,
-                `${token.name} unloads ${ammunition.name} from their ${weapon.name}.`, /*Localization?*/
-                game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+                format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: ammunition.name, weapon: weapon.name }),
+                game.i18n.localize("PF2E.Actions.Interact.Title"),
                 "1"
             );
         } else {
@@ -65,8 +68,8 @@ export async function unload() {
             postInChat(
                 actor,
                 loadedEffect.img,
-                `${token.name} unloads ${getFlag(loadedEffect, "ammunition").name} from their ${weapon.name}.`, /*Localization?*/
-                game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+                format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(loadedEffect, "ammunition").name, weapon: weapon.name }),
+                game.i18n.localize("PF2E.Actions.Interact.Title"),
                 "1"
             );
         }
@@ -75,8 +78,8 @@ export async function unload() {
         postInChat(
             actor,
             loadedEffect.img,
-            `${token.name} unloads their ${weapon.name}`, /*Localization?*/
-            game.i18n.localize("pf2e-ranged-combat.basic-terms.interact"),
+            format("tokenUnloadsWeapon", { token: token.name, weapon: weapon.name }),
+            game.i18n.localize("PF2E.Actions.Interact.Title"),
             "1"
         );
     }
@@ -96,7 +99,7 @@ function getLoadedWeapon(actor) {
             }
             return false;
         },
-        game.i18n.localize("pf2e-ranged-combat.ammunition-system.actions.unload.weapon")
+        localize("noLoadedWeapons")
     );
 }
 

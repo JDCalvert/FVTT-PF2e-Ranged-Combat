@@ -1,6 +1,8 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { getControlledActor, getControlledActorAndToken } from "../utils/utils.js";
 
+const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key)
+
 export function npcWeaponConfiguration() {
     const actor = getControlledActor();
     if (!actor) {
@@ -8,21 +10,21 @@ export function npcWeaponConfiguration() {
     }
 
     if (actor.type !== "npc") {
-        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.ui-notification"));
+        ui.notifications.warn(localize("warningNpcOnly"));
         return;
     }
 
     new Dialog(
         {
-            title: game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.title"),
+            title: localize("dialog.title"),
             content: buildContent(actor),
             buttons: {
                 ok: {
-                    label: game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.ok"),
+                    label: localize("dialog.done"),
                     callback: ($html) => saveChanges($html, actor)
                 },
                 cancel: {
-                    label: game.i18n.localize("pf2e-ranged-combat.npc-weapon-system.cancel")
+                    label: localize("dialog.cancel")
                 }
             }
         }
@@ -42,36 +44,36 @@ function buildContent(actor) {
 
     content += `
         <div>
-            Here, you can configure the NPC to be used by the PF2e Ranged Combat module.
+            ${localize("dialog.hint")}
         </div>
 
         <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
-            <legend>General</legend>
+            <legend>${localize("dialog.legendGeneral")}</legend>
             <form>
                 <div class = "form-group">
                     <input type="checkbox" id="enableAdvancedAmmunitionSystem" name="enableAdvancedAmmunitionSystem" ${enableAdvancedAmmunitionSystem ? `checked` : ``}>
-                    <label>Enable Advanced Ammunition System</label>
+                    <label>${localize("dialog.enableAmmunition")}</label>
                 </div>
             </form>
             <form>
                 <div class = "form-group">
                     <input type="checkbox" id="enableAdvancedThrownWeaponSystem" name="enableAdvancedThrownWeaponSystem" ${enableAdvancedThrownWeaponSystem ? `checked` : ``}>
-                    <label>Enable Advanced Thrown Weapon System</label>
+                    <label>${localize("dialog.enableThrown")}</label>
                 </div>
             </form>
         </fieldset>
         <hr/>
-    `; /*Localization?*/
+    `;
 
     content += `
         <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
-            <legend>Weapon Mapping</legend>
+            <legend>${localize("dialog.legendMapping")}</legend>
             <div>
-                You can map each of your NPC's attacks to a weapon and ammunition, so it is treated like a PC's weapon by the module.
+            ${localize("dialog.mappingHint")}
             </div>
         
             <form>
-    `; 
+    `;
 
     for (const attack of attacks) {
         const weaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
@@ -79,9 +81,9 @@ function buildContent(actor) {
 
         content += `
             <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
-                <legend>${attack.name} [${attack.system.weaponType.value === "melee" ? "Melee" : "Ranged"}]</legend>
+                <legend>${attack.name} [${attack.system.weaponType.value === "melee" ? localize("dialog.weaponTypeMelee") : localize("dialog.weaponTypeRanged")}]</legend>
                 <div class="form-group">
-                    <label>Weapon</label>
+                    <label>${localize("dialog.labelWeapon")}</label>
                     <select id="${attack.id}-weapon" name="${attack.id}-weapon">
                         <option/>
         `;
@@ -98,7 +100,7 @@ function buildContent(actor) {
         if (isRanged && usesAmmunition) {
             content += `
                 <div class="form-group">
-                    <label>Ammunition</label>
+                    <label>${localize("dialog.labelAmmunition")}</label>
                     <select id="${attack.id}-ammo" name="${attack.id}-ammo">
                         <option/>`;
 
