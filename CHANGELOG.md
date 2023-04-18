@@ -1,3 +1,7 @@
+## 3.9.0 - 2023-04-18 (Pathfinder 2e 4.10.4)
+### Feature
+- Added localization support (currently English only)
+
 ## 3.8.0 - 2023-03-15 (Pathfinder 2e 4.9.2) 
 ### Feature
 - New <b>Reload NPCs</b> macro to reload all NPCs on the scene.
