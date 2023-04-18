@@ -2,13 +2,16 @@ import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
 import { getControlledActorAndToken, showWarning, Updates } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key, data)
+
 export async function switchAmmunition() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;
     }
 
-    const weapon = await getWeapon(actor, weapon => weapon.usesAmmunition, "You have no weapons that use ammunition.");
+    const weapon = await getWeapon(actor, weapon => weapon.usesAmmunition, localize("warningNoWeaponUsesAmmunition"));
     if (!weapon) {
         return;
     }
@@ -18,8 +21,8 @@ export async function switchAmmunition() {
     await selectAmmunition(
         weapon,
         updates,
-        `You have no equipped ammunition compatible with your ${weapon.name}.`,
-        "Select the ammunition to switch to.",
+        format("warningNoCompatibleAmmunitionAvailable", { weapon: weapon }),
+        localize("noCompatibleAmmunitionSelectNew"),
         true,
         true
     );
@@ -68,7 +71,7 @@ export async function selectAmmunition(
     }
 
     const result = await ItemSelectDialog.getItemWithOptions(
-        "Ammunition Select",
+        localize("dialogTitle"),
         selectNewMessage,
         ammunitionMap,
         alwaysSetAsAmmunition

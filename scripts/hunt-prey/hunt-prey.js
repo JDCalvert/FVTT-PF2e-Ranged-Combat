@@ -19,7 +19,7 @@ export async function huntPrey() {
 
     const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
     if (!huntPreyAction) {
-        showWarning(`${token.name} does not have the Hunt Prey action.`);
+        showWarning(game.i18n.format("pf2e-ranged-combat.huntPrey.warningNoAction", { tokenName: token.name }));
         return;
     }
 
@@ -28,10 +28,10 @@ export async function huntPrey() {
     const hasTripleThreat = !!getItemFromActor(actor, TRIPLE_THREAT_FEAT_ID);
 
     const maxTargets = hasTripleThreat
-        ? { num: 3, word: "three" }
+        ? { num: 3, word: game.i18n.localize("pf2e-ranged-combat.huntPrey.maxTargetsThree") }
         : hasDoublePrey
-            ? { num: 2, word: "two" }
-            : { num: 1, word: "one" };
+            ? { num: 2, word: game.i18n.localize("pf2e-ranged-combat.huntPrey.maxTargetsTwo") }
+            : { num: 1, word: game.i18n.localize("pf2e-ranged-combat.huntPrey.maxTargetsOne") };
 
     const targets = getTargets(maxTargets);
     if (!targets.length) {
@@ -46,23 +46,23 @@ export async function huntPrey() {
     {
         const remainingTargets = maxTargets.num - targets.length;
         const remainingTargetsText = remainingTargets === 2
-            ? ", and can share the effect with two allies"
+            ? game.i18n.localize("pf2e-ranged-combat.huntPrey.shareWithTwo")
             : remainingTargets === 1 && hasSharedPrey
-                ? ", and can share the effect with one ally"
+                ? game.i18n.localize("pf2e-ranged-combat.huntPrey.shareWithOne")
                 : "";
 
         const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
         const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : "Unknown Token");
-
+        const targetData = { tokenName: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
         await postActionInChat(huntPreyAction);
         await postInChat(
             actor,
             HUNT_PREY_IMG,
             targets.length === 3
-                ? `${token.name} makes ${targetNames[0]}, ${targetNames[1]}, and ${targetNames[2]} their hunted prey.`
+                ? game.i18n.format("pf2e-ranged-combat.huntPrey.huntThreeTargets", targetData)
                 : targets.length === 2
-                    ? `${token.name} makes ${targetNames[0]} and ${targetNames[1]} their hunted prey${remainingTargetsText}.`
-                    : `${token.name} makes ${targetNames[0]} their hunted prey${remainingTargetsText}.`
+                    ? `${game.i18n.format("pf2e-ranged-combat.huntPrey.huntTwoTargets", targetData)} ${remainingTargetsText}`
+                    : `${game.i18n.format("pf2e-ranged-combat.huntPrey.huntOneTarget", targetData)} ${remainingTargetsText}`
             ,
             huntPreyAction.name,
             1
@@ -104,10 +104,10 @@ function getTargets(maxTargets) {
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
 
     if (!targetTokens.length) {
-        showWarning("No target selected.");
+        showWarning(game.i18n.localize("pf2e-ranged-combat.huntPrey.warningNoTarget"));
         return [];
     } else if (targetTokens.length > maxTargets.num) {
-        showWarning(`You may only have ${maxTargets.word} hunted prey.`);
+        showWarning(game.i18n.format("pf2e-ranged-combat.huntPrey.warningTooManyTargets", { maxTargets: maxTargets.word }));
         return [];
     } else {
         return targetTokens;

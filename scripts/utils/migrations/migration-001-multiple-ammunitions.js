@@ -6,7 +6,7 @@ export class Migration001MultipleAmmunitions {
     version = 1;
 
     async runMigration() {
-        console.info("PF2e Ranged Combat - Running Migration 1: Multiple Ammunition Update");
+        console.info(game.i18n.localize("pf2e-ranged-combat.utils.migration.multipleAmmunitions.consoleInfo"));
 
         const actors = game.actors.contents;
 

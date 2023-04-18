@@ -5,6 +5,9 @@ import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js"
 import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadMagazine } from "./unload.js";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.reloadMagazine." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.reloadMagazine." + key, data)
+
 /**
  * Replace the magazine in a repeating weapon.
  * - If no new magazine is selected, only remove the current magazine.
@@ -21,10 +24,10 @@ export async function reloadMagazine() {
 
     if (!useAdvancedAmmunitionSystem(actor)) {
         if (actor.type === "character") {
-            showWarning("PF2e Ranged Combat - Magazine Reload can only be used if the Advanced Ammunition System is enabled.");
+            showWarning(localize("warningAdvancedAmmunitionNeeded"));
             return;
         } else if (actor.type === "npc") {
-            showWarning("PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.");
+            showWarning(localize("warningNpcNotSupported"));
             return;
         }
     }
@@ -32,7 +35,7 @@ export async function reloadMagazine() {
     const weapon = await getWeapon(
         actor,
         weapon => weapon.isRepeating,
-        "You have no repeating weapons.",
+        localize("warningNoRepeatingWeapons"),
         weapon => {
             const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
             return !magazineLoadedEffect || !getFlag(magazineLoadedEffect, "remaining");
@@ -64,11 +67,11 @@ export async function reloadMagazine() {
 
         if (magazineRemaining === magazineCapacity && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is full, and the selected ammunition is the same
-            showWarning(`${weapon.name} is already loaded with a full magazine.`);
+            showWarning(format("warningFullyLoaded", { weapon: weapon.name }));
             return;
         } else if (magazineRemaining === ammo.system.charges.value && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is the same, and has the same remaining ammunition, as the new one
-            showWarning(`${weapon.name}'s current magazine is already loaded with as much ammunition as ${ammo.name}`);
+            showWarning(format("warningAlreadyMoreAmmo", { weapon: weapon.name, ammo: ammo.name }));
             return;
         } else {
             // We actually want to reload, either for a magazine with more ammunition remaining, or for a different type of ammunition
@@ -108,7 +111,7 @@ export async function reloadMagazine() {
                 quantity: ammo.quantity - 1,
                 charges: {
                     value: ammo.system.charges.max
-                }            
+                }
             }
         }
     );
@@ -116,8 +119,8 @@ export async function reloadMagazine() {
     await postInChat(
         actor,
         RELOAD_MAGAZINE_IMG,
-        `${token.name} loads their ${weapon.name} with ${ammo.name} (${ammo.system.charges.value}/${ammo.system.charges.max}).`,
-        "Interact",
+        format("tokenLoadsAmmo", { token: token.name, ammo: ammo.name, charges: ammo.system.charges.value, maxCharges: ammo.system.charges.max }),
+        game.i18n.localize("PF2E.Actions.Interact.Title"),
         String(numActions)
     );
 
@@ -127,13 +130,13 @@ export async function reloadMagazine() {
 
 async function getAmmunition(weapon, updates) {
     const ammunition = weapon.ammunition;
-    
+
     if (!ammunition) {
         return await selectAmmunition(
             weapon,
             updates,
-            `You have no equipped ammunition compatible with your ${weapon.name}.`,
-            `You have no ammunition selected for your ${weapon.name}.</p><p>Select the ammunition to load.`,
+            format("warningNoCompatibleAmmunition", { weapon: weapon.name }),
+            format("noAmmunitionSelectNew", { weapon: weapon.name }),
             false,
             false
         )
@@ -141,8 +144,8 @@ async function getAmmunition(weapon, updates) {
         return await selectAmmunition(
             weapon,
             updates,
-            `You don't have enough ammunition to reload your ${weapon.name}.`,
-            `Your selected ammunition for your ${weapon.name} is empty.</p><p>Select new ammunition to load.`,
+            format("warningNotEnoughAmmunition", { weapon: weapon.name }),
+            format("notEnoughAmmunitionSelectNew", { weapon: weapon.name }),
             true,
             false
         )

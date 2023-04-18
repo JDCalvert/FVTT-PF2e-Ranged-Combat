@@ -56,5 +56,13 @@
             "type": "Macro",
             "system": "pf2e"
         }
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json",
+            "flags": {}
+        }
     ]
 }

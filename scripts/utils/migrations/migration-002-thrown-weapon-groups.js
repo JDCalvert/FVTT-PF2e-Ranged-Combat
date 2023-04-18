@@ -5,7 +5,7 @@ export class Migration002ThrownWeaponGroups {
     version = 2;
 
     async runMigration() {
-        console.info("PF2e Ranged Combat - Running Migration 2: Thrown Weapon Groups");
+        console.info(game.i18n.localize("pf2e-ranged-combat.utils.migration.thrownWeaponGroups.consoleInfo"));
 
         const actors = game.actors.contents;
 

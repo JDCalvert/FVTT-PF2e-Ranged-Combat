@@ -1,3 +1,5 @@
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key)
+
 export class Updates {
     constructor(actor) {
         this.actor = actor;
@@ -36,7 +38,7 @@ export class Updates {
     }
 
     hasChanges() {
-        return this.itemsToAdd.length || this.itemsToUpdate.length || this.itemsToRemove.length;
+        return this.creates.length || this.deletes.length || this.updates.length || this.complexUpdates.length;
     }
 
     async handleUpdates() {
@@ -103,7 +105,7 @@ export function getControlledActorAndToken() {
         }
     }
 
-    showWarning("You must have a single character selected.");
+    showWarning(localize("singleCharacterSelected"));
     return { actor: null, token: null };
 }
 
@@ -246,16 +248,16 @@ export function showWarning(warningMessage) {
             {
                 "title": "PF2e Ranged Combat",
                 "content": `
-                    <p>You cannot fire this weapon because: ${warningMessage}<p>
-                    <p>This is a feature of the PF2e Ranged Combat module. 
-                    You can learn how to use the module <a href="https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md">here</a>.</p>
+                    <p>${localize("warningDialog1")} ${warningMessage}<p>
+                    <p>${localize("warningDialog2")} 
+                    ${localize("warningDialog3")}</p>
                 `,
                 "buttons": {
                     "ok": {
-                        "label": "OK",
+                        "label": localize("buttonOK"),
                     },
                     "doNotShowAgain": {
-                        "label": "OK (Do not show again)",
+                        "label": localize("buttonDoNotShowAgain"),
                         "callback": () => game.settings.set("pf2e-ranged-combat", "doNotShowWarningAgain", true)
                     }
                 }

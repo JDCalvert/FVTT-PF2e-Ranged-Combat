@@ -5,6 +5,9 @@ import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_ACTION
 import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key)
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key, data)
+
 export async function conjureBullet() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -13,12 +16,12 @@ export async function conjureBullet() {
 
     const conjureBulletAction = getItemFromActor(actor, CONJURE_BULLET_ACTION_ID);
     if (!conjureBulletAction) {
-        showWarning(`${token.name} does not have the Conjure Bullet action.`);
+        showWarning(format("warningNoAction", { token: token.name }));
         return;
     }
 
     const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, "You have no reloadable weapons."),
+        getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, localize("noReloadableWeapons")),
         weapon => !isFullyLoaded(actor, weapon)
     );
     if (!weapon) {
@@ -27,7 +30,7 @@ export async function conjureBullet() {
 
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
-        showWarning(`${weapon.name} can only be loaded with one conjured round.`);
+        showWarning(format("warningSingleRound", { weapon: weapon.name }));
         return;
     }
 
@@ -64,8 +67,8 @@ export async function conjureBullet() {
     await postInChat(
         token.actor,
         CONJURE_BULLET_IMG,
-        `${token.name} uses Conjure Bullet to load their ${weapon.name}.`,
-        "Conjure Bullet",
+        format("chatMessage", { token: token.name, weapon: weapon.name }),
+        localize("chatActionName"),
         1,
     );
 
