@@ -35,17 +35,17 @@
             }
         },
         "huntPrey": {
-            "warningNoAction": "{tokenName}没有猎杀目标动作。",
+            "warningNoAction": "{token}没有猎杀目标动作。",
             "maxTargetsOne": "一个",
             "maxTargetsTwo": "两个",
             "maxTargetsThree": "三个",
             "shareWithTwo": "他们可以与两个盟友共享效果。",
-            "huntTwoTargets": "{tokenName}指定{target1}和{target2}为猎杀目标。",
-            "huntOneTarget": "{tokenName}指定{target1}为猎杀目标。",
+            "huntTwoTargets": "{token}指定{target1}和{target2}为猎杀目标。",
+            "huntOneTarget": "{token}指定{target1}为猎杀目标。",
             "warningNoTarget": "没有选择目标。",
             "warningTooManyTargets": "你只能指定{maxTargets}猎杀目标。",
             "shareWithOne": "他们可以与一个盟友共享效果。",
-            "huntThreeTargets": "{tokenName}指定{target1}、{target2}和{target3}为猎杀目标。"
+            "huntThreeTargets": "{token}指定{target1}、{target2}和{target3}为猎杀目标。"
         },
         "thrownWeapons": {
             "warningNotEquipped": "{weapon}未被装备！",
@@ -138,7 +138,7 @@
                     "warningNotEnoughAmmunition": "你没有足够弹药装填{weapon}。",
                     "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为空。</p><p>选择新弹药装填。",
                     "tokenReloadsWeapon": "{token}装填了{weapon}",
-                    "withAmmunition": "使用{ammunitionName}。"
+                    "withAmmunition": "使用{ammunition}。"
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "你没有使用弹药的武器。",
