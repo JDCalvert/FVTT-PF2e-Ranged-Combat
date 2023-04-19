@@ -290,7 +290,7 @@ async function postReloadToChat(token, weapon, ammunitionName) {
     const reloadActions = weapon.reload;
     let desc = format("tokenReloadsWeapon", { token: token.name, weapon: weapon.name });
     if (ammunitionName) {
-        desc = desc + " " + format("withAmmunition", { ammunitionName: ammunitionName });
+        desc = desc + " " + format("withAmmunition", { ammunition: ammunitionName });
     } else {
         desc = `${desc}.`;
     }

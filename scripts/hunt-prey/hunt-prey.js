@@ -11,6 +11,9 @@ export const SHARED_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.Aqhsx5duEpBgaPB0";
 
 export const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
+
 export async function huntPrey() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
@@ -19,7 +22,7 @@ export async function huntPrey() {
 
     const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
     if (!huntPreyAction) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.huntPrey.warningNoAction", { tokenName: token.name }));
+        showWarning(format("warningNoAction", { token: token.name }));
         return;
     }
 
@@ -28,10 +31,10 @@ export async function huntPrey() {
     const hasTripleThreat = !!getItemFromActor(actor, TRIPLE_THREAT_FEAT_ID);
 
     const maxTargets = hasTripleThreat
-        ? { num: 3, word: game.i18n.localize("pf2e-ranged-combat.huntPrey.maxTargetsThree") }
+        ? { num: 3, word: localize("maxTargetsThree") }
         : hasDoublePrey
-            ? { num: 2, word: game.i18n.localize("pf2e-ranged-combat.huntPrey.maxTargetsTwo") }
-            : { num: 1, word: game.i18n.localize("pf2e-ranged-combat.huntPrey.maxTargetsOne") };
+            ? { num: 2, word: localize("maxTargetsTwo") }
+            : { num: 1, word: localize("maxTargetsOne") };
 
     const targets = getTargets(maxTargets);
     if (!targets.length) {
@@ -46,23 +49,23 @@ export async function huntPrey() {
     {
         const remainingTargets = maxTargets.num - targets.length;
         const remainingTargetsText = remainingTargets === 2
-            ? game.i18n.localize("pf2e-ranged-combat.huntPrey.shareWithTwo")
+            ? localize("shareWithTwo")
             : remainingTargets === 1 && hasSharedPrey
-                ? game.i18n.localize("pf2e-ranged-combat.huntPrey.shareWithOne")
+                ? localize("shareWithOne")
                 : "";
 
         const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
-        const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : "Unknown Token");
-        const targetData = { tokenName: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
+        const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
+        const targetData = { token: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
         await postActionInChat(huntPreyAction);
         await postInChat(
             actor,
             HUNT_PREY_IMG,
             targets.length === 3
-                ? game.i18n.format("pf2e-ranged-combat.huntPrey.huntThreeTargets", targetData)
+                ? format("huntThreeTargets", targetData)
                 : targets.length === 2
-                    ? `${game.i18n.format("pf2e-ranged-combat.huntPrey.huntTwoTargets", targetData)} ${remainingTargetsText}`
-                    : `${game.i18n.format("pf2e-ranged-combat.huntPrey.huntOneTarget", targetData)} ${remainingTargetsText}`
+                    ? `${format("huntTwoTargets", targetData)} ${remainingTargetsText}`
+                    : `${format("huntOneTarget", targetData)} ${remainingTargetsText}`
             ,
             huntPreyAction.name,
             1
@@ -104,10 +107,10 @@ function getTargets(maxTargets) {
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
 
     if (!targetTokens.length) {
-        showWarning(game.i18n.localize("pf2e-ranged-combat.huntPrey.warningNoTarget"));
+        showWarning(localize("warningNoTarget"));
         return [];
     } else if (targetTokens.length > maxTargets.num) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.huntPrey.warningTooManyTargets", { maxTargets: maxTargets.word }));
+        showWarning(format("warningTooManyTargets", { maxTargets: maxTargets.word }));
         return [];
     } else {
         return targetTokens;
