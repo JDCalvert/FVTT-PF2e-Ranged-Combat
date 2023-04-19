@@ -35,15 +35,16 @@
             }
         },
         "huntPrey": {
-            "warningNoAction": "{tokenName} does not have the Hunt Prey action.",
+            "warningNoAction": "{token} does not have the Hunt Prey action.",
+            "unknownToken": "Unknown Token",
             "maxTargetsOne": "one",
             "maxTargetsTwo": "two",
             "maxTargetsThree": "three",
             "shareWithTwo": "They can share the effect with two allies.",
             "shareWithOne": "They can share the effect with one ally.",
-            "huntThreeTargets": "{tokenName} makes {target1}, {target2}, and {target3} their hunted prey.",
-            "huntTwoTargets": "{tokenName} makes {target1} and {target2} their hunted prey.",
-            "huntOneTarget": "{tokenName} makes {target1} their hunted prey.",
+            "huntThreeTargets": "{token} makes {target1}, {target2}, and {target3} their hunted prey.",
+            "huntTwoTargets": "{token} makes {target1} and {target2} their hunted prey.",
+            "huntOneTarget": "{token} makes {target1} their hunted prey.",
             "warningNoTarget": "No target selected.",
             "warningTooManyTargets": "You may only have {maxTargets} hunted prey."
         },
@@ -103,7 +104,6 @@
                 },
                 "consolidateAmmunition": {
                     "chatMessage": "{token} consolidates their ammunition.",
-                    "chatActionInteract": "Interact",
                     "infoAlreadyConsolidated": "Your repeating ammunition is already consolidated!"
                 },
                 "nextChamber": {
@@ -138,7 +138,7 @@
                     "warningNotEnoughAmmunition": "Not enough ammunition to reload {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.</p><p>Select new ammunition to load.",
                     "tokenReloadsWeapon": "{token} reloads their {weapon}",
-                    "withAmmunition": "with {ammunitionName}."
+                    "withAmmunition": "with {ammunition}."
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "You have no weapons that use ammunition.",
