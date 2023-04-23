@@ -1,1 +1,201 @@
-{}
+{
+    "pf2e-ranged-combat": {
+        "config": {
+            "postFullAction": {
+                "name": "Poster une action complète à partir de macros",
+                "hint": "Lorsque vous exécutez des macros qui simulent des actions, envoyez la description complète de l'action dans la conversation."
+            },
+            "postFullAmmunition": {
+                "name": "Afficher la description complète des munitions",
+                "hint": "Lorsque vous utilisez une arme à distance avec des munitions non standard, affichez la description de la munition dans la conversation."
+            },
+            "schemaVersion": {
+                "name": "Version du schéma",
+                "hint": "La version actuelle des données relatives à ce module"
+            },
+            "advancedAmmunitionSystemPlayer": {
+                "name": "Système de munitions avancé (Joueur)",
+                "hint": "Suivre les munitions chargées pour les armes rechargeables et à répétition. Cette option est prioritaire sur l'option Empêcher de tirer avec l'arme si elle n'est pas chargée."
+            },
+            "advancedThrownWeaponSystemPlayer": {
+                "name": "Système d'arme de jet avancé (Joueur)",
+                "hint": "Gérer les armes de jet qui sont lâchées après utilisation et exiger qu'une autre arme soit dégainée avant une nouvelle attaque."
+            },
+            "requiredPermissionToShowMessages": {
+                "name": "Autorisation minimale pour voir les messages",
+                "hint": "Plusieurs fonctions de ce module envoient des messages dans la conversation, par exemple Recharger.\nCe module cachera ces messages aux joueurs n'ayant pas la permission requise sur l'acteur effectuant l'action."
+            },
+            "hideTokenIcons": {
+                "name": "Cacher les icônes d'effet des jetons",
+                "hint": "Cache les icônes des jetons pour les effets créés par ce module."
+            },
+            "preventFireNotLoaded": {
+                "name": "Empêcher de tirer avec l'arme si elle n'est pas chargée",
+                "hint": "Pour les armes avec rechargement de 1 ou plus, empêchez les jets d'attaque avec cette arme à moins que vous n'ayez l'effet rechargement pour cette arme."
+            }
+        },
+        "huntPrey": {
+            "warningNoAction": "{token} n'a pas l'action Chasser une proie.",
+            "unknownToken": "Jeton inconnu",
+            "maxTargetsTwo": "deux",
+            "maxTargetsThree": "trois",
+            "shareWithOne": "Il peut partager l'effet avec un allié.",
+            "huntThreeTargets": "{token} fait de {target1}, {target2} et {target3} ses proies.",
+            "huntTwoTargets": "{token} fait de {target1} et {target2} ses proies.",
+            "warningNoTarget": "Pas de cible sélectionnée.",
+            "warningTooManyTargets": "Vous ne pouvez avoir que {maxTargets} proie(s).",
+            "maxTargetsOne": "une",
+            "shareWithTwo": "Il peut partager l'effet avec deux alliés.",
+            "huntOneTarget": "{token} fait de {target1} sa proie."
+        },
+        "thrownWeapons": {
+            "warningNotEquipped": "Vous n'avez pas équipé votre {weapon} !",
+            "warningNoAmmoLeft": "Vous n'avez plus aucun(e) {weapon} !"
+        },
+        "npcWeaponSystem": {
+            "warningNpcOnly": "Vous ne pouvez utiliser ceci que sur les PNJ.",
+            "dialog": {
+                "hint": "Ici, vous pouvez configurer le PNJ qui sera utilisé par le module PF2e Ranged Combat.",
+                "legendGeneral": "Général",
+                "enableAmmunition": "Activer le système de munitions avancées",
+                "legendMapping": "Cartographie des armes",
+                "labelWeapon": "Arme",
+                "weaponTypeMelee": "Corps-à-corps",
+                "weaponTypeRanged": "À distance",
+                "labelAmmunition": "Munition",
+                "cancel": "Annuler",
+                "done": "Terminé",
+                "title": "Configuration des armes des PNJ",
+                "enableThrown": "Activer le système d'arme de jet avancé",
+                "mappingHint": "Vous pouvez associer chaque attaque de votre PNJ à une arme et à des munitions, de sorte que le module les traite comme les armes d'un PJ."
+            }
+        },
+        "ammunitionSystem": {
+            "fireWeapon": "{actor} tire un(e) {ammunition}.",
+            "utils": {
+                "warningLoaded": "{weapon} est déjà chargé.",
+                "warningFullyLoaded": "{weapon} est déjà totalement chargé(e)."
+            },
+            "ammunitionSelect": {
+                "title": "Choisir la munition",
+                "header": "Choisir quelle munition utiliser.",
+                "loadedAmmunition": "Munition chargée"
+            },
+            "check": {
+                "weaponNotLoaded": "{weapon} n'est pas chargé(e).",
+                "magazineEmpty": "Le chargeur de {weapon} est vide.",
+                "chamberNotLoaded": "La chambre actuelle de {weapon} n'est pas chargée.",
+                "bothBarrelsNotLoaded": "Les deux canons de {weapon} ne sont pas chargés.",
+                "noAmmunitionSelected": "Pas de munitions sélectionnées pour {weapon}",
+                "noAmmunitionRemaining": "Pas de munition restante pour {weapon}",
+                "bothBarrelsNotEnough": "Il n'y a pas assez de munitions dans {weapon} pour faire feu avec les deux canons.",
+                "magazineNotLoaded": "aucun chargeur dans {weapon}."
+            },
+            "actions": {
+                "conjureBullet": {
+                    "conjuredRound": "Balle invoquée",
+                    "warningNoAction": "{token} ne possède pas l'action Conjurer une balle.",
+                    "noReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
+                    "chatMessage": "{token} utilise Balle conjurée pour charger sa/son {weapon}.",
+                    "chatActionName": "Balle conjurée",
+                    "warningSingleRound": "{weapon} ne peut être chargée qu'avec une balle conjurée."
+                },
+                "consolidateAmmunition": {
+                    "chatMessage": "{token} consolide ses munitions.",
+                    "infoAlreadyConsolidated": "Los munitions de vos armes à répétition sont déjà consolidées !"
+                },
+                "nextChamber": {
+                    "noCapacityWeapons": "Vous n'avez pas d'armes disposant du trait capacité.",
+                    "warningNotLoaded": "{weapon} n'est pas chargé(e) !",
+                    "chatMessageSelectChamber": "{token} sélectionne une chambre chargée avec un(e) {ammunition} sur sa/son {weapon}.",
+                    "warningAlreadySelected": "La chambre de {weapon} est déjà chargée !",
+                    "warningAlreadyLoaded": "La chambre de {weapon} est déjà chargée avec un(e) {ammunition} sélectionné(e) !",
+                    "chatMessageSelectNextChamber": "{token} sélectionne la prochaine chambre chargée de sa/son {weapon}."
+                },
+                "reloadMagazine": {
+                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged combat - Le rechargement du chargeur ne peut être utilisé que si le système de munitions avancé est activé.",
+                    "warningNoRepeatingWeapons": "Vous n'avez pas d'armes à répétition.",
+                    "warningFullyLoaded": "un chargeur plein est déjà chargé dans votre {weapon}.",
+                    "warningAlreadyMoreAmmo": "Le chargeur actuel de votre {weapon} est déjà chargé avec {ammo} munitions",
+                    "tokenLoadsAmmo": "{token} charge sa/son {weapon} avec {ammo} ({charges}/{maxCharges}).",
+                    "warningNotEnoughAmmunition": "Vous n'avez pas assez de munitions pour recharger votre {weapon}.",
+                    "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.</p><p>Sélectionnez de nouvelles munitions à charger.",
+                    "warningNpcNotSupported": "PF2e Ranged Combat - Le rechargement des chargeurs n'est actuellement pas pris en charge pour les PNJ.",
+                    "warningNoCompatibleAmmunition": "Vous ne disposez pas de munitions compatibles avec votre {weapon}.",
+                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger."
+                },
+                "reload": {
+                    "warningNoReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
+                    "warningNoMagazineLoaded": "aucun chargeur dans votre {weapon} !",
+                    "warningMagazineEmpty": "Le chargeur de {weapon} est vide !",
+                    "warningAlreadyLoaded": "{weapon} est déjà chargé(e).",
+                    "warningAlreadyLoadedWithAmmo": "{weapon} est déjà chargé(e) avec {ammo}.",
+                    "warningNoCompatibleAmmunition": "Vous n'avez pas de munitions compatibles avec votre {weapon}.",
+                    "warningNotEnoughAmmunition": "Pas assez de munitions pour recharger votre {weapon}.",
+                    "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.</p><p>Sélectionnez de nouvelles munitions à charger.",
+                    "tokenReloadsWeapon": "{token} recharge sa/son {weapon}",
+                    "withAmmunition": "avec {ammunition}.",
+                    "warningAlreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
+                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger."
+                },
+                "switchAmmunition": {
+                    "warningNoWeaponUsesAmmunition": "Vous n'avez pas d'armes utilisant des munitions.",
+                    "warningNoCompatibleAmmunitionAvailable": "Vous ne disposez pas de munitions compatibles avec votre {weapon}.",
+                    "noCompatibleAmmunitionSelectNew": "Sélectionnez la munition à utiliser.",
+                    "dialogTitle": "Choisir la munition"
+                },
+                "unload": {
+                    "tokenUnloadsAmmunitionFromWeapon": "{token} retire {ammunition} de sa/son {weapon}.",
+                    "tokenUnloadsWeapon": "{token} décharge sa/son {weapon}",
+                    "noLoadedWeapons": "Vous n'avez pas d'arme chargée.",
+                    "warningNotLoaded": "{weapon} n'est pas chargé(e) !"
+                }
+            },
+            "fireConjuredRound": "{actor} tire sa balle conjurée.",
+            "fireWeaponRepeating": "{actor} utilise un(e) {ammunition} (Il en reste {remaining}/{capacity})."
+        },
+        "utils": {
+            "singleCharacterSelected": "Vous ne devez choisir qu'un personnage.",
+            "warningDialog1": "Vous ne pouvez pas tirer avec cette arme parce que :",
+            "buttonOK": "Ok",
+            "buttonDoNotShowAgain": "Ok (Ne plus afficher)",
+            "migration": {
+                "multipleAmmunitions.consoleInfo": "PF2e Ranged combat - Migration en cours 1 : Mise à jour des munitions multiples",
+                "thrownWeaponGroups.consoleInfo": "PF2e Ranged combat - Migration en cours 2 : Groupes des armes de jet",
+                "huntedPrey.consoleInfo": "PF2e Ranged Combat : Migration en cours 3 : série Chasser une proie"
+            },
+            "warningDialog2": "Il s'agit d'une fonctionnalité du module PF2e Ranged combat.",
+            "warningDialog3": "Vous pouvez apprendre comment utiliser le module <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">ici</a>."
+        },
+        "actions": {
+            "alchemicalCrossbow": {
+                "warningAlreadyLoaded": "{weeapon} de {token} est déjà chargée avec {bomb}.",
+                "bombWillBeReturned": "{bomb} sera remis(e) dans votre inventaire.",
+                "usesWillBeWasted": "Les utilisations restantes de {bomb} seront gâchées.",
+                "loadInsteadDialogTitle": "{weapon} déjà chargée",
+                "loadInstead": "Voulez-vous charger {bomb} à la place ?",
+                "buttonLoad": "Charger",
+                "buttonDoNotLoad": "Ne pas charger",
+                "lesser": "Inférieur(e)",
+                "tokenLoadsWeaponWithBomb": "{token} charge sa/son {weapon} avec {bomb}.",
+                "warningWeaponNotLoaded": "{weapon} de {token} n'est pas chargé avec une bombe alchimique.",
+                "shouldUnloadDialogTitle": "Défausser {bomb}",
+                "shouldUnloadInstead": "Etes-vous sûr de vouloir décharger {bomb} de {weapon} ?",
+                "buttonUnload": "Décharger",
+                "buttonDoNotUnload": "Ne pas décharger",
+                "tokenUnloadsBombFromWeapon": "{token} décharge {bomb} de sa/son {weapon}.",
+                "warningNoAlchemicalCrossbow": "{token} n'a pas d'Arbalète alchimique.",
+                "weaponIsLoadedWithCharges": "{weapon} est chargé(e) avec {bomb} avec {charges}/{maxCharges} utilisations restantes.",
+                "shouldUnloadDialogRestWasted": "Les utilisations restantes seront gâchées",
+                "warningNoLesserAlchemicalBombs": "{token} ne possède pas de bombes alchimiques inférieures infligeant des dégâts d'énergie."
+            },
+            "alchemicalShot": {
+                "warningNoFeat": "{token} n'a pas le don Tir alchimique.",
+                "warningNotWieldingProperWeapon": "{token} ne manie pas d'arme à feu ni d'arbalète.",
+                "warningNoAlchenicalBombs": "{token} n'a pas de bombes alchimiques.",
+                "tokenPoursBombIntoWeapon": "{token} verse le contenu de {bomb} dans sa/son {weapon}.",
+                "alchemicalShot": "Tir alchimique"
+            }
+        }
+    }
+}
