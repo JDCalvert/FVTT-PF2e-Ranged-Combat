@@ -1,3 +1,7 @@
+## 3.9.1 - 2023-04-24 (Pathfinder 2e 4.10.4)
+### Feature
+- Added translations for Chinese (Simplified) and French
+
 ## 3.9.0 - 2023-04-18 (Pathfinder 2e 4.10.4)
 ### Feature
 - Added localization support (currently English only)
