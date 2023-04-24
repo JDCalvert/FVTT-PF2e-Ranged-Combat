@@ -45,7 +45,8 @@
             "warningNoTarget": "没有选择目标。",
             "warningTooManyTargets": "你只能指定{maxTargets}猎杀目标。",
             "shareWithOne": "他们可以与一个盟友共享效果。",
-            "huntThreeTargets": "{token}指定{target1}、{target2}和{target3}为猎杀目标。"
+            "huntThreeTargets": "{token}指定{target1}、{target2}和{target3}为猎杀目标。",
+            "unknownToken": "未知指示物"
         },
         "thrownWeapons": {
             "warningNotEquipped": "{weapon}未被装备！",
