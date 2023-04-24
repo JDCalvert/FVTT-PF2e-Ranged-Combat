@@ -1,0 +1,202 @@
+{
+    "pf2e-ranged-combat": {
+        "config": {
+            "schemaVersion": {
+                "name": "概要模式",
+                "hint": "与本模组相关联的系统版本"
+            },
+            "postFullAction": {
+                "name": "发布宏中的完整动作",
+                "hint": "执行模拟行动的宏时，将完整描述发送至聊天。"
+            },
+            "postFullAmmunition": {
+                "name": "发布完整弹药描述",
+                "hint": "远程武器使用非标准弹药射击时，将弹药道具发送至聊天。"
+            },
+            "preventFireNotLoaded": {
+                "name": "未装填时禁止射击",
+                "hint": "对于装填至少为1的武器，禁止骰攻击检定，除非角色已有该武器的装填状态。"
+            },
+            "advancedAmmunitionSystemPlayer": {
+                "name": "进阶弹药系统（玩家）",
+                "hint": "追踪连发武器和再装填武器的弹药数量。若武器未装填，这会覆盖“禁止武器射击”的设置。"
+            },
+            "advancedThrownWeaponSystemPlayer": {
+                "name": "进阶投掷武器系统（玩家）",
+                "hint": "使用后将投掷武器标记为“放开”，并在下一攻击前要求玩家拔出另一把武器。"
+            },
+            "requiredPermissionToShowMessages": {
+                "name": "查看消息的最低权限",
+                "hint": "本模组的部分功能会发送聊天信息，比如装填弹药。\n若玩家对执行动作的角色权限不足，本设置会对其隐藏此类聊天信息。"
+            },
+            "hideTokenIcons": {
+                "name": "隐藏指示物效果图标",
+                "hint": "隐藏本模组创建的指示物效果图标。"
+            }
+        },
+        "huntPrey": {
+            "warningNoAction": "{token}没有猎杀目标动作。",
+            "maxTargetsOne": "一个",
+            "maxTargetsTwo": "两个",
+            "maxTargetsThree": "三个",
+            "shareWithTwo": "他们可以与两个盟友共享效果。",
+            "huntTwoTargets": "{token}指定{target1}和{target2}为猎杀目标。",
+            "huntOneTarget": "{token}指定{target1}为猎杀目标。",
+            "warningNoTarget": "没有选择目标。",
+            "warningTooManyTargets": "你只能指定{maxTargets}猎杀目标。",
+            "shareWithOne": "他们可以与一个盟友共享效果。",
+            "huntThreeTargets": "{token}指定{target1}、{target2}和{target3}为猎杀目标。",
+            "unknownToken": "未知指示物"
+        },
+        "thrownWeapons": {
+            "warningNotEquipped": "{weapon}未被装备！",
+            "warningNoAmmoLeft": "你已经没有{weapon}剩余了！"
+        },
+        "npcWeaponSystem": {
+            "warningNpcOnly": "你只能对NPC使用此功能。",
+            "dialog": {
+                "title": "NPC武器配置",
+                "legendGeneral": "通用",
+                "mappingHint": "你可以将NPC的攻击配置到武器和弹药，模组将按照处理PC武器的方式处理它。",
+                "labelWeapon": "武器",
+                "weaponTypeMelee": "近战",
+                "weaponTypeRanged": "远程",
+                "labelAmmunition": "弹药",
+                "done": "完成",
+                "cancel": "取消",
+                "hint": "你可以在这里设置PF2e Ranged Combat模组使用的NPC。",
+                "enableAmmunition": "启用进阶弹药系统",
+                "enableThrown": "启用进阶投掷武器系统",
+                "legendMapping": "武器配置"
+            }
+        },
+        "ammunitionSystem": {
+            "fireWeapon": "{actor}击发了{ammunition}。",
+            "fireWeaponRepeating": "{actor}使用了{ammunition} (尚余{remaining}/{capacity})。",
+            "fireConjuredRound": "{actor}击发了召回子弹。",
+            "utils": {
+                "warningFullyLoaded": "{weapon}已装填满。",
+                "warningLoaded": "{weapon}已被装填。"
+            },
+            "ammunitionSelect": {
+                "title": "选择弹药",
+                "loadedAmmunition": "装填中的弹药",
+                "header": "选择要使用的弹药。"
+            },
+            "check": {
+                "weaponNotLoaded": "{weapon}尚未装填。",
+                "magazineNotLoaded": "{weapon}没有装填弹匣。",
+                "magazineEmpty": "{weapon}的弹匣已空。",
+                "chamberNotLoaded": "{weapon}的当前弹仓尚未装填。",
+                "bothBarrelsNotEnough": "弹药不足以装填{weapon}的双管弹仓。",
+                "noAmmunitionSelected": "未选择{weapon}的弹药",
+                "noAmmunitionRemaining": "{weapon}没有弹药剩余了",
+                "bothBarrelsNotLoaded": "{weapon}的双管弹仓尚未全部装填。"
+            },
+            "actions": {
+                "conjureBullet": {
+                    "conjuredRound": "召唤子弹",
+                    "warningNoAction": "{token}没有召唤子弹动作。",
+                    "noReloadableWeapons": "你没有可再装填的武器。",
+                    "chatMessage": "{token}使用召唤子弹装填了{weapon}。",
+                    "chatActionName": "召唤子弹",
+                    "warningSingleRound": "{weapon}只能被一颗召唤子弹装填。"
+                },
+                "consolidateAmmunition": {
+                    "chatMessage": "{token}合并了子弹。",
+                    "chatActionInteract": "交互",
+                    "infoAlreadyConsolidated": "你的连发弹药已合并！"
+                },
+                "nextChamber": {
+                    "noCapacityWeapons": "你没有具备弹容特征的武器。",
+                    "warningNotLoaded": "{weapon}尚未装填！",
+                    "chatMessageSelectChamber": "{token}选择用{ammunition}装填了{weapon}的一个弹仓。",
+                    "chatMessageSelectNextChamber": "{token}选择了{weapon}的下一个弹仓。",
+                    "warningAlreadyLoaded": "{weapon}的一个弹仓已装填了所选{ammunition}！",
+                    "warningAlreadySelected": "已经选择了{weapon}的一个已装填弹仓！"
+                },
+                "reloadMagazine": {
+                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - 装填弹匣仅在启用进阶弹药系统时可用。",
+                    "warningNpcNotSupported": "PF2e Ranged Combat - 装填弹匣目前不支持NPC使用。",
+                    "warningNoRepeatingWeapons": "你没有连发武器。",
+                    "warningFullyLoaded": "{weapon}的弹匣已装满。",
+                    "warningAlreadyMoreAmmo": "{weapon}当前弹匣已装填了{ammo}颗弹药",
+                    "tokenLoadsAmmo": "{token}用{ammo}装填了{weapon} ({charges}/{maxCharges})。",
+                    "warningNoCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。",
+                    "warningNotEnoughAmmunition": "你没有足够弹药来装填{weapon}。",
+                    "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为零。</p><p>选择新弹药装填。",
+                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。</p><p>选择要装填的弹药。"
+                },
+                "reload": {
+                    "warningNoReloadableWeapons": "你没有可再装填的武器。",
+                    "warningNoMagazineLoaded": "{weapon}尚未装填弹匣！",
+                    "warningMagazineEmpty": "{weapon}的弹匣为空！",
+                    "warningAlreadyLoaded": "{weapon}已装填。",
+                    "warningAlreadyFullyLoaded": "{weapon}已装填满。",
+                    "warningAlreadyLoadedWithAmmo": "{weapon}已装填{ammo}。",
+                    "warningNoCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。",
+                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。</p><p>选择要装填的弹药。",
+                    "warningNotEnoughAmmunition": "你没有足够弹药装填{weapon}。",
+                    "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为空。</p><p>选择新弹药装填。",
+                    "tokenReloadsWeapon": "{token}装填了{weapon}",
+                    "withAmmunition": "使用{ammunition}。"
+                },
+                "switchAmmunition": {
+                    "warningNoWeaponUsesAmmunition": "你没有使用弹药的武器。",
+                    "warningNoCompatibleAmmunitionAvailable": "你没有装备可用于{weapon}的弹药。",
+                    "noCompatibleAmmunitionSelectNew": "选择要使用的弹药。",
+                    "dialogTitle": "选择弹药"
+                },
+                "unload": {
+                    "warningNotLoaded": "{weapon}尚未装填！",
+                    "tokenUnloadsAmmunitionFromWeapon": "{token}将{ammunition}退出{weapon}。",
+                    "tokenUnloadsWeapon": "{token}退出{weapon}的弹药",
+                    "noLoadedWeapons": "你没有已装填的武器。"
+                }
+            }
+        },
+        "utils": {
+            "singleCharacterSelected": "你必须选择一个角色。",
+            "warningDialog1": "你无法击发此武器：",
+            "warningDialog2": "这是PF2e Ranged Combat模组提供的功能。",
+            "warningDialog3": "你可以在<a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">这里</a>学习如何使用模组。",
+            "buttonOK": "好的",
+            "buttonDoNotShowAgain": "好的（不要再显示）",
+            "migration": {
+                "multipleAmmunitions.consoleInfo": "PF2e Ranged Combat - 开始迁移 1：多种弹药更新",
+                "thrownWeaponGroups.consoleInfo": "PF2e Ranged Combat - 开始迁移 2：投掷武器组",
+                "huntedPrey.consoleInfo": "PF2e Ranged Combat - 开始迁移 3：猎杀目标系列"
+            }
+        },
+        "actions": {
+            "alchemicalCrossbow": {
+                "warningAlreadyLoaded": "{token}的{weapon}已装填{bomb}。",
+                "bombWillBeReturned": "{bomb}将被退回物品栏。",
+                "usesWillBeWasted": "剩余{bomb}将被浪费。",
+                "loadInsteadDialogTitle": "{weapon}已被装填",
+                "weaponIsLoadedWithCharges": "{weapon}已装填{bomb}，{charges}/{maxCharges}可用。",
+                "loadInstead": "确定要装填{bomb}吗?",
+                "buttonLoad": "装填",
+                "buttonDoNotLoad": "不要装填",
+                "lesser": "次等",
+                "tokenLoadsWeaponWithBomb": "{token}用{bomb}装填了{weapon}。",
+                "warningWeaponNotLoaded": "{token}的{weapon}尚未装填炼金炸弹。",
+                "shouldUnloadDialogTitle": "{bomb}已废弃",
+                "shouldUnloadDialogRestWasted": "剩余炸弹将被浪费",
+                "shouldUnloadInstead": "确定从{weapon}中退出{bomb}吗？",
+                "buttonUnload": "确定",
+                "buttonDoNotUnload": "不要退出",
+                "tokenUnloadsBombFromWeapon": "{token}从{weapon}中退出{bomb}。",
+                "warningNoAlchemicalCrossbow": "{token}没有炼金弩。",
+                "warningNoLesserAlchemicalBombs": "{token}没有能造成能量伤害的次级炼金炸弹。"
+            },
+            "alchemicalShot": {
+                "warningNoFeat": "{token}没有炼金射击专长。",
+                "warningNotWieldingProperWeapon": "{token}没有持握火器或弩。",
+                "warningNoAlchenicalBombs": "{token}没有炼金炸弹。",
+                "tokenPoursBombIntoWeapon": "{token}将{bomb}的内容物倒入{weapon}。",
+                "alchemicalShot": "炼金射击"
+            }
+        }
+    }
+}
