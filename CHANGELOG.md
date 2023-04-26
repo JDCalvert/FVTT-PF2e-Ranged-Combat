@@ -1,3 +1,7 @@
+## 3.9.2 - 2023-04-26 (Pathfinder 2e 4.10.4)
+### Fixes
+- Fix language code for Chinese (Simplified)
+
 ## 3.9.1 - 2023-04-24 (Pathfinder 2e 4.10.4)
 ### Feature
 - Added translations for Chinese (Simplified) and French
