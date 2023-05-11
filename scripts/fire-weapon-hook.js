@@ -76,7 +76,7 @@ Hooks.on(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",
             function(wrapper, ...args) {
-                if (this.actor) {
+                if (this.actor && this.actor.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)) {
                     const updates = new Updates(this.actor);
 
                     const groupStacks = findGroupStacks(this);

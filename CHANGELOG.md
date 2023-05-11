@@ -1,3 +1,7 @@
+## 3.9.3 - 2023-05-11 (Pathfinder 2e 4.11.2)
+### Fixes
+- Fix error shown to other players when removing the final thrown weapon from a stack
+
 ## 3.9.2 - 2023-04-26 (Pathfinder 2e 4.10.4)
 ### Fixes
 - Fix language code for Chinese (Simplified)
