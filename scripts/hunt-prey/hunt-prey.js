@@ -1,13 +1,13 @@
 import { handleHuntPrey } from "../feats/crossbow-feats.js";
 import { getControlledActorAndToken, getItem, getItemFromActor, postActionInChat, postInChat, showWarning, Updates } from "../utils/utils.js";
 
-export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm";
-export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.rdLADYwOByj8AZ7r";
-export const PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.mVYwtEeIaI6AW9jK";
+export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.Item.JYi4MnsdFu618hPm";
+export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.rdLADYwOByj8AZ7r";
+export const PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.mVYwtEeIaI6AW9jK";
 
-export const DOUBLE_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.pbD4lfAPkK1NNag0";
-export const TRIPLE_THREAT_FEAT_ID = "Compendium.pf2e.feats-srd.EHorYedQ8r05qAtk";
-export const SHARED_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.Aqhsx5duEpBgaPB0";
+export const DOUBLE_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.Item.pbD4lfAPkK1NNag0";
+export const TRIPLE_THREAT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.EHorYedQ8r05qAtk";
+export const SHARED_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Aqhsx5duEpBgaPB0";
 
 export const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
 

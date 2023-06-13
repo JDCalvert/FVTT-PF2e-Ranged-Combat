@@ -2,12 +2,12 @@ import { ensureDuration, getEffectFromActor, getFlag, getItem, getItemFromActor,
 import { getWeapons } from "../utils/weapon-utils.js";
 
 // Crossbow Ace
-export const CROSSBOW_ACE_FEAT_ID = "Compendium.pf2e.feats-srd.CpjN7v1QN8TQFcvI";
-export const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.zP0vPd14V5OG9ZFv";
+export const CROSSBOW_ACE_FEAT_ID = "Compendium.pf2e.feats-srd.Item.CpjN7v1QN8TQFcvI";
+export const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.zP0vPd14V5OG9ZFv";
 
 // Crossbow Crack Shot
-export const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.s6h0xkdKf3gecLk6";
-export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.hG9i3aOBDZ9Bq9yi";
+export const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.s6h0xkdKf3gecLk6";
+export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.hG9i3aOBDZ9Bq9yi";
 
 export async function handleReload(weapon, updates) {
     // Both of these feats only activate if the weapon is an equipped crossbow

@@ -2,7 +2,7 @@ import { dialogPrompt } from "../utils/prompt-dialog.js";
 import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postInChat, setChoice, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
-const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.cA9sBCFAxY2EJgrC";
+const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.cA9sBCFAxY2EJgrC";
 const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossbow.webp";
 
 const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
