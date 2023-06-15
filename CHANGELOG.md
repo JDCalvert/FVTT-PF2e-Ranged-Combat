@@ -1,3 +1,7 @@
+## 4.0.0 - 2023-06-15 (Pathfinder 2e 5.0.0-beta2)
+### Feature
+- Foundry v11 compatibility
+
 ## 3.9.3 - 2023-05-11 (Pathfinder 2e 4.11.2)
 ### Fixes
 - Fix error shown to other players when removing the final thrown weapon from a stack
