@@ -1,12 +1,12 @@
 // Effect IDs
-export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.nEqdxZMAHlYVXI0Z";
-export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.vKeDaHOu3bGKSk6b";
-export const CHAMBER_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.3KT0VeuCOTy5K0lS";
-export const CONJURED_ROUND_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.psguBnq7jpbnYrhu";
-export const DOUBLE_BARREL_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.ArViNUKIri5i3E82";
+export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.nEqdxZMAHlYVXI0Z";
+export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.vKeDaHOu3bGKSk6b";
+export const CHAMBER_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.3KT0VeuCOTy5K0lS";
+export const CONJURED_ROUND_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.psguBnq7jpbnYrhu";
+export const DOUBLE_BARREL_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.ArViNUKIri5i3E82";
 
 // Action IDs
-export const CONJURE_BULLET_ACTION_ID = "Compendium.pf2e.actionspf2e.KC6o1cvbr45xnMei";
+export const CONJURE_BULLET_ACTION_ID = "Compendium.pf2e.actionspf2e.Item.KC6o1cvbr45xnMei";
 
 // Images
 export const RELOAD_AMMUNITION_IMG = "modules/pf2e-ranged-combat/art/reload_ammunition.webp";

@@ -1,8 +1,8 @@
 import { Updates, ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, setEffectTarget, showWarning } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
-const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Q1O4P1YIkCfeedHH";
-const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.IYcN1TxztAmnKXi4";
+const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Q1O4P1YIkCfeedHH";
+const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.IYcN1TxztAmnKXi4";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalShot." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data);
