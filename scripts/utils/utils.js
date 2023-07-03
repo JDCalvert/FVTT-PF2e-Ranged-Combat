@@ -1,4 +1,4 @@
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
 export class Updates {
     constructor(actor) {
@@ -21,12 +21,17 @@ export class Updates {
     }
 
     update(item, update) {
-        this.updates.push(
-            {
-                ...update,
-                _id: item.id,
-            }
-        );
+        const existingUpdate = this.updates.find(updateItem => updateItem._id === item.id);
+        if (existingUpdate) {
+            mergeObject(existingUpdate, update);
+        } else {
+            this.updates.push(
+                {
+                    ...update,
+                    _id: item.id,
+                }
+            );
+        }
     }
 
     complexUpdate(update) {

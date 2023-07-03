@@ -6,17 +6,25 @@ import { useAdvancedThrownWeaponSystem } from "./utils.js";
  * move one item from the dropped stack to the original stack and perform the operation on the original,
  * if it puts the item in the character's hands.
  */
-export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlot) {
+export async function changeCarryType(
+    wrapper,
+    item,
+    {
+        carryType,
+        handsHeld,
+        inSlot
+    }
+) {
     // If we're not using the advanced thrown weapon system, or the weapon isn't a thrown weapon,
     // just call the normal function
     if (!isThrownWeaponUsingAdvancedThrownWeaponSystem(item)) {
-        return wrapper(item, carryType, handsHeld, inSlot);
+        return wrapper(item, { carryType, handsHeld, inSlot });
     }
 
     // If we're keeping the same carry type (e.g. two-handed to one-handed) then call
     // the normal function
     if (carryType === item.system.equipped.carryType) {
-        return wrapper(item, carryType, handsHeld, inSlot);
+        return wrapper(item, { carryType, handsHeld, inSlot });
     }
 
     // Find the other stacks in this weapon's group
@@ -37,7 +45,7 @@ export async function changeCarryType(wrapper, item, carryType, handsHeld, inSlo
     //   - If this would leave our original stack empty, then delete it
     if (!targetStack) {
         if (item.quantity <= 1) {
-            return wrapper(item, carryType, handsHeld, inSlot);
+            return wrapper(item, { carryType, handsHeld, inSlot });
         } else {
             createNewStack(item, groupStacks, carryType, handsHeld, inSlot);
         }
@@ -110,44 +118,50 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
         groupStacks.push(targetStack);
         const groupStackIds = groupStacks.map(stack => stack.id);
 
-        const updates = [];
+        const updates = new Updates(item.actor);
 
         // Update the new stack to have a size of one, and the equipped status
         // that we were trying to update the original stack to
-        updates.push({
-            _id: targetStack.id,
-            system: {
-                containerId: container?.id ?? null,
-                equipped: {
-                    carryType,
-                    handsHeld,
-                    inSlot
-                },
-                quantity: 1
+        updates.update(
+            targetStack,
+            {
+                system: {
+                    containerId: container?.id ?? null,
+                    equipped: {
+                        carryType,
+                        handsHeld,
+                        inSlot
+                    },
+                    quantity: 1
+                }
             }
-        });
+        );
 
         // Go through all the stacks in the group and update the group list 
         for (const stack of groupStacks) {
-            updates.push({
-                _id: stack.id,
-                flags: {
-                    "pf2e-ranged-combat": {
-                        groupIds: groupStackIds
+            updates.update(
+                stack,
+                {
+                    flags: {
+                        "pf2e-ranged-combat": {
+                            groupIds: groupStackIds
+                        }
                     }
                 }
-            });
+            );
         }
 
         // Finally, reduce the quantity of the original stack by one
-        updates.push({
-            _id: item.id,
-            system: {
-                quantity: item.quantity - 1
+        updates.update(
+            item,
+            {
+                system: {
+                    quantity: item.quantity - 1
+                }
             }
-        });
+        );
 
-        await targetStack.actor.updateEmbeddedDocuments("Item", updates);
+        await updates.handleUpdates();
     }
 }
 

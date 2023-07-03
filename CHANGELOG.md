@@ -1,3 +1,7 @@
+## 4.0.1 - 2023-07-03 (Pathfinder 2e 5.1.0)
+### Fixes
+- Fixed an issue with the advanced thrown weapon system (and potentially other places in the module) caused by a change in the Foundry API
+
 ## 4.0.0 - 2023-06-15 (Pathfinder 2e 5.0.0-beta2)
 ### Feature
 - Foundry v11 compatibility
