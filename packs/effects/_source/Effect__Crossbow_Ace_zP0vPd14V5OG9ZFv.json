@@ -1,0 +1,107 @@
+{
+  "_id": "zP0vPd14V5OG9ZFv",
+  "name": "Effect: Crossbow Ace",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/weapons/crossbow.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p>You gain a +2 circumstance bonus to the damage roll on your next Strike with your crossbow. If the crossbow is a simple crossbow, you also increase the damage die size for that attack.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "flag": "weapon",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            "item:ranged",
+            "item:tag:crossbow",
+            "item:equipped"
+          ]
+        }
+      },
+      {
+        "key": "DamageDice",
+        "label": "Crossbow Ace",
+        "override": {
+          "upgrade": true
+        },
+        "predicate": [
+          "weapon:tag:crossbow",
+          "weapon:category:simple"
+        ],
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "slug": "crossbow-ace-dice-upgrade"
+      },
+      {
+        "key": "FlatModifier",
+        "predicate": [
+          "weapon:tag:crossbow"
+        ],
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "type": "circumstance",
+        "value": 2
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.714,
+      "lastMigration": {
+        "datetime": "2022-01-24T10:04:51.373+00:00",
+        "version": {
+          "schema": 0.713,
+          "foundry": "9.242",
+          "system": "3.2.2"
+        }
+      }
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 1,
+      "unit": "rounds",
+      "sustained": false,
+      "expiry": "turn-end"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "ownership": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.6.3",
+    "coreVersion": "10.291",
+    "createdTime": null,
+    "modifiedTime": 1672853377937,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!zP0vPd14V5OG9ZFv"
+}

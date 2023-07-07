@@ -1,0 +1,105 @@
+{
+  "_id": "ArViNUKIri5i3E82",
+  "name": "Fire Both Barrels",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/weapons/double-barreled-musket.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p>When you fire your double-barreled weapon, both barrels will be fired.</p>\n<p>The weapon's damage due will increase by one step. If the weapon has the fatal trait, this increases the fatal die by one step.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "DamageDice",
+        "label": "Double Barrel Damage Die",
+        "override": {
+          "upgrade": true
+        },
+        "predicate": [
+          "weapon:trait:double-barrel"
+        ],
+        "selector": "strike-damage"
+      },
+      {
+        "key": "AdjustStrike",
+        "label": "Double Barrel Fatal d10",
+        "property": "traits",
+        "mode": "add",
+        "value": "fatal-d12",
+        "definition": [
+          "weapon:trait:double-barrel",
+          "weapon:trait:fatal-d10"
+        ],
+        "selector": "strike-damage"
+      },
+      {
+        "key": "AdjustStrike",
+        "label": "Double Barrel Fatal d8",
+        "property": "traits",
+        "mode": "add",
+        "value": "fatal-d10",
+        "definition": [
+          "weapon:trait:double-barrel",
+          "weapon:trait:fatal-d8"
+        ],
+        "selector": "strike-damage"
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.751,
+      "lastMigration": {
+        "datetime": "2022-05-26T16:57:15.806+01:00",
+        "version": {
+          "schema": null,
+          "foundry": "9.269",
+          "system": "3.10.4"
+        }
+      }
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": -1,
+      "unit": "unlimited",
+      "sustained": false,
+      "expiry": "turn-start"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "ownership": {
+    "default": 0,
+    "uOCymwU5JQSqoT5u": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.6.8",
+    "coreVersion": "10.291",
+    "createdTime": null,
+    "modifiedTime": 1674471433831,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!ArViNUKIri5i3E82"
+}

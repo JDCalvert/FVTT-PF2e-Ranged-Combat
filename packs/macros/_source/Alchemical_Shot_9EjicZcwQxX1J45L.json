@@ -1,0 +1,17 @@
+{
+  "_id": "9EjicZcwQxX1J45L",
+  "name": "Alchemical Shot",
+  "type": "script",
+  "author": "uOCymwU5JQSqoT5u",
+  "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.alchemicalShot();",
+  "folder": null,
+  "sort": 0,
+  "permission": {
+    "default": 0,
+    "uOCymwU5JQSqoT5u": 3
+  },
+  "flags": {},
+  "_key": "!macros!9EjicZcwQxX1J45L"
+}

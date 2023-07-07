@@ -1,0 +1,17 @@
+{
+  "_id": "54JyC632afdZDmDM",
+  "name": "Fire Both Barrels",
+  "type": "script",
+  "author": "uOCymwU5JQSqoT5u",
+  "img": "systems/pf2e/icons/equipment/weapons/double-barreled-musket.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.fireBothBarrels();",
+  "folder": null,
+  "sort": 0,
+  "permission": {
+    "default": 0,
+    "uOCymwU5JQSqoT5u": 3
+  },
+  "flags": {},
+  "_key": "!macros!54JyC632afdZDmDM"
+}

@@ -1,0 +1,61 @@
+{
+  "name": "Prey",
+  "type": "effect",
+  "effects": [],
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>You have been designated as a hunted prey.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "rules": [],
+    "slug": null,
+    "schema": {
+      "version": 0.833,
+      "lastMigration": null
+    },
+    "traits": {
+      "value": []
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": -1,
+      "unit": "unlimited",
+      "sustained": false,
+      "expiry": "turn-start"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "img": "modules/pf2e-ranged-combat/art/hunted-prey.webp",
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.9.1",
+    "coreVersion": "10.291",
+    "createdTime": 1678729372760,
+    "modifiedTime": 1678735139786,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "folder": null,
+  "sort": 0,
+  "_id": "mVYwtEeIaI6AW9jK",
+  "_key": "!items!mVYwtEeIaI6AW9jK"
+}

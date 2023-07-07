@@ -1,0 +1,200 @@
+{
+  "_id": "IYcN1TxztAmnKXi4",
+  "name": "Alchemical Shot",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p>You've poured your bomb's content onto your ammunition using the @Compendium[pf2e.feats-srd.Q1O4P1YIkCfeedHH]{Alchemical Shot} feat.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "flag": "weapon",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            "item:group:firearm"
+          ]
+        }
+      },
+      {
+        "key": "ChoiceSet",
+        "flag": "damageType",
+        "choices": [
+          {
+            "value": "acid",
+            "label": "Acid",
+            "img": "systems/pf2e/icons/spells/acid-arrow.webp"
+          },
+          {
+            "value": "bludgeoning",
+            "label": "Bludgeoning",
+            "img": "systems/pf2e/icons/spells/telekinetic-projectile.webp"
+          },
+          {
+            "value": "cold",
+            "label": "Cold",
+            "img": "systems/pf2e/icons/spells/ice-storm.webp"
+          },
+          {
+            "value": "electricity",
+            "label": "Electricity",
+            "img": "systems/pf2e/icons/spells/shocking-grasp.webp"
+          },
+          {
+            "value": "fire",
+            "label": "Fire",
+            "img": "systems/pf2e/icons/spells/ignite-fireworks.webp"
+          },
+          {
+            "value": "good",
+            "label": "Good",
+            "img": "systems/pf2e/icons/spells/radiant-field.webp"
+          },
+          {
+            "value": "mental",
+            "label": "Mental",
+            "img": "systems/pf2e/icons/spells/feeblemind.webp"
+          },
+          {
+            "value": "negative",
+            "label": "Negative",
+            "img": "systems/pf2e/icons/spells/harm.webp"
+          },
+          {
+            "value": "piercing",
+            "label": "Piercing",
+            "img": "systems/pf2e/icons/spells/impaling-spike.webp"
+          },
+          {
+            "value": "poison",
+            "label": "Poison",
+            "img": "systems/pf2e/icons/spells/necrotic-radiation.webp"
+          },
+          {
+            "value": "positive",
+            "label": "Positive",
+            "img": "systems/pf2e/icons/spells/healers-blessing.webp"
+          },
+          {
+            "value": "slashing",
+            "label": "Slashing",
+            "img": "systems/pf2e/icons/spells/perfect-strike.webp"
+          },
+          {
+            "value": "sonic",
+            "label": "Sonic",
+            "img": "systems/pf2e/icons/spells/haunting-hymn.webp"
+          }
+        ]
+      },
+      {
+        "key": "ChoiceSet",
+        "flag": "persistentDamageDice",
+        "choices": [
+          {
+            "value": 1,
+            "label": "Lesser/Moderate",
+            "sort": 1
+          },
+          {
+            "value": 2,
+            "label": "Greater",
+            "sort": 2
+          },
+          {
+            "value": 3,
+            "label": "Major",
+            "sort": 3
+          }
+        ]
+      },
+      {
+        "key": "DamageDice",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "override": {
+          "damageType": "{item|flags.pf2e.rulesSelections.damageType}"
+        }
+      },
+      {
+        "key": "DamageDice",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "diceNumber": "{item|flags.pf2e.rulesSelections.persistentDamageDice}",
+        "dieSize": "d6",
+        "damageType": "{item|flags.pf2e.rulesSelections.damageType}",
+        "category": "persistent"
+      },
+      {
+        "key": "Note",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-attack",
+        "title": "Alchemical Shot (Failure)",
+        "text": "<p class='compact-text'>You take [[/r 1d6[{item|flags.pf2e.rulesSelections.damageType}]]]{1d6 {item|flags.pf2e.rulesSelections.damageType} damage} and your weapon misfires.</p>",
+        "outcome": [
+          "failure",
+          "criticalFailure"
+        ]
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.764,
+      "lastMigration": {
+        "datetime": "2022-07-22T17:44:47.443+01:00",
+        "version": {
+          "schema": null,
+          "foundry": "9.269",
+          "system": "3.12.2.10"
+        }
+      }
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 0,
+      "unit": "rounds",
+      "sustained": false,
+      "expiry": "turn-end"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "ownership": {
+    "default": 0,
+    "uOCymwU5JQSqoT5u": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.6.8",
+    "coreVersion": "10.291",
+    "createdTime": null,
+    "modifiedTime": 1674042381242,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!IYcN1TxztAmnKXi4"
+}

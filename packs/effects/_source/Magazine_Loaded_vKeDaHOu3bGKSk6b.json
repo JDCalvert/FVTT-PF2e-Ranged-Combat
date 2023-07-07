@@ -1,0 +1,73 @@
+{
+  "_id": "vKeDaHOu3bGKSk6b",
+  "name": "Magazine Loaded",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/weapons/magazine-with-5-bolts.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p>Your weapon is loaded with a magazine.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            "item:trait:repeating"
+          ]
+        }
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.716,
+      "lastMigration": null
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": -1,
+      "unit": "unlimited",
+      "sustained": false,
+      "expiry": "turn-start"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null
+  },
+  "ownership": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.2.1",
+    "coreVersion": "10.286",
+    "createdTime": null,
+    "modifiedTime": 1664790505118,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!vKeDaHOu3bGKSk6b"
+}

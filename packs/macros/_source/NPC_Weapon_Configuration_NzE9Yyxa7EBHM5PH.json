@@ -1,0 +1,25 @@
+{
+  "_id": "NzE9Yyxa7EBHM5PH",
+  "name": "NPC Weapon Configuration",
+  "type": "script",
+  "scope": "global",
+  "author": "6cYJNd43VitcuYqD",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "command": "game.pf2eRangedCombat.npcWeaponConfiguration();",
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.6.3",
+    "coreVersion": "10.291",
+    "createdTime": 1672850305746,
+    "modifiedTime": 1672914095704,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "folder": null,
+  "sort": 0,
+  "_key": "!macros!NzE9Yyxa7EBHM5PH"
+}
