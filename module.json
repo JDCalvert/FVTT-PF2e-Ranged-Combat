@@ -45,16 +45,26 @@
         {
             "name": "effects",
             "label": "Ranged Combat Effects",
-            "path": "packs/effects.db",
+            "path": "packs/effects",
             "type": "Item",
             "system": "pf2e"
         },
         {
             "name": "macros",
             "label": "Ranged Combat Macros",
-            "path": "packs/macros.db",
+            "path": "packs/macros",
             "type": "Macro",
             "system": "pf2e"
+        }
+    ],
+    "packFolders": [
+        {
+            "name": "PF2e Ranged Combat",
+            "sorting": "a",
+            "packs": [
+                "effects",
+                "macros"
+            ]
         }
     ],
     "media": [
