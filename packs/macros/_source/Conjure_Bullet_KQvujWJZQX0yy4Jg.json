@@ -1,0 +1,17 @@
+{
+  "_id": "KQvujWJZQX0yy4Jg",
+  "name": "Conjure Bullet",
+  "type": "script",
+  "author": "uOCymwU5JQSqoT5u",
+  "img": "modules/pf2e-ranged-combat/art/conjure-bullet.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.conjureBullet();",
+  "folder": null,
+  "sort": 0,
+  "permission": {
+    "default": 0,
+    "uOCymwU5JQSqoT5u": 3
+  },
+  "flags": {},
+  "_key": "!macros!KQvujWJZQX0yy4Jg"
+}

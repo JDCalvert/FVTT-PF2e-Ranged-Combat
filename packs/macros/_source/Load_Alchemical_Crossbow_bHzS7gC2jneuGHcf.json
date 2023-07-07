@@ -1,0 +1,17 @@
+{
+  "_id": "bHzS7gC2jneuGHcf",
+  "name": "Load Alchemical Crossbow",
+  "type": "script",
+  "author": "I90qJ09IMT0McqwG",
+  "img": "modules/pf2e-ranged-combat/art/load-alchemical-crossbow.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.loadAlchemicalCrossbow();",
+  "folder": null,
+  "sort": 0,
+  "permission": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "flags": {},
+  "_key": "!macros!bHzS7gC2jneuGHcf"
+}

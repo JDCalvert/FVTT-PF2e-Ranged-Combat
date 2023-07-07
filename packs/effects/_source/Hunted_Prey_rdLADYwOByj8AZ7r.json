@@ -1,0 +1,63 @@
+{
+  "_id": "rdLADYwOByj8AZ7r",
+  "name": "Hunted Prey",
+  "type": "effect",
+  "img": "systems/pf2e/icons/features/classes/hunt-prey.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>You have designated this creature as your prey.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "rules": [],
+    "slug": "hunted-prey",
+    "schema": {
+      "version": 0.713,
+      "lastMigration": null
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": -1,
+      "unit": "unlimited",
+      "sustained": false,
+      "expiry": null
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "ownership": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.9.1",
+    "coreVersion": "10.291",
+    "createdTime": null,
+    "modifiedTime": 1678742633133,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!rdLADYwOByj8AZ7r"
+}

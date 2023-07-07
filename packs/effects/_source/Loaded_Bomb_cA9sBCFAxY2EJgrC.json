@@ -1,0 +1,119 @@
+{
+  "_id": "cA9sBCFAxY2EJgrC",
+  "name": "Loaded Bomb",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/weapons/alchemical-crossbow.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p>You have loaded your Alchemical Crossbow with an alchemical bomb, and deal an additional 1d6 damage of the bomb's type.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "flag": "weapon",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            "item:base:alchemical-crossbow"
+          ]
+        }
+      },
+      {
+        "key": "ChoiceSet",
+        "flag": "damageType",
+        "choices": [
+          {
+            "value": "fire",
+            "label": "Fire",
+            "img": "systems/pf2e/icons/spells/ignite-fireworks.webp"
+          },
+          {
+            "value": "cold",
+            "label": "Cold",
+            "img": "systems/pf2e/icons/spells/ice-storm.webp"
+          },
+          {
+            "value": "acid",
+            "label": "Acid",
+            "img": "systems/pf2e/icons/spells/acid-arrow.webp"
+          },
+          {
+            "value": "electricity",
+            "label": "Electricity",
+            "img": "systems/pf2e/icons/spells/shocking-grasp.webp"
+          },
+          {
+            "value": "sonic",
+            "label": "Sonic",
+            "img": "systems/pf2e/icons/spells/haunting-hymn.webp"
+          }
+        ]
+      },
+      {
+        "key": "DamageDice",
+        "dieSize": "d6",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "diceNumber": 1,
+        "damageType": "{item|flags.pf2e.rulesSelections.damageType}"
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.73,
+      "lastMigration": {
+        "datetime": "2022-03-25T20:32:42.898+00:00",
+        "version": {
+          "schema": null,
+          "foundry": "9.255",
+          "system": "3.7.2.10819"
+        }
+      }
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": -1,
+      "unit": "unlimited",
+      "sustained": false,
+      "expiry": "turn-start"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null
+  },
+  "ownership": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.2.1",
+    "coreVersion": "10.286",
+    "createdTime": null,
+    "modifiedTime": 1664797612380,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!cA9sBCFAxY2EJgrC"
+}

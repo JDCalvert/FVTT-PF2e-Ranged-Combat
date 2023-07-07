@@ -1,0 +1,80 @@
+{
+  "_id": "nEqdxZMAHlYVXI0Z",
+  "name": "Loaded",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/weapons/bolts.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p>Your weapon is loaded and ready to fire.</p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": {
+        "value": "common"
+      },
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            {
+              "gt": [
+                "item:reload",
+                0
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.709,
+      "lastMigration": null
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": -1,
+      "unit": "unlimited",
+      "sustained": false,
+      "expiry": "turn-start"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null
+  },
+  "ownership": {
+    "default": 0,
+    "4siyeA20BbSN5bfQ": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.2.1",
+    "coreVersion": "10.286",
+    "createdTime": null,
+    "modifiedTime": 1664789561465,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!nEqdxZMAHlYVXI0Z"
+}

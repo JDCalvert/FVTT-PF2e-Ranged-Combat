@@ -1,0 +1,25 @@
+{
+  "_id": "rDuR04k9mCrrwJlG",
+  "name": "Reload NPCs",
+  "type": "script",
+  "author": "I90qJ09IMT0McqwG",
+  "img": "modules/pf2e-ranged-combat/art/reload_all.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.reloadNPCs();",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "ownership": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.9.2",
+    "coreVersion": "10.291",
+    "createdTime": null,
+    "modifiedTime": 1678916132630,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!macros!rDuR04k9mCrrwJlG"
+}

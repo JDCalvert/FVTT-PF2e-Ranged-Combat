@@ -1,0 +1,17 @@
+{
+  "_id": "ddmh8XdH0dbq3POz",
+  "name": "Hunt Prey",
+  "type": "script",
+  "author": "I90qJ09IMT0McqwG",
+  "img": "systems/pf2e/icons/features/classes/hunt-prey.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.huntPrey();",
+  "folder": null,
+  "sort": 0,
+  "permission": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "flags": {},
+  "_key": "!macros!ddmh8XdH0dbq3POz"
+}

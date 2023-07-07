@@ -1,0 +1,98 @@
+{
+  "_id": "hG9i3aOBDZ9Bq9yi",
+  "name": "Effect: Crossbow Crack Shot",
+  "type": "effect",
+  "img": "systems/pf2e/icons/equipment/weapons/heavy-crossbow.webp",
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "description": {
+      "value": "<p><span style=\"color: #191813; font-family: Roboto, sans-serif; font-size: 13px;\">You gain a +2 circumstance bonus to the damage roll on your next Strike with your crossbow. If the crossbow is a simple crossbow, you also increase the damage die size for that attack.</span></p>"
+    },
+    "source": {
+      "value": ""
+    },
+    "traits": {
+      "value": [],
+      "rarity": "common",
+      "custom": ""
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "flag": "weapon",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            "item:ranged",
+            "item:tag:crossbow",
+            "item:equipped"
+          ]
+        }
+      },
+      {
+        "key": "DamageDice",
+        "label": "Crossbow Ace",
+        "override": {
+          "upgrade": true
+        },
+        "predicate": [
+          "weapon:tag:crossbow",
+          "weapon:category:simple"
+        ],
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "slug": "crossbow-ace-dice-upgrade"
+      },
+      {
+        "key": "FlatModifier",
+        "predicate": [
+          "weapon:tag:crossbow"
+        ],
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "type": "circumstance",
+        "value": 2
+      }
+    ],
+    "slug": null,
+    "schema": {
+      "version": 0.713,
+      "lastMigration": null
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 0,
+      "unit": "rounds",
+      "sustained": false,
+      "expiry": "turn-end"
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "target": null,
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null
+  },
+  "ownership": {
+    "default": 0,
+    "I90qJ09IMT0McqwG": 3
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "4.2.1",
+    "coreVersion": "10.286",
+    "createdTime": null,
+    "modifiedTime": 1664796550879,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!hG9i3aOBDZ9Bq9yi"
+}
