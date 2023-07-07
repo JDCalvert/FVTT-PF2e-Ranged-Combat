@@ -80,8 +80,22 @@
             },
             "ammunitionSelect": {
                 "title": "Ammunition Select",
-                "header": "Select which ammunition to switch to.",
-                "loadedAmmunition": "Loaded Ammunition"
+                "action": {
+                    "switch": "Select which ammunition to switch to.",
+                    "unload": "Select which ammunition to unload.",
+                    "fire": "Select which ammunition to fire."
+                },
+                "header": {
+                    "loadedAmmunition": "Loaded Ammunition",
+                    "current": "Current",
+                    "equipped": "Equipped"    
+                },
+                "option": {
+                    "setAsAmmunition": "Set as ammunition"
+                }
+            },
+            "itemSelect": {
+                "options": "Options"
             },
             "check": {
                 "weaponNotLoaded": "{weapon} is not loaded.",
@@ -142,9 +156,7 @@
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "You have no weapons that use ammunition.",
-                    "warningNoCompatibleAmmunitionAvailable": "You have no equipped ammunition compatible with your {weapon}.",
-                    "noCompatibleAmmunitionSelectNew": "Select the ammunition to switch to.",
-                    "dialogTitle": "Ammunition Select"
+                    "warningNoCompatibleAmmunitionAvailable": "You have no equipped ammunition compatible with your {weapon}."
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon} is not loaded!",
@@ -156,7 +168,7 @@
         },
         "utils": {
             "singleCharacterSelected": "You must have a single character selected.",
-            "warningDialog1": "You cannot fire this weapon because:",
+            "warningDialog1": "You cannot perform this action because:",
             "warningDialog2": "This is a feature of the PF2e Ranged Combat module.",
             "warningDialog3": "You can learn how to use the module <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">here</a>.",
             "buttonOK": "OK",

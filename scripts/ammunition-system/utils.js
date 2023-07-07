@@ -54,7 +54,7 @@ export function isFullyLoaded(actor, weapon) {
     }
 }
 
-export async function getSelectedAmmunition(actor, weapon) {
+export async function getSelectedAmmunition(actor, weapon, action) {
     const ammunitions = [];
 
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
@@ -78,8 +78,8 @@ export async function getSelectedAmmunition(actor, weapon) {
     if (ammunitions.length > 1) {
         return await ItemSelectDialog.getItem(
             localize("ammunitionSelect.title"),
-            localize("ammunitionSelect.header"),
-            new Map([[localize("ammunitionSelect.loadedAmmunition"), ammunitions]])
+            localize(`ammunitionSelect.action.${action}`),
+            new Map([[localize("ammunitionSelect.header.loadedAmmunition"), ammunitions]])
         );
     } else {
         return ammunitions[0];

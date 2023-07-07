@@ -89,7 +89,7 @@ async function checkLoadedRound(actor, weapon) {
     }
 
     if (useAdvancedAmmunitionSystem(actor) && weapon.isDoubleBarrel && !isFiringBothBarrels(actor, weapon)) {
-        const selectedAmmunition = await getSelectedAmmunition(actor, weapon);
+        const selectedAmmunition = await getSelectedAmmunition(actor, weapon, "fire");
         if (!selectedAmmunition) {
             return false;
         }

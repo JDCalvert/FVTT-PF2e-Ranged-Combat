@@ -28,7 +28,7 @@ export async function nextChamber() {
     const updates = new Updates(actor);
 
     if (useAdvancedAmmunitionSystem(actor)) {
-        const selectedAmmunition = await getSelectedAmmunition(actor, weapon);
+        const selectedAmmunition = await getSelectedAmmunition(actor, weapon, "switch");
         if (!selectedAmmunition) {
             return;
         }

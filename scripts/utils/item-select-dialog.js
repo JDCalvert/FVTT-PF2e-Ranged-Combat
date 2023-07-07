@@ -1,3 +1,5 @@
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.itemSelect." + key);
+
 export class ItemSelectDialog extends Dialog {
     constructor(title, content) {
         super(
@@ -56,7 +58,7 @@ export class ItemSelectDialog extends Dialog {
         if (options.length) {
             content += `
                 <fieldset style="border: 1px solid #a1a1a1; paddng: 5px;">
-                    <legend>Options</legend>
+                    <legend>${localize("options")}</legend>
                     <form>
             `;
 

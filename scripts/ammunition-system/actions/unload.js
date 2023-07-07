@@ -43,7 +43,7 @@ export async function unload() {
                 );
             }
         } else if (weapon.capacity) {
-            const ammunition = await getSelectedAmmunition(actor, weapon);
+            const ammunition = await getSelectedAmmunition(actor, weapon, "unload");
             if (!ammunition) {
                 return;
             }

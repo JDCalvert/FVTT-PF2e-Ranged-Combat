@@ -2,8 +2,9 @@ import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
 import { getControlledActorAndToken, showWarning, Updates } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key);
+const localizeDialog = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.ammunitionSelect." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key, data);
 
 export async function switchAmmunition() {
     const { actor, token } = getControlledActorAndToken();
@@ -22,7 +23,7 @@ export async function switchAmmunition() {
         weapon,
         updates,
         format("warningNoCompatibleAmmunitionAvailable", { weapon: weapon }),
-        localize("noCompatibleAmmunitionSelectNew"),
+        localizeDialog("action.switch"),
         true,
         true
     );
@@ -63,15 +64,15 @@ export async function selectAmmunition(
     if (weapon.ammunition) {
         const currentAmmunition = availableAmmunitionChoices.findSplice(ammo => ammo.id === weapon.ammunition.id);
         if (currentAmmunition) {
-            ammunitionMap.set("Current", [currentAmmunition]);
+            ammunitionMap.set(localizeDialog("header.current"), [currentAmmunition]);
         }
     };
     if (availableAmmunitionChoices.length) {
-        ammunitionMap.set("Equipped", availableAmmunitionChoices);
+        ammunitionMap.set(localizeDialog("header.equipped"), availableAmmunitionChoices);
     }
 
     const result = await ItemSelectDialog.getItemWithOptions(
-        localize("dialogTitle"),
+        localizeDialog("title"),
         selectNewMessage,
         ammunitionMap,
         alwaysSetAsAmmunition
@@ -79,7 +80,7 @@ export async function selectAmmunition(
             : [
                 {
                     id: "set-as-ammunition",
-                    label: "Set as ammunition",
+                    label: localizeDialog("option.setAsAmmunition"),
                     defaultValue: defaultSetAsAmmunition
                 }
             ]
