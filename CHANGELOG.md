@@ -1,3 +1,7 @@
+## 4.0.2 - 2023-07-07 (Pathfinder 2e 5.1.1)
+### Fixes
+- Improved the wording and localisation of some dialogs
+
 ## 4.0.1 - 2023-07-03 (Pathfinder 2e 5.1.0)
 ### Fixes
 - Fixed an issue with the advanced thrown weapon system (and potentially other places in the module) caused by a change in the Foundry API
