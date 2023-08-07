@@ -1,3 +1,7 @@
+## 4.0.3 - 2023-08-07 (Pathfinder 2e 5.3.1)
+### Fixes
+- Fixed the weapon name showing as "undefined" when loading a magazine into a repeating weapon
+
 ## 4.0.2 - 2023-07-07 (Pathfinder 2e 5.1.1)
 ### Fixes
 - Improved the wording and localisation of some dialogs

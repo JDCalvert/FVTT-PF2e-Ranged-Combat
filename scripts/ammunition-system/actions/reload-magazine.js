@@ -5,8 +5,8 @@ import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js"
 import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadMagazine } from "./unload.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.reloadMagazine." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.reloadMagazine." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.reloadMagazine." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.reloadMagazine." + key, data);
 
 /**
  * Replace the magazine in a repeating weapon.
@@ -119,7 +119,16 @@ export async function reloadMagazine() {
     await postInChat(
         actor,
         RELOAD_MAGAZINE_IMG,
-        format("tokenLoadsAmmo", { token: token.name, ammo: ammo.name, charges: ammo.system.charges.value, maxCharges: ammo.system.charges.max }),
+        format(
+            "tokenLoadsAmmo",
+            {
+                token: token.name,
+                weapon: weapon.name,
+                ammo: ammo.name,
+                charges: ammo.system.charges.value,
+                maxCharges: ammo.system.charges.max
+            }
+        ),
         game.i18n.localize("PF2E.Actions.Interact.Title"),
         String(numActions)
     );
@@ -139,7 +148,7 @@ async function getAmmunition(weapon, updates) {
             format("noAmmunitionSelectNew", { weapon: weapon.name }),
             false,
             false
-        )
+        );
     } else if (ammunition.quantity < 1) {
         return await selectAmmunition(
             weapon,
@@ -148,7 +157,7 @@ async function getAmmunition(weapon, updates) {
             format("notEnoughAmmunitionSelectNew", { weapon: weapon.name }),
             true,
             false
-        )
+        );
     } else {
         return ammunition;
     }
