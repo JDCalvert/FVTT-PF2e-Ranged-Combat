@@ -47,7 +47,7 @@ export async function changeCarryType(
         if (item.quantity <= 1) {
             return wrapper(item, { carryType, handsHeld, inSlot });
         } else {
-            createNewStack(item, groupStacks, carryType, handsHeld, inSlot);
+            await createNewStack(item, groupStacks, carryType, handsHeld, inSlot);
         }
     } else {
         moveBetweenStacks(item, targetStack);

@@ -1,3 +1,7 @@
+## 4.0.4 - 2023-08-21 (Pathfinder 2e 5.3.2)
+### Fixes
+- When creating a new stack, wait for the stack to be created before continuing execution
+
 ## 4.0.3 - 2023-08-07 (Pathfinder 2e 5.3.1)
 ### Fixes
 - Fixed the weapon name showing as "undefined" when loading a magazine into a repeating weapon
