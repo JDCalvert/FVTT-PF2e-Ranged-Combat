@@ -154,6 +154,14 @@
                     "tokenReloadsWeapon": "{token} reloads their {weapon}",
                     "withAmmunition": "with {ammunition}."
                 },
+                "spendAmmoFromMagazine": {
+                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - Spend Ammo from Magazine can only be used if the Advanced Ammunition System is enabled.",
+                    "warningNpcNotSupported": "PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.",
+                    "warningNoRepeatingWeapons": "You have no repeating weapons.",
+                    "warningNotEnoughAmmo": "{weapon} doesn't have enough ammo in magazine.",
+                    "tokenSpendAmmunitionFromMagazine": "{token} spend {amount} ammunition from {weapon}'s current magazine",
+                    "warningNotLoaded": "{weapon} is not loaded!"
+                },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "You have no weapons that use ammunition.",
                     "warningNoCompatibleAmmunitionAvailable": "You have no equipped ammunition compatible with your {weapon}."
