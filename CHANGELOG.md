@@ -1,3 +1,7 @@
+## 4.0.5 - 2023-11-01 (Pathfinder 2e )
+### Feature
+- Add translations for Polish
+
 ## 4.0.4 - 2023-08-21 (Pathfinder 2e 5.3.2)
 ### Fixes
 - When creating a new stack, wait for the stack to be created before continuing execution
