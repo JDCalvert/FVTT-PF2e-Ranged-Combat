@@ -89,6 +89,11 @@
             "lang": "fr",
             "name": "Français",
             "path": "lang/fr.json"
+        },
+        {
+            "lang": "pl",
+            "name": "polski",
+            "path": "lang/pl.json"
         }
     ]
 }
