@@ -104,17 +104,19 @@ export async function reloadMagazine() {
     numActions += 2;
 
     // Remove that magazine from the stack
-    updates.update(
-        ammo,
-        {
-            system: {
-                quantity: ammo.quantity - 1,
-                charges: {
-                    value: ammo.system.charges.max
+    if (ammo.autoDestroy) {
+        updates.update(
+            ammo,
+            {
+                system: {
+                    quantity: ammo.quantity - 1,
+                    charges: {
+                        value: ammo.system.charges.max
+                    }
                 }
             }
-        }
-    );
+        );
+    }
 
     await postInChat(
         actor,
@@ -149,7 +151,7 @@ async function getAmmunition(weapon, updates) {
             false,
             false
         );
-    } else if (ammunition.quantity < 1) {
+    } else if (ammunition.quantity < 1 && ammunition.autoDestroy) {
         return await selectAmmunition(
             weapon,
             updates,

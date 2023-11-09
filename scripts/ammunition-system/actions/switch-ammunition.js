@@ -1,3 +1,4 @@
+import { Weapon } from "../../types/pf2e-ranged-combat-types.js";
 import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
 import { getControlledActorAndToken, showWarning, Updates } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
@@ -32,6 +33,15 @@ export async function switchAmmunition() {
     Hooks.callAll("pf2eRangedCombatSwitchAmmunition", actor, token, weapon);
 }
 
+/**
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ * @param {string} nonAvailableMessage 
+ * @param {string} selectNewMessage 
+ * @param {boolean} defaultSetAsAmmunition 
+ * @param {boolean} alwaysSetAsAmmunition 
+ * @returns 
+ */
 export async function selectAmmunition(
     weapon,
     updates,
@@ -42,7 +52,7 @@ export async function selectAmmunition(
 ) {
     const availableAmmunition = weapon.actor.itemTypes.consumable
         .filter(item => item.isAmmunition && !item.isStowed)
-        .filter(ammo => ammo.quantity > 0)
+        .filter(ammo => ammo.quantity > 0 || !ammo.autoDestroy)
         .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
 
     if (!availableAmmunition.length) {

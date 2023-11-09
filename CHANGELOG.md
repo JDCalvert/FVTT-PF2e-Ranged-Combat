@@ -1,4 +1,10 @@
-## 4.0.5 - 2023-11-01 (Pathfinder 2e )
+## 4.0.6 - 2023-11-09 (Pathfinder 2e 5.8.3)
+### Fixes
+- Fixed thumbnail image not displaying when using a routePrefix
+- Add force, vitality, and void damage types to alchemical crossbow
+- Respect ammunition auto-destroy setting
+
+## 4.0.5 - 2023-11-01
 ### Feature
 - Add translations for Polish
 

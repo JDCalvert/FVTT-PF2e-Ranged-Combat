@@ -5,7 +5,7 @@ import { getWeapon } from "../utils/weapon-utils.js";
 const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.cA9sBCFAxY2EJgrC";
 const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossbow.webp";
 
-const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "sonic"];
+const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "force", "sonic", "vitality", "void"];
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalCrossbow." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalCrossbow." + key, data);

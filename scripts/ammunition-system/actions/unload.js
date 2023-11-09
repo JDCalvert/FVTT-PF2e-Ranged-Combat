@@ -1,10 +1,10 @@
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
-import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity } from "../utils.js";
+import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "../utils.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key, data);
 
 export async function unload() {
     const { actor, token } = getControlledActorAndToken();
@@ -115,7 +115,7 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
 
     if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
         // We found the original stack of ammunition this
-        updates.update(ammunitionItem, { "system.quantity": ammunitionItem.quantity + 1 });
+        updateAmmunitionQuantity(updates, ammunitionItem, +1);
     } else if (ammunitionRemaining > 0) {
         // The magazine still has some ammunition left, create a new item with the remaining ammunition
         const itemSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
@@ -151,7 +151,7 @@ export async function moveAmmunitionToInventory(actor, ammunition, updates) {
     if (ammunitionItem) {
         // We still have the stack the ammunition originally came from, or another that's the same.
         // Add the currently loaded ammunition to the stack
-        updates.update(ammunitionItem, { "system.quantity": ammunitionItem.quantity + 1 });
+        updateAmmunitionQuantity(updates, ammunitionItem, +1)
     } else {
         // Create a new stack with one piece of ammunition in it
         const ammunitionSource = await getItem(ammunition.sourceId);

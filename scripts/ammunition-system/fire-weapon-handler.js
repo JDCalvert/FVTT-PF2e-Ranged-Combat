@@ -1,7 +1,7 @@
 import { findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity } from "./utils.js";
+import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
 
@@ -135,7 +135,7 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
         return;
     }
 
-    updates.update(ammunition, { "system.quantity": ammunition.quantity - ammunitionToFire });
+    updateAmmunitionQuantity(updates, ammunition, -ammunitionToFire)
 
     if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
         ammunition.toMessage();

@@ -2,7 +2,7 @@
     "id": "pf2e-ranged-combat",
     "title": "PF2e Ranged Combat",
     "description": "Utilities for improving ranged combat in Pathfinder 2e.",
-    "version": "4.0.5",
+    "version": "4.0.6",
     "authors": [
         {
             "name": "JDCalvert"
@@ -28,7 +28,7 @@
     },
     "url": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat",
     "manifest": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/releases/latest/download/module.json",
-    "download": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/archive/4.0.5.zip",
+    "download": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/archive/4.0.6.zip",
     "readme": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat",
     "bugs": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/issues",
     "changelog": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/CHANGELOG.md",
@@ -71,7 +71,7 @@
         {
             "type": "setup",
             "caption": "PF2e Ranged Combat",
-            "thumbnail": "/modules/pf2e-ranged-combat/art/thumbnail.webp"
+            "thumbnail": "modules/pf2e-ranged-combat/art/thumbnail.webp"
         }
     ],
     "languages": [

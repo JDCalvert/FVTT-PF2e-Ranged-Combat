@@ -2,8 +2,8 @@ import { ItemSelectDialog } from "../utils/item-select-dialog.js";
 import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
 
 /**
  * Check if the weapon is fully loaded and, if it is, show a warning
@@ -114,6 +114,12 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
         }
     } else {
         updates.delete(loadedEffect);
+    }
+}
+
+export function updateAmmunitionQuantity(updates, ammunition, delta) {
+    if (ammunition.autoDestroy) {
+        updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
     }
 }
 
