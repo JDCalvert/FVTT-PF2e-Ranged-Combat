@@ -1,3 +1,7 @@
+## 4.0.7 - 2023-12-01 (Pathfinder 2e 5.9.5)
+### Fixes
+- Do not post full chat card for repeating ammunition when the setting is disabled
+
 ## 4.0.6 - 2023-11-09 (Pathfinder 2e 5.8.3)
 ### Fixes
 - Fixed thumbnail image not displaying when using a routePrefix

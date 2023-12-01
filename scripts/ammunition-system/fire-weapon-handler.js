@@ -1,3 +1,5 @@
+import { Ammunition } from "../types/pf2e-ranged-combat-types.js";
+import { PF2eActor, PF2eConsumable } from "../types/pf2e-types.js";
 import { findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
@@ -66,7 +68,7 @@ function fireWeaponRepeating(actor, weapon, updates) {
     const ammunitionSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
     const ammunition = findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
 
-    if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition") && ammunition) {
+    if (shouldPostFullAmmunition(ammunition)) {
         ammunition.toMessage();
     } else {
         postInChat(
@@ -98,7 +100,7 @@ function fireWeaponReloadable(actor, weapon, updates) {
 
         const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
         updates.delete(loadedEffect);
-        postAmmunitionAndApplyEffect(actor, weapon, getFlag(loadedEffect, "ammunition"), updates);
+        postAmmunition(actor, getFlag(loadedEffect, "ammunition"));
     }
 }
 
@@ -120,7 +122,7 @@ function fireWeaponDoubleBarrel(actor, weapon, updates) {
         const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
         const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
         for (const loadedAmmunition of loadedAmmunitions) {
-            postAmmunitionAndApplyEffect(actor, weapon, loadedAmmunition, updates);
+            postAmmunition(actor, loadedAmmunition);
         }
 
         updates.delete(loadedEffect);
@@ -135,9 +137,9 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
         return;
     }
 
-    updateAmmunitionQuantity(updates, ammunition, -ammunitionToFire)
+    updateAmmunitionQuantity(updates, ammunition, -ammunitionToFire);
 
-    if (game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
+    if (shouldPostFullAmmunition(ammunition)) {
         ammunition.toMessage();
     } else {
         postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));
@@ -152,7 +154,7 @@ function consumeAmmunition(actor, weapon, ammunition, updates) {
         consumeConjuredRound(actor, weapon, updates);
     } else {
         removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
-        postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates);
+        postAmmunition(actor, ammunition);
     }
 }
 
@@ -165,11 +167,27 @@ function consumeConjuredRound(actor, weapon, updates) {
     return !!conjuredRoundEffect;
 }
 
-function postAmmunitionAndApplyEffect(actor, weapon, ammunition, updates) {
+/**
+ * Post to chat that some ammunition has been fired.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Ammunition} ammunition 
+ */
+function postAmmunition(actor, ammunition) {
     const ammunitionItem = findItemOnActor(actor, ammunition.id, ammunition.sourceId);
-    if (ammunitionItem && ammunitionItem.level > 0 && game.settings.get("pf2e-ranged-combat", "postFullAmmunition")) {
+    if (shouldPostFullAmmunition(actor, ammunitionItem)) {
         ammunitionItem.toMessage();
     } else {
         postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));
     }
+}
+
+/**
+ * Determine whether we should post the full ammunition or a summary.
+ * 
+ * @param {PF2eConsumable} ammunitionItem The ammunition being fired
+ * @returns {boolean} true if we should post the full ammunition
+ */
+function shouldPostFullAmmunition(ammunitionItem) {
+    return ammunitionItem && ammunitionItem.level > 0 && game.settings.get("pf2e-ranged-combat", "postFullAmmunition");
 }

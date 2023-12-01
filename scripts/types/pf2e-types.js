@@ -9,6 +9,12 @@ export class PF2eItemTypes {
 }
 
 export class PF2eConsumable {
+    /** @type string */
+    id;
+
+    /** @type string */
+    sourceId;
+    
     /** @type boolean */
     autoDestroy;
 
