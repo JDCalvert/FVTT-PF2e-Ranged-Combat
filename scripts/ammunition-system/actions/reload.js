@@ -76,7 +76,7 @@ async function performReload(actor, token, weapon, updates) {
             // If the weapon is already loaded, we don't need to do it again
             const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
             if (loadedEffect) {
-                showWarning(formate("warningAlreadyLoaded", { weapon: weapon.name }));
+                showWarning(format("warningAlreadyLoaded", { weapon: weapon.name }));
                 return;
             }
 

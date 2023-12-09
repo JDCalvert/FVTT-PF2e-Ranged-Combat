@@ -6,7 +6,7 @@ import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-
 import { changeCarryType, changeStowed, findGroupStacks } from "./thrown-weapons/change-carry-type.js";
 import { checkThrownWeapon } from "./thrown-weapons/throw-weapon-check.js";
 import { handleThrownWeapon } from "./thrown-weapons/throw-weapon-handler.js";
-import { getFlag, Updates } from "./utils/utils.js";
+import { getAttackPopout, getFlag, Updates } from "./utils/utils.js";
 import { transformWeapon } from "./utils/weapon-utils.js";
 
 Hooks.on(
@@ -114,6 +114,9 @@ Hooks.on(
 
                     updates.handleUpdates();
                 }
+
+                // If there's an attack popout open for this item, close it
+                getAttackPopout(this)?.close({ force: true });
 
                 wrapper(...args);
             },

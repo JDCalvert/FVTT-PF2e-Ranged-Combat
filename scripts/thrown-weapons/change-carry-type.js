@@ -1,4 +1,4 @@
-import { Updates } from "../utils/utils.js";
+import { Updates, getAttackPopout } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
 /**
@@ -36,7 +36,7 @@ export async function changeCarryType(
     }
 
     // Find the stack that has the carry type we're trying to set
-    const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === carryType);
+    let targetStack = groupStacks.find(stack => stack.system.equipped.carryType === carryType);
 
     // - If there is no target stack then what we do depends on the size of our current stack:
     //   - If our stack size is one, then we can just call the normal function
@@ -47,11 +47,26 @@ export async function changeCarryType(
         if (item.quantity <= 1) {
             return wrapper(item, { carryType, handsHeld, inSlot });
         } else {
-            await createNewStack(item, groupStacks, carryType, handsHeld, inSlot);
+            targetStack = await createNewStack(item, groupStacks, carryType, handsHeld, inSlot);
         }
     } else {
         moveBetweenStacks(item, targetStack);
     }
+
+    // If there's a strike window open for this item, but not for the target stack, then open one for the new stack
+    if (targetStack) {
+        if (getAttackPopout(item) && !getAttackPopout(targetStack)) {
+            game.pf2e.rollActionMacro(
+                {
+                    actorUUID: "Actor." + targetStack.actor.id,
+                    type: "strike",
+                    itemId: targetStack.id,
+                    slug: targetStack.slug,
+                }
+            );
+        }
+    }
+
     return [];
 }
 
@@ -162,6 +177,8 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
         );
 
         await updates.handleUpdates();
+
+        return targetStack;
     }
 }
 

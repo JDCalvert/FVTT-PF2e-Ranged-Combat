@@ -228,6 +228,10 @@ export async function postInChat(actor, img, message, actionName = "", numAction
     });
 }
 
+export function getAttackPopout(item) {
+    return Object.values(item.actor.apps).find(window => window.constructor.name === "AttackPopout" && window.options.strikeItemId === item.id);
+}
+
 /**
  * For the given actor type, check if the advanced ammunition system is enabled
  */

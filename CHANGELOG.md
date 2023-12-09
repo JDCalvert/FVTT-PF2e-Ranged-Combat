@@ -1,3 +1,8 @@
+## 4.0.8 - 2023-12-09 (Pathfinder 2e 5.10.5)
+### Feature
+- Automatically open strike popouts for new stacks if created from a stack with an open strike popout
+- Close strike popouts for deleted stacks
+
 ## 4.0.7 - 2023-12-01 (Pathfinder 2e 5.9.5)
 ### Fixes
 - Do not post full chat card for repeating ammunition when the setting is disabled
