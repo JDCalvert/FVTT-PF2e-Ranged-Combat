@@ -52,7 +52,7 @@ export async function selectAmmunition(
 ) {
     const availableAmmunition = weapon.actor.itemTypes.consumable
         .filter(item => item.isAmmunition && !item.isStowed)
-        .filter(ammo => ammo.quantity > 0 || !ammo.autoDestroy)
+        .filter(ammo => ammo.quantity > 0 || !ammo.system.uses.autoDestroy)
         .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
 
     if (!availableAmmunition.length) {

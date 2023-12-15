@@ -272,7 +272,7 @@ async function getAmmunition(weapon, updates) {
             false,
             false
         );
-    } else if (ammunition.quantity < 1 && ammunition.autoDestroy) {
+    } else if (ammunition.quantity < 1 && ammunition.system.uses.autoDestroy) {
         return await selectAmmunition(
             weapon,
             updates,

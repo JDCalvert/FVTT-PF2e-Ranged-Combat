@@ -69,7 +69,7 @@ export async function reloadMagazine() {
             // The current magazine is full, and the selected ammunition is the same
             showWarning(format("warningFullyLoaded", { weapon: weapon.name }));
             return;
-        } else if (magazineRemaining === ammo.system.charges.value && magazineSourceId === selectedAmmunitionSourceId) {
+        } else if (magazineRemaining === ammo.system.uses.value && magazineSourceId === selectedAmmunitionSourceId) {
             // The current magazine is the same, and has the same remaining ammunition, as the new one
             showWarning(format("warningAlreadyMoreAmmo", { weapon: weapon.name, ammo: ammo.name }));
             return;
@@ -87,15 +87,15 @@ export async function reloadMagazine() {
     magazineLoadedEffectSource.flags["pf2e-ranged-combat"] = {
         ...magazineLoadedEffectSource.flags["pf2e-ranged-combat"],
         name: `${magazineLoadedEffectSource.name} (${ammo.name})`,
-        capacity: ammo.system.charges.max,
-        remaining: ammo.system.charges.value,
+        capacity: ammo.system.uses.max,
+        remaining: ammo.system.uses.value,
         ammunitionName: ammo.name,
         ammunitionImg: ammo.img,
         ammunitionItemId: ammo.id,
         ammunitionSourceId: ammo.sourceId
     };
 
-    magazineLoadedEffectSource.name = `${magazineLoadedEffectSource.name} (${ammo.name}) (${ammo.system.charges.value}/${ammo.system.charges.max})`;
+    magazineLoadedEffectSource.name = `${magazineLoadedEffectSource.name} (${ammo.name}) (${ammo.system.uses.value}/${ammo.system.uses.max})`;
 
     updates.create(magazineLoadedEffectSource);
 
@@ -104,14 +104,14 @@ export async function reloadMagazine() {
     numActions += 2;
 
     // Remove that magazine from the stack
-    if (ammo.autoDestroy) {
+    if (ammo.system.uses.autoDestroy) {
         updates.update(
             ammo,
             {
                 system: {
                     quantity: ammo.quantity - 1,
-                    charges: {
-                        value: ammo.system.charges.max
+                    uses: {
+                        value: ammo.system.uses.max
                     }
                 }
             }
@@ -127,8 +127,8 @@ export async function reloadMagazine() {
                 token: token.name,
                 weapon: weapon.name,
                 ammo: ammo.name,
-                charges: ammo.system.charges.value,
-                maxCharges: ammo.system.charges.max
+                charges: ammo.system.uses.value,
+                maxCharges: ammo.system.uses.max
             }
         ),
         game.i18n.localize("PF2E.Actions.Interact.Title"),
@@ -151,7 +151,7 @@ async function getAmmunition(weapon, updates) {
             false,
             false
         );
-    } else if (ammunition.quantity < 1 && ammunition.autoDestroy) {
+    } else if (ammunition.quantity < 1 && ammunition.system.uses.autoDestroy) {
         return await selectAmmunition(
             weapon,
             updates,

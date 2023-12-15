@@ -120,7 +120,7 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
         // The magazine still has some ammunition left, create a new item with the remaining ammunition
         const itemSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
         const ammunitionSource = await getItem(itemSourceId);
-        ammunitionSource.system.charges.value = ammunitionRemaining;
+        ammunitionSource.system.uses.value = ammunitionRemaining;
         updates.create(ammunitionSource);
     }
 
