@@ -119,7 +119,27 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
 
 export function updateAmmunitionQuantity(updates, ammunition, delta) {
     if (ammunition.autoDestroy) {
-        updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
+        if (ammunition.system.charges.max > 1) {
+            // This is 
+            if (ammunition.system.charges.value > -delta) {
+                // We're using up some of the magazine, so just reduce the charges by the amount of ammunition
+                updates.update(ammunition, { "system.charges.value": ammunition.system.charges.value + delta });
+            } else {
+                // We're using up the rest of the magazine, so move onto the next one
+                updates.update(
+                    ammunition,
+                    {
+                        system: {
+                            "charges.value": ammunition.system.charges.max,
+                            "quantity": ammunition.quantity - 1
+                        }
+
+                    }
+                );
+            }
+        } else {
+            updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
+        }
     }
 }
 
