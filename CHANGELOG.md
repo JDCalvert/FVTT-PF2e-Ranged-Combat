@@ -1,3 +1,8 @@
+## 4.0.9 - 2023-12-15 (Pathfinder 2e 5.11.1)
+### Fixes
+- Fixed consuming repeating ammunition with the advanced ammunition system disabled
+- Updated terminology of "charges" to "uses" to match system update
+
 ## 4.0.8 - 2023-12-09 (Pathfinder 2e 5.10.5)
 ### Feature
 - Automatically open strike popouts for new stacks if created from a stack with an open strike popout

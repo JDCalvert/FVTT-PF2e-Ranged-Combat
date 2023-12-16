@@ -11,7 +11,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
     }
 
     // Find all the repeating ammunition stacks
-    const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.system.charges.max > 1);
+    const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.system.uses.max > 1);
     const ammunitionStacksBySourceId = ammunitionStacks.reduce(
         function (map, stack) {
             const mapEntry = map[stack.sourceId];
@@ -35,7 +35,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
         const stackEntry = ammunitionStacksBySourceId[sourceId];
         const stacks = stackEntry.stacks;
 
-        const maxChargesPerItem = stacks[0].system.charges.max;
+        const maxChargesPerItem = stacks[0].system.uses.max;
 
         // Work out if we need to consolidate:
         // - We have one stack with zero quantity
@@ -45,8 +45,8 @@ export async function consolidateRepeatingWeaponAmmunition() {
         // - AND
         //   - We have no other stacks
         const haveEmptyStack = stacks.some(stack => stack.quantity === 0);
-        const haveFullStack = stacks.some(stack => stack.quantity > 0 && stack.system.charges.value === stack.system.charges.max);
-        const haveNonFullStack = stacks.some(stack => stack.quantity === 1 && stack.system.charges.value !== stack.system.charges.max);
+        const haveFullStack = stacks.some(stack => stack.quantity > 0 && stack.system.uses.value === stack.system.uses.max);
+        const haveNonFullStack = stacks.some(stack => stack.quantity === 1 && stack.system.uses.value !== stack.system.uses.max);
         if ((haveEmptyStack && stacks.length === 1) || stacks.length === haveFullStack + haveNonFullStack) {
             continue;
         }
@@ -64,7 +64,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
                 {
                     system: {
                         quantity: quantityFullCharges,
-                        charges: {
+                        uses: {
                             value: maxChargesPerItem
                         }
                     }
@@ -78,7 +78,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
             if (index >= stacks.length) {
                 const newStackSource = await getItem(sourceId);
                 newStackSource.system.quantity = 1;
-                newStackSource.system.charges.value = remainingCharges;
+                newStackSource.system.uses.value = remainingCharges;
                 updates.create(newStackSource);
             } else {
                 const indexNow = index;
@@ -87,7 +87,7 @@ export async function consolidateRepeatingWeaponAmmunition() {
                     {
                         system: {
                             quantity: 1,
-                            charges: {
+                            uses: {
                                 value: remainingCharges
                             }
                         }
@@ -118,5 +118,5 @@ export async function consolidateRepeatingWeaponAmmunition() {
 }
 
 function getTotalChargesForStack(stack) {
-    return stack.quantity > 0 ? stack.system.charges.value + (stack.quantity - 1) * stack.system.charges.max : 0;
+    return stack.quantity > 0 ? stack.system.uses.value + (stack.quantity - 1) * stack.system.uses.max : 0;
 }
