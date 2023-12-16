@@ -1,3 +1,7 @@
+## 4.0.10 - 2023-12-16 (Pathfinder 2e 5.11.3)
+### Fixes
+- Fixed use of ammunition `isAmmunition` to `isAmmo` as per system change
+
 ## 4.0.9 - 2023-12-15 (Pathfinder 2e 5.11.1)
 ### Fixes
 - Fixed consuming repeating ammunition with the advanced ammunition system disabled

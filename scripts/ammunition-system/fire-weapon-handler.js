@@ -1,5 +1,6 @@
 import { Ammunition } from "../types/pf2e-ranged-combat-types.js";
-import { PF2eActor, PF2eConsumable } from "../types/pf2e-types.js";
+import { PF2eActor } from "../types/pf2e/actor.js";
+import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";

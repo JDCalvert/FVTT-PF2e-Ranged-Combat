@@ -1,4 +1,5 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
+import { PF2eActor } from "../types/pf2e/actor.js";
 import { getControlledActor, getControlledActorAndToken } from "../utils/utils.js";
 
 const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key)
@@ -31,6 +32,10 @@ export function npcWeaponConfiguration() {
     ).render(true);
 }
 
+/**
+ * @param {PF2eActor} actor 
+ * @returns {string}
+ */
 function buildContent(actor) {
     const flags = actor.flags["pf2e-ranged-combat"];
     const enableAdvancedAmmunitionSystem = flags?.enableAdvancedAmmunitionSystem;
@@ -38,7 +43,7 @@ function buildContent(actor) {
 
     const attacks = actor.itemTypes.melee;
     const weapons = actor.itemTypes.weapon.filter(weapon => weapon === findGroupStacks(weapon)[0]);
-    const ammunitions = actor.itemTypes.consumable.filter((i) => i.isAmmunition && !i.isStowed);
+    const ammunitions = actor.itemTypes.consumable.filter(consumable => consumable.isAmmo && !consumable.isStowed);
 
     let content = "";
 

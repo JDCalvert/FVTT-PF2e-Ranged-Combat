@@ -1,4 +1,4 @@
-import { Weapon } from "../../types/pf2e-ranged-combat-types.js";
+import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
 import { getControlledActorAndToken, showWarning, Updates } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
@@ -23,7 +23,7 @@ export async function switchAmmunition() {
     await selectAmmunition(
         weapon,
         updates,
-        format("warningNoCompatibleAmmunitionAvailable", { weapon: weapon }),
+        format("warningNoCompatibleAmmunitionAvailable", { weapon: weapon.name }),
         localizeDialog("action.switch"),
         true,
         true
@@ -51,7 +51,7 @@ export async function selectAmmunition(
     alwaysSetAsAmmunition
 ) {
     const availableAmmunition = weapon.actor.itemTypes.consumable
-        .filter(item => item.isAmmunition && !item.isStowed)
+        .filter(item => item.isAmmo && !item.isStowed)
         .filter(ammo => ammo.quantity > 0 || !ammo.system.uses.autoDestroy)
         .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
 

@@ -1,13 +1,3 @@
-export class PF2eActor {
-    /** @type PF2eItemTypes */
-    itemTypes;
-}
-
-export class PF2eItemTypes {
-    /** @type PF2eConsumable[] */
-    consumable;
-}
-
 export class PF2eConsumable {
     /** @type string */
     id;
@@ -16,7 +6,7 @@ export class PF2eConsumable {
     sourceId;
 
     /** @type boolean */
-    isAmmunition;
+    isAmmo;
 
     /** @type boolean */
     isStowed;

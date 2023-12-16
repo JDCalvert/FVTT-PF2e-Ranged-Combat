@@ -1,8 +1,8 @@
+import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { getControlledActorAndToken, getItem, postInChat, Updates } from "../../utils/utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key)
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key, data)
-
 
 export async function consolidateRepeatingWeaponAmmunition() {
     const { actor, token } = getControlledActorAndToken();
@@ -11,28 +11,36 @@ export async function consolidateRepeatingWeaponAmmunition() {
     }
 
     // Find all the repeating ammunition stacks
-    const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmunition && consumable.system.uses.max > 1);
+    const ammunitionStacks = actor.itemTypes.consumable.filter(consumable => consumable.isAmmo && consumable.system.uses.max > 1);
     const ammunitionStacksBySourceId = ammunitionStacks.reduce(
+        /**
+         * @param {Map<string, { stacks: PF2eConsumable[], totalCharges: number}>} map
+         * @param {PF2eConsumable} stack
+         * 
+         * @returns {Map<string, { stacks: PF2eConsumable[], totalCharges: number}>}
+         */
         function (map, stack) {
-            const mapEntry = map[stack.sourceId];
+            const mapEntry = map.get(stack.sourceId);
             if (!mapEntry) {
-                map[stack.sourceId] = {
-                    stacks: [stack],
-                    totalCharges: getTotalChargesForStack(stack)
-                };
+                map.set(
+                    stack.sourceId,
+                    {
+                        stacks: [stack],
+                        totalCharges: getTotalChargesForStack(stack)
+                    }
+                );
             } else {
                 mapEntry.stacks.push(stack);
                 mapEntry.totalCharges += getTotalChargesForStack(stack);
             }
             return map;
         },
-        {}
+        new Map(),
     );
 
     const updates = new Updates(actor);
 
-    for (const sourceId in ammunitionStacksBySourceId) {
-        const stackEntry = ammunitionStacksBySourceId[sourceId];
+    for (const [sourceId, stackEntry] of ammunitionStacksBySourceId) {
         const stacks = stackEntry.stacks;
 
         const maxChargesPerItem = stacks[0].system.uses.max;
@@ -44,10 +52,10 @@ export async function consolidateRepeatingWeaponAmmunition() {
         //   - Optionally, one stack with quantity 1 and not fully-charged
         // - AND
         //   - We have no other stacks
-        const haveEmptyStack = stacks.some(stack => stack.quantity === 0);
-        const haveFullStack = stacks.some(stack => stack.quantity > 0 && stack.system.uses.value === stack.system.uses.max);
-        const haveNonFullStack = stacks.some(stack => stack.quantity === 1 && stack.system.uses.value !== stack.system.uses.max);
-        if ((haveEmptyStack && stacks.length === 1) || stacks.length === haveFullStack + haveNonFullStack) {
+        const haveEmptyStack = stacks.some(stack => stack.quantity == 0);
+        const haveFullStack = stacks.some(stack => stack.quantity > 0 && stack.system.uses.value == stack.system.uses.max);
+        const haveNonFullStack = stacks.some(stack => stack.quantity > 0 && stack.system.uses.value != stack.system.uses.max);
+        if ((haveEmptyStack && stacks.length == 1) || stacks.length == haveFullStack + haveNonFullStack) {
             continue;
         }
 
@@ -117,6 +125,12 @@ export async function consolidateRepeatingWeaponAmmunition() {
     }
 }
 
+/**
+ * Calculte the total number of uses remaining for this stack.
+ * 
+ * @param {PF2eConsumable} stack
+ * @returns {number} The total number of uses remaining in the stack
+ */
 function getTotalChargesForStack(stack) {
     return stack.quantity > 0 ? stack.system.uses.value + (stack.quantity - 1) * stack.system.uses.max : 0;
 }

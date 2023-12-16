@@ -1,6 +1,24 @@
+import { PF2eActor } from "../types/pf2e/actor.js";
+import { PF2eToken } from "../types/pf2e/token.js";
+
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
 export class Updates {
+    /** @type PF2eActor */
+    actor;
+
+    /** @type any[] */
+    creates;
+
+    /** @type any[] */
+    deletes;
+
+    /** @type any[] */
+    updates;
+
+    /**
+     * @param {PF2eActor} actor 
+     */
     constructor(actor) {
         this.actor = actor;
 
@@ -89,7 +107,7 @@ export function getControlledActor() {
  * - If there are no tokens selected, but the user has an owned actor with one token in the scene, return that actor and token
  * - Otherwise, show a warning and return an empty object
  * 
- * @returns an object with `actor` and `token` fields, which are either both populated or both null
+ * @returns {{actor: PF2eActor, token: PF2eToken}|{actor: null, token: null}}
  */
 export function getControlledActorAndToken() {
     const controlledTokens = canvas.tokens.controlled;
