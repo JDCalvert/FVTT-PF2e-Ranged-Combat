@@ -19,17 +19,14 @@ export class PF2eConsumable {
 }
 
 export class PF2eConsumableSystem {
-    /** @type PF2eConsumableUses */
+    /**
+        @type {
+            {
+                value: number,
+                max: number,
+                autoDestroy: boolean
+            }
+        }
+     */
     uses;
-}
-
-export class PF2eConsumableUses {
-    /** @type number */
-    value;
-    
-    /** @type number */
-    max;
-    
-    /** @type boolean */
-    autoDestroy;
 }
