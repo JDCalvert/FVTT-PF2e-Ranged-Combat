@@ -1,5 +1,6 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
+import { PF2eItem } from "../types/pf2e/item.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
@@ -7,14 +8,16 @@ export class Updates {
     /** @type PF2eActor */
     actor;
 
-    /** @type any[] */
+    /** @type PF2eItem[] */
     creates;
 
-    /** @type any[] */
+    /** @type PF2eItem[] */
     deletes;
 
-    /** @type any[] */
+    /** @type PF2eItem[] */
     updates;
+
+    complexUpdates;
 
     /**
      * @param {PF2eActor} actor 
@@ -30,14 +33,27 @@ export class Updates {
         this.floatyTextToShow = [];
     }
 
+    /**
+     * @param {PF2eItem} item 
+     */
     create(item) {
         this.creates.push(item);
     }
 
+    /**
+     * @param {PF2eItem} item 
+     */
     delete(item) {
         this.deletes.push(item.id);
     }
 
+    /**
+     * Add the given update to the updates list.
+     * If another update for the same item exists, merges the existing and new updates.
+     * 
+     * @param {PF2eItem} item 
+     * @param {any} update 
+     */
     update(item, update) {
         const existingUpdate = this.updates.find(updateItem => updateItem._id === item.id);
         if (existingUpdate) {
@@ -52,14 +68,24 @@ export class Updates {
         }
     }
 
+    /**
+     * @param {function(): void} update
+     */
     complexUpdate(update) {
         this.complexUpdates.push(update);
     }
 
+    /**
+     * @param {string} text
+     * @param {boolean} up
+     */
     floatyText(text, up) {
         this.floatyTextToShow.push({ text, up });
     }
 
+    /**
+     * @returns {boolean}
+     */
     hasChanges() {
         return this.creates.length || this.deletes.length || this.updates.length || this.complexUpdates.length;
     }
@@ -91,7 +117,11 @@ export class Updates {
     }
 }
 
+/**
+ * Find a single controlled actor, either from an open character sheet, selected token, or owned actor.
+ */
 export function getControlledActor() {
+    /** @type PF2eActor[] */
     const sheetActors = Object.values(ui.windows).map(window => window.actor).filter(actor => !!actor);
     if (sheetActors.length === 1) {
         return sheetActors[0];
@@ -134,7 +164,11 @@ export function getControlledActorAndToken() {
 
 /**
  * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
- * with the same source ID if one cannot be found
+ * with the same source ID if one cannot be found.
+ * 
+ * @param {PF2eActor} actor
+ * @param {string} itemId 
+ * @param {string} sourceId
  */
 export function findItemOnActor(actor, itemId, sourceId) {
     return actor.items.find(item => item.id === itemId && !item.isStowed)
@@ -142,18 +176,25 @@ export function findItemOnActor(actor, itemId, sourceId) {
 }
 
 /**
- * Get a specific item from the actor, identified by its source ID. Optionally, add it if not already present
+ * Get a specific item from the actor, identified by its source ID
+ * 
+ * @param {PF2eActor} actor
+ * @param {string} sourceId
  */
 export function getItemFromActor(actor, sourceId) {
-    return actor.items.find(item => item.getFlag("core", "sourceId") === sourceId);
+    return actor.items.find(item => item.sourceId === sourceId);
 }
 
 /**
  * Get an effect currently on the actor with the specified source ID and target
+ * 
+ * @param {PF2eActor} actor
+ * @param {string} sourceId
+ * @param {string} targetId
  */
 export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
-        effect.getFlag("core", "sourceId") === sourceId
+        effect.sourceId === sourceId
         && getFlag(effect, "targetId") === targetId
         && !effect.isExpired
     );
@@ -252,6 +293,10 @@ export function getAttackPopout(item) {
 
 /**
  * For the given actor type, check if the advanced ammunition system is enabled
+ * 
+ * @param {PF2eActor} actor
+ * 
+ * @returns {boolean}
  */
 export function useAdvancedAmmunitionSystem(actor) {
     if (actor.type === "character") {

@@ -1,13 +1,22 @@
-import { Ammunition } from "../types/pf2e-ranged-combat-types.js";
+import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
-import { findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { Updates, findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
 
+/**
+ * Handle firing a weapon, including updating/removing loaded effects and consuming ammunition.
+ * 
+ * @param {PF2eActor} actor
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ * @returns 
+ */
 export function fireWeapon(actor, weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
@@ -27,6 +36,13 @@ export function fireWeapon(actor, weapon, updates) {
     }
 }
 
+/**
+ * Handle firing a weapon with the advanced ammunition system disabled.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ */
 export function fireWeaponSimple(actor, weapon, updates) {
     if (weapon.isCapacity) {
         clearLoadedChamber(actor, weapon, null, updates);
@@ -48,6 +64,13 @@ export function fireWeaponSimple(actor, weapon, updates) {
     }
 }
 
+/**
+ * Handle firing a repeating weapon with the advanced ammunition system enabled.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ */
 function fireWeaponRepeating(actor, weapon, updates) {
     const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     const magazineCapacity = getFlag(magazineLoadedEffect, "capacity");
@@ -88,6 +111,13 @@ function fireWeaponRepeating(actor, weapon, updates) {
     }
 }
 
+/**
+ * Handle firing a reloadable weapon.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ */
 function fireWeaponReloadable(actor, weapon, updates) {
     if (weapon.isCapacity) {
         fireWeaponCapacity(actor, weapon, updates);
@@ -105,6 +135,13 @@ function fireWeaponReloadable(actor, weapon, updates) {
     }
 }
 
+/**
+ * Handle firing a capacity weapon
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ */
 function fireWeaponCapacity(actor, weapon, updates) {
     const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
     updates.delete(chamberLoadedEffect);
@@ -114,6 +151,13 @@ function fireWeaponCapacity(actor, weapon, updates) {
     consumeAmmunition(actor, weapon, chamberAmmunition, updates);
 }
 
+/**
+ * Handle firing a double-barrel weapon.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ */
 function fireWeaponDoubleBarrel(actor, weapon, updates) {
     if (isFiringBothBarrels(actor, weapon)) {
         // Fire the conjured round, if there is one
@@ -132,6 +176,14 @@ function fireWeaponDoubleBarrel(actor, weapon, updates) {
     }
 }
 
+/**
+ * Handle consuming ammunition after firing the weapon.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ * @param {number} ammunitionToFire 
+ */
 function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
     const ammunition = weapon.ammunition;
     if (!ammunition) {
@@ -148,7 +200,12 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
 }
 
 /**
- * Consume the given ammunition from a capacity weapon
+ * Consume the given ammunition from a capacity weapon.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {PF2eConsumable} ammunition
+ * @param {Updates} updates
  */
 function consumeAmmunition(actor, weapon, ammunition, updates) {
     if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
