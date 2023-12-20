@@ -138,6 +138,14 @@
                     "warningAlreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
                     "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger."
                 },
+                "spendAmmoFromMagazine": {
+                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged combat - Le rechargement du chargeur ne peut être utilisé que si le système de munitions avancé est activé.",
+                    "warningNpcNotSupported": "PF2e Ranged Combat - Le rechargement des chargeurs n'est actuellement pas pris en charge pour les PNJ.",
+                    "warningNoRepeatingWeapons": "Vous n'avez pas d'armes à répétition.",
+                    "warningNotEnoughAmmo": "{weapon} doesn't have enough ammo in magazine.",
+                    "tokenSpendAmmunitionFromMagazine": "{token} spend {amount} ammunition from {weapon}'s current magazine",
+                    "warningNotLoaded": "{weapon} n'est pas chargé(e) !"
+                },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "Vous n'avez pas d'armes utilisant des munitions.",
                     "warningNoCompatibleAmmunitionAvailable": "Vous ne disposez pas de munitions compatibles avec votre {weapon}.",
