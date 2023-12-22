@@ -293,6 +293,10 @@ export function getAttackPopout(item) {
 
 /**
  * For the given actor type, check if the advanced ammunition system is enabled
+ * 
+ * @param {PF2eActor} actor
+ * 
+ * @returns {boolean}
  */
 export function useAdvancedAmmunitionSystem(actor) {
     if (actor.type === "character") {

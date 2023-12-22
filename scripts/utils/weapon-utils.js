@@ -1,3 +1,5 @@
+import { PF2eWeapon } from "../types/pf2e/weapon.js";
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { ItemSelectDialog } from "./item-select-dialog.js";
 import { showWarning } from "./utils.js";
 
@@ -59,8 +61,13 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
     return weapons;
 }
 
+/**
+ * @param {PF2eWeapon} weapon 
+ * 
+ * @returns {Weapon | null}
+ */
 export function transformWeapon(weapon) {
-    const originalItem = weapon.actor.items.get(weapon.id)
+    const originalItem = weapon.actor.items.get(weapon.id);
     if (!["weapon", "melee"].includes(originalItem?.type)) {
         return null;
     }

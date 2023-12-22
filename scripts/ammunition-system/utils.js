@@ -1,5 +1,7 @@
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
+import { PF2eActor } from "../types/pf2e/actor.js";
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
-import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
+import { Updates, getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key);
@@ -88,6 +90,10 @@ export async function getSelectedAmmunition(actor, weapon, action) {
 
 /**
  * Remove a piece of ammunition from the weapon.
+ * 
+ * @param {PF2eActor} actor
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
  */
 export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1) {
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);

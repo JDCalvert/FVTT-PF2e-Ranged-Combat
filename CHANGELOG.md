@@ -1,3 +1,7 @@
+## 4.0.11 - 2023-12-18 (Pathfinder 2e 5.11.5)
+### Fixes
+- Fixed bad import causing a lot of functions to fail
+
 ## 4.0.10 - 2023-12-16 (Pathfinder 2e 5.11.3)
 ### Fixes
 - Fixed use of ammunition `isAmmunition` to `isAmmo` as per system change
