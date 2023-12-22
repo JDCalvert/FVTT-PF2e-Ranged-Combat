@@ -1,3 +1,7 @@
+## 4.1.0 - 2023-12-22 (Pathfinder 2e 5.11.5)
+### Feature
+- Add new Fully Reload macro to fully reload a capacity weapon
+
 ## 4.0.11 - 2023-12-18 (Pathfinder 2e 5.11.5)
 ### Fixes
 - Fixed bad import causing a lot of functions to fail
