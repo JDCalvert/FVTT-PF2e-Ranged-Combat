@@ -1,5 +1,5 @@
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
-import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { getWeapon } from "../../utils/weapon-utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
 import { getSelectedAmmunition, isLoaded } from "../utils.js";
 
@@ -12,8 +12,10 @@ export async function nextChamber() {
         return;
     }
 
-    const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.isCapacity, localize("noCapacityWeapons")),
+    const weapon = await getWeapon(
+        actor,
+        weapon => weapon.isCapacity,
+        localize("noCapacityWeapons"),
         weapon => isLoaded(actor, weapon) && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)
     );
     if (!weapon) {

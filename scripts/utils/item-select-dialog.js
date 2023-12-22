@@ -17,6 +17,14 @@ export class ItemSelectDialog extends Dialog {
         );
     }
 
+    /**
+     * @template T
+     * 
+     * @param {string} title 
+     * @param {string} header 
+     * @param {Map<string, T>} items 
+     * @returns {Promise<T | null>}
+     */
     static async getItem(title, header, items) {
         const result = await this.getItemWithOptions(title, header, items, []);
         return result?.item;

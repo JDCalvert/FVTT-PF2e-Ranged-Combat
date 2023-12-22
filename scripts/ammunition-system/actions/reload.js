@@ -1,5 +1,10 @@
 import { handleReload } from "../../feats/crossbow-feats.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { CapacityLoadedEffect } from "../../types/pf2e-ranged-combat/loaded-effect.js";
+import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
+import { PF2eActor } from "../../types/pf2e/actor.js";
+import { PF2eConsumable } from "../../types/pf2e/consumable.js";
+import { PF2eToken } from "../../types/pf2e/token.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
 import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded, updateAmmunitionQuantity } from "../utils.js";
@@ -7,8 +12,13 @@ import { setLoadedChamber } from "./next-chamber.js";
 import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadAmmunition } from "./unload.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.reload." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.reload." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.reload." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.reload." + key, data);
+
+class ReloadOptions {
+    /** @type boolean */
+    fullyReload;
+}
 
 export async function reload() {
     const { actor, token } = getControlledActorAndToken();
@@ -33,6 +43,29 @@ export async function reload() {
     updates.handleUpdates();
 }
 
+export async function fullyReload() {
+    const { actor, token } = getControlledActorAndToken();
+    if (!actor) {
+        return;
+    }
+
+    const weapon = await getWeapon(
+        actor,
+        weapon => weapon.requiresLoading && weapon.capacity,
+        localize("warningNoReloadableCapacityWeapons"),
+        weapon => !isFullyLoaded(actor, weapon)
+    );
+    if (!weapon) {
+        return;
+    }
+
+    const updates = new Updates(actor);
+
+    await performReload(actor, token, weapon, updates, { fullyReload: true });
+
+    updates.handleUpdates();
+}
+
 export async function reloadNPCs() {
     try {
         CONFIG.pf2eRangedCombat.silent = true;
@@ -40,7 +73,7 @@ export async function reloadNPCs() {
         const nonPlayerTokens = Array.from(canvas.scene.tokens).filter(token => !token.actor.hasPlayerOwner);
         for (const token of nonPlayerTokens) {
             const actor = token.actor;
-            const weapons = await getWeapons(
+            const weapons = getWeapons(
                 actor,
                 weapon => weapon.requiresLoading,
                 localize("noReloadableWeapons"),
@@ -59,7 +92,14 @@ export async function reloadNPCs() {
     }
 }
 
-async function performReload(actor, token, weapon, updates) {
+/**
+ * @param {PF2eActor} actor 
+ * @param {PF2eToken} token 
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ * @param {ReloadOptions} options
+ */
+async function performReload(actor, token, weapon, updates, options = {}) {
     if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             // With a repeating weapon, we only need to have a magazine loaded with at least one ammunition remaining. The ammunition itself
@@ -87,62 +127,77 @@ async function performReload(actor, token, weapon, updates) {
 
             await postReloadToChat(token, weapon);
         } else {
-            // If we have no ammunition selected, or we don't have any left in the stack, we can't reload
-            const ammo = await getAmmunition(weapon, updates);
-            if (!ammo) {
-                return;
-            }
-
             if (weapon.capacity) {
                 if (isFullyLoaded(actor, weapon)) {
                     showWarning(format("warningAlreadyFullyLoaded", { weapon: weapon.name }));
                     return;
                 }
 
+                /** @type PF2eConsumable */
+                let ammo;
+
+                /** @type number */
+                let numRoundsToLoad;
+
                 // If some chambers are already loaded, we only want to load with the same type of ammunition
                 const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
                 if (loadedEffect) {
-                    const loadedChambers = getFlag(loadedEffect, "loadedChambers");
-                    const loadedCapacity = getFlag(loadedEffect, "capacity");
-                    const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
+                    /** @type CapacityLoadedEffect */
+                    const loaded = getFlags(loadedEffect);
 
+                    numRoundsToLoad = options.fullyReload ? loaded.capacity - loaded.loadedChambers : 1;
+
+                    ammo = await getAmmunition(weapon, updates, numRoundsToLoad);
+                    if (!ammo) {
+                        return;
+                    }
+
+                    const loadedAmmunitions = loaded.ammunition;
+
+                    // Try to find ammunition of the same type already loaded. If we find any, add to it, otherwise create a new one.
                     let loadedAmmunition = loadedAmmunitions.find(ammunition => ammunition.sourceId === ammo.sourceId);
                     if (loadedAmmunition) {
-                        loadedAmmunition.quantity++;
+                        loadedAmmunition.quantity += numRoundsToLoad;
                     } else {
                         loadedAmmunition = {
                             name: ammo.name,
                             img: ammo.img,
                             id: ammo.id,
                             sourceId: ammo.sourceId,
-                            quantity: 1
+                            quantity: numRoundsToLoad,
                         };
                         loadedAmmunitions.push(loadedAmmunition);
                     }
 
-                    // Increase the number of loaded chambers by one
+                    // Increase the number of loaded chambers by one.
+                    loaded.loadedChambers += numRoundsToLoad;
+
                     updates.update(
                         loadedEffect,
                         {
                             name: buildLoadedEffectName(loadedEffect),
                             flags: {
-                                "pf2e-ranged-combat": {
-                                    loadedChambers: loadedChambers + 1,
-                                    ammunition: loadedAmmunitions
-                                }
+                                "pf2e-ranged-combat": loaded
                             }
                         }
                     );
-                    updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} ${loadedChambers + 1}/${loadedCapacity}`, true);
+                    updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} ${loaded.loadedChambers}/${loaded.capacity}`, true);
                 } else {
+                    numRoundsToLoad = options.fullyReload ? weapon.capacity : 1;
+
+                    ammo = await getAmmunition(weapon, updates, numRoundsToLoad);
+                    if (!ammo) {
+                        return false;
+                    }
+
                     // No chambers are loaded, so create a new loaded effect
                     const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
                     updates.create(loadedEffectSource);
 
                     setEffectTarget(loadedEffectSource, weapon);
 
-                    loadedEffectSource.flags["pf2e-ranged-combat"] = {
-                        ...loadedEffectSource.flags["pf2e-ranged-combat"],
+                    /** @type CapacityLoadedEffect */
+                    const loaded = {
                         originalName: loadedEffectSource.name,
                         ammunition: [
                             {
@@ -150,13 +205,18 @@ async function performReload(actor, token, weapon, updates) {
                                 img: ammo.img,
                                 id: ammo.id,
                                 sourceId: ammo.sourceId,
-                                quantity: 1
+                                quantity: numRoundsToLoad
                             }
                         ],
-                        loadedChambers: 1,
+                        loadedChambers: numRoundsToLoad,
                         capacity: weapon.capacity
                     };
-                    loadedEffectSource.name = `${loadedEffectSource.name} (${ammo.name}) (1/${weapon.capacity})`;
+
+                    loadedEffectSource.flags["pf2e-ranged-combat"] = {
+                        ...loadedEffectSource.flags["pf2e-ranged-combat"],
+                        ...loaded
+                    };
+                    loadedEffectSource.name = buildLoadedEffectName(loadedEffectSource);
                 }
 
                 // For a capacity weapon, if the selected chamber isn't loaded, assume the chamber being loaded is the selected one
@@ -165,7 +225,14 @@ async function performReload(actor, token, weapon, updates) {
                 }
 
                 await postReloadToChat(token, weapon, ammo.name);
+                updateAmmunitionQuantity(updates, ammo, -numRoundsToLoad);
             } else {
+                // If we have no ammunition selected, or we don't have any left in the stack, we can't reload
+                const ammo = await getAmmunition(weapon, updates);
+                if (!ammo) {
+                    return;
+                }
+
                 // If the weapon is already loaded with the same type of ammunition as we're loading, don't reload
                 // Otherwise, unload the existing round before loading the new one
                 const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
@@ -199,32 +266,36 @@ async function performReload(actor, token, weapon, updates) {
                 };
 
                 await postReloadToChat(token, weapon, ammo.name);
-            }
 
-            // Remove one piece of ammunition from the stack
-            updateAmmunitionQuantity(updates, ammo, -1)
+                // Remove one piece of ammunition from the stack
+                updateAmmunitionQuantity(updates, ammo, -1);
+            }
         }
     } else {
         if (checkFullyLoaded(actor, weapon)) {
             return;
         }
 
-        // If the weapon is already loaded, we don't need to do it again
-        const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-
         if (weapon.capacity) {
+            const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
             if (loadedEffect) {
-                const loadedChambers = getFlag(loadedEffect, "loadedChambers");
-                const loadedCapacity = getFlag(loadedEffect, "capacity");
+                /** @type CapacityLoadedEffect */
+                const loaded = getFlags(loadedEffect);
+
+                if (options.fullyReload) {
+                    loaded.loadedChambers = loaded.capacity;
+                } else {
+                    loaded.loadedChambers++;
+                }
 
                 updates.update(
                     loadedEffect,
                     {
-                        "name": `${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`,
-                        "flags.pf2e-ranged-combat.loadedChambers": loadedChambers + 1
+                        "name": `${getFlag(loadedEffect, "name")} (${loaded.loadedChambers}/${loaded.capacity})`,
+                        "flags.pf2e-ranged-combat": loaded
                     }
                 );
-                updates.floatyText(`${getFlag(loadedEffect, "name")} (${loadedChambers + 1}/${loadedCapacity})`, true);
+                updates.floatyText(`${getFlag(loadedEffect, "name")} (${loaded.loadedChambers}/${loaded.capacity})`, true);
 
                 if (weapon.isCapacity) {
                     await setLoadedChamber(actor, weapon, null, updates);
@@ -234,13 +305,17 @@ async function performReload(actor, token, weapon, updates) {
                 setEffectTarget(loadedEffectSource, weapon);
                 updates.create(loadedEffectSource);
 
-                const loadedEffectName = loadedEffectSource.name;
-                loadedEffectSource.name = `${loadedEffectName} (1/${weapon.capacity})`;
+                /** @type CapacityLoadedEffect */
+                const loaded = {
+                    name: loadedEffectSource.name,
+                    capacity: weapon.capacity,
+                    loadedChambers: options.fullyReload ? weapon.capacity : 1,
+                };
+
+                loadedEffectSource.name = `${loadedEffectSource.name} (1/${weapon.capacity})`;
                 loadedEffectSource.flags["pf2e-ranged-combat"] = {
                     ...loadedEffectSource.flags["pf2e-ranged-combat"],
-                    name: loadedEffectName,
-                    loadedChambers: 1,
-                    capacity: weapon.capacity
+                    ...loaded
                 };
 
                 if (weapon.isCapacity) {
@@ -260,7 +335,13 @@ async function performReload(actor, token, weapon, updates) {
     Hooks.callAll("pf2eRangedCombatReload", actor, token, weapon);
 };
 
-async function getAmmunition(weapon, updates) {
+/**
+ * @param {Weapon} weapon 
+ * @param {Updates} updates 
+ * @param {number} ammunitionRequired 
+ * @returns {Promise<PF2eConsumable | null}
+ */
+async function getAmmunition(weapon, updates, ammunitionRequired = 1) {
     const ammunition = weapon.ammunition;
 
     if (!ammunition) {
@@ -272,7 +353,7 @@ async function getAmmunition(weapon, updates) {
             false,
             false
         );
-    } else if (ammunition.quantity < 1 && ammunition.system.uses.autoDestroy) {
+    } else if (ammunition.quantity < ammunitionRequired && ammunition.system.uses.autoDestroy) {
         return await selectAmmunition(
             weapon,
             updates,

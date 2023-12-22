@@ -1,12 +1,29 @@
-import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
+import { PF2eActor } from "../types/pf2e/actor.js";
+import { PF2eConsumable } from "../types/pf2e/consumable.js";
+import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelectDialog } from "./item-select-dialog.js";
 import { showWarning } from "./utils.js";
 
+/**
+ * Choose a single weapon from the given actor that matches the given conditions.
+ *
+ * @param {PF2eActor} actor 
+ * @param {(weapon: Weapon) => boolean} predicate 
+ * @param {string} noResultsMessage 
+ * @param {(weapon: Weapon) => boolean} priorityPredicate 
+ * @returns {Promise<Weapon | null>}
+ */
 export async function getWeapon(actor, predicate, noResultsMessage, priorityPredicate) {
     return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage), priorityPredicate);
 }
 
+/**
+ * 
+ * @param {Array<PF2eWeapon>} weapons 
+ * @param {(weapon: Weapon) => boolean} priorityPredicate 
+ * @returns {Weapon | null}
+ */
 export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     // If there are no weapons, then return nothing
     if (!weapons.length) {
@@ -27,6 +44,7 @@ export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     }
 
     // We need to choose a weapon
+    /** @type Map<string, Weapon> */
     const weaponsByEquipped = new Map();
     const equippedWeapons = weapons.filter(weapon => weapon.isEquipped);
     if (equippedWeapons.length) {
@@ -40,8 +58,17 @@ export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     return ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weaponsByEquipped);
 }
 
+/**
+ * 
+ * @param {PF2eActor} actor 
+ * @param {(weapon: Weapon) => boolean} predicate 
+ * @param {string} noResultsMessage 
+ * @returns {Weapon[]}
+ */
 export function getWeapons(actor, predicate = () => true, noResultsMessage = null) {
+    /** @type Weapon[] */
     let weapons;
+
     if (actor.type === "character") {
         weapons = actor.itemTypes.weapon
             .map(characterWeaponTransform)
@@ -81,6 +108,10 @@ export function transformWeapon(weapon) {
     }
 }
 
+/**
+ * @param {PF2eWeapon} weapon 
+ * @returns {Weapon}
+ */
 function characterWeaponTransform(weapon) {
     return {
         actor: weapon.actor,
@@ -114,6 +145,10 @@ function characterWeaponTransform(weapon) {
     };
 }
 
+/**
+ * @param {PF2eWeapon} weapon 
+ * @returns {Weapon}
+ */
 function npcWeaponTransform(melee) {
     const weaponId = melee.flags["pf2e-ranged-combat"]?.weaponId;
     const weapon = weaponId ? melee.actor.items.get(weaponId) : null;
@@ -275,6 +310,10 @@ function requiresAmmunition(weapon) {
     }
 }
 
+/**
+ * @param {PF2eWeapon} weapon 
+ * @returns {PF2eConsumable}
+ */
 function getAmmunition(weapon) {
     if (!usesAmmunition(weapon)) {
         return;

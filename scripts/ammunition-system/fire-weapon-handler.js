@@ -233,7 +233,7 @@ function consumeConjuredRound(actor, weapon, updates) {
  */
 function postAmmunition(actor, ammunition) {
     const ammunitionItem = findItemOnActor(actor, ammunition.id, ammunition.sourceId);
-    if (shouldPostFullAmmunition(actor, ammunitionItem)) {
+    if (shouldPostFullAmmunition(ammunitionItem)) {
         ammunitionItem.toMessage();
     } else {
         postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));

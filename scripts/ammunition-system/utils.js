@@ -1,5 +1,7 @@
+import { CapacityLoadedEffect, LoadedEffect } from "../types/pf2e-ranged-combat/loaded-effect.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
+import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
 import { Updates, getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
@@ -31,6 +33,11 @@ export function isLoaded(actor, weapon) {
 
 /**
  * Check if the weapon is fully loaded, returning the warning message to display
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * 
+ * @return {boolean}
  */
 export function isFullyLoaded(actor, weapon) {
     let roundsLoaded = 0;
@@ -56,6 +63,14 @@ export function isFullyLoaded(actor, weapon) {
     }
 }
 
+/**
+ * Select an ammunition type of the ones loaded into the given weapon.
+ * 
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ * @param {string} action 
+ * @returns 
+ */
 export async function getSelectedAmmunition(actor, weapon, action) {
     const ammunitions = [];
 
@@ -123,8 +138,13 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
     }
 }
 
+/**
+ * @param {Updates} updates 
+ * @param {PF2eConsumable} ammunition 
+ * @param {number} delta 
+ */
 export function updateAmmunitionQuantity(updates, ammunition, delta) {
-    const uses = ammunition.system.uses
+    const uses = ammunition.system.uses;
     if (uses.autoDestroy) {
         if (uses.max > 1) {
             if (uses.value + delta > 0) {
@@ -199,23 +219,34 @@ export function clearLoadedChamber(actor, weapon, ammunition, updates) {
 
 /**
  * For weapons with a capacity of more than one, build the 
+ * 
+ * @returns {string}
  */
 export function buildLoadedEffectName(loadedEffect) {
-    const ammunitions = getFlag(loadedEffect, "ammunition");
+    /** @type LoadedEffect | CapacityLoadedEffect */
+    let loaded = getFlags(loadedEffect);
 
     // We're not tracking specific ammunition, either because it's for a repeating weapon or
     // we're using the simple ammunition system
-    if (!ammunitions || !ammunitions.length) {
+    if (!loaded.ammunition || !loaded.ammunition.length) {
         return loadedEffect.name;
     }
 
-    const capacity = getFlag(loadedEffect, "capacity");
-    const originalName = getFlag(loadedEffect, "originalName");
+    /** @type CapacityLoadedEffect */
+    const capacityLoaded = loaded;
+
+    const ammunitions = capacityLoaded.ammunition;
+    const capacity = capacityLoaded.capacity;
+    const originalName = capacityLoaded.originalName;
 
     // We have exactly one type of ammunition, so the name is 
     if (ammunitions.length === 1) {
         const ammunition = ammunitions[0];
-        return `${originalName} (${ammunition.name}) (${ammunition.quantity}/${capacity})`;
+        if (ammunition.level) {
+            return `${originalName} (${ammunition.name}) (${ammunition.quantity}/${capacity})`;
+        } else {
+            return `${originalName} (${ammunition.quantity}/${capacity})`;
+        }
     } else {
         const ammunitionCount = ammunitions.map(ammunition => ammunition.quantity).reduce((current, next) => current + next);
         const ammunitionsDescription = ammunitions.map(ammunition => `${ammunition.name} x${ammunition.quantity}`).join(", ");

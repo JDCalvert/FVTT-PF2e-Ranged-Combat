@@ -1,0 +1,27 @@
+{
+  "name": "Fully Reload",
+  "type": "script",
+  "scope": "global",
+  "author": "6cYJNd43VitcuYqD",
+  "img": "modules/pf2e-ranged-combat/art/fully-reload.webp",
+  "command": "game.pf2eRangedCombat.fullyReload();",
+  "folder": null,
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {
+    "core": {}
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.11.5",
+    "coreVersion": "11.315",
+    "createdTime": 1703286910471,
+    "modifiedTime": 1703288274001,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_id": "NdkPdr7RrNkYJSs3",
+  "sort": 0,
+  "_key": "!macros!NdkPdr7RrNkYJSs3"
+}

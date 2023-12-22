@@ -142,6 +142,7 @@
                 },
                 "reload": {
                     "warningNoReloadableWeapons": "You have no reloadable weapons.",
+                    "warningNoReloadableCapacityWeapons": "You have no reloadable weapons with the capacity trait.",
                     "warningNoMagazineLoaded": "{weapon} has no magazine loaded!",
                     "warningMagazineEmpty": "{weapon}'s magazine is empty!",
                     "warningAlreadyLoaded": "{weapon} is already loaded.",

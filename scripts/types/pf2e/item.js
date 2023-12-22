@@ -7,4 +7,7 @@ export class PF2eItem {
 
     /** @type boolean */
     isStowed;
+
+    /** @type number */
+    quantity;
 }

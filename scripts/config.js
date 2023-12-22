@@ -1,17 +1,16 @@
-import { reload } from "./ammunition-system/actions/reload.js";
-import { unload } from "./ammunition-system/actions/unload.js";
-import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
-import { reloadNPCs } from "./ammunition-system/actions/reload.js";
-import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
-import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
-import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
-import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.js";
-import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
-import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot } from "./actions/alchemical-shot.js";
-import { runMigrations } from "./utils/migrations/migration.js";
+import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
+import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
+import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.js";
+import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
+import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
+import { reload, reloadNPCs, fullyReload } from "./ammunition-system/actions/reload.js";
+import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
+import { unload } from "./ammunition-system/actions/unload.js";
+import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
+import { runMigrations } from "./utils/migrations/migration.js";
 
 Hooks.on(
     "init",
@@ -151,6 +150,7 @@ Hooks.on(
             conjureBullet,
             reloadMagazine,
             reloadNPCs,
+            fullyReload,
             consolidateRepeatingWeaponAmmunition,
             huntPrey,
             loadAlchemicalCrossbow,

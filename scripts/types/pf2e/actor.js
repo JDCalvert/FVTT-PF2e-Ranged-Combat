@@ -18,4 +18,7 @@ export class PF2eItemTypes {
 
     /** @type PF2eItem[] */
     effect;
+
+    /** @type PF2eWeapon[] */
+    weapon;
 }

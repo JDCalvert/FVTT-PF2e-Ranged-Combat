@@ -1,18 +1,8 @@
-export class PF2eConsumable {
-    /** @type string */
-    id;
+import { PF2eItem } from "./item.js";
 
-    /** @type string */
-    sourceId;
-
+export class PF2eConsumable extends PF2eItem {
     /** @type boolean */
     isAmmo;
-
-    /** @type boolean */
-    isStowed;
-
-    /** @type number */
-    quantity;
 
     /** @type PF2eConsumableSystem */
     system;
