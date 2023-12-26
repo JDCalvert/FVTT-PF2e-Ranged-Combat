@@ -17,8 +17,6 @@ export class Updates {
     /** @type PF2eItem[] */
     updates;
 
-    complexUpdates;
-
     /**
      * @param {PF2eActor} actor 
      */
@@ -28,7 +26,6 @@ export class Updates {
         this.creates = []; // Array of items to be created
         this.deletes = []; // Set of IDs of items to be deleted
         this.updates = []; // Array of updates to existing items
-        this.complexUpdates = []; // Array of functions to execute to perform complex updates
 
         this.floatyTextToShow = [];
     }
@@ -69,13 +66,6 @@ export class Updates {
     }
 
     /**
-     * @param {function(): void} update
-     */
-    complexUpdate(update) {
-        this.complexUpdates.push(update);
-    }
-
-    /**
      * @param {string} text
      * @param {boolean} up
      */
@@ -87,15 +77,16 @@ export class Updates {
      * @returns {boolean}
      */
     hasChanges() {
-        return this.creates.length || this.deletes.length || this.updates.length || this.complexUpdates.length;
+        return this.creates.length || this.deletes.length || this.updates.length;
     }
 
     async handleUpdates() {
-        for (const update of this.complexUpdates) {
-            await update();
+        let items;
+
+        if (this.creates.length) {
+            items = await this.actor.createEmbeddedDocuments("Item", this.creates);
         }
 
-        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
         if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates);
         if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
 

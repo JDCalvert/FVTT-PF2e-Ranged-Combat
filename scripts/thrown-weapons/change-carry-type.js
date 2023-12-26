@@ -133,7 +133,7 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
         groupStacks.push(targetStack);
         const groupStackIds = groupStacks.map(stack => stack.id);
 
-        const updates = new Updates(item.actor);
+        const updates = new Updates(targetStack.actor);
 
         // Update the new stack to have a size of one, and the equipped status
         // that we were trying to update the original stack to

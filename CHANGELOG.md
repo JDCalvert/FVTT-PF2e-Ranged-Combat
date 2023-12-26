@@ -1,3 +1,7 @@
+## 4.1.1 - 2023-12-26 (Pathfinder 2e 5.11.5)
+### Fix
+- Fixed advanced thrown weapon system error when creating stack when a token is targeted
+
 ## 4.1.0 - 2023-12-22 (Pathfinder 2e 5.11.5)
 ### Feature
 - Add new Fully Reload macro to fully reload a capacity weapon
