@@ -81,12 +81,7 @@ export class Updates {
     }
 
     async handleUpdates() {
-        let items;
-
-        if (this.creates.length) {
-            items = await this.actor.createEmbeddedDocuments("Item", this.creates);
-        }
-
+        if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
         if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates);
         if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
 
