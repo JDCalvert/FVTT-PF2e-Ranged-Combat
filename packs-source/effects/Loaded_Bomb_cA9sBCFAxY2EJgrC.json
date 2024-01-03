@@ -9,15 +9,8 @@
   "flags": {},
   "system": {
     "description": {
+      "gm": "",
       "value": "<p>You have loaded your Alchemical Crossbow with an alchemical bomb, and deal an additional 1d6 damage of the bomb's type.</p>"
-    },
-    "source": {
-      "value": ""
-    },
-    "traits": {
-      "value": [],
-      "rarity": "common",
-      "custom": ""
     },
     "rules": [
       {
@@ -73,16 +66,25 @@
       }
     ],
     "slug": null,
-    "schema": {
-      "version": 0.73,
-      "lastMigration": {
-        "datetime": "2022-03-25T20:32:42.898+00:00",
-        "version": {
-          "schema": null,
-          "foundry": "9.255",
-          "system": "3.7.2.10819"
-        }
+    "_migration": {
+      "version": 0.911,
+      "lastMigration": null,
+      "previous": {
+        "schema": 0.73,
+        "foundry": "11.315",
+        "system": "5.11.5"
       }
+    },
+    "traits": {
+      "otherTags": [],
+      "value": [],
+      "rarity": "common"
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
     },
     "level": {
       "value": 1
@@ -90,18 +92,19 @@
     "duration": {
       "value": -1,
       "unit": "unlimited",
-      "sustained": false,
-      "expiry": "turn-start"
+      "expiry": null,
+      "sustained": false
     },
     "start": {
       "value": 0,
       "initiative": null
     },
-    "target": null,
     "tokenIcon": {
       "show": true
     },
-    "badge": null
+    "badge": null,
+    "context": null,
+    "target": null
   },
   "ownership": {
     "default": 0,
@@ -109,10 +112,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "4.2.1",
-    "coreVersion": "10.286",
+    "systemVersion": "5.11.5",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1664797612380,
+    "modifiedTime": 1704277391990,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!cA9sBCFAxY2EJgrC"

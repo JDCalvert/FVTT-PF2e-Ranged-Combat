@@ -9,15 +9,8 @@
   "flags": {},
   "system": {
     "description": {
-      "value": "<p><span style=\"color: #191813; font-family: Roboto, sans-serif; font-size: 13px;\">You gain a +2 circumstance bonus to the damage roll on your next Strike with your crossbow. If the crossbow is a simple crossbow, you also increase the damage die size for that attack.</span></p>"
-    },
-    "source": {
-      "value": ""
-    },
-    "traits": {
-      "value": [],
-      "rarity": "common",
-      "custom": ""
+      "gm": "",
+      "value": "<p><span style=\"color:#191813;font-family:Roboto, sans-serif;font-size:13px\">You gain a +2 circumstance bonus to the damage roll on your next Strike with your crossbow. If the crossbow is a simple crossbow, you also increase the damage die size for that attack.</span></p>"
     },
     "rules": [
       {
@@ -30,7 +23,7 @@
           ],
           "predicate": [
             "item:ranged",
-            "item:tag:crossbow",
+            "item:group:crossbow",
             "item:equipped"
           ]
         }
@@ -42,8 +35,8 @@
           "upgrade": true
         },
         "predicate": [
-          "weapon:tag:crossbow",
-          "weapon:category:simple"
+          "item:group:crossbow",
+          "item:category:simple"
         ],
         "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
         "slug": "crossbow-ace-dice-upgrade"
@@ -51,7 +44,7 @@
       {
         "key": "FlatModifier",
         "predicate": [
-          "weapon:tag:crossbow"
+          "item:group:crossbow"
         ],
         "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
         "type": "circumstance",
@@ -59,9 +52,25 @@
       }
     ],
     "slug": null,
-    "schema": {
-      "version": 0.713,
-      "lastMigration": null
+    "_migration": {
+      "version": 0.911,
+      "lastMigration": null,
+      "previous": {
+        "schema": 0.713,
+        "foundry": "11.315",
+        "system": "5.11.5"
+      }
+    },
+    "traits": {
+      "otherTags": [],
+      "value": [],
+      "rarity": "common"
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
     },
     "level": {
       "value": 1
@@ -69,18 +78,19 @@
     "duration": {
       "value": 0,
       "unit": "rounds",
-      "sustained": false,
-      "expiry": "turn-end"
+      "expiry": "turn-end",
+      "sustained": false
     },
     "start": {
       "value": 0,
       "initiative": null
     },
-    "target": null,
     "tokenIcon": {
       "show": true
     },
-    "badge": null
+    "badge": null,
+    "context": null,
+    "target": null
   },
   "ownership": {
     "default": 0,
@@ -88,10 +98,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "4.2.1",
-    "coreVersion": "10.286",
+    "systemVersion": "5.11.5",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1664796550879,
+    "modifiedTime": 1704277391990,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!hG9i3aOBDZ9Bq9yi"

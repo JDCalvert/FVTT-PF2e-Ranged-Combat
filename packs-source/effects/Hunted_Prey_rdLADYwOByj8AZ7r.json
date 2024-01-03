@@ -12,19 +12,27 @@
       "gm": "",
       "value": "<p>You have designated this creature as your prey.</p>"
     },
-    "source": {
-      "value": ""
-    },
     "rules": [],
     "slug": "hunted-prey",
-    "schema": {
-      "version": 0.713,
-      "lastMigration": null
+    "_migration": {
+      "version": 0.911,
+      "lastMigration": null,
+      "previous": {
+        "schema": 0.713,
+        "foundry": "11.315",
+        "system": "5.11.5"
+      }
     },
     "traits": {
+      "otherTags": [],
       "value": [],
-      "rarity": "common",
-      "custom": ""
+      "rarity": "common"
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
     },
     "level": {
       "value": 1
@@ -32,19 +40,19 @@
     "duration": {
       "value": -1,
       "unit": "unlimited",
-      "sustained": false,
-      "expiry": null
+      "expiry": null,
+      "sustained": false
     },
     "start": {
       "value": 0,
       "initiative": null
     },
-    "target": null,
     "tokenIcon": {
       "show": true
     },
     "badge": null,
     "context": null,
+    "target": null,
     "unidentified": false
   },
   "ownership": {
@@ -53,10 +61,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "4.9.1",
-    "coreVersion": "10.291",
+    "systemVersion": "5.11.5",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1678742633133,
+    "modifiedTime": 1704277391990,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!rdLADYwOByj8AZ7r"

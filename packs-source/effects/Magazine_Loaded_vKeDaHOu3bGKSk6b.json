@@ -9,15 +9,8 @@
   "flags": {},
   "system": {
     "description": {
+      "gm": "",
       "value": "<p>Your weapon is loaded with a magazine.</p>"
-    },
-    "source": {
-      "value": ""
-    },
-    "traits": {
-      "value": [],
-      "rarity": "common",
-      "custom": ""
     },
     "rules": [
       {
@@ -34,9 +27,25 @@
       }
     ],
     "slug": null,
-    "schema": {
-      "version": 0.716,
-      "lastMigration": null
+    "_migration": {
+      "version": 0.911,
+      "lastMigration": null,
+      "previous": {
+        "schema": 0.716,
+        "foundry": "11.315",
+        "system": "5.11.5"
+      }
+    },
+    "traits": {
+      "otherTags": [],
+      "value": [],
+      "rarity": "common"
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
     },
     "level": {
       "value": 1
@@ -44,18 +53,19 @@
     "duration": {
       "value": -1,
       "unit": "unlimited",
-      "sustained": false,
-      "expiry": "turn-start"
+      "expiry": null,
+      "sustained": false
     },
     "start": {
       "value": 0,
       "initiative": null
     },
-    "target": null,
     "tokenIcon": {
       "show": true
     },
-    "badge": null
+    "badge": null,
+    "context": null,
+    "target": null
   },
   "ownership": {
     "default": 0,
@@ -63,10 +73,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "4.2.1",
-    "coreVersion": "10.286",
+    "systemVersion": "5.11.5",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1664790505118,
+    "modifiedTime": 1704277391990,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!vKeDaHOu3bGKSk6b"
