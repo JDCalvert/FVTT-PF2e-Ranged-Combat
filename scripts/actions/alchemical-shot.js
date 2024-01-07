@@ -21,7 +21,7 @@ export async function alchemicalShot() {
 
     const weapon = await getWeapon(
         actor,
-        weapon => weapon.isEquipped && (weapon.group === "firearm" || weapon.isCrossbow),
+        weapon => weapon.isEquipped && (weapon.group == "firearm" || weapon.group == "crossbow"),
         format("warningNotWieldingProperWeapon", { token: token.name })
     );
     if (!weapon) {
@@ -103,7 +103,7 @@ export async function handleWeaponFiredAlchemicalShot(weapon, updates) {
         if (getFlag(alchemicalShotEffect, "fired")) {
             updates.delete(alchemicalShotEffect);
         } else {
-            alchemicalShotEffect.system.rules.findSplice(rule => rule.selector.endsWith("-attack"));
+            alchemicalShotEffect.system.rules.findSplice(rule => rule.selector.some(selector => selector.endsWith("-attack")));
             updates.update(
                 alchemicalShotEffect,
                 {

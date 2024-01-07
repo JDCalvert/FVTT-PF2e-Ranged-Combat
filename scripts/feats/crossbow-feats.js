@@ -11,7 +11,7 @@ export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effe
 
 export async function handleReload(weapon, updates) {
     // Both of these feats only activate if the weapon is an equipped crossbow
-    if (!weapon.isCrossbow || !weapon.isEquipped) {
+    if (!weapon.group == "crossbow" || !weapon.isEquipped) {
         return;
     }
 
@@ -26,7 +26,7 @@ export async function handleReload(weapon, updates) {
 
 export async function handleHuntPrey(actor, updates) {
     if (getItemFromActor(actor, CROSSBOW_ACE_FEAT_ID)) {
-        const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.isCrossbow);
+        const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.group == "crossbow");
         for (const weapon of weapons) {
             await applyFeatEffect(weapon, CROSSBOW_ACE_EFFECT_ID, updates);
         }

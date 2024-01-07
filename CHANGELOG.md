@@ -1,3 +1,7 @@
+## 4.1.2 - 2024-01-07 (Pathfinder 2e 5.12.1)
+### Fix
+- Fixed checks for crossbow-type weapons to use the weapon group instead of additional tags
+
 ## 4.1.1 - 2023-12-26 (Pathfinder 2e 5.11.5)
 ### Fix
 - Fixed advanced thrown weapon system error when creating stack when a token is targeted

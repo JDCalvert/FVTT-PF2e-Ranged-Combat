@@ -141,7 +141,6 @@ function characterWeaponTransform(weapon) {
         isCapacity: isCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
-        isCrossbow: weapon.system.traits.otherTags.includes("crossbow")
     };
 }
 
@@ -178,8 +177,7 @@ function npcWeaponTransform(melee) {
             isDoubleBarrel: isDoubleBarrel(weapon),
             isCapacity: isCapacity(weapon),
             isEquipped: weapon.isEquipped,
-            isStowed: weapon.isStowed,
-            isCrossbow: weapon.system.traits.otherTags.includes("crossbow")
+            isStowed: weapon.isStowed
         };
     } else {
         return {
@@ -207,8 +205,7 @@ function npcWeaponTransform(melee) {
             isDoubleBarrel: isDoubleBarrel(melee),
             isCapacity: isCapacity(melee),
             isEquipped: true,
-            isStowed: false,
-            isCrossbow: false
+            isStowed: false
         };
     }
 }
