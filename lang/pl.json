@@ -2,12 +2,12 @@
     "pf2e-ranged-combat": {
         "config": {
             "schemaVersion": {
-                "name": "Wersja Schemy",
+                "name": "Wersja schematu",
                 "hint": "Obecna wersja danych związanych z tym modułem"
             },
             "postFullAction": {
                 "name": "Pokaż Pełną Akcję z Makr",
-                "hint": "Odpalając makra symulujące wykonywanie akcji, zamieść pełny opis akcji w oknie czatu."
+                "hint": "Podczas uruchamiania makr symulujących wykonywanie akcji, zamieść pełny opis akcji w oknie czatu."
             },
             "postFullAmmunition": {
                 "name": "Pokaż Pełen Opis Amunicji",
@@ -35,18 +35,18 @@
             }
         },
         "huntPrey": {
-            "warningNoAction": "{token} nie ma akcji Polowanie.",
+            "warningNoAction": "{token} nie ma akcji Łowy na Zwierzynę.",
             "unknownToken": "Nieznany Token",
             "maxTargetsOne": "jedna",
             "maxTargetsTwo": "dwie",
             "maxTargetsThree": "trzy",
             "shareWithTwo": "Mogą dzielić efekt z dwoma sojusznikami.",
             "shareWithOne": "Mogą dzielić efekt z jednym sojusznikiem.",
-            "huntThreeTargets": "{token} czyni {target1}, {target2}, oraz {target3} celem swojego polowania.",
-            "huntTwoTargets": "{token} czyni {target1} oraz {target2} celem swojego polowania.",
-            "huntOneTarget": "{token} czyni {target1} celem swojego polowania.",
+            "huntThreeTargets": "{token} czyni {target1}, {target2}, oraz {target3} celem swoich łowów na zwierzynę.",
+            "huntTwoTargets": "{token} czyni {target1} oraz {target2} celem swojego łowów na zwierzynę.",
+            "huntOneTarget": "{token} czyni {target1} celem swojego łowów na zwierzynę.",
             "warningNoTarget": "Nie wybrano celu.",
-            "warningTooManyTargets": "Twoja maksymalna liczba celów polowania to: {maxTargets}."
+            "warningTooManyTargets": "Twoja maksymalna liczba celów łowów na zwierzynę to: {maxTargets}."
         },
         "thrownWeapons": {
             "warningNotEquipped": "Nie jesteś wyposażony w: {weapon}!",
@@ -103,7 +103,7 @@
                 "magazineEmpty": "Pusty magazynek w: {weapon}.",
                 "chamberNotLoaded": "{weapon}: obecna komora jest niezaładowana.",
                 "bothBarrelsNotLoaded": "{weapon} nie ma załadowanych obu luf.",
-                "bothBarrelsNotEnough": "{weapon} nie ma wystarczająco amunicji by strzelać z dwuch luf.",
+                "bothBarrelsNotEnough": "{weapon} nie ma wystarczająco amunicji by strzelać z dwóch luf.",
                 "noAmmunitionSelected": "{weapon} nie ma wybranej amunicji",
                 "noAmmunitionRemaining": "Brakuje amunicji do {weapon}"
             },
@@ -135,7 +135,7 @@
                     "warningFullyLoaded": "{weapon} jest już naładowany/a pełnym magazynkiem.",
                     "warningAlreadyMoreAmmo": "Magazynek w: {weapon}'s jest już naładowany odpowiednio amunicją: {ammo}",
                     "tokenLoadsAmmo": "{token} załadowuje {weapon} używając {ammo} ({charges}/{maxCharges}).",
-                    "warningNoCompatibleAmmunition": "Nie masz na wyposażeniu amunicji kompatybilnej z {weapon}.",
+                    "warningNoCompatibleAmmunition": "Nie masz wyposażonej amunicji kompatybilnej z twoją {weapon}.",
                     "noAmmunitionSelectNew": "Nie masz wybranej amunicji do załadowania do {weapon}.</p><p>Wybierz amunicję do załadowania.",
                     "warningNotEnoughAmmunition": "Nie masz wystarczająco amunicji by przeładować {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Wybrany rodzaj amunicji do {weapon} jest pusty.</p><p>Wybierz nową amunicję do załadowania."
@@ -149,14 +149,15 @@
                     "warningAlreadyLoadedWithAmmo": "{weapon} jest już nałądowany/a amunicją: {ammo}.",
                     "warningNoCompatibleAmmunition": "Nie masz na wyposażeniu amunicji kompatybilnej z {weapon}.",
                     "noAmmunitionSelectNew": "Nie masz wybranej amunicji do załadowania do {weapon}.</p><p>Wybierz amunicję do załadowania.",
-                    "warningNotEnoughAmmunition": "Nie masz wystarczająco amunicji by przeładować {weapon}.",
+                    "warningNotEnoughAmmunition": "Za mało amunicji do przeładowania {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Wybrany rodzaj amunicji do {weapon} jest pusty.</p><p>Wybierz nową amunicję do załadowania.",
                     "tokenReloadsWeapon": "{token} przeładowuje {weapon}",
-                    "withAmmunition": "używając: {ammunition}."
+                    "withAmmunition": "używając: {ammunition}.",
+                    "warningNoReloadableCapacityWeapons": "Nie masz broni wielokrotnego ładowania z cechą pojemności."
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "Nie masz broni używającej amunicji.",
-                    "warningNoCompatibleAmmunitionAvailable": "Nie masz na wyposażeniu amunicji kompatybilnej z {weapon}."
+                    "warningNoCompatibleAmmunitionAvailable": "Nie masz wyposażonej amunicji kompatybilnej z twoją {weapon}."
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon} nie jest naładowany/a!",
@@ -168,7 +169,7 @@
         },
         "utils": {
             "singleCharacterSelected": "Musisz mieć wybraną pojedynczą postać.",
-            "warningDialog1": "Nie możesz wykonać tej akcji, gdyż::",
+            "warningDialog1": "Nie możesz wykonać tej akcji, gdyż:",
             "warningDialog2": "To jest funkcjonalność z modułu: PF2e Ranged Combat.",
             "warningDialog3": "Możesz się nauczyć jak korzystać z modułu <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">tutaj</a>.",
             "buttonOK": "OK",
@@ -176,7 +177,7 @@
             "migration": {
                 "multipleAmmunitions.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 1: Uaktualnienie Róźnorodnej Amunicji",
                 "thrownWeaponGroups.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 2: Grupy Broni Miotanej",
-                "huntedPrey.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 3: Tabela Polowania"
+                "huntedPrey.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 3: Tabela Łowy na Zwierzynę"
             }
         },
         "actions": {
