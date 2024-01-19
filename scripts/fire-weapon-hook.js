@@ -17,14 +17,14 @@ Hooks.on(
          */
         libWrapper.register(
             "pf2e-ranged-combat",
-            "CONFIG.PF2E.Actor.documentClasses.character.prototype.adjustCarryType",
+            "CONFIG.PF2E.Actor.documentClasses.character.prototype.changeCarryType",
             changeCarryType,
             "MIXED"
         );
 
         libWrapper.register(
             "pf2e-ranged-combat",
-            "CONFIG.PF2E.Actor.documentClasses.npc.prototype.adjustCarryType",
+            "CONFIG.PF2E.Actor.documentClasses.npc.prototype.changeCarryType",
             changeCarryType,
             "MIXED"
         );
