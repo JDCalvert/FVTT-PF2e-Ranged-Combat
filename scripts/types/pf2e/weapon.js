@@ -4,4 +4,10 @@ import { PF2eItem } from "./item.js";
 export class PF2eWeapon extends PF2eItem {
     /** @type PF2eConsumable */
     ammo;
+
+    /** @type PF2eWeaponSystem */
+    system;
+}
+
+export class PF2eWeaponSystem {
 }

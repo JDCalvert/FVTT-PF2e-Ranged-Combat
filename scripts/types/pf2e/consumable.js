@@ -9,14 +9,17 @@ export class PF2eConsumable extends PF2eItem {
 }
 
 export class PF2eConsumableSystem {
-    /**
-        @type {
-            {
-                value: number,
-                max: number,
-                autoDestroy: boolean
-            }
-        }
-     */
+    /** @type PF2eConsumableUses */
     uses;
+}
+
+export class PF2eConsumableUses {
+    /** @type number */
+    value;
+
+    /** @type number */
+    max;
+
+    /** @type boolean */
+    autoDestroy;
 }

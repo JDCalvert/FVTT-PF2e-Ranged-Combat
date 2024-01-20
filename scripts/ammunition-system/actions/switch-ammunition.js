@@ -50,10 +50,17 @@ export async function selectAmmunition(
     defaultSetAsAmmunition,
     alwaysSetAsAmmunition
 ) {
-    const availableAmmunition = weapon.actor.itemTypes.consumable
+    const consumableAmmunition = weapon.actor.itemTypes.consumable
         .filter(item => item.isAmmo && !item.isStowed)
         .filter(ammo => ammo.quantity > 0 || !ammo.system.uses.autoDestroy)
         .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
+
+    const weaponAmmunition = weapon.actor.itemTypes.weapon
+        .filter(item => !item.isStowed)
+        .filter(item => item.quantity > 0)
+        .filter(item => weapon.isAmmunitionForWeapon(item))
+
+    const availableAmmunition = consumableAmmunition.concat(weaponAmmunition);
 
     if (!availableAmmunition.length) {
         showWarning(nonAvailableMessage);

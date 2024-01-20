@@ -58,20 +58,6 @@ Hooks.on(
             "OVERRIDE"
         );
 
-        /**
-         * Override the system function of determining a weapon's ammunition, so we still consider
-         * an empty stack as selected ammunition
-         */
-        libWrapper.register(
-            "pf2e-ranged-combat",
-            "CONFIG.PF2E.Item.documentClasses.weapon.prototype.ammo",
-            function() {
-                const ammo = this.actor?.items.get(this.system.selectedAmmoId ?? "");
-                return ammo?.type === "consumable" ? ammo : null;
-            },
-            "OVERRIDE"
-        );
-
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",

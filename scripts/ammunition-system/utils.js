@@ -1,7 +1,8 @@
 import { CapacityLoadedEffect, LoadedEffect } from "../types/pf2e-ranged-combat/loaded-effect.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eConsumable } from "../types/pf2e/consumable.js";
+import { PF2eConsumable, PF2eConsumableUses } from "../types/pf2e/consumable.js";
+import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
 import { Updates, getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
@@ -140,33 +141,38 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
 
 /**
  * @param {Updates} updates 
- * @param {PF2eConsumable} ammunition 
+ * @param {PF2eConsumable | PF2eWeapon} ammunition 
  * @param {number} delta 
  */
 export function updateAmmunitionQuantity(updates, ammunition, delta) {
-    const uses = ammunition.system.uses;
-    if (uses.autoDestroy) {
-        if (uses.max > 1) {
-            if (uses.value + delta > 0) {
-                // We're using up some of the magazine, so just reduce the uses by the amount of ammunition
-                updates.update(ammunition, { "system.uses.value": uses.value + delta });
-            } else {
-                // We're using up the rest of the magazine, so move onto the next one
-                updates.update(
-                    ammunition,
-                    {
-                        system: {
-                            "uses.value": uses.max,
-                            "quantity": ammunition.quantity - 1
+    if (ammunition.type == "consumable") {
+        /** @type PF2eConsumableUses */
+        const uses = ammunition.system.uses;
+        if (uses.autoDestroy) {
+            if (uses.max > 1) {
+                if (uses.value + delta > 0) {
+                    // We're using up some of the magazine, so just reduce the uses by the amount of ammunition
+                    updates.update(ammunition, { "system.uses.value": uses.value + delta });
+                } else {
+                    // We're using up the rest of the magazine, so move onto the next one
+                    updates.update(
+                        ammunition,
+                        {
+                            system: {
+                                "uses.value": uses.max,
+                                "quantity": ammunition.quantity - 1
+                            }
+    
                         }
-
-                    }
-                );
+                    );
+                }
+            } else {
+                updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
             }
-        } else {
-            updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
-        }
-    }
+        }   
+    } else {
+        updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
+    }    
 }
 
 export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates) {

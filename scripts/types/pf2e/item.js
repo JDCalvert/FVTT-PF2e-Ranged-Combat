@@ -10,4 +10,7 @@ export class PF2eItem {
 
     /** @type number */
     quantity;
+
+    /** @type string */
+    type;
 }

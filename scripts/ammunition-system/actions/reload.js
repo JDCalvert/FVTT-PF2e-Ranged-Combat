@@ -339,7 +339,7 @@ async function performReload(actor, token, weapon, updates, options = {}) {
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  * @param {number} ammunitionRequired 
- * @returns {Promise<PF2eConsumable | null}
+ * @returns {Promise<PF2eConsumable | null>}
  */
 async function getAmmunition(weapon, updates, ammunitionRequired = 1) {
     const ammunition = weapon.ammunition;
