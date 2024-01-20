@@ -1,4 +1,4 @@
-## Unreleased
+## 4.2.0 - 2024-01-20 (Pathfinder 2e 5.12.7)
 ### Features
 - Add actions inside character sheets to reload, unload, reload magazine, and switch to next chamber.
 - Updated Polish translations.
