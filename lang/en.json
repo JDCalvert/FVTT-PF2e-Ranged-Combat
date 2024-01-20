@@ -88,7 +88,7 @@
                 "header": {
                     "loadedAmmunition": "Loaded Ammunition",
                     "current": "Current",
-                    "equipped": "Equipped"    
+                    "equipped": "Equipped"
                 },
                 "option": {
                     "setAsAmmunition": "Set as ammunition"
@@ -108,6 +108,12 @@
                 "noAmmunitionRemaining": "{weapon} has no ammunition remaining"
             },
             "actions": {
+                "names": {
+                    "reload": "Reload",
+                    "unload": "Unload",
+                    "reloadMagazine": "Reload Magazine",
+                    "nextChamber": "Next Chamber"
+                },
                 "conjureBullet": {
                     "conjuredRound": "Conjured Round",
                     "warningNoAction": "{token} does not have the Conjure Bullet action.",

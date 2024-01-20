@@ -1,3 +1,4 @@
+import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
 import { CapacityLoadedEffect, LoadedEffect } from "../types/pf2e-ranged-combat/loaded-effect.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
@@ -25,25 +26,26 @@ export function checkFullyLoaded(actor, weapon) {
     return weaponFullyLoaded;
 }
 
-export function isLoaded(actor, weapon) {
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+/**
+ * @param {Weapon} weapon 
+ */
+export function isLoaded(weapon) {
+    const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
+    const conjuredRoundEffect = getEffectFromActor(weapon.actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
 
     return !!loadedEffect || !!conjuredRoundEffect;
 }
 
 /**
  * Check if the weapon is fully loaded, returning the warning message to display
- * 
- * @param {PF2eActor} actor 
- * @param {Weapon} weapon 
- * 
+
+ * @param {Weapon} weapon
  * @return {boolean}
  */
-export function isFullyLoaded(actor, weapon) {
+export function isFullyLoaded(weapon) {
     let roundsLoaded = 0;
 
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+    const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
     if (loadedEffect) {
         if (weapon.capacity) {
             roundsLoaded += getFlag(loadedEffect, "loadedChambers");
@@ -52,7 +54,7 @@ export function isFullyLoaded(actor, weapon) {
         }
     }
 
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+    const conjuredRoundEffect = getEffectFromActor(weapon.actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         roundsLoaded++;
     }
@@ -67,41 +69,50 @@ export function isFullyLoaded(actor, weapon) {
 /**
  * Select an ammunition type of the ones loaded into the given weapon.
  * 
- * @param {PF2eActor} actor 
- * @param {Weapon} weapon 
- * @param {string} action 
+ * @param {Weapon} weapon
+ * @param {string} action
  * @returns 
  */
-export async function getSelectedAmmunition(actor, weapon, action) {
+export async function getSelectedAmmunition(weapon, action) {
+    const loadedAmmunitions = getLoadedAmmunitions(weapon);
+    if (loadedAmmunitions.length > 1) {
+        return await ItemSelectDialog.getItem(
+            localize("ammunitionSelect.title"),
+            localize(`ammunitionSelect.action.${action}`),
+            new Map([[localize("ammunitionSelect.header.loadedAmmunition"), loadedAmmunitions]])
+        );
+    } else {
+        return loadedAmmunitions[0];
+    }
+}
+
+/**
+ * @param {Weapon} weapon 
+ * @returns { Ammunition[] }
+ */
+export function getLoadedAmmunitions(weapon) {
     const ammunitions = [];
 
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+    const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
     if (loadedEffect) {
         const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
         ammunitions.push(...loadedAmmunitions);
     }
 
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+    const conjuredRoundEffect = getEffectFromActor(weapon.actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         ammunitions.push(
             {
                 name: localize("actions.conjureBullet.conjuredRound"),
                 img: conjuredRoundEffect.img,
                 id: CONJURED_ROUND_ITEM_ID,
-                sourceId: CONJURED_ROUND_ITEM_ID
+                sourceId: CONJURED_ROUND_ITEM_ID,
+                quantity: 1
             }
         );
     }
 
-    if (ammunitions.length > 1) {
-        return await ItemSelectDialog.getItem(
-            localize("ammunitionSelect.title"),
-            localize(`ammunitionSelect.action.${action}`),
-            new Map([[localize("ammunitionSelect.header.loadedAmmunition"), ammunitions]])
-        );
-    } else {
-        return ammunitions[0];
-    }
+    return ammunitions;
 }
 
 /**
@@ -162,17 +173,17 @@ export function updateAmmunitionQuantity(updates, ammunition, delta) {
                                 "uses.value": uses.max,
                                 "quantity": ammunition.quantity - 1
                             }
-    
+
                         }
                     );
                 }
             } else {
                 updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
             }
-        }   
+        }
     } else {
         updates.update(ammunition, { "system.quantity": ammunition.quantity + delta });
-    }    
+    }
 }
 
 export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates) {

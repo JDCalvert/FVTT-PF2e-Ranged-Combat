@@ -1,3 +1,11 @@
+## Unreleased
+### Features
+- Add actions inside character sheets to reload, unload, reload magazine, and switch to next chamber.
+- Updated Polish translations.
+
+### Fixes
+- Fix being able to use weapons as ammunition.
+
 ## 4.1.2 - 2024-01-07 (Pathfinder 2e 5.12.1)
 ### Fix
 - Fixed checks for crossbow-type weapons to use the weapon group instead of additional tags

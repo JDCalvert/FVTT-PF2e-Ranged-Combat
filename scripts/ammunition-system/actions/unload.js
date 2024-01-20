@@ -1,5 +1,7 @@
 import { Ammunition } from "../../types/pf2e-ranged-combat/ammunition.js";
+import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
+import { PF2eToken } from "../../types/pf2e/token.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
@@ -19,6 +21,15 @@ export async function unload() {
         return;
     }
 
+    performUnload(actor, token, weapon);
+}
+
+/**
+ * @param {PF2eActor} actor 
+ * @param {PF2eToken} token 
+ * @param {Weapon} weapon 
+ */
+export async function performUnload(actor, token, weapon) {
     const updates = new Updates(actor);
 
     const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
@@ -45,7 +56,7 @@ export async function unload() {
                 );
             }
         } else if (weapon.capacity) {
-            const ammunition = await getSelectedAmmunition(actor, weapon, "unload");
+            const ammunition = await getSelectedAmmunition(weapon, "unload");
             if (!ammunition) {
                 return;
             }
@@ -90,19 +101,28 @@ export async function unload() {
     Hooks.callAll("pf2eRangedCombatUnload", actor, token, weapon);
 }
 
+/**
+ * @param {PF2eActor} actor 
+ * @returns {Promise<Weapon | null>}
+ */
 function getLoadedWeapon(actor) {
     return getWeapon(
         actor,
-        weapon => {
-            if (useAdvancedAmmunitionSystem(actor) && weapon.isRepeating) {
-                return getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-            } else if (weapon.requiresLoading) {
-                return isLoaded(actor, weapon);
-            }
-            return false;
-        },
+        isWeaponLoaded,
         localize("noLoadedWeapons")
     );
+}
+
+/**
+ * @param {Weapon} weapon 
+ */
+export function isWeaponLoaded(weapon) {
+    if (useAdvancedAmmunitionSystem(weapon.actor) && weapon.isRepeating) {
+        return !!getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
+    } else if (weapon.requiresLoading) {
+        return isLoaded(weapon);
+    }
+    return false;
 }
 
 /**
@@ -117,7 +137,7 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
 
     if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
         // We found the original stack of ammunition this
-        updateAmmunitionQuantity(updates, ammunitionItem, +1);
+        updates.update(ammunitionItem, { "system.quantity": ammunitionItem.quantity + 1 });
     } else if (ammunitionRemaining > 0) {
         // The magazine still has some ammunition left, create a new item with the remaining ammunition
         const itemSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
@@ -150,7 +170,7 @@ export async function unloadAmmunition(actor, weapon, updates) {
  * @param {Ammunition} ammunition 
  * @param {Updates} updates 
  */
-export async function moveAmmunitionToInventory(actor, ammunition, updates) {
+async function moveAmmunitionToInventory(actor, ammunition, updates) {
     // Try to find either the stack the loaded ammunition came from, or another stack of the same ammunition
     const ammunitionItem = actor.items.find(item => item.id === ammunition.id && !item.isStowed)
         || actor.items.find(item => item.sourceId === ammunition.sourceId && !item.isStowed);
@@ -158,7 +178,7 @@ export async function moveAmmunitionToInventory(actor, ammunition, updates) {
     if (ammunitionItem) {
         // We still have the stack the ammunition originally came from, or another that's the same.
         // Add the currently loaded ammunition to the stack
-        updateAmmunitionQuantity(updates, ammunitionItem, +1)
+        updateAmmunitionQuantity(updates, ammunitionItem, +1);
     } else {
         // Create a new stack with one piece of ammunition in it
         const ammunitionSource = await getItem(ammunition.sourceId);

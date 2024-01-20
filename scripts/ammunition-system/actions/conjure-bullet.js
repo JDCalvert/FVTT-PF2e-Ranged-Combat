@@ -22,7 +22,7 @@ export async function conjureBullet() {
 
     const weapon = await getSingleWeapon(
         getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, localize("noReloadableWeapons")),
-        weapon => !isFullyLoaded(actor, weapon)
+        weapon => !isFullyLoaded(weapon)
     );
     if (!weapon) {
         return;

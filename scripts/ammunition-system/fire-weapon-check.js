@@ -72,7 +72,7 @@ function checkLoadedMagazine(actor, weapon) {
  * Check the weapon has a round loaded
  */
 async function checkLoadedRound(actor, weapon) {
-    if (!isLoaded(actor, weapon)) {
+    if (!isLoaded(weapon)) {
         showWarning(format("weaponNotLoaded", { weapon: weapon.name }));
         return false;
     }
@@ -83,13 +83,13 @@ async function checkLoadedRound(actor, weapon) {
         }
     }
 
-    if (isFiringBothBarrels(actor, weapon) && !isFullyLoaded(actor, weapon)) {
+    if (isFiringBothBarrels(actor, weapon) && !isFullyLoaded(weapon)) {
         showWarning(format("bothBarrelsNotLoaded", { weapon: weapon.name }));
         return false;
     }
 
     if (useAdvancedAmmunitionSystem(actor) && weapon.isDoubleBarrel && !isFiringBothBarrels(actor, weapon)) {
-        const selectedAmmunition = await getSelectedAmmunition(actor, weapon, "fire");
+        const selectedAmmunition = await getSelectedAmmunition(weapon, "fire");
         if (!selectedAmmunition) {
             return false;
         }

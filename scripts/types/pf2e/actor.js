@@ -1,5 +1,6 @@
 import { PF2eConsumable } from "./consumable.js";
 import { PF2eItem } from "./item.js";
+import { PF2eWeapon } from "./weapon.js";
 
 export class PF2eActor {
     /** @type string */

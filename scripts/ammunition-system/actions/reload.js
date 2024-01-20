@@ -30,7 +30,7 @@ export async function reload() {
         actor,
         weapon => weapon.requiresLoading,
         localize("warningNoReloadableWeapons"),
-        weapon => !isFullyLoaded(actor, weapon)
+        weapon => !isFullyLoaded(weapon)
     );
     if (!weapon) {
         return;
@@ -53,7 +53,7 @@ export async function fullyReload() {
         actor,
         weapon => weapon.requiresLoading && weapon.capacity,
         localize("warningNoReloadableCapacityWeapons"),
-        weapon => !isFullyLoaded(actor, weapon)
+        weapon => !isFullyLoaded(weapon)
     );
     if (!weapon) {
         return;
@@ -99,7 +99,7 @@ export async function reloadNPCs() {
  * @param {Updates} updates 
  * @param {ReloadOptions} options
  */
-async function performReload(actor, token, weapon, updates, options = {}) {
+export async function performReload(actor, token, weapon, updates, options = {}) {
     if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             // With a repeating weapon, we only need to have a magazine loaded with at least one ammunition remaining. The ammunition itself
@@ -128,7 +128,7 @@ async function performReload(actor, token, weapon, updates, options = {}) {
             await postReloadToChat(token, weapon);
         } else {
             if (weapon.capacity) {
-                if (isFullyLoaded(actor, weapon)) {
+                if (isFullyLoaded(weapon)) {
                     showWarning(format("warningAlreadyFullyLoaded", { weapon: weapon.name }));
                     return;
                 }
@@ -187,7 +187,7 @@ async function performReload(actor, token, weapon, updates, options = {}) {
 
                     ammo = await getAmmunition(weapon, updates, numRoundsToLoad);
                     if (!ammo) {
-                        return false;
+                        return;
                     }
 
                     // No chambers are loaded, so create a new loaded effect

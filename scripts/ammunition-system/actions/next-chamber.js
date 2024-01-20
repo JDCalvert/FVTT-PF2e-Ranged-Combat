@@ -1,3 +1,6 @@
+import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
+import { PF2eActor } from "../../types/pf2e/actor.js";
+import { PF2eToken } from "../../types/pf2e/token.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
@@ -16,21 +19,30 @@ export async function nextChamber() {
         actor,
         weapon => weapon.isCapacity,
         localize("noCapacityWeapons"),
-        weapon => isLoaded(actor, weapon) && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)
+        weapon => isLoaded(weapon) && !getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)
     );
     if (!weapon) {
         return;
     }
 
-    if (!isLoaded(actor, weapon)) {
+    if (!isLoaded(weapon)) {
         showWarning(format("warningNotLoaded", { weapon: weapon.name }));
         return;
     }
 
+    performNextChamber(actor, token, weapon);
+}
+
+/**
+ * @param {PF2eActor} actor
+ * @param {PF2eToken} token
+ * @param {Weapon} weapon
+ */
+export async function performNextChamber(actor, token, weapon) {
     const updates = new Updates(actor);
 
     if (useAdvancedAmmunitionSystem(actor)) {
-        const selectedAmmunition = await getSelectedAmmunition(actor, weapon, "switch");
+        const selectedAmmunition = await getSelectedAmmunition(weapon, "switch");
         if (!selectedAmmunition) {
             return;
         }

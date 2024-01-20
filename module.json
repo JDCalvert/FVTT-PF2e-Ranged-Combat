@@ -34,7 +34,6 @@
     "changelog": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/CHANGELOG.md",
     "esmodules": [
         "scripts/config.js",
-        "scripts/fire-weapon-hook.js",
         "scripts/hunt-prey/hunted-prey-hook.js",
         "scripts/chat-message-hook.js"
     ],

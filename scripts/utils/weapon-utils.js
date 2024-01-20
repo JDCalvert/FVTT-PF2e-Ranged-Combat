@@ -22,7 +22,7 @@ export async function getWeapon(actor, predicate, noResultsMessage, priorityPred
  * 
  * @param {Array<PF2eWeapon>} weapons 
  * @param {(weapon: Weapon) => boolean} priorityPredicate 
- * @returns {Weapon | null}
+ * @returns {Promise<Weapon | null>}
  */
 export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     // If there are no weapons, then return nothing
@@ -112,7 +112,7 @@ export function transformWeapon(weapon) {
  * @param {PF2eWeapon} weapon 
  * @returns {Weapon}
  */
-function characterWeaponTransform(weapon) {
+export function characterWeaponTransform(weapon) {
     return {
         actor: weapon.actor,
         id: weapon.id,
