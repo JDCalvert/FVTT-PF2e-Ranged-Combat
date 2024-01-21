@@ -90,7 +90,8 @@
     },
     "badge": null,
     "context": null,
-    "target": null
+    "target": null,
+    "unidentified": false
   },
   "ownership": {
     "default": 0,
@@ -98,10 +99,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.11.5",
+    "systemVersion": "5.12.7",
     "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1704277391990,
+    "modifiedTime": 1705875794360,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!hG9i3aOBDZ9Bq9yi"

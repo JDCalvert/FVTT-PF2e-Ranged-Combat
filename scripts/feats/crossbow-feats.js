@@ -1,4 +1,6 @@
-import { ensureDuration, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget } from "../utils/utils.js";
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
+import { PF2eActor } from "../types/pf2e/actor.js";
+import { Updates, ensureDuration, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
 // Crossbow Ace
@@ -9,13 +11,17 @@ export const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Ite
 export const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.s6h0xkdKf3gecLk6";
 export const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.hG9i3aOBDZ9Bq9yi";
 
+/**
+ * @param {Weapon} weapon
+ * @param {Updates} updates
+ */
 export async function handleReload(weapon, updates) {
     // Both of these feats only activate if the weapon is an equipped crossbow
     if (!weapon.group == "crossbow" || !weapon.isEquipped) {
         return;
     }
 
-    if (getItemFromActor(weapon.actor, CROSSBOW_ACE_FEAT_ID)) {
+    if (hasLegacyCrossbowAce(weapon.actor)) {
         await applyFeatEffect(weapon, CROSSBOW_ACE_EFFECT_ID, updates);
     }
 
@@ -24,8 +30,12 @@ export async function handleReload(weapon, updates) {
     }
 }
 
+/**
+ * @param {PF2eActor} actor
+ * @param {Updates} updates
+ */
 export async function handleHuntPrey(actor, updates) {
-    if (getItemFromActor(actor, CROSSBOW_ACE_FEAT_ID)) {
+    if (hasLegacyCrossbowAce(actor, CROSSBOW_ACE_FEAT_ID)) {
         const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.group == "crossbow");
         for (const weapon of weapons) {
             await applyFeatEffect(weapon, CROSSBOW_ACE_EFFECT_ID, updates);
@@ -37,6 +47,9 @@ export async function handleHuntPrey(actor, updates) {
  * Handle what happens with these feat effects when a weapon is fired. Since they only last for one shot,
  * we need to keep track of whether or not a shot has been fired for the effect already. If so, mark it
  * as having had a shot fired. If a shot has already been fired, remove the effect.
+ * 
+ * @param {Weapon} weapon
+ * @param {Updates} updates
  */
 export function handleWeaponFired(weapon, updates) {
     for (const effectId of [CROSSBOW_ACE_EFFECT_ID, CROSSBOW_CRACK_SHOT_EFFECT_ID]) {
@@ -51,6 +64,26 @@ export function handleWeaponFired(weapon, updates) {
     }
 }
 
+/**
+ * Check if the actor has the legacy Crossbow Ace feat.
+ * 
+ * @param {PF2eActor} actor 
+ * @returns boolean
+ */
+function hasLegacyCrossbowAce(actor) {
+    const crossbowAceFeat = getItemFromActor(actor, CROSSBOW_ACE_FEAT_ID);
+    if (!crossbowAceFeat) {
+        return false;
+    }
+
+    return crossbowAceFeat.rules.length > 0;
+}
+
+/**
+ * @param {Weapon} weapon
+ * @param {string} effectId
+ * @param {Updates} updates
+ */
 async function applyFeatEffect(weapon, effectId, updates) {
     // Remove any existing effects
     const existing = getEffectFromActor(weapon.actor, effectId, weapon.id);

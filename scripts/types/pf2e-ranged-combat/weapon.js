@@ -8,6 +8,9 @@ export class Weapon {
     /** @type PF2eActor */
     actor;
 
+    /** @type string */
+    group;
+
     /** @type boolean */
     usesAmmunition;
 

@@ -1,5 +1,5 @@
-2023/12/22-23:39:24.835 2d3c Delete type=3 #1
-2023/12/22-23:39:24.842 3cfc Level-0 table #5: started
-2023/12/22-23:39:24.844 3cfc Level-0 table #5: 2469 bytes OK
-2023/12/22-23:39:24.846 3cfc Delete type=0 #3
-2023/12/22-23:39:24.847 3cfc Manual compaction at level-0 from '!macros!01ND960leScrLEGo' @ 72057594037927935 : 1 .. '!macros!sQjxFAGKcxIVcyJ0' @ 0 : 0; will stop at (end)
+2024/01/21-22:25:58.754 4e98 Delete type=3 #1
+2024/01/21-22:25:58.761 5d40 Level-0 table #5: started
+2024/01/21-22:25:58.763 5d40 Level-0 table #5: 2469 bytes OK
+2024/01/21-22:25:58.765 5d40 Delete type=0 #3
+2024/01/21-22:25:58.766 5d40 Manual compaction at level-0 from '!macros!01ND960leScrLEGo' @ 72057594037927935 : 1 .. '!macros!sQjxFAGKcxIVcyJ0' @ 0 : 0; will stop at (end)

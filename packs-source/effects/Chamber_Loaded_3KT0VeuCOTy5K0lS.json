@@ -2,7 +2,7 @@
   "_id": "3KT0VeuCOTy5K0lS",
   "name": "Chamber Loaded",
   "type": "effect",
-  "img": "systems/pf2e/icons/equipment/weapons/pepperbox.webp",
+  "img": "modules/pf2e-ranged-combat/art/chamber-loaded.webp",
   "effects": [],
   "folder": null,
   "sort": 0,
@@ -71,7 +71,8 @@
     },
     "badge": null,
     "context": null,
-    "target": null
+    "target": null,
+    "unidentified": false
   },
   "ownership": {
     "default": 0,
@@ -79,10 +80,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.11.5",
+    "systemVersion": "5.12.7",
     "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1704277391990,
+    "modifiedTime": 1705875817018,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!3KT0VeuCOTy5K0lS"
