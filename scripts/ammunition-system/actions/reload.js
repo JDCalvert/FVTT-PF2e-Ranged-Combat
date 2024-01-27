@@ -272,7 +272,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
             }
         }
     } else {
-        if (checkFullyLoaded(actor, weapon)) {
+        if (checkFullyLoaded(weapon)) {
             return;
         }
 

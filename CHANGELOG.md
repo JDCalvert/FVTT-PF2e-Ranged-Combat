@@ -1,3 +1,7 @@
+## 4.2.2 - 2024-01-27 (Pathfinder 2e 5.12.7)
+### Fix
+- Fix reloading actors with advanced ammunition system disabled.
+
 ## 4.2.1 - 2024-01-21 (Pathfinder 2e 5.12.7)
 ### Fix
 - Only apply Crossbow Ace effect if the legacy Crossbow Ace feat is being used.

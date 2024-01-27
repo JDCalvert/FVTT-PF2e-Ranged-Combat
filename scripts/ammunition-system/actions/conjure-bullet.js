@@ -35,7 +35,7 @@ export async function conjureBullet() {
     }
 
     // We can't conjure a bullet if the weapon is already (fully) loaded
-    if (checkFullyLoaded(actor, weapon)) {
+    if (checkFullyLoaded(weapon)) {
         return;
     }
 

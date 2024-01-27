@@ -14,8 +14,8 @@ const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSys
 /**
  * Check if the weapon is fully loaded and, if it is, show a warning
  */
-export function checkFullyLoaded(actor, weapon) {
-    const weaponFullyLoaded = isFullyLoaded(actor, weapon);
+export function checkFullyLoaded(weapon) {
+    const weaponFullyLoaded = isFullyLoaded(weapon);
     if (weaponFullyLoaded) {
         if (weapon.capacity) {
             showWarning(format("utils.warningFullyLoaded", { weapon: weapon.name }));
