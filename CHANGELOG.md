@@ -1,3 +1,7 @@
+## 4.2.3 - 2024-01-31 (Pathfinder 2e 5.13.0)
+### Fix
+- Fix libwrapper hook for `adjustCarryType` changing to `changeCarryType` in the system.
+
 ## 4.2.2 - 2024-01-27 (Pathfinder 2e 5.12.7)
 ### Fix
 - Fix reloading actors with advanced ammunition system disabled.
