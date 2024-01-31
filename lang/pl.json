@@ -164,6 +164,12 @@
                     "tokenUnloadsAmmunitionFromWeapon": "{token} wyjmuje {ammunition} z {weapon}.",
                     "tokenUnloadsWeapon": "{token} rozładowuje {weapon}",
                     "noLoadedWeapons": "Nie masz naładowanej broni."
+                },
+                "names": {
+                    "unload": "Rozładuj",
+                    "nextChamber": "Następna Komora",
+                    "reload": "Przeładowanie",
+                    "reloadMagazine": "Przeładuj Magazynek"
                 }
             }
         },
