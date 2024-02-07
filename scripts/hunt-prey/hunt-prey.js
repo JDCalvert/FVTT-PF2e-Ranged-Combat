@@ -108,12 +108,15 @@ function getTargets(maxTargets) {
  * @param {Updates} updates
  */
 function updateSystemItems(actor, updates, huntPreyAction) {
-    // Hunt Prey: update ranged attack penalty priority so it's resolved after we determine if the target is our hunted prey
+    // Hunt Prey: add another RollOption rule element which sets hunted-prey if the target is our hunted prey
     const huntPreyActionRules = huntPreyAction.toObject().system.rules;
     const huntedPreyTargetRule = huntPreyActionRules
         .find(rule => rule.key == "RollOption" && rule.option == "hunted-prey" && rule.predicate?.includes("target:effect:prey-{actor|id}"));
     if (!huntedPreyTargetRule) {
-        huntPreyActionRules.unshift(
+        const huntedPreyIndex = huntPreyActionRules.findIndex(rule => rule.key == "RollOption" && rule.option == "hunted-prey" && rule.toggleable);
+        huntPreyActionRules.splice(
+            huntedPreyIndex + 1,
+            0,
             {
                 key: "RollOption",
                 option: "hunted-prey",
@@ -122,7 +125,7 @@ function updateSystemItems(actor, updates, huntPreyAction) {
                 ]
             }
         );
-        
+
         updates.update(huntPreyAction, { "system.rules": huntPreyActionRules });
     }
 

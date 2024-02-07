@@ -1,8 +1,0 @@
-2024/02/07-16:16:05.883 33a4 Recovering log #29
-2024/02/07-16:16:05.889 33a4 Delete type=0 #29
-2024/02/07-16:16:05.890 33a4 Delete type=3 #27
-2024/02/07-16:43:03.630 3edc Level-0 table #36: started
-2024/02/07-16:43:03.631 3edc Level-0 table #36: 0 bytes OK
-2024/02/07-16:43:03.633 3edc Delete type=0 #34
-2024/02/07-16:43:03.637 3edc Manual compaction at level-0 from '!macros!01ND960leScrLEGo' @ 72057594037927935 : 1 .. '!macros!sQjxFAGKcxIVcyJ0' @ 0 : 0; will stop at (end)
-2024/02/07-16:43:03.637 3edc Manual compaction at level-1 from '!macros!01ND960leScrLEGo' @ 72057594037927935 : 1 .. '!macros!sQjxFAGKcxIVcyJ0' @ 0 : 0; will stop at (end)

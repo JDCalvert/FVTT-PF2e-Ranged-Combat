@@ -1,3 +1,5 @@
-2024/02/07-16:44:14.012 5390 Recovering log #36
-2024/02/07-16:44:14.022 5390 Delete type=0 #36
-2024/02/07-16:44:14.022 5390 Delete type=3 #34
+2024/02/07-17:04:00.433 2f74 Delete type=3 #1
+2024/02/07-17:04:00.439 d2c Level-0 table #5: started
+2024/02/07-17:04:00.441 d2c Level-0 table #5: 7529 bytes OK
+2024/02/07-17:04:00.443 d2c Delete type=0 #3
+2024/02/07-17:04:00.443 d2c Manual compaction at level-0 from '!items!3KT0VeuCOTy5K0lS' @ 72057594037927935 : 1 .. '!items!zP0vPd14V5OG9ZFv' @ 0 : 0; will stop at (end)
