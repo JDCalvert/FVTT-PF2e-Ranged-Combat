@@ -7,11 +7,19 @@
   "scope": "global",
   "command": "game.pf2eRangedCombat.reloadMagazine();",
   "folder": null,
-  "sort": 0,
-  "permission": {
+  "sort": 1600000,
+  "flags": {},
+  "ownership": {
     "default": 0,
     "I90qJ09IMT0McqwG": 3
   },
-  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.13.2",
+    "coreVersion": "11.315",
+    "createdTime": null,
+    "modifiedTime": 1707226890731,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
   "_key": "!macros!sQjxFAGKcxIVcyJ0"
 }

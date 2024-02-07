@@ -1,0 +1,229 @@
+{
+  "name": "Ranger's Animal Companion",
+  "type": "feat",
+  "effects": [],
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>This creature is a ranger's animal companion and gains its master's @UUID[Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm]{Hunt Prey} benefits, and their hunter's edge benefit.</p>"
+    },
+    "rules": [
+      {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+        "option": "hunted-prey",
+        "toggleable": true
+      },
+      {
+        "key": "RollOption",
+        "option": "hunted-prey",
+        "predicate": [
+          "target:effect:prey-{item|flags.pf2e-ranged-combat.master-id}"
+        ]
+      },
+      {
+        "key": "RollOption",
+        "option": "edge-{item|flags.pf2e-ranged-combat.hunters-edge}"
+      },
+      {
+        "key": "FlatModifier",
+        "label": "PF2E.SpecificRule.HuntPrey.SeekHuntedPrey",
+        "predicate": [
+          "action:seek",
+          "hunted-prey"
+        ],
+        "selector": "perception",
+        "type": "circumstance",
+        "value": 2
+      },
+      {
+        "key": "FlatModifier",
+        "label": "PF2E.SpecificRule.HuntPrey.TrackHuntedPrey",
+        "predicate": [
+          "action:track",
+          "hunted-prey"
+        ],
+        "selector": "survival",
+        "type": "circumstance",
+        "value": 2
+      },
+      {
+        "key": "MultipleAttackPenalty",
+        "predicate": [
+          "agile",
+          "edge-flurry",
+          "hunted-prey"
+        ],
+        "selector": "attack",
+        "value": -2
+      },
+      {
+        "key": "MultipleAttackPenalty",
+        "predicate": [
+          "hunted-prey",
+          "edge-flurry",
+          {
+            "not": "agile"
+          }
+        ],
+        "selector": "attack",
+        "value": -3
+      },
+      {
+        "key": "FlatModifier",
+        "label": "Vs. hunted prey",
+        "predicate": [
+          "edge-outwit",
+          "hunted-prey"
+        ],
+        "selector": [
+          "deception",
+          "intimidation",
+          "stealth"
+        ],
+        "type": "circumstance",
+        "value": 2
+      },
+      {
+        "key": "FlatModifier",
+        "label": "Recall knowledge on hunted prey",
+        "predicate": [
+          "action:recall-knowledge",
+          "edge:outwit",
+          "hunted-prey"
+        ],
+        "selector": "skill-check",
+        "type": "circumstance",
+        "value": 2
+      },
+      {
+        "key": "FlatModifier",
+        "label": "Vs. attacks from hunted prey",
+        "predicate": [
+          "edge-outwit",
+          {
+            "or": [
+              "hunted-prey",
+              "origin:effect:prey-{item|flags.pf2e-ranged-combat.master-id}"
+            ]
+          }
+        ],
+        "selector": "ac",
+        "type": "circumstance",
+        "value": 1
+      },
+      {
+        "domain": "all",
+        "key": "RollOption",
+        "label": "First attack on hunted prey this round",
+        "option": "first-attack",
+        "toggleable": true,
+        "disabledIf": [
+          {
+            "not": "edge-precision"
+          }
+        ],
+        "disabledValue": false,
+        "predicate": [
+          "edge-precision"
+        ]
+      },
+      {
+        "category": "precision",
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "hunted-prey",
+          "edge-precision",
+          {
+            "or": [
+              "first-attack",
+              "prey-attack-number:1"
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "value": {
+          "brackets": [
+            {
+              "end": 10,
+              "value": {
+                "diceNumber": 1
+              }
+            },
+            {
+              "end": 18,
+              "start": 11,
+              "value": {
+                "diceNumber": 2
+              }
+            },
+            {
+              "start": 19,
+              "value": {
+                "diceNumber": 3
+              }
+            }
+          ]
+        }
+      },
+      {
+        "key": "RollOption",
+        "domain": "all",
+        "option": "prey-attack-number:{item|flags.pf2e-ranged-combat.preyAttackNumber}"
+      }
+    ],
+    "slug": null,
+    "_migration": {
+      "version": 0.917,
+      "lastMigration": null
+    },
+    "traits": {
+      "otherTags": [],
+      "value": [],
+      "rarity": "common"
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
+    },
+    "level": {
+      "value": 1
+    },
+    "category": "bonus",
+    "onlyLevel1": false,
+    "maxTakable": 1,
+    "actionType": {
+      "value": "passive"
+    },
+    "actions": {
+      "value": null
+    },
+    "prerequisites": {
+      "value": []
+    },
+    "location": null
+  },
+  "img": "icons/sundries/books/book-red-exclamation.webp",
+  "folder": null,
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {
+    "core": {}
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.13.2",
+    "coreVersion": "11.315",
+    "createdTime": 1707129874334,
+    "modifiedTime": 1707319295103,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_id": "bmDVg2hU3CSAZGJ8",
+  "sort": 0,
+  "_key": "!items!bmDVg2hU3CSAZGJ8"
+}

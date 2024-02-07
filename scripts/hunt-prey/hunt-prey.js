@@ -1,15 +1,7 @@
 import { handleHuntPrey } from "../feats/crossbow-feats.js";
-import { getControlledActorAndToken, getItem, getItemFromActor, postActionInChat, postInChat, showWarning, Updates } from "../utils/utils.js";
-
-export const HUNT_PREY_ACTION_ID = "Compendium.pf2e.actionspf2e.Item.JYi4MnsdFu618hPm";
-export const HUNTED_PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.rdLADYwOByj8AZ7r";
-export const PREY_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.mVYwtEeIaI6AW9jK";
-
-export const DOUBLE_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.Item.pbD4lfAPkK1NNag0";
-export const TRIPLE_THREAT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.EHorYedQ8r05qAtk";
-export const SHARED_PREY_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Aqhsx5duEpBgaPB0";
-
-export const HUNT_PREY_IMG = "systems/pf2e/icons/features/classes/hunt-prey.webp";
+import { PF2eActor } from "../types/pf2e/actor.js";
+import { getControlledActorAndToken, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, showWarning, Updates } from "../utils/utils.js";
+import { DOUBLE_PREY_FEAT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNTED_PREY_EFFECT_ID, OUTWIT_FEATURE_ID, PRECISION_FEATURE_ID, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
@@ -46,56 +38,50 @@ export async function huntPrey() {
     /**
      * HUNT PREY ACTION AND EFFECT
      */
-    {
-        const remainingTargets = maxTargets.num - targets.length;
-        const remainingTargetsText = remainingTargets === 2
-            ? localize("shareWithTwo")
-            : remainingTargets === 1 && hasSharedPrey
-                ? localize("shareWithOne")
-                : "";
+    const remainingTargets = maxTargets.num - targets.length;
+    const remainingTargetsText = remainingTargets === 2
+        ? localize("shareWithTwo")
+        : remainingTargets === 1 && hasSharedPrey
+            ? localize("shareWithOne")
+            : "";
 
-        const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
-        const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
-        const targetData = { token: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
-        await postActionInChat(huntPreyAction);
-        await postInChat(
-            actor,
-            HUNT_PREY_IMG,
-            targets.length === 3
-                ? format("huntThreeTargets", targetData)
-                : targets.length === 2
-                    ? `${format("huntTwoTargets", targetData)} ${remainingTargetsText}`
-                    : `${format("huntOneTarget", targetData)} ${remainingTargetsText}`
-            ,
-            huntPreyAction.name,
-            1
-        );
+    const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
+    const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
+    const targetData = { token: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
 
-        // Remove any existing hunted prey effects
-        const existingHuntedPreyEffect = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
-        if (existingHuntedPreyEffect) {
-            updates.delete(existingHuntedPreyEffect);
-        }
+    await postActionInChat(huntPreyAction);
+    await postInChat(
+        actor,
+        HUNT_PREY_IMG,
+        targets.length === 3
+            ? format("huntThreeTargets", targetData)
+            : targets.length === 2
+                ? `${format("huntTwoTargets", targetData)} ${remainingTargetsText}`
+                : `${format("huntOneTarget", targetData)} ${remainingTargetsText}`
+        ,
+        huntPreyAction.name,
+        1
+    );
 
-        // Add the new effect
-        const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
-        huntedPreyEffectSource.name = `${huntedPreyEffectSource.name} (${targetNames.join(", ")})`;
-        huntedPreyEffectSource.flags = {
-            ...huntedPreyEffectSource.flags,
-            "pf2e-ranged-combat": {
-                "targetIds": targets.map(target => target.id)
-            }
-        };
-        updates.create(huntedPreyEffectSource);
+    updateSystemItems(actor, updates, huntPreyAction);
 
-        // Update the hunted prey flag to true
-        const rules = huntPreyAction.system.rules;
-        const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && !r.value);
-        if (rule) {
-            rule.value = true;
-            updates.update(huntPreyAction, { "system.rules": rules });
-        }
+    // Remove any existing hunted prey effects
+    const existingHuntedPreyEffect = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
+    if (existingHuntedPreyEffect) {
+        updates.delete(existingHuntedPreyEffect);
     }
+
+    // Add the new effect
+    const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
+    huntedPreyEffectSource.name = `${huntedPreyEffectSource.name} (${targetNames.join(", ")})`;
+    huntedPreyEffectSource.flags = {
+        ...huntedPreyEffectSource.flags,
+        "pf2e-ranged-combat": {
+            "targetIds": targets.map(target => target.id)
+        }
+    };
+
+    updates.create(huntedPreyEffectSource);
 
     await handleHuntPrey(actor, updates);
 
@@ -114,5 +100,105 @@ function getTargets(maxTargets) {
         return [];
     } else {
         return targetTokens;
+    }
+}
+
+/**
+ * @param {PF2eActor} actor 
+ * @param {Updates} updates
+ */
+function updateSystemItems(actor, updates, huntPreyAction) {
+    // Hunt Prey: add another RollOption rule element which sets hunted-prey if the target is our hunted prey
+    const huntPreyActionRules = huntPreyAction.toObject().system.rules;
+    const huntedPreyTargetRule = huntPreyActionRules
+        .find(rule => rule.key == "RollOption" && rule.option == "hunted-prey" && rule.predicate?.includes("target:effect:prey-{actor|id}"));
+    if (!huntedPreyTargetRule) {
+        const huntedPreyIndex = huntPreyActionRules.findIndex(rule => rule.key == "RollOption" && rule.option == "hunted-prey" && rule.toggleable);
+        huntPreyActionRules.splice(
+            huntedPreyIndex + 1,
+            0,
+            {
+                key: "RollOption",
+                option: "hunted-prey",
+                predicate: [
+                    "target:effect:prey-{actor|id}"
+                ]
+            }
+        );
+
+        updates.update(huntPreyAction, { "system.rules": huntPreyActionRules });
+    }
+
+    // Outwit: alter the AC bonus rule element to also trigger if our attacker is our hunted prey
+    const outwitFeature = getItemFromActor(actor, OUTWIT_FEATURE_ID);
+    if (outwitFeature) {
+        /** @type []any */
+        const outwitRules = outwitFeature.toObject().system.rules;
+        const acBonusRule = outwitRules
+            .find(rule => rule.key == "FlatModifier" && rule.selector == "ac" && rule.predicate.some(predicate => predicate == "hunted-prey"));
+        if (acBonusRule) {
+            acBonusRule.predicate = [
+                {
+                    or: [
+                        "hunted-prey",
+                        "origin:effect:prey-{actor|id}"
+                    ]
+                }
+            ];
+            updates.update(outwitFeature, { "system.rules": outwitRules });
+        }
+    }
+
+    // Precision:
+    //   - Add roll option with which attack number this is on the hunted prey
+    //   - Alter damage dice rule to predicate on the prey attack number being 1
+    const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
+    if (precisionFeature) {
+        const precisionRules = precisionFeature.toObject().system.rules;
+        let update = false;
+
+        const preyAttackNumber = getFlag(precisionFeature, "preyAttackNumber");
+        if (!preyAttackNumber) {
+            updates.update(
+                precisionFeature,
+                {
+                    "flags": {
+                        "pf2e-ranged-combat": {
+                            "preyAttackNumber": 1
+                        }
+                    }
+                }
+            );
+        }
+
+        const preyAttackNumberRule = precisionRules.find(rule => rule.key == "RollOption" && rule.option && rule.option.startsWith("prey-attack-number"));
+        if (!preyAttackNumberRule) {
+            precisionRules.unshift(
+                {
+                    key: "RollOption",
+                    domain: "all",
+                    option: "prey-attack-number:{item|flags.pf2e-ranged-combat.preyAttackNumber}"
+                }
+            );
+            update = true;
+        }
+
+        const damageDiceRule = precisionRules.find(rule => rule.key == "DamageDice" && rule.predicate?.some(predicate => predicate == "first-attack"));
+        if (damageDiceRule) {
+            damageDiceRule.predicate = [
+                "hunted-prey",
+                {
+                    or: [
+                        "first-attack",
+                        "prey-attack-number:1"
+                    ]
+                }
+            ];
+            update = true;
+        }
+
+        if (update) {
+            updates.update(precisionFeature, { "system.rules": precisionRules });
+        }
     }
 }

@@ -46,7 +46,14 @@
             "huntTwoTargets": "{token} makes {target1} and {target2} their hunted prey.",
             "huntOneTarget": "{token} makes {target1} their hunted prey.",
             "warningNoTarget": "No target selected.",
-            "warningTooManyTargets": "You may only have {maxTargets} hunted prey."
+            "warningTooManyTargets": "You may only have {maxTargets} hunted prey.",
+            "versusPreyAttack": "Vs. prey's attacks"
+        },
+        "linkCompanion": {
+            "noAnimalCompanionFeat": "{actor} does not have the Animal Companion ranger feat.",
+            "noTarget": "You must select a single target to become your animal companion.",
+            "rangersAnimalCompanion": "{actor}'s Animal Companion",
+            "linkedCompanion": "{companion} is now {master}'s companion."
         },
         "thrownWeapons": {
             "warningNotEquipped": "{weapon} is not equipped!",

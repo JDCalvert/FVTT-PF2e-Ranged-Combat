@@ -9,5 +9,15 @@
     "default": 1
   },
   "flags": {},
+  "folder": null,
+  "sort": 500000,
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.13.2",
+    "coreVersion": "11.315",
+    "createdTime": null,
+    "modifiedTime": 1707226890731,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
   "_key": "!macros!K9jrrGLnMF23WKET"
 }

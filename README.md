@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/4.2.3/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/5.0.0/total)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jdcalvert)
 
@@ -76,7 +76,10 @@ Repeating weapons that still require reloading work almost identically to other 
 ### Hunt Prey
 The <b>Hunt Prey</b> macro applies the <b>Hunted Prey</b> effect to your character, with the name of your current target, as a reminder of who your hunted prey is. It also applies the <b>Crossbow Ace</b> effect for your equipped crossbow(s) if you have the feat.
 
-While you have a hunted prey, the "Hunted Prey" toggle will automatically be enabled while you have your prey (and only your prey) targeted.
+While you have your hunted prey targetted, your Hunt Prey and Hunter's Edge benefits will automatically be applied.
+
+### Link Companion
+The <b>Link Companion</b> macro gives a feat to the targetted creature to allow it to make use of your Hunt Prey and Hunter's Edge benefits.
 
 ### Alchemical Crossbow
 You can use the <b>Load Alchemical Crossbow</b> macro to load a lesser alchemical bomb into an Alchemical Crossbow. This will give your weapon the <b>Loaded Bomb</b> effect, granting an additional 1d6 damage (type depending on the loaded bomb) for the next three shots. As per the Alchemical Crossbow's description, once the first shot has been fired, you have only one minute to fire the remaining shots or they are wasted.

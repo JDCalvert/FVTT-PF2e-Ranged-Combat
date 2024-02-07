@@ -1,3 +1,8 @@
+## 5.0.0 - 2024-02-07 (Pathfinder 2e 5.13.3)
+### Feature
+- Added the Link Companion macro, which allows you to link a ranger's animal companion to share your Hunt Prey benefits.
+- Rewrote the hunt prey code to more gracefully handle targetting your hunted prey and automatically apply the precision edge damage.
+
 ## 4.2.3 - 2024-01-31 (Pathfinder 2e 5.13.0)
 ### Fix
 - Fix libwrapper hook for `adjustCarryType` changing to `changeCarryType` in the system.
