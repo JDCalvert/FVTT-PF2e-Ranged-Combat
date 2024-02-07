@@ -1,4 +1,4 @@
-import { HUNTED_PREY_EFFECT_ID } from "../../hunt-prey/hunt-prey.js";
+import { HUNTED_PREY_EFFECT_ID } from "../../hunt-prey/constants.js";
 import { getFlags, getItemFromActor } from "../utils.js";
 
 export class Migration003HuntedPreyArray {

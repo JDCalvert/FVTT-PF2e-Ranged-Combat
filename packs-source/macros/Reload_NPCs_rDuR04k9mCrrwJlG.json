@@ -7,7 +7,7 @@
   "scope": "global",
   "command": "game.pf2eRangedCombat.reloadNPCs();",
   "folder": null,
-  "sort": 0,
+  "sort": 1500000,
   "flags": {},
   "ownership": {
     "default": 0,
@@ -15,10 +15,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.11.5",
+    "systemVersion": "5.13.2",
     "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1703287587499,
+    "modifiedTime": 1707226890731,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!macros!rDuR04k9mCrrwJlG"

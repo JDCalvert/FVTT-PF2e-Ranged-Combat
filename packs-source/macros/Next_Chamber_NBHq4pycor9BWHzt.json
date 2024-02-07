@@ -7,11 +7,19 @@
   "scope": "global",
   "command": "// When you have a loaded capacity weapon, switch to the next loaded chamber as an interact action that doesn't require a free hand.\ngame.pf2eRangedCombat.nextChamber();",
   "folder": null,
-  "sort": 0,
-  "permission": {
+  "sort": 700000,
+  "flags": {},
+  "ownership": {
     "default": 0,
     "uOCymwU5JQSqoT5u": 3
   },
-  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.13.2",
+    "coreVersion": "11.315",
+    "createdTime": null,
+    "modifiedTime": 1707226890731,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
   "_key": "!macros!NBHq4pycor9BWHzt"
 }

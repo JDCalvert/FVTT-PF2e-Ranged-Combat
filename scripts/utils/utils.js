@@ -41,7 +41,10 @@ export class Updates {
      * @param {PF2eItem} item 
      */
     delete(item) {
-        this.deletes.push(item.id);
+        const existingDelete = this.deletes.find(deleteId => deleteId === item.id)
+        if (!existingDelete) {
+            this.deletes.push(item.id);
+        }
     }
 
     /**

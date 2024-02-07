@@ -9,6 +9,7 @@ import { fullyReload, reload, reloadNPCs } from "./ammunition-system/actions/rel
 import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { unload } from "./ammunition-system/actions/unload.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
+import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { initialiseLibWrapperHooks } from "./libwrapper-hooks.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
@@ -156,6 +157,7 @@ Hooks.on(
             fullyReload,
             consolidateRepeatingWeaponAmmunition,
             huntPrey,
+            linkCompanion,
             loadAlchemicalCrossbow,
             unloadAlchemicalCrossbow,
             alchemicalShot,
