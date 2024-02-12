@@ -1,3 +1,4 @@
+import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Updates, getEffectFromActor, getFlag, getFlags, useAdvancedAmmunitionSystem } from "../utils/utils.js";
@@ -11,17 +12,15 @@ import { getLoadedAmmunitions, isFullyLoaded } from "./utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.names." + key);
 
-/**
- * @param {PF2eWeapon} pf2eWeapon 
- */
-export function buildAuxiliaryActions(pf2eWeapon) {
+export function buildAuxiliaryActions(strike) {
+    const pf2eWeapon = strike.item;
     const actor = pf2eWeapon.actor;
     const weapon = characterWeaponTransform(pf2eWeapon);
 
     const tokens = actor?.getActiveTokens();
     const token = tokens?.length === 1 ? tokens[0] : { name: actor.name, actor: actor };
 
-    const auxiliaryActions = [];
+    const auxiliaryActions = strike.auxiliaryActions;
 
     // Reload
     if (canReload(weapon)) {
@@ -89,7 +88,106 @@ export function buildAuxiliaryActions(pf2eWeapon) {
         );
     }
 
-    return auxiliaryActions;
+    // If the weapon is equipped, and there are other stacks of the same type
+    if (weapon.isEquipped) {
+        const groupStacks = findGroupStacks(weapon)
+
+        if (groupStacks.length && weapon.quantity === 0) {
+            auxiliaryActions.findSplice(action =>
+                action.label === game.i18n.localize("PF2E.Actions.Release.ChangeGrip.Title") ||
+                action.label === game.i18n.localize("PF2E.Actions.Interact.ChangeGrip.Title")
+            )
+
+            auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Release.Drop.Title"))
+            auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Interact.Sheathe.Title"))
+        }
+
+        const wornStack = groupStacks.find(weapon => weapon.carryType === "worn");
+        if (wornStack) {
+            if (weapon.quantity === 0) {
+                auxiliaryActions.push(
+                    buildAuxiliaryAction(
+                        pf2eWeapon,
+                        game.i18n.localize("PF2E.Actions.Interact.Draw1H.Title"),
+                        "interact",
+                        1,
+                        "1",
+                        1,
+                        () => changeCarryType(wornStack, "Draw1H", 1)
+                    )
+                );
+
+                if (weapon.hands === 2) {
+                    auxiliaryActions.push(
+                        buildAuxiliaryAction(
+                            pf2eWeapon,
+                            game.i18n.localize("PF2E.Actions.Interact.Draw2H.Title"),
+                            "interact",
+                            1,
+                            "1",
+                            2,
+                            () => changeCarryType(wornStack, "Draw2H", 2)
+                        )
+                    );
+                }
+            } else {
+                auxiliaryActions.push(
+                    buildAuxiliaryAction(
+                        pf2eWeapon,
+                        game.i18n.localize(`PF2E.Actions.Interact.Draw${pf2eWeapon.handsHeld}H.Title`),
+                        "interact",
+                        1,
+                        "1",
+                        pf2eWeapon.handsHeld,
+                        () => changeCarryType(wornStack, `Draw${pf2eWeapon.handsHeld}H`, pf2eWeapon.handsHeld)
+                    )
+                );
+            }
+        }
+
+        const droppedStack = groupStacks.find(weapon => weapon.carryType === "dropped");
+        if (droppedStack) {
+            if (weapon.quantity === 0) {
+                auxiliaryActions.push(
+                    buildAuxiliaryAction(
+                        pf2eWeapon,
+                        game.i18n.localize("PF2E.Actions.Interact.PickUp1H.Title"),
+                        "interact",
+                        1,
+                        "1",
+                        1,
+                        () => changeCarryType(droppedStack, "PickUp1H", 1)
+                    )
+                );
+
+                if (weapon.hands === 2) {
+                    auxiliaryActions.push(
+                        buildAuxiliaryAction(
+                            pf2eWeapon,
+                            game.i18n.localize("PF2E.Actions.Interact.PickUp2H.Title"),
+                            "interact",
+                            1,
+                            "1",
+                            2,
+                            () => changeCarryType(droppedStack, "PickUp2H", 2)
+                        )
+                    );
+                }
+            } else {
+                auxiliaryActions.push(
+                    buildAuxiliaryAction(
+                        pf2eWeapon,
+                        game.i18n.localize(`PF2E.Actions.Interact.PickUp${pf2eWeapon.handsHeld}H.Title`),
+                        "interact",
+                        1,
+                        "1",
+                        pf2eWeapon.handsHeld,
+                        () => changeCarryType(droppedStack, `PickUp${pf2eWeapon.handsHeld}H`, pf2eWeapon.handsHeld)
+                    )
+                );
+            }
+        }
+    }
 }
 
 /**
@@ -229,4 +327,54 @@ function canSwitchChamber(weapon) {
     }
 
     return true;
+}
+
+async function changeCarryType(weapon, subAction, hands) {
+    weapon.actor.changeCarryType(weapon, { carryType: "held", handsHeld: hands });
+
+    if (!game.combat) return; // Only send out messages if in encounter mode
+
+    const flavorAction = {
+        title: `PF2E.Actions.Interact.Title`,
+        subtitle: `PF2E.Actions.Interact.${subAction}.Title`,
+        glyph: "1",
+    };
+
+    const [traits, message] = [
+        [traitSlugToObject("manipulate")],
+        `PF2E.Actions.Interact.${subAction}.Description`,
+    ];
+
+    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: flavorAction, traits });
+    const content = await renderTemplate(
+        "./systems/pf2e/templates/chat/action/content.hbs",
+        {
+            imgPath: weapon.img,
+            message: game.i18n.format(
+                message,
+                {
+                    actor: weapon.actor.name,
+                    weapon: weapon.name,
+                    shield: weapon.name,
+                }
+            ),
+        }
+    );
+
+    ChatMessage.create(
+        {
+            content,
+            speaker: ChatMessage.getSpeaker({ actor: weapon.actor }),
+            flavor,
+            type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+        }
+    );
+}
+
+function traitSlugToObject(trait) {
+    return {
+        name: trait,
+        label: game.i18n.localize(CONFIG.PF2E.actionTraits[trait] ?? trait),
+        description: CONFIG.PF2E.traitsDescriptions[trait]
+    };
 }

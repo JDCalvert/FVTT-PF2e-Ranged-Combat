@@ -1,3 +1,5 @@
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
+import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Updates, getAttackPopout } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
@@ -105,6 +107,10 @@ export async function changeStowed(wrapper, item, container) {
     }
 }
 
+/**
+ * @param {Weapon | PF2eWeapon} item 
+ * @returns {PF2eWeapon[]}
+ */
 export function findGroupStacks(item) {
     const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.type === "weapon" ? item.id : item.weaponId];
     return item.actor.items.filter(i => groupIds.includes(i.id));
