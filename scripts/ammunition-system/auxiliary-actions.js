@@ -100,91 +100,43 @@ export function buildAuxiliaryActions(strike) {
 
             auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Release.Drop.Title"))
             auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Interact.Sheathe.Title"))
+
+            auxiliaryActions.push(
+                buildAuxiliaryAction(
+                    pf2eWeapon,
+                    "Remove",
+                    "",
+                    0,
+                    undefined,
+                    0,
+                    () => pf2eWeapon.delete()
+                )
+            );
         }
 
         const wornStack = groupStacks.find(weapon => weapon.carryType === "worn");
         if (wornStack) {
             if (weapon.quantity === 0) {
-                auxiliaryActions.push(
-                    buildAuxiliaryAction(
-                        pf2eWeapon,
-                        game.i18n.localize("PF2E.Actions.Interact.Draw1H.Title"),
-                        "interact",
-                        1,
-                        "1",
-                        1,
-                        () => changeCarryType(wornStack, "Draw1H", 1)
-                    )
-                );
+                auxiliaryActions.push(buildCarryTypeAuxiliaryAction(pf2eWeapon, wornStack, "Draw1H", 1));
 
                 if (weapon.hands === 2) {
-                    auxiliaryActions.push(
-                        buildAuxiliaryAction(
-                            pf2eWeapon,
-                            game.i18n.localize("PF2E.Actions.Interact.Draw2H.Title"),
-                            "interact",
-                            1,
-                            "1",
-                            2,
-                            () => changeCarryType(wornStack, "Draw2H", 2)
-                        )
-                    );
+                    auxiliaryActions.push(buildCarryTypeAuxiliaryAction(pf2eWeapon, wornStack, "Draw2H", 2));
                 }
             } else {
-                auxiliaryActions.push(
-                    buildAuxiliaryAction(
-                        pf2eWeapon,
-                        game.i18n.localize(`PF2E.Actions.Interact.Draw${pf2eWeapon.handsHeld}H.Title`),
-                        "interact",
-                        1,
-                        "1",
-                        pf2eWeapon.handsHeld,
-                        () => changeCarryType(wornStack, `Draw${pf2eWeapon.handsHeld}H`, pf2eWeapon.handsHeld)
-                    )
-                );
+                auxiliaryActions.push(buildCarryTypeAuxiliaryAction(pf2eWeapon, wornStack, `Draw${pf2eWeapon.handsHeld}H`, pf2eWeapon.handsHeld));
             }
         }
 
         const droppedStack = groupStacks.find(weapon => weapon.carryType === "dropped");
         if (droppedStack) {
             if (weapon.quantity === 0) {
-                auxiliaryActions.push(
-                    buildAuxiliaryAction(
-                        pf2eWeapon,
-                        game.i18n.localize("PF2E.Actions.Interact.PickUp1H.Title"),
-                        "interact",
-                        1,
-                        "1",
-                        1,
-                        () => changeCarryType(droppedStack, "PickUp1H", 1)
-                    )
-                );
+                auxiliaryActions.push(buildCarryTypeAuxiliaryAction(pf2eWeapon, droppedStack, "PickUp1H", 1));
 
                 if (weapon.hands === 2) {
-                    auxiliaryActions.push(
-                        buildAuxiliaryAction(
-                            pf2eWeapon,
-                            game.i18n.localize("PF2E.Actions.Interact.PickUp2H.Title"),
-                            "interact",
-                            1,
-                            "1",
-                            2,
-                            () => changeCarryType(droppedStack, "PickUp2H", 2)
-                        )
-                    );
+                    auxiliaryActions.push(buildCarryTypeAuxiliaryAction(pf2eWeapon, droppedStack, "PickUp2H", 2));
                 }
             } else {
-                auxiliaryActions.push(
-                    buildAuxiliaryAction(
-                        pf2eWeapon,
-                        game.i18n.localize(`PF2E.Actions.Interact.PickUp${pf2eWeapon.handsHeld}H.Title`),
-                        "interact",
-                        1,
-                        "1",
-                        pf2eWeapon.handsHeld,
-                        () => changeCarryType(droppedStack, `PickUp${pf2eWeapon.handsHeld}H`, pf2eWeapon.handsHeld)
-                    )
-                );
+                auxiliaryActions.push(buildCarryTypeAuxiliaryAction(pf2eWeapon, droppedStack, `PickUp${pf2eWeapon.handsHeld}H`, pf2eWeapon.handsHeld));
             }
         }
     }
@@ -329,35 +281,46 @@ function canSwitchChamber(weapon) {
     return true;
 }
 
+function buildCarryTypeAuxiliaryAction(pf2eWeapon, stack, action, hands) {
+    return buildAuxiliaryAction(
+        pf2eWeapon,
+        game.i18n.localize(`PF2E.Actions.Interact.${action}.Title`),
+        "interact",
+        1,
+        "1",
+        hands,
+        () => changeCarryType(stack, action, hands)
+    )
+}
+
 async function changeCarryType(weapon, subAction, hands) {
     weapon.actor.changeCarryType(weapon, { carryType: "held", handsHeld: hands });
 
     if (!game.combat) return; // Only send out messages if in encounter mode
 
-    const flavorAction = {
-        title: `PF2E.Actions.Interact.Title`,
-        subtitle: `PF2E.Actions.Interact.${subAction}.Title`,
-        glyph: "1",
-    };
-
-    const [traits, message] = [
-        [traitSlugToObject("manipulate")],
-        `PF2E.Actions.Interact.${subAction}.Description`,
-    ];
-
-    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: flavorAction, traits });
+    const flavor = await renderTemplate(
+        "./systems/pf2e/templates/chat/action/flavor.hbs",
+        {
+            action: {
+                title: `PF2E.Actions.Interact.Title`,
+                subtitle: `PF2E.Actions.Interact.${subAction}.Title`,
+                glyph: "1",
+            },
+            traits: traitSlugToObject("manipulate")
+        }
+    );
     const content = await renderTemplate(
         "./systems/pf2e/templates/chat/action/content.hbs",
         {
             imgPath: weapon.img,
             message: game.i18n.format(
-                message,
+                `PF2E.Actions.Interact.${subAction}.Description`,
                 {
                     actor: weapon.actor.name,
                     weapon: weapon.name,
                     shield: weapon.name,
                 }
-            ),
+            )
         }
     );
 
