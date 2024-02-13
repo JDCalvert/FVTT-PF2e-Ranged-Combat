@@ -114,7 +114,9 @@ Hooks.on(
 
         const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
         if (precisionFeature) {
-            const targetIsHuntedPrey = message.target?.actor?.getRollOptions()?.includes(`self:effect:prey-${actor.id}`);
+            const targetIsHuntedPrey =
+                message.target?.actor?.getRollOptions()?.includes(`self:effect:prey-${actor.id}`) ||
+                (actor.getRollOptions.includes("hunted-prey") && actor.getRollOptions().includes("first-attack"));
 
             if (targetIsHuntedPrey) {
                 const preyAttackNumber = getFlag(precisionFeature, "preyAttackNumber") ?? 1;
