@@ -113,7 +113,7 @@ export function initialiseLibWrapperHooks() {
         "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareStrike",
         function(wrapper, ...args) {
             const strike = wrapper(...args);
-            strike.auxiliaryActions.push(...buildAuxiliaryActions(strike.item));
+            buildAuxiliaryActions(strike);
             return strike;
         },
         "WRAPPER"

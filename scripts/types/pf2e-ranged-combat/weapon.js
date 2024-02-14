@@ -35,6 +35,9 @@ export class Weapon {
 
     /** @type boolean */
     requiresLoading;
+
+    /** @type boolean */
+    isEquipped;
 }
 
 
