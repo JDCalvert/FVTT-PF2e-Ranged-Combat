@@ -108,10 +108,25 @@ function getTargets(maxTargets) {
  * @param {Updates} updates
  */
 function updateSystemItems(actor, updates, huntPreyAction) {
-    // Hunt Prey: add another RollOption rule element which sets hunted-prey if the target is our hunted prey
+    updateHuntPreyAction(updates, huntPreyAction);
+    updateOutwitFeature(actor, updates);
+    updatePrecisionFeature(actor, updates);
+}
+
+/**
+ * @param {Updates} updates
+ * @param {any} huntPreyAction 
+ */
+function updateHuntPreyAction(updates, huntPreyAction) {
     const huntPreyActionRules = huntPreyAction.toObject().system.rules;
-    const huntedPreyTargetRule = huntPreyActionRules
-        .find(rule => rule.key == "RollOption" && rule.option == "hunted-prey" && rule.predicate?.includes("target:effect:prey-{actor|id}"));
+
+    // Add a new rule to set the "hunted-prey" roll option if our target is our hunted prey
+    // As this rule has the same roll option as the toggle, we have to add this rule *after* the toggleable one or we get errors
+    const huntedPreyTargetRule = huntPreyActionRules.find(rule =>
+        rule.key == "RollOption" &&
+        rule.option == "hunted-prey" &&
+        rule.predicate?.includes("target:effect:prey-{actor|id}")
+    );
     if (!huntedPreyTargetRule) {
         const huntedPreyIndex = huntPreyActionRules.findIndex(rule => rule.key == "RollOption" && rule.option == "hunted-prey" && rule.toggleable);
         huntPreyActionRules.splice(
@@ -128,77 +143,118 @@ function updateSystemItems(actor, updates, huntPreyAction) {
 
         updates.update(huntPreyAction, { "system.rules": huntPreyActionRules });
     }
+}
 
-    // Outwit: alter the AC bonus rule element to also trigger if our attacker is our hunted prey
+/**
+ * @param {PF2eActor} actor 
+ * @param {Updates} updates 
+ */
+function updateOutwitFeature(actor, updates) {
     const outwitFeature = getItemFromActor(actor, OUTWIT_FEATURE_ID);
-    if (outwitFeature) {
-        /** @type []any */
-        const outwitRules = outwitFeature.toObject().system.rules;
-        const acBonusRule = outwitRules
-            .find(rule => rule.key == "FlatModifier" && rule.selector == "ac" && rule.predicate.some(predicate => predicate == "hunted-prey"));
-        if (acBonusRule) {
-            acBonusRule.predicate = [
+    if (!outwitFeature) {
+        return;
+    }
+
+    /** @type []any */
+    const outwitRules = outwitFeature.toObject().system.rules;
+
+    // For the AC bonus rule, we want the bonus to also trigger if we're being attacked by our hunted prey
+    const acBonusRule = outwitRules.find(rule =>
+        rule.key == "FlatModifier" &&
+        rule.selector == "ac" &&
+        rule.predicate.some(predicate => predicate == "hunted-prey")
+    );
+    if (acBonusRule) {
+        acBonusRule.predicate = [
+            {
+                or: [
+                    "hunted-prey",
+                    "origin:effect:prey-{actor|id}"
+                ]
+            }
+        ];
+        updates.update(outwitFeature, { "system.rules": outwitRules });
+    }
+}
+
+/**
+ * @param {PF2eActor} actor
+ * @param {Updates} updates
+ */
+function updatePrecisionFeature(actor, updates) {
+    const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
+    if (!precisionFeature) {
+        return;
+    }
+
+    // If the prey attack number flag isn't present, set it to 1
+    const preyAttackNumber = getFlag(precisionFeature, "preyAttackNumber");
+    if (!preyAttackNumber) {
+        updates.update(
+            precisionFeature,
+            {
+                "flags": {
+                    "pf2e-ranged-combat": {
+                        "preyAttackNumber": 1
+                    }
+                }
+            }
+        );
+    }
+
+    const precisionRules = precisionFeature.toObject().system.rules;
+    let update = false;
+
+    // Add the prey attack number as a rule
+    const preyAttackNumberRule = precisionRules.find(rule => rule.key == "RollOption" && rule.option?.startsWith("prey-attack-number"));
+    if (!preyAttackNumberRule) {
+        precisionRules.unshift(
+            {
+                key: "RollOption",
+                domain: "all",
+                option: "prey-attack-number:{item|flags.pf2e-ranged-combat.preyAttackNumber}"
+            }
+        );
+        update = true;
+    }
+
+    // The first-attack rule needs to be disabled if the "hunted-prey" roll option is toggled off
+    // Also set the priority to 51 so its toggle is listed after the "hunted-prey" toggle
+    const firstAttackRule = precisionRules.find(rule => rule.key == "RollOption" && rule.option == "first-attack");
+    if (firstAttackRule) {
+        if (!firstAttackRule.disabledIf) {
+            firstAttackRule.disabledIf = [
                 {
-                    or: [
-                        "hunted-prey",
-                        "origin:effect:prey-{actor|id}"
-                    ]
+                    "not": "hunted-prey"
                 }
             ];
-            updates.update(outwitFeature, { "system.rules": outwitRules });
+            firstAttackRule.disabledValue = false;
+
+            update = true;
+        }
+
+        if ((firstAttackRule.priority ?? 0) < 51) {
+            firstAttackRule.priority = 51;
+            update = true;
         }
     }
 
-    // Precision:
-    //   - Add roll option with which attack number this is on the hunted prey
-    //   - Alter damage dice rule to predicate on the prey attack number being 1
-    const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
-    if (precisionFeature) {
-        const precisionRules = precisionFeature.toObject().system.rules;
-        let update = false;
+    // Set the precision damage to only trigger if we're attacking our hunted prey, and to also trigger if our new "prey-attack-number" is 1
+    const damageDiceRule = precisionRules.find(rule => rule.key == "DamageDice" && rule.predicate?.some(predicate => predicate == "first-attack"));
+    if (damageDiceRule) {
+        damageDiceRule.predicate = [
+            "hunted-prey",
+            {
+                or: [
+                    "first-attack",
+                    "prey-attack-number:1"
+                ]
+            }
+        ];
+        update = true;
+    }
 
-        const preyAttackNumber = getFlag(precisionFeature, "preyAttackNumber");
-        if (!preyAttackNumber) {
-            updates.update(
-                precisionFeature,
-                {
-                    "flags": {
-                        "pf2e-ranged-combat": {
-                            "preyAttackNumber": 1
-                        }
-                    }
-                }
-            );
-        }
-
-        const preyAttackNumberRule = precisionRules.find(rule => rule.key == "RollOption" && rule.option && rule.option.startsWith("prey-attack-number"));
-        if (!preyAttackNumberRule) {
-            precisionRules.unshift(
-                {
-                    key: "RollOption",
-                    domain: "all",
-                    option: "prey-attack-number:{item|flags.pf2e-ranged-combat.preyAttackNumber}"
-                }
-            );
-            update = true;
-        }
-
-        const damageDiceRule = precisionRules.find(rule => rule.key == "DamageDice" && rule.predicate?.some(predicate => predicate == "first-attack"));
-        if (damageDiceRule) {
-            damageDiceRule.predicate = [
-                "hunted-prey",
-                {
-                    or: [
-                        "first-attack",
-                        "prey-attack-number:1"
-                    ]
-                }
-            ];
-            update = true;
-        }
-
-        if (update) {
-            updates.update(precisionFeature, { "system.rules": precisionRules });
-        }
+    if (update) {
+        updates.update(precisionFeature, { "system.rules": precisionRules });
     }
 }

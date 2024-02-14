@@ -120,7 +120,12 @@
         "toggleable": true,
         "disabledIf": [
           {
-            "not": "edge-precision"
+            "not": {
+              "and": [
+                "edge-precision",
+                "hunted-prey"
+              ]
+            }
           }
         ],
         "disabledValue": false,
@@ -217,10 +222,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
+    "systemVersion": "5.13.6",
     "coreVersion": "11.315",
     "createdTime": 1707129874334,
-    "modifiedTime": 1707319295103,
+    "modifiedTime": 1707869759684,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_id": "bmDVg2hU3CSAZGJ8",
