@@ -1,3 +1,10 @@
+## 5.1.0 - 2024-02-14 (Pathfinder 2e 5.13.6)
+### Feature
+- Add buttons to equipped weapons with linked stacks to draw or pick up an item from those linked stacks.
+
+### Fix
+- Fix disabling the precision damage after the first damage instance per turn.
+
 ## 5.0.0 - 2024-02-07 (Pathfinder 2e 5.13.3)
 ### Feature
 - Added the Link Companion macro, which allows you to link a ranger's animal companion to share your Hunt Prey benefits.
