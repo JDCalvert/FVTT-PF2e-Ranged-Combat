@@ -233,7 +233,7 @@ function updatePrecisionFeature(actor, updates) {
             update = true;
         }
 
-        if (firstAttackRule.priority < 51) {
+        if ((firstAttackRule.priority ?? 0) < 51) {
             firstAttackRule.priority = 51;
             update = true;
         }
