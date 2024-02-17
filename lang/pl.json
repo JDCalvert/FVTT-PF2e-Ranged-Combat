@@ -46,7 +46,8 @@
             "huntTwoTargets": "{token} czyni {target1} oraz {target2} celem swojego łowów na zwierzynę.",
             "huntOneTarget": "{token} czyni {target1} celem swojego łowów na zwierzynę.",
             "warningNoTarget": "Nie wybrano celu.",
-            "warningTooManyTargets": "Twoja maksymalna liczba celów łowów na zwierzynę to: {maxTargets}."
+            "warningTooManyTargets": "Twoja maksymalna liczba celów łowów na zwierzynę to: {maxTargets}.",
+            "versusPreyAttack": "Przeciw atakom Naznaczonej Ofiary"
         },
         "thrownWeapons": {
             "warningNotEquipped": "Nie jesteś wyposażony w: {weapon}!",
@@ -215,6 +216,12 @@
                 "tokenPoursBombIntoWeapon": "{token} umieszcza zawartość {bomb} w {weapon}.",
                 "alchemicalShot": "Alchemiczny Strzał"
             }
+        },
+        "linkCompanion": {
+            "noTarget": "Musisz wybrać jeden cel, który stanie się twoim zwierzęcym towarzyszem.",
+            "rangersAnimalCompanion": "Zwierzęcy Towarzysz postaci {actor}",
+            "linkedCompanion": "{companion} jest teraz towarzyszem {master}.",
+            "noAnimalCompanionFeat": "{actor} nie posiada atutu łowcy Towarzysz Zwierząt."
         }
     }
 }
