@@ -1,3 +1,8 @@
+## 5.1.1 - 2024-02-19 (Pathfinder 2e 5.13.6)
+### Minor Feature
+- Skip using ammunition if the actor has the "skip-use-ammunition" roll option.
+- Update Polish translation.
+
 ## 5.1.0 - 2024-02-14 (Pathfinder 2e 5.13.6)
 ### Feature
 - Add buttons to equipped weapons with linked stacks to draw or pick up an item from those linked stacks.

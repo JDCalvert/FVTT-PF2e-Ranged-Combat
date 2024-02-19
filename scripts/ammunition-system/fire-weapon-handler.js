@@ -23,6 +23,11 @@ export function fireWeapon(actor, weapon, updates) {
         return;
     }
 
+    // If the actor has a flag to say they shouldn't consume ammo, don't do anything
+    if (actor.getRollOptions().includes("skip-use-ammunition")) {
+        return;
+    }
+
     if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             fireWeaponRepeating(actor, weapon, updates);
