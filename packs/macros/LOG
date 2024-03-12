@@ -1,5 +1,3 @@
-2024/02/14-00:17:39.681 2ba0 Delete type=3 #1
-2024/02/14-00:17:39.688 16b4 Level-0 table #5: started
-2024/02/14-00:17:39.690 16b4 Level-0 table #5: 2715 bytes OK
-2024/02/14-00:17:39.692 16b4 Delete type=0 #3
-2024/02/14-00:17:39.692 16b4 Manual compaction at level-0 from '!macros!01ND960leScrLEGo' @ 72057594037927935 : 1 .. '!macros!sQjxFAGKcxIVcyJ0' @ 0 : 0; will stop at (end)
+2024/03/12-22:51:20.228 3158 Recovering log #10
+2024/03/12-22:51:20.236 3158 Delete type=0 #10
+2024/03/12-22:51:20.236 3158 Delete type=3 #8

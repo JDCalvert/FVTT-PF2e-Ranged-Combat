@@ -3,7 +3,6 @@ export const LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.nEqd
 export const MAGAZINE_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.vKeDaHOu3bGKSk6b";
 export const CHAMBER_LOADED_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.3KT0VeuCOTy5K0lS";
 export const CONJURED_ROUND_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.psguBnq7jpbnYrhu";
-export const DOUBLE_BARREL_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.ArViNUKIri5i3E82";
 
 // Action IDs
 export const CONJURE_BULLET_ACTION_ID = "Compendium.pf2e.actionspf2e.Item.KC6o1cvbr45xnMei";

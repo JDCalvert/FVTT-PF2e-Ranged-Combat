@@ -1,10 +1,15 @@
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
+import { PF2eActor } from "../types/pf2e/actor.js";
 import { getEffectFromActor, getFlag, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
-import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.check." + key, data);
 
+/**
+ * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
+ */
 export async function checkLoaded(actor, weapon) {
     if (useAdvancedAmmunitionSystem(actor)) {
         // For repeating weapons, check that a magazine is loaded
@@ -24,14 +29,14 @@ export async function checkLoaded(actor, weapon) {
         // For non-repeating weapons that don't require loading, we need to have enough
         // ammunition in our selected stack to fire
         if (weapon.usesAmmunition && !weapon.isRepeating && !weapon.requiresLoading) {
-            if (!checkAmmunition(actor, weapon)) {
+            if (!checkAmmunition(weapon)) {
                 return false;
             }
         }
     } else {
         // Check the weapon has ammunition to fire
         if (weapon.requiresAmmunition) {
-            if (!checkAmmunition(actor, weapon)) {
+            if (!checkAmmunition(weapon)) {
                 return false;
             }
         }
@@ -83,12 +88,12 @@ async function checkLoadedRound(actor, weapon) {
         }
     }
 
-    if (isFiringBothBarrels(actor, weapon) && !isFullyLoaded(weapon)) {
+    if (weapon.isFiringBothBarrels && !isFullyLoaded(weapon)) {
         showWarning(format("bothBarrelsNotLoaded", { weapon: weapon.name }));
         return false;
     }
 
-    if (useAdvancedAmmunitionSystem(actor) && weapon.isDoubleBarrel && !isFiringBothBarrels(actor, weapon)) {
+    if (useAdvancedAmmunitionSystem(actor) && weapon.isDoubleBarrel && !weapon.isFiringBothBarrels) {
         const selectedAmmunition = await getSelectedAmmunition(weapon, "fire");
         if (!selectedAmmunition) {
             return false;
@@ -109,7 +114,7 @@ function checkChamberLoaded(actor, weapon) {
     return true;
 }
 
-function checkAmmunition(actor, weapon) {
+function checkAmmunition(weapon) {
     const ammunition = weapon.ammunition;
     if (!ammunition) {
         showWarning(format("noAmmunitionSelected", { weapon: weapon.name }));
@@ -117,7 +122,7 @@ function checkAmmunition(actor, weapon) {
     } else if (ammunition.quantity < 1) {
         showWarning(format("noAmmunitionRemaining", { weapon: weapon.name }));
         return false;
-    } else if (isFiringBothBarrels(actor, weapon) && ammunition.quantity < 2) {
+    } else if (weapon.isFiringBothBarrels && ammunition.quantity < 2) {
         showWarning(format("bothBarrelsNotEnough", { weapon: weapon.name }));
         return false;
     }

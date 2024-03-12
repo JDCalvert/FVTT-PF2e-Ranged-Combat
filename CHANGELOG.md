@@ -1,3 +1,10 @@
+## 5.1.2 - 2024-03-12 (Pathfinder 2e 5.14.3)
+### Fix
+- Fix for PF2eWeapon `requiresAmmo` function name change to `ammoRequired` causing all ammunition handling to be skipped.
+
+### Remove
+- Removed macro and effect for firing both barrels of a double-barrelled weapon, as this has been added to the system.
+
 ## 5.1.1 - 2024-02-19 (Pathfinder 2e 5.13.6)
 ### Minor Feature
 - Skip using ammunition if the actor has the "skip-use-ammunition" roll option.

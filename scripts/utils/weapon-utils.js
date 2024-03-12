@@ -138,6 +138,7 @@ export function characterWeaponTransform(weapon) {
         isRepeating: isRepeating(weapon),
         capacity: getCapacity(weapon),
         isDoubleBarrel: isDoubleBarrel(weapon),
+        isFiringBothBarrels: isFiringBothBarrels(weapon),
         isCapacity: isCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
@@ -175,6 +176,7 @@ function npcWeaponTransform(melee) {
             isRepeating: isRepeating(weapon),
             capacity: getCapacity(weapon),
             isDoubleBarrel: isDoubleBarrel(weapon),
+            isFiringBothBarrels: isFiringBothBarrels(weapon),
             isCapacity: isCapacity(weapon),
             isEquipped: weapon.isEquipped,
             isStowed: weapon.isStowed
@@ -203,6 +205,7 @@ function npcWeaponTransform(melee) {
             isRepeating: isRepeating(melee),
             capacity: getCapacity(melee),
             isDoubleBarrel: isDoubleBarrel(melee),
+            isFiringBothBarrels: false,
             isCapacity: isCapacity(melee),
             isEquipped: true,
             isStowed: false
@@ -224,6 +227,10 @@ function getCapacity(weapon) {
 
 function isDoubleBarrel(weapon) {
     return weapon.traits.has("double-barrel");
+}
+
+function isFiringBothBarrels(weapon) {
+    return weapon.system.traits.toggles.doubleBarrel.selected;
 }
 
 function isCapacity(weapon) {
@@ -281,10 +288,10 @@ function getReloadTime(weapon) {
  */
 function usesAmmunition(weapon) {
     if (weapon.actor.type === "character") {
-        return weapon.requiresAmmo;
+        return weapon.ammoRequired > 0;
     } else if (weapon.actor.type === "npc") {
         if (weapon.type === "weapon") {
-            return weapon.requiresAmmo;
+            return weapon.ammoRequired > 0;
         } else {
             return weapon.system.traits.value.some(trait => trait.startsWith("reload-"));
         }

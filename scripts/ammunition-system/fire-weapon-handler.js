@@ -3,7 +3,6 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { Updates, findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
-import { isFiringBothBarrels } from "./actions/fire-both-barrels.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 
@@ -54,7 +53,7 @@ export function fireWeaponSimple(actor, weapon, updates) {
     }
 
     let ammunitionToFire = 1;
-    if (isFiringBothBarrels(actor, weapon)) {
+    if (weapon.isFiringBothBarrels) {
         ammunitionToFire++;
     }
 
@@ -164,7 +163,7 @@ function fireWeaponCapacity(actor, weapon, updates) {
  * @param {Updates} updates 
  */
 function fireWeaponDoubleBarrel(actor, weapon, updates) {
-    if (isFiringBothBarrels(actor, weapon)) {
+    if (weapon.isFiringBothBarrels) {
         // Fire the conjured round, if there is one
         consumeConjuredRound(actor, weapon, updates);
 

@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/5.1.1/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/5.1.2/total)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jdcalvert)
 
@@ -26,8 +26,6 @@ If <b>Prevent Firing Weapon if not Loaded</b> is enabled <i>(default: true)</i> 
 Weapons with the capacity or double barrel trait can be loaded and fired much like other reloadable weapons, but they can be loaded with more than one round, up to their capacity (2 for double barrel).
 
 If <b>Prevent Firing Weapon if not Loaded</b> is enabled, then you must also have the <b>Chamber Loaded</b> effect to fire a capacity weapon. You can use either the <b>Next Chamber</b> macro to switch to a loaded chamber (if the weapon is already loaded with at least one round) or the <b>Reload</b> macro to load a new round. You can fire a double barrel weapon as long as at least one barrel is loaded.
-
-You can use the <b>Fire Both Barrels</b> macro to switch to firing both barrels of weapons with the double barrel trait, to deal increased damage. While you have this enabled, you must have both barrels loaded to fire double-barreled weapons.
 
 #### Effects
 The <b>Loaded</b> effect targets a specific weapon and serves as a reminder that the weapon is loaded. This effect is removed if the weapon is fired and, optionally, the weapon cannot be fired if it isn't loaded.

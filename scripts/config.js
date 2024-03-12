@@ -2,7 +2,6 @@ import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alch
 import { alchemicalShot } from "./actions/alchemical-shot.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
-import { fireBothBarrels } from "./ammunition-system/actions/fire-both-barrels.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
 import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
 import { fullyReload, reload, reloadNPCs } from "./ammunition-system/actions/reload.js";
@@ -150,7 +149,6 @@ Hooks.on(
             unload,
             switchAmmunition,
             nextChamber,
-            fireBothBarrels,
             conjureBullet,
             reloadMagazine,
             reloadNPCs,
