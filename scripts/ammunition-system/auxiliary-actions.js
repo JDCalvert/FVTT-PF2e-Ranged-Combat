@@ -306,7 +306,7 @@ async function changeCarryType(weapon, subAction, hands) {
                 subtitle: `PF2E.Actions.Interact.${subAction}.Title`,
                 glyph: "1",
             },
-            traits: traitSlugToObject("manipulate")
+            traits: [traitSlugToObject("manipulate")]
         }
     );
     const content = await renderTemplate(
