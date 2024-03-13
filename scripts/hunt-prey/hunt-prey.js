@@ -1,7 +1,7 @@
 import { handleHuntPrey } from "../feats/crossbow-feats.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { getControlledActorAndToken, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, showWarning, Updates } from "../utils/utils.js";
-import { DOUBLE_PREY_FEAT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNTED_PREY_EFFECT_ID, OUTWIT_FEATURE_ID, PRECISION_FEATURE_ID, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
+import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNTED_PREY_EFFECT_ID, OUTWIT_FEATURE_ID, PRECISION_FEATURE_ID, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
@@ -82,6 +82,17 @@ export async function huntPrey() {
     };
 
     updates.create(huntedPreyEffectSource);
+
+    // If this is a flurry ranger, update the hunted prey toggle to true
+    const flurryFeature = getItemFromActor(actor, FLURRY_FEATURE_ID);
+    if (flurryFeature) {
+        const rules = huntPreyAction.toObject().system.rules;
+        const rule = rules.find(r => r.key === "RollOption" && r.option === "hunted-prey" && r.toggleable && !r.value);
+        if (rule) {
+            rule.value = true;
+            updates.update(huntPreyAction, { "system.rules": rules });
+        }
+    }
 
     await handleHuntPrey(actor, updates);
 

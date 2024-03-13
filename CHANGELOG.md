@@ -1,3 +1,7 @@
+## 5.1.3 - 2024-03-13 (Pathfinder 2e 5.14.3)
+### Fix
+- Restore automatically enabling the hunted prey toggle when choosing a hunted prey for flurry rangers.
+
 ## 5.1.2 - 2024-03-12 (Pathfinder 2e 5.14.3)
 ### Fix
 - Fix for PF2eWeapon `requiresAmmo` function name change to `ammoRequired` causing all ammunition handling to be skipped.
