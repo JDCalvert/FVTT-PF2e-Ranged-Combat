@@ -1,3 +1,8 @@
+## 5.1.4 - 2024-03-17 (Pathfinder 2e 5.14.4)
+### Fix
+- Fix visual error displaying traits when using auxiliary actions.
+- Fix action glyth not displaying when reloading.
+
 ## 5.1.3 - 2024-03-13 (Pathfinder 2e 5.14.3)
 ### Fix
 - Restore automatically enabling the hunted prey toggle when choosing a hunted prey for flurry rangers.
