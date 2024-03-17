@@ -261,7 +261,7 @@ export async function postActionInChat(action) {
 
 export async function postInChat(actor, img, message, actionName = "", numActions = "") {
     const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.hbs", { imgPath: img, message: message, });
-    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: { title: actionName, typeNumber: String(numActions) } });
+    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: { title: actionName, glyph: String(numActions) } });
 
     await ChatMessage.create({
         type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
