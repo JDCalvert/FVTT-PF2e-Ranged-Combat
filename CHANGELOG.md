@@ -1,3 +1,7 @@
+## 5.1.5 - 2024-04-07 (Pathfinder 2e 5.15.0)
+### Fix
+- Allow firing the last piece of ammunition.
+
 ## 5.1.4 - 2024-03-17 (Pathfinder 2e 5.14.4)
 ### Fix
 - Fix visual error displaying traits when using auxiliary actions.
