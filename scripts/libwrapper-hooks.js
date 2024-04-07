@@ -1,7 +1,7 @@
 import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/alchemical-crossbow.js";
 import { handleWeaponFiredAlchemicalShot } from "./actions/alchemical-shot.js";
 import { buildAuxiliaryActions } from "./ammunition-system/auxiliary-actions.js";
-import { disableAmmoConsumption } from "./ammunition-system/disasble-ammo-consumption.js";
+import { disableAmmoConsumption } from "./ammunition-system/disable-ammo-consumption.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
 import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
@@ -44,18 +44,6 @@ export function initialiseLibWrapperHooks() {
         "CONFIG.PF2E.Actor.documentClasses.npc.prototype.stowOrUnstow",
         changeStowed,
         "MIXED"
-    );
-
-    /**
-     * Override the system function of consuming ammunition so we can handle it ourselves
-     */
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Actor.documentClasses.character.prototype.consumeAmmo",
-        function() {
-            return true;
-        },
-        "OVERRIDE"
     );
 
     libWrapper.register(
@@ -114,8 +102,10 @@ export function initialiseLibWrapperHooks() {
         "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareStrike",
         function(wrapper, ...args) {
             const strike = wrapper(...args);
+
             buildAuxiliaryActions(strike);
             disableAmmoConsumption(strike);
+
             return strike;
         },
         "WRAPPER"
