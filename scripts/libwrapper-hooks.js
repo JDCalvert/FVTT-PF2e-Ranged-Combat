@@ -1,6 +1,7 @@
 import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/alchemical-crossbow.js";
 import { handleWeaponFiredAlchemicalShot } from "./actions/alchemical-shot.js";
 import { buildAuxiliaryActions } from "./ammunition-system/auxiliary-actions.js";
+import { disableAmmoConsumption } from "./ammunition-system/disasble-ammo-consumption.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
 import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
 import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
@@ -114,6 +115,7 @@ export function initialiseLibWrapperHooks() {
         function(wrapper, ...args) {
             const strike = wrapper(...args);
             buildAuxiliaryActions(strike);
+            disableAmmoConsumption(strike);
             return strike;
         },
         "WRAPPER"
