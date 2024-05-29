@@ -1,8 +1,9 @@
+import { postToChatConfig } from "../config.js";
 import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
-import { Updates, findItemOnActor, getEffectFromActor, getFlag, postInChat, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { Updates, findItemOnActor, getEffectFromActor, getFlag, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 
@@ -96,10 +97,9 @@ function fireWeaponRepeating(actor, weapon, updates) {
     const ammunitionSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
     const ammunition = findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
 
-    if (shouldPostFullAmmunition(ammunition)) {
-        ammunition.toMessage();
-    } else {
-        postInChat(
+    postAmmunitionToChat(
+        ammunition,
+        () => postMessage(
             actor,
             getFlag(magazineLoadedEffect, "ammunitionImg"),
             game.i18n.format(
@@ -111,8 +111,8 @@ function fireWeaponRepeating(actor, weapon, updates) {
                     capacity: magazineCapacity
                 }
             )
-        );
-    }
+        )
+    );
 }
 
 /**
@@ -196,11 +196,10 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
 
     updateAmmunitionQuantity(updates, ammunition, -ammunitionToFire);
 
-    if (shouldPostFullAmmunition(ammunition)) {
-        ammunition.toMessage();
-    } else {
-        postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));
-    }
+    postAmmunitionToChat(
+        ammunition,
+        () => postMessage(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }))
+    );
 }
 
 /**
@@ -224,7 +223,7 @@ function consumeConjuredRound(actor, weapon, updates) {
     const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         updates.delete(conjuredRoundEffect);
-        postInChat(actor, CONJURE_BULLET_IMG, format("fireConjuredRound", { actor: actor.name }));
+        postAmmunitionToChat(null, () => postMessage(actor, CONJURE_BULLET_IMG, format("fireConjuredRound", { actor: actor.name })));
     }
     return !!conjuredRoundEffect;
 }
@@ -236,20 +235,25 @@ function consumeConjuredRound(actor, weapon, updates) {
  * @param {Ammunition} ammunition 
  */
 function postAmmunition(actor, ammunition) {
-    const ammunitionItem = findItemOnActor(actor, ammunition.id, ammunition.sourceId);
-    if (shouldPostFullAmmunition(ammunitionItem)) {
-        ammunitionItem.toMessage();
-    } else {
-        postInChat(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }));
-    }
+    postAmmunitionToChat(
+        findItemOnActor(actor, ammunition.id, ammunition.sourceId),
+        () => postMessage(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }))
+    );
 }
 
 /**
  * Determine whether we should post the full ammunition or a summary.
  * 
- * @param {PF2eConsumable} ammunitionItem The ammunition being fired
+ * @param {PF2eConsumable} ammunition The ammunition being fired
+ * @param {() => void} postMessageFunction Function to post a simple message
  * @returns {boolean} true if we should post the full ammunition
  */
-function shouldPostFullAmmunition(ammunitionItem) {
-    return ammunitionItem && ammunitionItem.level > 0 && game.settings.get("pf2e-ranged-combat", "postFullAmmunition");
+function postAmmunitionToChat(ammunition, postMessageFunction) {
+    const settingValue = game.settings.get("pf2e-ranged-combat", "postAmmunitionToChat");
+
+    if (ammunition && ammunition.level > 0 && settingValue == postToChatConfig.full) {
+        ammunition.toMessage();
+    } else if (settingValue) {
+        postMessageFunction();
+    }
 }

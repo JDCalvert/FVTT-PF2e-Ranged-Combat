@@ -1,4 +1,4 @@
-import { Updates, ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, setEffectTarget, showWarning } from "../utils/utils.js";
+import { Updates, ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, setEffectTarget, showWarning } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Q1O4P1YIkCfeedHH";
@@ -80,8 +80,8 @@ export async function alchemicalShot() {
         }
     );
 
-    await postActionInChat(alchemicalShotFeat);
-    await postInChat(
+    await postActionToChat(alchemicalShotFeat);
+    await postToChat(
         actor,
         bomb.img,
         format("tokenPoursBombIntoWeapon", { token: token.name, weapon: weapon.name, bomb: bomb.name }),

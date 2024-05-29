@@ -5,11 +5,11 @@
                 "name": "Wersja schematu",
                 "hint": "Obecna wersja danych związanych z tym modułem"
             },
-            "postFullAction": {
+            "postActionToChat": {
                 "name": "Pokaż Pełną Akcję z Makr",
                 "hint": "Podczas uruchamiania makr symulujących wykonywanie akcji, zamieść pełny opis akcji w oknie czatu."
             },
-            "postFullAmmunition": {
+            "postAmmunitionToChat": {
                 "name": "Pokaż Pełen Opis Amunicji",
                 "hint": "Strzelając z broni dystansowej niestandardową amunicją, zamieść przedmiot amunicji na czacie."
             },

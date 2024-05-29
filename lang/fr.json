@@ -1,11 +1,11 @@
 {
     "pf2e-ranged-combat": {
         "config": {
-            "postFullAction": {
+            "postActionToChat": {
                 "name": "Poster une action complète à partir de macros",
                 "hint": "Lorsque vous exécutez des macros qui simulent des actions, envoyez la description complète de l'action dans la conversation."
             },
-            "postFullAmmunition": {
+            "postAmmunitionToChat": {
                 "name": "Afficher la description complète des munitions",
                 "hint": "Lorsque vous utilisez une arme à distance avec des munitions non standard, affichez la description de la munition dans la conversation."
             },

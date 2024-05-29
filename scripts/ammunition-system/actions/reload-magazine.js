@@ -2,7 +2,7 @@ import { handleReload } from "../../feats/crossbow-feats.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postToChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
 import { selectAmmunition } from "./switch-ammunition.js";
@@ -131,7 +131,7 @@ export async function performReloadMagazine(actor, token, weapon) {
         );
     }
 
-    await postInChat(
+    await postToChat(
         actor,
         RELOAD_MAGAZINE_IMG,
         format(

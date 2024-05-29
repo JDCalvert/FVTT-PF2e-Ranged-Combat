@@ -2,7 +2,7 @@ import { Ammunition } from "../../types/pf2e-ranged-combat/ammunition.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postToChat, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
 import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "../utils.js";
@@ -47,7 +47,7 @@ export async function performUnload(actor, token, weapon) {
             }
             if (magazineLoadedEffect) {
                 await unloadMagazine(actor, magazineLoadedEffect, updates);
-                postInChat(
+                postToChat(
                     actor,
                     magazineLoadedEffect.img,
                     format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(magazineLoadedEffect, "ammunitionName"), weapon: weapon.name }),
@@ -69,7 +69,7 @@ export async function performUnload(actor, token, weapon) {
                 moveAmmunitionToInventory(actor, ammunition, updates);
                 removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
             }
-            postInChat(
+            postToChat(
                 actor,
                 ammunition.img,
                 format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: ammunition.name, weapon: weapon.name }),
@@ -78,7 +78,7 @@ export async function performUnload(actor, token, weapon) {
             );
         } else {
             unloadAmmunition(actor, weapon, updates);
-            postInChat(
+            postToChat(
                 actor,
                 loadedEffect.img,
                 format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(loadedEffect, "ammunition").name, weapon: weapon.name }),
@@ -88,7 +88,7 @@ export async function performUnload(actor, token, weapon) {
         }
     } else {
         removeAmmunition(actor, weapon, updates);
-        postInChat(
+        postToChat(
             actor,
             loadedEffect.img,
             format("tokenUnloadsWeapon", { token: token.name, weapon: weapon.name }),

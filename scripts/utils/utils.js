@@ -1,6 +1,7 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { PF2eItem } from "../types/pf2e/item.js";
+import { postToChatConfig } from "../config.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
@@ -41,7 +42,7 @@ export class Updates {
      * @param {PF2eItem} item 
      */
     delete(item) {
-        const existingDelete = this.deletes.find(deleteId => deleteId === item.id)
+        const existingDelete = this.deletes.find(deleteId => deleteId === item.id);
         if (!existingDelete) {
             this.deletes.push(item.id);
         }
@@ -253,13 +254,19 @@ export function ensureDuration(actor, effectSource) {
     }
 }
 
-export async function postActionInChat(action) {
-    if (game.settings.get("pf2e-ranged-combat", "postFullAction")) {
+export async function postActionToChat(action) {
+    if (game.settings.get("pf2e-ranged-combat", "postActionToChat") == postToChatConfig.full) {
         await action.toMessage();
     }
 }
 
-export async function postInChat(actor, img, message, actionName = "", numActions = "") {
+export async function postToChat(actor, img, message, actionName = "", numActions = "") {
+    if (game.settings.get("pf2e-ranged-combat", "postActionToChat")) {
+        postMessage(actor, img, message, actionName, numActions);
+    }
+}
+
+export async function postMessage(actor, img, message, actionName = "", numActions = "") {
     const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.hbs", { imgPath: img, message: message, });
     const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: { title: actionName, glyph: String(numActions) } });
 

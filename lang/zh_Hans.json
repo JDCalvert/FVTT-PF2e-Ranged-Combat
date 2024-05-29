@@ -5,11 +5,11 @@
                 "name": "概要模式",
                 "hint": "与本模组相关联的系统版本"
             },
-            "postFullAction": {
+            "postActionToChat": {
                 "name": "发布宏中的完整动作",
                 "hint": "执行模拟行动的宏时，将完整描述发送至聊天。"
             },
-            "postFullAmmunition": {
+            "postAmmunitionToChat": {
                 "name": "发布完整弹药描述",
                 "hint": "远程武器使用非标准弹药射击时，将弹药道具发送至聊天。"
             },

@@ -5,13 +5,18 @@
                 "name": "Schema Version",
                 "hint": "The current version of the data related to this module"
             },
-            "postFullAction": {
-                "name": "Post Full Action from Macros",
-                "hint": "When running macros that simulate taking actions, post the full action description to chat."
+            "postToChat": {
+                "none": "None",
+                "simple": "Simple",
+                "full": "Full"
             },
-            "postFullAmmunition": {
-                "name": "Post Full Ammunition Description",
-                "hint": "When firing a ranged weapon with non-standard ammunition, post the ammunition item to chat."
+            "postActionToChat": {
+                "name": "Post Actions to Chat",
+                "hint": "When running macros that simulate taking actions, post either a simple message or the full action to chat."
+            },
+            "postAmmunitionToChat": {
+                "name": "Post Ammunition to Chat",
+                "hint": "When firing a ranged weapon, post either a simple message, or the whole ammunition item."
             },
             "preventFireNotLoaded": {
                 "name": "Prevent Firing Weapon if not Loaded",

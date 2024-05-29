@@ -1,6 +1,6 @@
 import { handleHuntPrey } from "../feats/crossbow-feats.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { getControlledActorAndToken, getFlag, getItem, getItemFromActor, postActionInChat, postInChat, showWarning, Updates } from "../utils/utils.js";
+import { getControlledActorAndToken, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, showWarning, Updates } from "../utils/utils.js";
 import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNTED_PREY_EFFECT_ID, OUTWIT_FEATURE_ID, PRECISION_FEATURE_ID, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
@@ -49,8 +49,8 @@ export async function huntPrey() {
     const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
     const targetData = { token: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
 
-    await postActionInChat(huntPreyAction);
-    await postInChat(
+    await postActionToChat(huntPreyAction);
+    await postToChat(
         actor,
         HUNT_PREY_IMG,
         targets.length === 3

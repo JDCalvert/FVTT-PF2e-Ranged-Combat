@@ -13,6 +13,12 @@ import { initialiseLibWrapperHooks } from "./libwrapper-hooks.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
+export const postToChatConfig = {
+    none: 0,
+    simple: 1,
+    full: 2
+};
+
 Hooks.on(
     "init",
     () => {
@@ -35,27 +41,37 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
-            "postFullAction",
+            "postActionToChat",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.postFullAction.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.postFullAction.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.postActionToChat.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.postActionToChat.hint"),
                 scope: "world",
                 config: true,
-                type: Boolean,
-                default: true
+                type: Number,
+                choices: {
+                    0: game.i18n.localize("pf2e-ranged-combat.config.postToChat.none"),
+                    1: game.i18n.localize("pf2e-ranged-combat.config.postToChat.simple"),
+                    2: game.i18n.localize("pf2e-ranged-combat.config.postToChat.full")
+                },
+                default: postToChatConfig.simple
             }
         );
 
         game.settings.register(
             "pf2e-ranged-combat",
-            "postFullAmmunition",
+            "postAmmunitionToChat",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.postFullAmmunition.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.postFullAmmunition.hint"),
+                name: game.i18n.localize("pf2e-ranged-combat.config.postAmmunitionToChat.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.config.postAmmunitionToChat.hint"),
                 scope: "world",
                 config: true,
-                type: Boolean,
-                default: false
+                type: Number,
+                choices: {
+                    0: game.i18n.localize("pf2e-ranged-combat.config.postToChat.none"),
+                    1: game.i18n.localize("pf2e-ranged-combat.config.postToChat.simple"),
+                    2: game.i18n.localize("pf2e-ranged-combat.config.postToChat.full")
+                },
+                default: postToChatConfig.simple
             }
         );
 

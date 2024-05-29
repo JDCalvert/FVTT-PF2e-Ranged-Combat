@@ -1,5 +1,5 @@
 import { dialogPrompt } from "../utils/prompt-dialog.js";
-import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postInChat, setChoice, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
+import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postToChat, setChoice, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
 const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.cA9sBCFAxY2EJgrC";
@@ -82,7 +82,7 @@ export async function loadAlchemicalCrossbow() {
     // Remove one bomb from the stack
     updates.update(bomb, { "system.quantity": bomb.quantity - 1 });
 
-    await postInChat(
+    await postToChat(
         actor,
         bomb.img,
         format("tokenLoadsWeaponWithBomb", { token: token.name, weapon: weapon.name, bomb: bomb.name }),
@@ -134,7 +134,7 @@ export async function unloadAlchemicalCrossbow() {
     await unloadBomb(actor, loadedBombEffect, updates);
 
     if (loadedBombFlags.bombCharges > 0) {
-        await postInChat(
+        await postToChat(
             actor,
             UNLOAD_BOMB_IMG,
             format(
