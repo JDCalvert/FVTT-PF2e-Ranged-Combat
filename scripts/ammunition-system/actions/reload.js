@@ -246,7 +246,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
                         showWarning(format("warningAlreadyLoadedWithAmmo", { weapon: weapon.name, ammo: ammo.name }));
                         return;
                     }
-                    await unloadAmmunition(actor, weapon, updates);
+                    await unloadAmmunition(actor, weapon, loadedEffect, updates);
                 }
 
                 // Now we can load the new ammunition

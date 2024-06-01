@@ -1,13 +1,14 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import { Updates, getEffectFromActor, getFlag, getFlags, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { Updates, getEffectFromActor, getFlag, getFlags, getItemFromActor, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { characterWeaponTransform } from "../utils/weapon-utils.js";
+import { performConjureBullet } from "./actions/conjure-bullet.js";
 import { performNextChamber } from "./actions/next-chamber.js";
 import { performReloadMagazine } from "./actions/reload-magazine.js";
 import { performReload } from "./actions/reload.js";
 import { isWeaponLoaded, performUnload } from "./actions/unload.js";
-import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { getLoadedAmmunitions, isFullyLoaded } from "./utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.names." + key);
@@ -88,18 +89,33 @@ export function buildAuxiliaryActions(strike) {
         );
     }
 
+    // Conjure Bullet
+    if (canConjureBullet(weapon)) {
+        auxiliaryActions.push(
+            buildAuxiliaryAction(
+                pf2eWeapon,
+                game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet.chatActionName"),
+                "interact",
+                1,
+                "1",
+                1,
+                async () => performConjureBullet(actor, token, weapon)
+            )
+        );
+    }
+
     // If the weapon is equipped, and there are other stacks of the same type
     if (weapon.isEquipped) {
-        const groupStacks = findGroupStacks(weapon)
+        const groupStacks = findGroupStacks(weapon);
 
         if (groupStacks.length && weapon.quantity === 0) {
             auxiliaryActions.findSplice(action =>
                 action.label === game.i18n.localize("PF2E.Actions.Release.ChangeGrip.Title") ||
                 action.label === game.i18n.localize("PF2E.Actions.Interact.ChangeGrip.Title")
-            )
+            );
 
-            auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Release.Drop.Title"))
-            auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Interact.Sheathe.Title"))
+            auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Release.Drop.Title"));
+            auxiliaryActions.findSplice(action => action.label === game.i18n.localize("PF2E.Actions.Interact.Sheathe.Title"));
 
             auxiliaryActions.push(
                 buildAuxiliaryAction(
@@ -264,7 +280,7 @@ function canSwitchChamber(weapon) {
         return false;
     }
 
-    const loadedAmmunitions = getLoadedAmmunitions(weapon)
+    const loadedAmmunitions = getLoadedAmmunitions(weapon);
     if (loadedAmmunitions.length == 0) {
         return false;
     }
@@ -281,6 +297,28 @@ function canSwitchChamber(weapon) {
     return true;
 }
 
+/**
+ * @param {Weapon} weapon 
+ * @returns 
+ */
+function canConjureBullet(weapon) {
+    if (isFullyLoaded(weapon)) {
+        return false;
+    }
+
+    const conjureBulletAction = getItemFromActor(weapon.actor, CONJURE_BULLET_ACTION_ID);
+    if (!conjureBulletAction) {
+        return false;
+    }
+
+    const conjuredRoundEffect = getEffectFromActor(weapon.actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+    if (conjuredRoundEffect) {
+        return false;
+    }
+
+    return true;
+}
+
 function buildCarryTypeAuxiliaryAction(pf2eWeapon, stack, action, hands) {
     return buildAuxiliaryAction(
         pf2eWeapon,
@@ -290,7 +328,7 @@ function buildCarryTypeAuxiliaryAction(pf2eWeapon, stack, action, hands) {
         "1",
         hands,
         () => changeCarryType(stack, action, hands)
-    )
+    );
 }
 
 async function changeCarryType(weapon, subAction, hands) {

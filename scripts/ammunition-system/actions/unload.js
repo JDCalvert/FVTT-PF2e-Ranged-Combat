@@ -77,14 +77,32 @@ export async function performUnload(actor, token, weapon) {
                 "1"
             );
         } else {
-            unloadAmmunition(actor, weapon, updates);
-            postToChat(
-                actor,
-                loadedEffect.img,
-                format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(loadedEffect, "ammunition").name, weapon: weapon.name }),
-                game.i18n.localize("PF2E.Actions.Interact.Title"),
-                "1"
-            );
+            if (conjuredRoundEffect) {
+                updates.delete(conjuredRoundEffect);
+                postToChat(
+                    actor,
+                    conjuredRoundEffect.img,
+                    format(
+                        "tokenUnloadsAmmunitionFromWeapon",
+                        {
+                            token: token.name,
+                            ammunition: game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet.conjuredRound"),
+                            weapon: weapon.name
+                        }
+                    ),
+                    game.i18n.localize("PF2E.Actions.Interact.Title"),
+                    "1"
+                );
+            } else if (loadedEffect) {
+                unloadAmmunition(actor, weapon, loadedEffect, updates);
+                postToChat(
+                    actor,
+                    loadedEffect.img,
+                    format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(loadedEffect, "ammunition").name, weapon: weapon.name }),
+                    game.i18n.localize("PF2E.Actions.Interact.Title"),
+                    "1"
+                );
+            }
         }
     } else {
         removeAmmunition(actor, weapon, updates);
@@ -157,11 +175,13 @@ export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
     }
 }
 
-export async function unloadAmmunition(actor, weapon, updates) {
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+export async function unloadAmmunition(actor, weapon, loadedEffect, updates) {
     const loadedAmmunition = getFlag(loadedEffect, "ammunition");
 
-    moveAmmunitionToInventory(actor, loadedAmmunition, updates);
+    if (loadedAmmunition) {
+        moveAmmunitionToInventory(actor, loadedAmmunition, updates);
+    }
+
     removeAmmunition(actor, weapon, updates);
 }
 

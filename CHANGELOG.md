@@ -1,3 +1,8 @@
+## 5.2.0 - 2024-06-01 (Pathfinder 2e 5.16.1)
+### Features
+- Add more options to control chat message generation.
+- Add Conjure Bullet to auxiliary actions.
+
 ## 5.1.5 - 2024-04-07 (Pathfinder 2e 5.15.0)
 ### Fix
 - Allow firing the last piece of ammunition.

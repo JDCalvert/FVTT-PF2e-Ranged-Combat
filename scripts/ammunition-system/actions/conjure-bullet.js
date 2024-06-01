@@ -1,4 +1,6 @@
 import { handleReload } from "../../feats/crossbow-feats.js";
+import { PF2eActor } from "../../types/pf2e/actor.js";
+import { PF2eToken } from "../../types/pf2e/token.js";
 import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postToChat, setEffectTarget, showWarning, Updates } from "../../utils/utils.js";
 import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
@@ -39,6 +41,15 @@ export async function conjureBullet() {
         return;
     }
 
+    performConjureBullet(actor, token, weapon)
+}
+
+/**
+ * @param {PF2eActor} actor 
+ * @param {PF2eToken} token
+ * @param {Weapon} weapon
+ */
+export async function performConjureBullet(actor, token, weapon) {
     const updates = new Updates(actor);
 
     const conjuredRoundSource = await getItem(CONJURED_ROUND_EFFECT_ID);
