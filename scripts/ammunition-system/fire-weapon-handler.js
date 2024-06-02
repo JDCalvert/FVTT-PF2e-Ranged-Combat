@@ -3,7 +3,7 @@ import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
-import { Updates, findItemOnActor, getEffectFromActor, getFlag, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { Updates, findItemOnActor, getEffectFromActor, getFlag, useAdvancedAmmunitionSystem, postMessage } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 

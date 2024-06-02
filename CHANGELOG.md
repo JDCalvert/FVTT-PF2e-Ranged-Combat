@@ -1,3 +1,7 @@
+## 5.2.1 - 2024-06-02 (Pathfinder 2e 5.16.1)
+### Fixes
+- Fix failing to post messages about using ammunition.
+
 ## 5.2.0 - 2024-06-01 (Pathfinder 2e 5.16.1)
 ### Features
 - Add more options to control chat message generation.
