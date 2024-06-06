@@ -1,3 +1,4 @@
+import { HookManager } from "../utils/hook-manager.js";
 import { dialogPrompt } from "../utils/prompt-dialog.js";
 import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postToChat, setChoice, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
@@ -9,6 +10,10 @@ const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "force", "sonic", "
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalCrossbow." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalCrossbow." + key, data);
+
+export function initialiseAlchemicalCrossbowHooks() {
+    HookManager.register("weapon-attack", handleWeaponFired);
+}
 
 export async function loadAlchemicalCrossbow() {
     const { actor, token } = getControlledActorAndToken();
@@ -153,12 +158,12 @@ export async function unloadAlchemicalCrossbow() {
     updates.handleUpdates();
 }
 
-export function handleWeaponFired(actor, weapon, updates) {
+function handleWeaponFired(weapon, updates) {
     if (!isAlchemicalCrossbow(weapon)) {
         return;
     }
 
-    const loadedBombEffect = getEffectFromActor(actor, LOADED_BOMB_EFFECT_ID, weapon.id);
+    const loadedBombEffect = getEffectFromActor(weapon.actor, LOADED_BOMB_EFFECT_ID, weapon.id);
     if (!loadedBombEffect) {
         return;
     }

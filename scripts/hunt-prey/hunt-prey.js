@@ -1,5 +1,5 @@
-import { handleHuntPrey } from "../feats/crossbow-feats.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
+import { HookManager } from "../utils/hook-manager.js";
 import { getControlledActorAndToken, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, showWarning, Updates } from "../utils/utils.js";
 import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNTED_PREY_EFFECT_ID, OUTWIT_FEATURE_ID, PRECISION_FEATURE_ID, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
@@ -94,7 +94,7 @@ export async function huntPrey() {
         }
     }
 
-    await handleHuntPrey(actor, updates);
+    await HookManager.call("hunt-prey", actor, updates);
 
     updates.handleUpdates();
 }

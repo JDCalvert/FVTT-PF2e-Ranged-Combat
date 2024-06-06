@@ -1,13 +1,9 @@
-import { handleWeaponFired as handleAlchemicalCrossbowFired } from "./actions/alchemical-crossbow.js";
-import { handleWeaponFiredAlchemicalShot } from "./actions/alchemical-shot.js";
 import { buildAuxiliaryActions } from "./ammunition-system/auxiliary-actions.js";
 import { disableAmmoConsumption } from "./ammunition-system/disable-ammo-consumption.js";
 import { checkLoaded } from "./ammunition-system/fire-weapon-check.js";
-import { fireWeapon } from "./ammunition-system/fire-weapon-handler.js";
-import { handleWeaponFired as crossbowFeatsHandleFired } from "./feats/crossbow-feats.js";
 import { changeCarryType, changeStowed, findGroupStacks } from "./thrown-weapons/change-carry-type.js";
 import { checkThrownWeapon } from "./thrown-weapons/throw-weapon-check.js";
-import { handleThrownWeapon } from "./thrown-weapons/throw-weapon-handler.js";
+import { HookManager } from "./utils/hook-manager.js";
 import { Updates, getAttackPopout, getFlag } from "./utils/utils.js";
 import { transformWeapon } from "./utils/weapon-utils.js";
 
@@ -97,6 +93,16 @@ export function initialiseLibWrapperHooks() {
         "WRAPPER"
     );
 
+    // Stop ammunition rules from automatically applying to its weapon
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
+        function() {
+            Object.getPrototypeOf(CONFIG.PF2E.Item.documentClasses.weapon).prototype.prepareSiblingData.apply(this);
+        },
+        "OVERRIDE"
+    );
+
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareStrike",
@@ -149,15 +155,9 @@ export function initialiseLibWrapperHooks() {
                 return;
             }
 
+            // Call the weapon attack hook and handle any updates that come out of it
             const updates = new Updates(actor);
-
-            // Run the various handlers for the weapon being used
-            crossbowFeatsHandleFired(weapon, updates);
-            handleAlchemicalCrossbowFired(actor, weapon, updates);
-            fireWeapon(actor, weapon, updates);
-            handleThrownWeapon(weapon);
-            handleWeaponFiredAlchemicalShot(weapon, updates);
-
+            await HookManager.call("weapon-attack", weapon, updates);
             await updates.handleUpdates();
 
             return roll;

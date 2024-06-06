@@ -122,6 +122,7 @@ export function characterWeaponTransform(weapon) {
         name: weapon.name,
         level: weapon.level,
         damageType: weapon.system.damage.damageType,
+        damageDice: weapon.system.damage.dice,
         img: weapon.img,
         flags: weapon.flags,
         group: weapon.system.group,

@@ -1,7 +1,6 @@
 import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
 import { CapacityLoadedEffect, LoadedEffect } from "../types/pf2e-ranged-combat/loaded-effect.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable, PF2eConsumableUses } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
@@ -118,12 +117,11 @@ export function getLoadedAmmunitions(weapon) {
 /**
  * Remove a piece of ammunition from the weapon.
  * 
- * @param {PF2eActor} actor
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1) {
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+export function removeAmmunition(weapon, updates, ammunitionToRemove = 1) {
+    const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
     if (!loadedEffect) {
         return;
     }
@@ -143,7 +141,7 @@ export function removeAmmunition(actor, weapon, updates, ammunitionToRemove = 1)
         } else {
             updates.update(loadedEffect, { "name": `${getFlag(loadedEffect, "name")} (0/${loadedCapacity})` });
             updates.delete(loadedEffect);
-            clearLoadedChamber(actor, weapon, null, updates);
+            clearLoadedChamber(weapon, null, updates);
         }
     } else {
         updates.delete(loadedEffect);
@@ -196,7 +194,7 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     loadedAmmunition.quantity--;
     if (loadedAmmunition.quantity === 0) {
         loadedFlags.ammunition.findSplice(ammunition => ammunition.id === loadedAmmunition.id);
-        clearLoadedChamber(actor, weapon, loadedAmmunition, updates);
+        clearLoadedChamber(weapon, loadedAmmunition, updates);
     }
 
     // If the weapon is still loaded, update the effect, otherwise remove it
@@ -220,8 +218,8 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     }
 }
 
-export function clearLoadedChamber(actor, weapon, ammunition, updates) {
-    const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+export function clearLoadedChamber(weapon, ammunition, updates) {
+    const chamberLoadedEffect = getEffectFromActor(weapon.actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
     if (chamberLoadedEffect) {
         if (ammunition) {
             const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");

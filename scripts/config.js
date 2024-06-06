@@ -1,5 +1,5 @@
-import { loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
-import { alchemicalShot } from "./actions/alchemical-shot.js";
+import { initialiseAlchemicalCrossbowHooks, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
+import { alchemicalShot, initialiseAlchemicalShort as initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
@@ -7,10 +7,15 @@ import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
 import { fullyReload, reload, reloadNPCs } from "./ammunition-system/actions/reload.js";
 import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { unload } from "./ammunition-system/actions/unload.js";
+import { initialiseAmmunitionEffects } from "./ammunition-system/ammunition-effects.js";
+import { initialiseFireWeaponHandler } from "./ammunition-system/fire-weapon-handler.js";
+import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
+import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { initialiseLibWrapperHooks } from "./libwrapper-hooks.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
+import { initialiseThrownWeaponHandler } from "./thrown-weapons/throw-weapon-handler.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 export const postToChatConfig = {
@@ -159,6 +164,15 @@ Hooks.on(
         );
 
         initialiseLibWrapperHooks();
+        
+        initialiseFireWeaponHandler();
+        initialiseThrownWeaponHandler();
+        
+        initialiseAmmunitionEffects();
+        initialiseCrossbowCrackShot();
+        initialiseCrossbowAce();
+        initialiseAlchemicalCrossbowHooks();
+        initialiseAlchemicalShot();
 
         game.pf2eRangedCombat = {
             reload,

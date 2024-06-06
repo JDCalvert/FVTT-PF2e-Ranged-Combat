@@ -1,9 +1,9 @@
-import { handleReload } from "../../feats/crossbow-feats.js";
 import { CapacityLoadedEffect } from "../../types/pf2e-ranged-combat/loaded-effect.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
+import { HookManager } from "../../utils/hook-manager.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postToChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
@@ -331,7 +331,8 @@ export async function performReload(actor, token, weapon, updates, options = {})
         await postReloadToChat(token, weapon);
     }
 
-    await handleReload(weapon, updates);
+    await HookManager.call("reload", weapon, updates);
+    
     Hooks.callAll("pf2eRangedCombatReload", actor, token, weapon);
 };
 

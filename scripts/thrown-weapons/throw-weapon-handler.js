@@ -1,7 +1,12 @@
+import { HookManager } from "../utils/hook-manager.js";
 import { createNewStack, findGroupStacks } from "./change-carry-type.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
-export async function handleThrownWeapon(weapon) {
+export function initialiseThrownWeaponHandler() {
+    HookManager.register("weapon-attack", handleThrownWeapon);
+}
+
+async function handleThrownWeapon(weapon) {
     if (!useAdvancedThrownWeaponSystem(weapon.actor)) {
         return;
     }

@@ -18,6 +18,9 @@ export class Updates {
     /** @type PF2eItem[] */
     updates;
 
+    /** @type {(() => Promise<void>)[]} */
+    deferredUpdates;
+
     /**
      * @param {PF2eActor} actor 
      */
@@ -27,6 +30,7 @@ export class Updates {
         this.creates = []; // Array of items to be created
         this.deletes = []; // Set of IDs of items to be deleted
         this.updates = []; // Array of updates to existing items
+        this.deferredUpdates = [];
 
         this.floatyTextToShow = [];
     }
@@ -70,6 +74,14 @@ export class Updates {
     }
 
     /**
+     * Add a process to run before all the other updates. Useful for when we can't run asynchronously at the time
+     * @param {() => Promise<void>} update 
+     */
+    deferredUpdate(update) {
+        this.deferredUpdates.push(update);
+    }
+
+    /**
      * @param {string} text
      * @param {boolean} up
      */
@@ -81,10 +93,14 @@ export class Updates {
      * @returns {boolean}
      */
     hasChanges() {
-        return this.creates.length || this.deletes.length || this.updates.length;
+        return this.creates.length || this.deletes.length || this.updates.length || this.deferredUpdates.length;
     }
 
     async handleUpdates() {
+        for (const deferredUpdate of this.deferredUpdates) {
+            await deferredUpdate();
+        }
+
         if (this.creates.length) await this.actor.createEmbeddedDocuments("Item", this.creates);
         if (this.updates.length) await this.actor.updateEmbeddedDocuments("Item", this.updates);
         if (this.deletes.length) await this.actor.deleteEmbeddedDocuments("Item", this.deletes);
@@ -249,9 +265,19 @@ export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
  * To prevent this, set the duration to 1 round
  */
 export function ensureDuration(actor, effectSource) {
-    if (!actor.getActiveTokens().some(token => token.inCombat) && effectSource.system.duration.value === 0) {
+    if (!isInCombat(actor) && effectSource.system.duration.value === 0) {
         effectSource.system.duration.value = 1;
     }
+}
+
+/**
+ * Determine if the actor has some token that's in combat
+ * 
+ * @param {PF2eActor} actor 
+ * @returns {boolean}
+ */
+export function isInCombat(actor) {
+    return actor.getActiveTokens().some(token => token.inCombat);
 }
 
 export async function postActionToChat(action) {

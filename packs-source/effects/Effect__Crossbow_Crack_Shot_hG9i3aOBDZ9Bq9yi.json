@@ -10,7 +10,7 @@
   "system": {
     "description": {
       "gm": "",
-      "value": "<p><span style=\"color:#191813;font-family:Roboto, sans-serif;font-size:13px\">You gain a +2 circumstance bonus to the damage roll on your next Strike with your crossbow. If the crossbow is a simple crossbow, you also increase the damage die size for that attack.</span></p>"
+      "value": "<p>Your @UUID[Compendium.pf2e.feats-srd.s6h0xkdKf3gecLk6]{Crossbow Crack Shot} feat is activated by reloading your crossbow.</p>"
     },
     "rules": [
       {
@@ -29,26 +29,27 @@
         }
       },
       {
-        "key": "DamageDice",
-        "label": "Crossbow Ace",
-        "override": {
-          "upgrade": true
-        },
-        "predicate": [
-          "item:group:crossbow",
-          "item:category:simple"
-        ],
+        "key": "FlatModifier",
+        "label": "Crossbow Crack Shot",
         "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
-        "slug": "crossbow-ace-dice-upgrade"
+        "value": "@weapon.system.damage.dice",
+        "damageCategory": "precision"
       },
       {
-        "key": "FlatModifier",
-        "predicate": [
-          "item:group:crossbow"
-        ],
+        "key": "AdjustModifier",
+        "mode": "upgrade",
         "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
-        "type": "circumstance",
-        "value": 2
+        "slug": "backstabber",
+        "value": "2*@weapon.system.damage.dice"
+      },
+      {
+        "definition": [
+          "item:id:{item|flags.pf2e.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "range-increment",
+        "value": 10
       }
     ],
     "slug": null,
@@ -76,9 +77,9 @@
       "value": 1
     },
     "duration": {
-      "value": 0,
-      "unit": "rounds",
-      "expiry": "turn-end",
+      "value": -1,
+      "unit": "unlimited",
+      "expiry": null,
       "sustained": false
     },
     "start": {
@@ -99,10 +100,10 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.12.7",
+    "systemVersion": "5.16.1",
     "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1705875794360,
+    "modifiedTime": 1717713002730,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!hG9i3aOBDZ9Bq9yi"

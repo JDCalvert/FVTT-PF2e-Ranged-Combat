@@ -1,3 +1,4 @@
+import { HookManager } from "../utils/hook-manager.js";
 import { Updates, ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, setEffectTarget, showWarning } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
@@ -6,6 +7,10 @@ const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.IY
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalShot." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data);
+
+export function initialiseAlchemicalShort() {
+    HookManager.register("weapon-attack", handleWeaponFired)
+}
 
 export async function alchemicalShot() {
     const { actor, token } = getControlledActorAndToken();
@@ -97,7 +102,7 @@ export async function alchemicalShot() {
  * - Update the "fired" flag to be true, and remove the failure roll note to prevent it being posted on the next strike
  * - If the "fired" flag is already true, delete the effect
  */
-export async function handleWeaponFiredAlchemicalShot(weapon, updates) {
+function handleWeaponFired(weapon, updates) {
     const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
     if (alchemicalShotEffect) {
         if (getFlag(alchemicalShotEffect, "fired")) {

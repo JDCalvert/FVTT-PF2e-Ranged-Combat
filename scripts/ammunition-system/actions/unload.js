@@ -64,7 +64,7 @@ export async function performUnload(actor, token, weapon) {
             if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
                 const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
                 updates.delete(conjuredRoundEffect);
-                clearLoadedChamber(actor, weapon, ammunition, updates);
+                clearLoadedChamber(weapon, ammunition, updates);
             } else {
                 moveAmmunitionToInventory(actor, ammunition, updates);
                 removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
@@ -105,7 +105,7 @@ export async function performUnload(actor, token, weapon) {
             }
         }
     } else {
-        removeAmmunition(actor, weapon, updates);
+        removeAmmunition(weapon, updates);
         postToChat(
             actor,
             loadedEffect.img,
@@ -182,7 +182,7 @@ export async function unloadAmmunition(actor, weapon, loadedEffect, updates) {
         moveAmmunitionToInventory(actor, loadedAmmunition, updates);
     }
 
-    removeAmmunition(actor, weapon, updates);
+    removeAmmunition(weapon, updates);
 }
 
 /**

@@ -1,7 +1,7 @@
-import { handleReload } from "../../feats/crossbow-feats.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
+import { HookManager } from "../../utils/hook-manager.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postToChat, setEffectTarget, showWarning, Updates, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
@@ -112,8 +112,6 @@ export async function performReloadMagazine(actor, token, weapon) {
 
     updates.create(magazineLoadedEffectSource);
 
-    await handleReload(weapon, updates);
-
     numActions += 2;
 
     // Remove that magazine from the stack
@@ -148,7 +146,10 @@ export async function performReloadMagazine(actor, token, weapon) {
         String(numActions)
     );
 
+    await HookManager.call("reload", weapon, updates);
+
     updates.handleUpdates();
+    
     Hooks.callAll("pf2eRangedCombatReloadMagazine", actor, token, weapon);
 }
 

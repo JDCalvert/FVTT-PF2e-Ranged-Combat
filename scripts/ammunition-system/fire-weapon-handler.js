@@ -1,56 +1,58 @@
 import { postToChatConfig } from "../config.js";
 import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
-import { Updates, findItemOnActor, getEffectFromActor, getFlag, useAdvancedAmmunitionSystem, postMessage } from "../utils/utils.js";
+import { HookManager } from "../utils/hook-manager.js";
+import { Updates, findItemOnActor, getEffectFromActor, getFlag, postMessage, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
 
+export function initialiseFireWeaponHandler() {
+    HookManager.register("weapon-attack", fireWeapon);
+}
+
 /**
  * Handle firing a weapon, including updating/removing loaded effects and consuming ammunition.
  * 
- * @param {PF2eActor} actor
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  * @returns 
  */
-export function fireWeapon(actor, weapon, updates) {
+function fireWeapon(weapon, updates) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
         return;
     }
 
     // If the actor has a flag to say they shouldn't consume ammo, don't do anything
-    if (actor.getRollOptions().includes("skip-use-ammunition")) {
+    if (weapon.actor.getRollOptions().includes("skip-use-ammunition")) {
         return;
     }
 
-    if (useAdvancedAmmunitionSystem(actor)) {
+    if (useAdvancedAmmunitionSystem(weapon.actor)) {
         if (weapon.isRepeating) {
-            fireWeaponRepeating(actor, weapon, updates);
+            fireWeaponRepeating(weapon, updates);
         } else if (weapon.requiresLoading) {
-            fireWeaponReloadable(actor, weapon, updates);
+            fireWeaponReloadable(weapon, updates);
         } else {
-            fireWeaponAmmunition(actor, weapon, updates);
+            fireWeaponAmmunition(weapon, updates);
         }
     } else {
-        fireWeaponSimple(actor, weapon, updates);
+        fireWeaponSimple(weapon, updates);
     }
 }
 
 /**
  * Handle firing a weapon with the advanced ammunition system disabled.
  * 
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-export function fireWeaponSimple(actor, weapon, updates) {
+function fireWeaponSimple(weapon, updates) {
     if (weapon.isCapacity) {
-        clearLoadedChamber(actor, weapon, null, updates);
+        clearLoadedChamber(weapon, null, updates);
     }
 
     let ammunitionToFire = 1;
@@ -58,26 +60,25 @@ export function fireWeaponSimple(actor, weapon, updates) {
         ammunitionToFire++;
     }
 
-    const consumedConjuredRound = consumeConjuredRound(actor, weapon, updates);
+    const consumedConjuredRound = consumeConjuredRound(weapon, updates);
     if (consumedConjuredRound) {
         ammunitionToFire--;
     }
 
     if (ammunitionToFire) {
-        fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire);
-        removeAmmunition(actor, weapon, updates, ammunitionToFire);
+        fireWeaponAmmunition(weapon, updates, ammunitionToFire);
+        removeAmmunition(weapon, updates, ammunitionToFire);
     }
 }
 
 /**
  * Handle firing a repeating weapon with the advanced ammunition system enabled.
  * 
- * @param {PF2eActor} actor 
- * @param {Weapon} weapon 
- * @param {Updates} updates 
+ * @param {Weapon} weapon
+ * @param {Updates} updates
  */
-function fireWeaponRepeating(actor, weapon, updates) {
-    const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
+function fireWeaponRepeating(weapon, updates) {
+    const magazineLoadedEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     const magazineCapacity = getFlag(magazineLoadedEffect, "capacity");
     const magazineRemaining = getFlag(magazineLoadedEffect, "remaining") - 1;
 
@@ -90,22 +91,22 @@ function fireWeaponRepeating(actor, weapon, updates) {
         }
     );
     updates.floatyText(`${getFlag(magazineLoadedEffect, "ammunitionName")} ${magazineRemaining}/${magazineCapacity}`, false);
-    removeAmmunition(actor, weapon, updates);
+    removeAmmunition(weapon, updates);
 
     // Post in chat saying some ammunition was used
     const ammunitionItemId = getFlag(magazineLoadedEffect, "ammunitionItemId");
     const ammunitionSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
-    const ammunition = findItemOnActor(actor, ammunitionItemId, ammunitionSourceId);
+    const ammunition = findItemOnActor(weapon.actor, ammunitionItemId, ammunitionSourceId);
 
-    postAmmunitionToChat(
+    postAmmunition(
         ammunition,
         () => postMessage(
-            actor,
+            weapon.actor,
             getFlag(magazineLoadedEffect, "ammunitionImg"),
             game.i18n.format(
                 "pf2e-ranged-combat.ammunitionSystem.fireWeaponRepeating",
                 {
-                    actor: actor.name,
+                    actor: weapon.actor.name,
                     ammunition: getFlag(magazineLoadedEffect, "ammunitionName"),
                     remaining: magazineRemaining,
                     capacity: magazineCapacity
@@ -113,82 +114,82 @@ function fireWeaponRepeating(actor, weapon, updates) {
             )
         )
     );
+
+    if (ammunition) {
+        HookManager.call("ammunition-fire", weapon, ammunition, updates);
+    }
 }
 
 /**
  * Handle firing a reloadable weapon.
  * 
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-function fireWeaponReloadable(actor, weapon, updates) {
+function fireWeaponReloadable(weapon, updates) {
     if (weapon.isCapacity) {
-        fireWeaponCapacity(actor, weapon, updates);
+        fireWeaponCapacity(weapon, updates);
     } else if (weapon.isDoubleBarrel) {
-        fireWeaponDoubleBarrel(actor, weapon, updates);
+        fireWeaponDoubleBarrel(weapon, updates);
     } else {
-        const firedConjuredRound = consumeConjuredRound(actor, weapon, updates);
+        const firedConjuredRound = consumeConjuredRound(weapon, updates);
         if (firedConjuredRound) {
             return;
         }
 
-        const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+        const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
         updates.delete(loadedEffect);
-        postAmmunition(actor, getFlag(loadedEffect, "ammunition"));
+        handleFireAmmunition(weapon, getFlag(loadedEffect, "ammunition"), updates);
     }
 }
 
 /**
  * Handle firing a capacity weapon
  * 
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-function fireWeaponCapacity(actor, weapon, updates) {
-    const chamberLoadedEffect = getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
+function fireWeaponCapacity(weapon, updates) {
+    const chamberLoadedEffect = getEffectFromActor(weapon.actor, CHAMBER_LOADED_EFFECT_ID, weapon.id);
     updates.delete(chamberLoadedEffect);
 
     const chamberAmmunition = getFlag(chamberLoadedEffect, "ammunition");
 
-    consumeAmmunition(actor, weapon, chamberAmmunition, updates);
+    consumeAmmunition(weapon, chamberAmmunition, updates);
 }
 
 /**
  * Handle firing a double-barrel weapon.
  * 
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-function fireWeaponDoubleBarrel(actor, weapon, updates) {
+function fireWeaponDoubleBarrel(weapon, updates) {
     if (weapon.isFiringBothBarrels) {
         // Fire the conjured round, if there is one
-        consumeConjuredRound(actor, weapon, updates);
+        consumeConjuredRound(weapon, updates);
 
         // Fire all the loaded ammunition
-        const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
+        const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
         const loadedAmmunitions = getFlag(loadedEffect, "ammunition");
         for (const loadedAmmunition of loadedAmmunitions) {
-            postAmmunition(actor, loadedAmmunition);
+            handleFireAmmunition(weapon, loadedAmmunition, updates);
         }
 
         updates.delete(loadedEffect);
     } else {
-        consumeAmmunition(actor, weapon, weapon.selectedAmmunition, updates);
+        consumeAmmunition(weapon, weapon.selectedAmmunition, updates);
     }
 }
 
 /**
  * Handle consuming ammunition after firing the weapon.
  * 
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  * @param {number} ammunitionToFire 
  */
-function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
+function fireWeaponAmmunition(weapon, updates, ammunitionToFire = 1) {
     const ammunition = weapon.ammunition;
     if (!ammunition) {
         return;
@@ -196,34 +197,47 @@ function fireWeaponAmmunition(actor, weapon, updates, ammunitionToFire = 1) {
 
     updateAmmunitionQuantity(updates, ammunition, -ammunitionToFire);
 
-    postAmmunitionToChat(
+    postAmmunition(
         ammunition,
-        () => postMessage(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }))
+        () => postMessage(weapon.actor, ammunition.img, format("fireWeapon", { actor: weapon.actor.name, ammunition: ammunition.name }))
     );
+
+    HookManager.call("ammunition-fire", weapon, ammunition, updates);
 }
 
 /**
  * Consume the given ammunition from a capacity weapon.
  * 
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  * @param {PF2eConsumable} ammunition
  * @param {Updates} updates
  */
-function consumeAmmunition(actor, weapon, ammunition, updates) {
+function consumeAmmunition(weapon, ammunition, updates) {
     if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
-        consumeConjuredRound(actor, weapon, updates);
+        consumeConjuredRound(weapon, updates);
     } else {
-        removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
-        postAmmunition(actor, ammunition);
+        removeAmmunitionAdvancedCapacity(weapon.actor, weapon, ammunition, updates);
+        handleFireAmmunition(weapon, ammunition, updates);
     }
 }
 
-function consumeConjuredRound(actor, weapon, updates) {
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
+function consumeConjuredRound(weapon, updates) {
+    const conjuredRoundEffect = getEffectFromActor(weapon.actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
     if (conjuredRoundEffect) {
         updates.delete(conjuredRoundEffect);
-        postAmmunitionToChat(null, () => postMessage(actor, CONJURE_BULLET_IMG, format("fireConjuredRound", { actor: actor.name })));
+        postAmmunition(
+            null,
+            () => postMessage(
+                weapon.actor,
+                CONJURE_BULLET_IMG,
+                format(
+                    "fireConjuredRound",
+                    {
+                        actor: weapon.actor.name
+                    }
+                )
+            )
+        );
     }
     return !!conjuredRoundEffect;
 }
@@ -231,29 +245,38 @@ function consumeConjuredRound(actor, weapon, updates) {
 /**
  * Post to chat that some ammunition has been fired.
  * 
- * @param {PF2eActor} actor 
+ * @param {Weapon} weapon 
  * @param {Ammunition} ammunition 
+ * @param {Updates} updates
  */
-function postAmmunition(actor, ammunition) {
-    postAmmunitionToChat(
-        findItemOnActor(actor, ammunition.id, ammunition.sourceId),
-        () => postMessage(actor, ammunition.img, format("fireWeapon", { actor: actor.name, ammunition: ammunition.name }))
+function handleFireAmmunition(weapon, ammunition, updates) {
+    const pf2eAmmunition = findItemOnActor(weapon.actor, ammunition.id, ammunition.sourceId);
+
+    postAmmunition(
+        pf2eAmmunition,
+        () => postMessage(weapon.actor, ammunition.img, format("fireWeapon", { actor: weapon.actor.name, ammunition: ammunition.name }))
     );
+
+    if (pf2eAmmunition) {
+        HookManager.call("ammunition-fire", weapon, pf2eAmmunition, updates);
+    }
 }
 
 /**
  * Determine whether we should post the full ammunition or a summary.
  * 
- * @param {PF2eConsumable} ammunition The ammunition being fired
- * @param {() => void} postMessageFunction Function to post a simple message
+ * @param {Weapon} weapon The weapon the ammunition was fired from
+ * @param {PF2eConsumable | null} ammunition The ammunition being fired
+ * @param {() => void} simpleMessageFunction Function to post a simple message
+ * 
  * @returns {boolean} true if we should post the full ammunition
  */
-function postAmmunitionToChat(ammunition, postMessageFunction) {
+function postAmmunition(ammunition, simpleMessageFunction) {
     const settingValue = game.settings.get("pf2e-ranged-combat", "postAmmunitionToChat");
 
     if (ammunition && ammunition.level > 0 && settingValue == postToChatConfig.full) {
         ammunition.toMessage();
     } else if (settingValue) {
-        postMessageFunction();
+        simpleMessageFunction();
     }
 }
