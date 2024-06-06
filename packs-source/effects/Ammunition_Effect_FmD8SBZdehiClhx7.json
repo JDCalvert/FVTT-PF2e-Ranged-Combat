@@ -1,0 +1,64 @@
+{
+  "name": "Ammunition Effect",
+  "type": "effect",
+  "effects": [],
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>This ammunition has been fired.</p>"
+    },
+    "rules": [],
+    "slug": null,
+    "_migration": {
+      "version": 0.926,
+      "lastMigration": null
+    },
+    "traits": {
+      "otherTags": [],
+      "value": []
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 0,
+      "unit": "rounds",
+      "expiry": "turn-end",
+      "sustained": false
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "_id": "FmD8SBZdehiClhx7",
+  "img": "systems/pf2e/icons/equipment/weapons/arrows.webp",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
+    "createdTime": 1717708131105,
+    "modifiedTime": 1717708362202,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!FmD8SBZdehiClhx7"
+}
