@@ -1,6 +1,7 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { Updates, getEffectFromActor, getFlag, getItem, getItemFromActor, isInCombat, setEffectTarget } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { getEffectFromActor, getFlag, getItem, getItemFromActor, isInCombat, setEffectTarget } from "../utils/utils.js";
 
 const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.s6h0xkdKf3gecLk6";
 const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.hG9i3aOBDZ9Bq9yi";

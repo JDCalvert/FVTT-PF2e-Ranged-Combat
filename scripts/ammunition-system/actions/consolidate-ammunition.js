@@ -1,5 +1,6 @@
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
-import { getControlledActorAndToken, getItem, postToChat, Updates } from "../../utils/utils.js";
+import { Updates } from "../../utils/updates.js";
+import { getControlledActorAndToken, getItem, postToChat } from "../../utils/utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key)
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key, data)

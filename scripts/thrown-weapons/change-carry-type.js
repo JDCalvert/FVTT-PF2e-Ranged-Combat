@@ -1,6 +1,7 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import { Updates, getAttackPopout, getFlag } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { getAttackPopout, getFlag } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
 export function initialiseCarryTypeHandler() {

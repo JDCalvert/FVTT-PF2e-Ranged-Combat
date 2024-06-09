@@ -4,7 +4,8 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable, PF2eConsumableUses } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
-import { Updates, getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key);

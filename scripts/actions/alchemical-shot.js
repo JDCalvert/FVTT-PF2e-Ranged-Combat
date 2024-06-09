@@ -1,5 +1,6 @@
 import { HookManager } from "../utils/hook-manager.js";
-import { Updates, ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, setEffectTarget, showWarning } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { ensureDuration, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, setEffectTarget, showWarning } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Q1O4P1YIkCfeedHH";

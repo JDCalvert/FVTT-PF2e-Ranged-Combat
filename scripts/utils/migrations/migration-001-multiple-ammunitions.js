@@ -1,5 +1,6 @@
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
-import { getEffectFromActor, getFlags, Updates, useAdvancedAmmunitionSystem } from "../utils.js";
+import { Updates } from "../updates.js";
+import { getEffectFromActor, getFlags, useAdvancedAmmunitionSystem } from "../utils.js";
 import { getWeapons } from "../weapon-utils.js";
 
 export class Migration001MultipleAmmunitions {

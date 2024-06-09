@@ -1,7 +1,8 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { Updates, getEffectFromActor, getItem, setEffectTarget } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { getEffectFromActor, getItem, setEffectTarget } from "../utils/utils.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
 

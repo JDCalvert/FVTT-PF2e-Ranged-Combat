@@ -3,7 +3,7 @@ import { disableAmmoConsumption } from "../ammunition-system/disable-ammo-consum
 import { checkLoaded } from "../ammunition-system/fire-weapon-check.js";
 import { checkThrownWeapon } from "../thrown-weapons/throw-weapon-check.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { Updates } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
 import { transformWeapon } from "../utils/weapon-utils.js";
 
 export function initialiseAdvancedWeaponSystem() {

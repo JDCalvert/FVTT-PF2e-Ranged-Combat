@@ -1,6 +1,7 @@
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
-import { getControlledActorAndToken, showWarning, Updates } from "../../utils/utils.js";
+import { Updates } from "../../utils/updates.js";
+import { getControlledActorAndToken, showWarning } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key);

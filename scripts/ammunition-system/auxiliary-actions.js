@@ -1,7 +1,8 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import { Updates, getEffectFromActor, getFlag, getFlags, getItemFromActor, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { getEffectFromActor, getFlag, getFlags, getItemFromActor, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { characterWeaponTransform } from "../utils/weapon-utils.js";
 import { performConjureBullet } from "./actions/conjure-bullet.js";
 import { performNextChamber } from "./actions/next-chamber.js";

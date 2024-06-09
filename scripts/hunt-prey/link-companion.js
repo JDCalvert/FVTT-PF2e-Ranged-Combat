@@ -1,5 +1,6 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { Updates, getControlledActor, getFlag, getItem, getItemFromActor, showWarning } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { getControlledActor, getFlag, getItem, getItemFromActor, showWarning } from "../utils/utils.js";
 import { ANIMAL_COMPANION_RANGER_FEAT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.linkCompanion." + key);

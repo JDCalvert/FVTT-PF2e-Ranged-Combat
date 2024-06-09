@@ -1,6 +1,7 @@
 import { HookManager } from "../utils/hook-manager.js";
 import { dialogPrompt } from "../utils/prompt-dialog.js";
-import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postToChat, setChoice, setEffectTarget, showWarning, Updates } from "../utils/utils.js";
+import { Updates } from "../utils/updates.js";
+import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getItem, postToChat, setChoice, setEffectTarget, showWarning } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
 const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.cA9sBCFAxY2EJgrC";
