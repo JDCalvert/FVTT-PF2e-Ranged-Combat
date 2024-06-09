@@ -6,7 +6,7 @@ export function initialiseThrownWeaponHandler() {
     HookManager.register("weapon-attack", handleThrownWeapon);
 }
 
-async function handleThrownWeapon(weapon) {
+async function handleThrownWeapon({ weapon }) {
     if (!useAdvancedThrownWeaponSystem(weapon.actor)) {
         return;
     }

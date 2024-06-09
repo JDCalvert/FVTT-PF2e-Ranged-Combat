@@ -1,14 +1,101 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import { Updates, getAttackPopout } from "../utils/utils.js";
+import { Updates, getAttackPopout, getFlag } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
+
+export function initialiseCarryTypeHandler() {
+    /**
+     * Override the function for changing an items carrying position
+     */
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Actor.documentClasses.character.prototype.changeCarryType",
+        changeCarryType,
+        "MIXED"
+    );
+
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Actor.documentClasses.npc.prototype.changeCarryType",
+        changeCarryType,
+        "MIXED"
+    );
+
+    /** 
+     * Override the function for stowing or unstowing an item
+     */
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Actor.documentClasses.character.prototype.stowOrUnstow",
+        changeStowed,
+        "MIXED"
+    );
+
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Actor.documentClasses.npc.prototype.stowOrUnstow",
+        changeStowed,
+        "MIXED"
+    );
+
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",
+        function(wrapper, ...args) {
+            if (this.actor && this.actor.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)) {
+                const updates = new Updates(this.actor);
+
+                const groupStacks = findGroupStacks(this);
+                const groupStackIds = groupStacks.map(stack => stack.id);
+
+                // Update all the weapons in the group to remove this item's ID
+                groupStacks.forEach(stack =>
+                    updates.update(
+                        stack,
+                        {
+                            flags: {
+                                "pf2e-ranged-combat": {
+                                    groupIds: groupStackIds
+                                }
+                            }
+                        }
+                    )
+                );
+
+                if (groupStacks.length) {
+                    this.actor.itemTypes.melee.filter(melee => getFlag(melee, "weaponId") === this.id)
+                        .forEach(melee =>
+                            updates.update(
+                                melee,
+                                {
+                                    flags: {
+                                        "pf2e-ranged-combat": {
+                                            weaponId: groupStackIds[0]
+                                        }
+                                    }
+                                }
+                            )
+                        );
+                }
+
+                updates.handleUpdates();
+            }
+
+            // If there's an attack popout open for this item, close it
+            getAttackPopout(this)?.close({ force: true });
+
+            wrapper(...args);
+        },
+        "WRAPPER"
+    );
+}
 
 /**
  * When we try to change the carry type of an item that represents a dropped version of another item,
  * move one item from the dropped stack to the original stack and perform the operation on the original,
  * if it puts the item in the character's hands.
  */
-export async function changeCarryType(
+async function changeCarryType(
     wrapper,
     item,
     {
@@ -72,7 +159,7 @@ export async function changeCarryType(
     return [];
 }
 
-export async function changeStowed(wrapper, item, container) {
+async function changeStowed(wrapper, item, container) {
     // Fall back on the default function if any of:
     // - The item isn't a thrown weapon
     // - We're not using the advanced thrown weapon system

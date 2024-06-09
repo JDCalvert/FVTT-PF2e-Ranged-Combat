@@ -7,8 +7,8 @@ import { CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG, CONJURED_ROUND_EFFECT_ID,
 import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key, data);
 
 export async function conjureBullet() {
     const { actor, token } = getControlledActorAndToken();
@@ -41,7 +41,7 @@ export async function conjureBullet() {
         return;
     }
 
-    performConjureBullet(actor, token, weapon)
+    performConjureBullet(actor, token, weapon);
 }
 
 /**
@@ -83,9 +83,9 @@ export async function performConjureBullet(actor, token, weapon) {
         1,
     );
 
-    await HookManager.call("reload", weapon, updates);
+    await HookManager.call("reload", { weapon, updates });
 
     updates.handleUpdates();
-    
+
     Hooks.callAll("pf2eRangedCombatConjureBullet", actor, token, weapon);
 }

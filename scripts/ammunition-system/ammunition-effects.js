@@ -18,7 +18,7 @@ export function initialiseAmmunitionEffects() {
  * @param {PF2eConsumable} ammunition   The ammunition being fired
  * @param {Updates} updates 
  */
-function handleAmmunitionFired(weapon, ammunition, updates) {
+function handleAmmunitionFired({ weapon, ammunition, updates }) {
     const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);
@@ -50,7 +50,7 @@ function handleAmmunitionFired(weapon, ammunition, updates) {
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-async function removeAmmunitionEffect(weapon, updates) {
+async function removeAmmunitionEffect({ weapon, updates }) {
     const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);

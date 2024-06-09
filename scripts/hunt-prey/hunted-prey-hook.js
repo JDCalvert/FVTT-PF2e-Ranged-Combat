@@ -1,145 +1,152 @@
-import { Updates, getFlag, getItem, getItemFromActor } from "../utils/utils.js";
+import { HookManager } from "../utils/hook-manager.js";
+import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
 import { FLURRY_FEATURE_ID, HUNTED_PREY_EFFECT_ID, HUNT_PREY_ACTION_ID, PRECISION_FEATURE_ID, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID } from "./constants.js";
 
-Hooks.on(
-    "ready",
-    () => {
-        libWrapper.register(
-            "pf2e-ranged-combat",
-            "CONFIG.PF2E.Item.documentClasses.effect.prototype._onCreate",
-            function(wrapper, ...args) {
-                if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
-                    const sourceActorName = this.actor.name;
-                    const sourceActorID = this.actor.id;
-                    const targetIds = getFlag(this, "targetIds") ?? [];
+export function initialiseHuntPrey() {
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Item.documentClasses.effect.prototype._onCreate",
+        function(wrapper, ...args) {
+            if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
+                const sourceActorName = this.actor.name;
+                const sourceActorID = this.actor.id;
+                const targetIds = getFlag(this, "targetIds") ?? [];
 
-                    canvas.scene.tokens
-                        .filter(token => targetIds.includes(token.id))
-                        .map(token => token.actor)
-                        .filter(actor => game.user === actor.primaryUpdater)
-                        .forEach(async actor => {
-                            const preyEffectSource = await getItem(PREY_EFFECT_ID);
-                            preyEffectSource.name = `${preyEffectSource.name} (${sourceActorName})`;
-                            preyEffectSource.flags = {
-                                ...preyEffectSource.flags,
-                                "pf2e-ranged-combat": {
-                                    "sourceEffectId": this.id
-                                }
-                            };
-                            preyEffectSource.system.slug = `prey-${sourceActorID}`;
+                canvas.scene.tokens
+                    .filter(token => targetIds.includes(token.id))
+                    .map(token => token.actor)
+                    .filter(actor => game.user === actor.primaryUpdater)
+                    .forEach(async actor => {
+                        const preyEffectSource = await getItem(PREY_EFFECT_ID);
+                        preyEffectSource.name = `${preyEffectSource.name} (${sourceActorName})`;
+                        preyEffectSource.flags = {
+                            ...preyEffectSource.flags,
+                            "pf2e-ranged-combat": {
+                                "sourceEffectId": this.id
+                            }
+                        };
+                        preyEffectSource.system.slug = `prey-${sourceActorID}`;
 
-                            actor.createEmbeddedDocuments("Item", [preyEffectSource]);
-                        });
-                }
+                        actor.createEmbeddedDocuments("Item", [preyEffectSource]);
+                    });
+            }
 
-                wrapper(...args);
-            },
-            "WRAPPER"
-        );
+            wrapper(...args);
+        },
+        "WRAPPER"
+    );
 
-        libWrapper.register(
-            "pf2e-ranged-combat",
-            "CONFIG.PF2E.Item.documentClasses.effect.prototype._onDelete",
-            function(wrapper, ...args) {
-                if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
-                    const targetIds = getFlag(this, "targetIds") ?? [];
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Item.documentClasses.effect.prototype._onDelete",
+        function(wrapper, ...args) {
+            if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
+                const targetIds = getFlag(this, "targetIds") ?? [];
 
-                    canvas.scene.tokens
-                        .filter(token => targetIds.includes(token.id))
-                        .map(token => token.actor)
-                        .filter(actor => game.user === actor.primaryUpdater)
-                        .forEach(actor =>
-                            actor.itemTypes.effect
-                                .find(effect => effect.sourceId === PREY_EFFECT_ID && getFlag(effect, "sourceEffectId") === this.id)
-                                ?.delete()
-                        );
-                }
+                canvas.scene.tokens
+                    .filter(token => targetIds.includes(token.id))
+                    .map(token => token.actor)
+                    .filter(actor => game.user === actor.primaryUpdater)
+                    .forEach(actor =>
+                        actor.itemTypes.effect
+                            .find(effect => effect.sourceId === PREY_EFFECT_ID && getFlag(effect, "sourceEffectId") === this.id)
+                            ?.delete()
+                    );
+            }
 
-                wrapper(...args);
-            },
-            "WRAPPER"
-        );
-    }
-);
+            wrapper(...args);
+        },
+        "WRAPPER"
+    );
 
-Hooks.on(
-    "pf2e.startTurn",
-    async combatant => {
-        const actor = combatant.actor;
-        if (!actor) {
-            return;
-        }
+    Hooks.on(
+        "pf2e.startTurn",
+        async combatant => {
+            const actor = combatant.actor;
+            if (!actor) {
+                return;
+            }
 
-        const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
-        if (precisionFeature) {
-            precisionFeature.update(
-                {
-                    flags: {
-                        "pf2e-ranged-combat": {
-                            preyAttackNumber: 1
+            const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
+            if (precisionFeature) {
+                precisionFeature.update(
+                    {
+                        flags: {
+                            "pf2e-ranged-combat": {
+                                preyAttackNumber: 1
+                            }
                         }
                     }
-                }
-            );
-        }
+                );
+            }
 
-        const companionId = getFlag(actor, "animalCompanionId");
-        if (!companionId) return;
+            const companionId = getFlag(actor, "animalCompanionId");
+            if (!companionId) return;
 
-        const companion = await fromUuid(`Actor.${companionId}`);
-        if (!companion) return;
+            const companion = await fromUuid(`Actor.${companionId}`);
+            if (!companion) return;
 
-        const rangersAnimalCompanionFeat = getItemFromActor(companion, RANGERS_ANIMAL_COMPANION_FEAT_ID);
-        if (rangersAnimalCompanionFeat) {
-            rangersAnimalCompanionFeat.update(
-                {
-                    flags: {
-                        "pf2e-ranged-combat": {
-                            preyAttackNumber: 1
+            const rangersAnimalCompanionFeat = getItemFromActor(companion, RANGERS_ANIMAL_COMPANION_FEAT_ID);
+            if (rangersAnimalCompanionFeat) {
+                rangersAnimalCompanionFeat.update(
+                    {
+                        flags: {
+                            "pf2e-ranged-combat": {
+                                preyAttackNumber: 1
+                            }
                         }
                     }
+                );
+            }
+        }
+    );
+
+    // When we make a damage roll, check if this is our first attack, and if it
+    HookManager.register(
+        "weapon-damage",
+        ({ weapon, target, updates }) => {
+            if (!game?.combats?.active) {
+                return;
+            }
+
+            const actor = weapon.actor;
+
+            const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
+            if (precisionFeature) {
+                const targetIsHuntedPrey =
+                    target?.getRollOptions()?.includes(`self:effect:prey-${actor.id}`) ||
+                    actor.getRollOptions().includes("hunted-prey");
+
+                if (targetIsHuntedPrey) {
+                    updateForPrecision(precisionFeature, updates);
                 }
-            );
-        }
-    }
-);
+            }
 
-// When we make a damage roll, check if this is our first attack, and if it
-Hooks.on(
-    "preCreateChatMessage",
-    async message => {
-        const actor = message.actor;
-        if (!actor) return;
-        if (!game?.combats?.active || message.flags?.pf2e?.context?.type != "damage-roll") return;
+            const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
+            if (rangersAnimalCompanionFeat) {
+                const masterId = getFlag(rangersAnimalCompanionFeat, "master-id");
+                const targetIsHuntedPrey =
+                    target?.getRollOptions()?.includes(`self:effect:prey-${masterId}`) ||
+                    actor.getRollOptions().includes("hunted-prey");
 
-        const updates = new Updates(actor);
-
-        const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
-        if (precisionFeature) {
-            const targetIsHuntedPrey =
-                message.target?.actor?.getRollOptions()?.includes(`self:effect:prey-${actor.id}`) ||
-                actor.getRollOptions().includes("hunted-prey");
-
-            if (targetIsHuntedPrey) {
-                updateForPrecision(precisionFeature, updates);
+                if (targetIsHuntedPrey) {
+                    updateForPrecision(rangersAnimalCompanionFeat, updates);
+                }
             }
         }
+    );
 
-        const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
-        if (rangersAnimalCompanionFeat) {
-            const masterId = getFlag(rangersAnimalCompanionFeat, "master-id");
-            const targetIsHuntedPrey = 
-                message.target?.actor?.getRollOptions()?.includes(`self:effect:prey-${masterId}`) ||
-                actor.getRollOptions().includes("hunted-prey");
-
-            if (targetIsHuntedPrey) {
-                updateForPrecision(rangersAnimalCompanionFeat, updates);
+    Hooks.on(
+        "targetToken",
+        (user) => {
+            if (user.isSelf) {
+                setHuntedPrey();
             }
         }
+    );
 
-        updates.handleUpdates();
-    }
-);
+    Hooks.on("controlToken", setHuntedPrey);
+}
 
 function updateForPrecision(precisionFeat, updates) {
     const preyAttackNumber = getFlag(precisionFeat, "preyAttackNumber") ?? 1;
@@ -169,21 +176,6 @@ function updateForPrecision(precisionFeat, updates) {
         );
     }
 }
-
-Hooks.on(
-    "targetToken",
-    (user) => {
-        if (!user.isSelf) return;
-        setHuntedPrey();
-    }
-);
-
-Hooks.on(
-    "controlToken",
-    () => {
-        setHuntedPrey();
-    }
-);
 
 async function setHuntedPrey() {
     const targetedIds = game.user.targets.ids;

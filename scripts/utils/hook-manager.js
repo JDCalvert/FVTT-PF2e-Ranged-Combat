@@ -6,7 +6,7 @@ export class HookManager {
     /**
      * 
      * @param {string} key 
-     * @param {function} callback 
+     * @param {(args) => void} callback 
      */
     static register(key, callback) {
         let functions = this.hooks.get(key);
@@ -22,13 +22,13 @@ export class HookManager {
      * Call all the functions registered with this key, waiting for them all to be finished before continuing
      * 
      * @param {string} key
-     * @param  {...any} args
+     * @param  {*} args
      */
-    static async call(key, ...args) {
+    static async call(key, args) {
         const functions = this.hooks.get(key);
         if (functions) {
             for (let func of functions) {
-                await func(...args);
+                await func(args);
             }
         }
     }

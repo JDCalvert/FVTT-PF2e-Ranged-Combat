@@ -94,7 +94,7 @@ export async function huntPrey() {
         }
     }
 
-    await HookManager.call("hunt-prey", actor, updates);
+    await HookManager.call("hunt-prey", { actor, updates });
 
     updates.handleUpdates();
 }

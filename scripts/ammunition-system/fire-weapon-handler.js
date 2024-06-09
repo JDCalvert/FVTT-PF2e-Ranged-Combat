@@ -20,7 +20,7 @@ export function initialiseFireWeaponHandler() {
  * @param {Updates} updates 
  * @returns 
  */
-function fireWeapon(weapon, updates) {
+function fireWeapon({ updates, weapon }) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
         return;
@@ -116,7 +116,7 @@ function fireWeaponRepeating(weapon, updates) {
     );
 
     if (ammunition) {
-        HookManager.call("ammunition-fire", weapon, ammunition, updates);
+        HookManager.call("ammunition-fire", { weapon, ammunition, updates });
     }
 }
 
@@ -202,7 +202,7 @@ function fireWeaponAmmunition(weapon, updates, ammunitionToFire = 1) {
         () => postMessage(weapon.actor, ammunition.img, format("fireWeapon", { actor: weapon.actor.name, ammunition: ammunition.name }))
     );
 
-    HookManager.call("ammunition-fire", weapon, ammunition, updates);
+    HookManager.call("ammunition-fire", { weapon, ammunition, updates });
 }
 
 /**
@@ -258,7 +258,14 @@ function handleFireAmmunition(weapon, ammunition, updates) {
     );
 
     if (pf2eAmmunition) {
-        HookManager.call("ammunition-fire", weapon, pf2eAmmunition, updates);
+        HookManager.call(
+            "ammunition-fire",
+            {
+                weapon,
+                ammunition: pf2eAmmunition,
+                updates
+            }
+        );
     }
 }
 

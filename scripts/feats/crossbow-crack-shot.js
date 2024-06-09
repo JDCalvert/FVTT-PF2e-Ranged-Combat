@@ -36,7 +36,7 @@ async function handleStartTurn(combatant) {
  * 
  * @returns Promise<void>
  */
-async function handleReload(weapon, updates) {
+async function handleReload({ weapon, updates }) {
     // Remove any existing effect
     const existing = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
     if (existing) {
@@ -77,7 +77,7 @@ async function handleReload(weapon, updates) {
  * @param {Weapon} weapon
  * @param {Updates} updates
  */
-function handleWeaponFired(weapon, updates) {
+function handleWeaponFired({ weapon, updates }) {
     const effect = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
     if (effect) {
         if (getFlag(effect, "fired")) {
@@ -94,7 +94,7 @@ function handleWeaponFired(weapon, updates) {
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-function handleWeaponDamage(weapon, updates) {
+function handleWeaponDamage({ weapon, updates }) {
     const effect = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
     if (effect) {
         updates.delete(effect);

@@ -1,4 +1,4 @@
-## 5.3.0 - 2024-06-06 (Pathfinder 2e 5.16.1)
+## 5.3.0 - 2024-06-07 (Pathfinder 2e 5.16.1)
 ### Feature
 - Reintroduced ammunition effects, replacing the system effects, so the correct effect is applied even if ammunition is changed after loading.
 - Update and improve Crossbow Crack Shot automation.

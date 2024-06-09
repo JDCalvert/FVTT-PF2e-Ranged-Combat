@@ -11,7 +11,7 @@ const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "force", "sonic", "
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalCrossbow." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalCrossbow." + key, data);
 
-export function initialiseAlchemicalCrossbowHooks() {
+export function initialiseAlchemicalCrossbow() {
     HookManager.register("weapon-attack", handleWeaponFired);
 }
 
@@ -158,7 +158,7 @@ export async function unloadAlchemicalCrossbow() {
     updates.handleUpdates();
 }
 
-function handleWeaponFired(weapon, updates) {
+function handleWeaponFired({ weapon, updates }) {
     if (!isAlchemicalCrossbow(weapon)) {
         return;
     }

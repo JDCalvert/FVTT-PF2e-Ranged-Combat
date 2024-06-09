@@ -331,8 +331,8 @@ export async function performReload(actor, token, weapon, updates, options = {})
         await postReloadToChat(token, weapon);
     }
 
-    await HookManager.call("reload", weapon, updates);
-    
+    await HookManager.call("reload", { weapon, updates });
+
     Hooks.callAll("pf2eRangedCombatReload", actor, token, weapon);
 };
 

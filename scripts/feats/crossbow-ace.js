@@ -11,7 +11,7 @@ export function initialiseCrossbowAce() {
     // Apply Crossbow Ace when we reload the weapon
     HookManager.register(
         "reload",
-        async (weapon, updates) => {
+        async ({ weapon, updates }) => {
             if (!(weapon.group == "crossbow" && weapon.isEquipped)) {
                 return;
             }
@@ -25,7 +25,7 @@ export function initialiseCrossbowAce() {
     // Apply Crossbow Ace when we Hunt Prey
     HookManager.register(
         "hunt-prey",
-        async (actor, updates) => {
+        async ({ actor, updates }) => {
             if (hasLegacyCrossbowAce(actor)) {
                 const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.group == "crossbow");
                 for (const weapon of weapons) {
@@ -38,7 +38,7 @@ export function initialiseCrossbowAce() {
     // When the weapon is fired, record that the effect has been fired. If it's already been fired, delete the effect.
     HookManager.register(
         "weapon-attack",
-        (weapon, updates) => {
+        ({ weapon, updates }) => {
             const effect = getEffectFromActor(weapon.actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
             if (effect) {
                 if (getFlag(effect, "fired")) {
@@ -53,7 +53,7 @@ export function initialiseCrossbowAce() {
     // When we roll damage for the weapon, remove the effect.
     HookManager.register(
         "weapon-damage",
-        (weapon, updates) => {
+        ({ weapon, updates }) => {
             const effect = getEffectFromActor(weapon.actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
             if (effect) {
                 updates.delete(effect);

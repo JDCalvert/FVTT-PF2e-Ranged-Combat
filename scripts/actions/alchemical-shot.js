@@ -9,7 +9,7 @@ const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemi
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data);
 
 export function initialiseAlchemicalShort() {
-    HookManager.register("weapon-attack", handleWeaponFired)
+    HookManager.register("weapon-attack", handleWeaponFired);
 }
 
 export async function alchemicalShot() {
@@ -102,7 +102,7 @@ export async function alchemicalShot() {
  * - Update the "fired" flag to be true, and remove the failure roll note to prevent it being posted on the next strike
  * - If the "fired" flag is already true, delete the effect
  */
-function handleWeaponFired(weapon, updates) {
+function handleWeaponFired({ weapon, updates }) {
     const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
     if (alchemicalShotEffect) {
         if (getFlag(alchemicalShotEffect, "fired")) {

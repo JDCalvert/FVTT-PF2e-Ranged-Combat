@@ -33,9 +33,7 @@
     "bugs": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/issues",
     "changelog": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/CHANGELOG.md",
     "esmodules": [
-        "scripts/config.js",
-        "scripts/hunt-prey/hunted-prey-hook.js",
-        "scripts/chat-message-hook.js"
+        "scripts/config.js"
     ],
     "styles": [
         "styles/ranged-combat.css"
