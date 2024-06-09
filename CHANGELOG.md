@@ -1,4 +1,4 @@
-## Unreleased
+## 5.3.1 - 2024-06-09 (Pathfinder 2e 5.16.1)
 ### Feature
 - Allow selecting Hunted Prey by posting the action from the character sheet.
 
