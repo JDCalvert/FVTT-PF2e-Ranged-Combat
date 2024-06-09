@@ -1,7 +1,5 @@
 import { buildAuxiliaryActions } from "../ammunition-system/auxiliary-actions.js";
 import { disableAmmoConsumption } from "../ammunition-system/disable-ammo-consumption.js";
-import { checkLoaded } from "../ammunition-system/fire-weapon-check.js";
-import { checkThrownWeapon } from "../thrown-weapons/throw-weapon-check.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { transformWeapon } from "../utils/weapon-utils.js";
@@ -53,11 +51,8 @@ export function initialiseAdvancedWeaponSystem() {
                 return wrapper(...args);
             }
 
-            if (!await checkLoaded(actor, weapon)) {
-                return;
-            }
-
-            if (!await checkThrownWeapon(weapon)) {
+            // Run any registered checks before rolling the attack
+            if (!await HookManager.runCheck("weapon-attack", { weapon })) {
                 return;
             }
 

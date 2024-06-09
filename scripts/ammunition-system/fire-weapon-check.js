@@ -1,27 +1,30 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
+import { HookManager } from "../utils/hook-manager.js";
 import { getEffectFromActor, getFlag, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.check." + key, data);
 
+export function initialiseFireWeaponCheck() {
+    HookManager.registerCheck("weapon-attack", checkLoaded);
+}
+
 /**
- * @param {PF2eActor} actor 
  * @param {Weapon} weapon 
  */
-export async function checkLoaded(actor, weapon) {
-    if (useAdvancedAmmunitionSystem(actor)) {
+async function checkLoaded({ weapon }) {
+    if (useAdvancedAmmunitionSystem(weapon.actor)) {
         // For repeating weapons, check that a magazine is loaded
         if (weapon.isRepeating) {
-            if (!checkLoadedMagazine(actor, weapon)) {
+            if (!checkLoadedMagazine(weapon)) {
                 return false;
             }
         }
 
         // For reloadable weapons, check that the weapon is loaded
         if (weapon.requiresLoading) {
-            if (!await checkLoadedRound(actor, weapon)) {
+            if (!await checkLoadedRound(weapon)) {
                 return false;
             }
         }
@@ -43,7 +46,7 @@ export async function checkLoaded(actor, weapon) {
 
         // If Prevent Firing Weapon if not Loaded is enabled, check the weapon is loaded
         if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading) {
-            if (!await checkLoadedRound(actor, weapon)) {
+            if (!await checkLoadedRound(weapon)) {
                 return false;
             }
         }
@@ -55,8 +58,8 @@ export async function checkLoaded(actor, weapon) {
 /**
  * Check if the weapon has a magazine loaded with at least one shot remaining
  */
-function checkLoadedMagazine(actor, weapon) {
-    const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
+function checkLoadedMagazine(weapon) {
+    const magazineLoadedEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
 
     // Check the weapon has a magazine loaded
     if (!magazineLoadedEffect) {
@@ -76,14 +79,14 @@ function checkLoadedMagazine(actor, weapon) {
 /**
  * Check the weapon has a round loaded
  */
-async function checkLoadedRound(actor, weapon) {
+async function checkLoadedRound(weapon) {
     if (!isLoaded(weapon)) {
         showWarning(format("weaponNotLoaded", { weapon: weapon.name }));
         return false;
     }
 
     if (weapon.isCapacity) {
-        if (!checkChamberLoaded(actor, weapon)) {
+        if (!checkChamberLoaded(weapon)) {
             return false;
         }
     }
@@ -93,7 +96,7 @@ async function checkLoadedRound(actor, weapon) {
         return false;
     }
 
-    if (useAdvancedAmmunitionSystem(actor) && weapon.isDoubleBarrel && !weapon.isFiringBothBarrels) {
+    if (useAdvancedAmmunitionSystem(weapon.actor) && weapon.isDoubleBarrel && !weapon.isFiringBothBarrels) {
         const selectedAmmunition = await getSelectedAmmunition(weapon, "fire");
         if (!selectedAmmunition) {
             return false;
@@ -105,8 +108,8 @@ async function checkLoadedRound(actor, weapon) {
     return true;
 }
 
-function checkChamberLoaded(actor, weapon) {
-    if (!getEffectFromActor(actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
+function checkChamberLoaded(weapon) {
+    if (!getEffectFromActor(weapon.actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
         showWarning(format("chamberNotLoaded", { weapon: weapon.name }));
         return false;
     }

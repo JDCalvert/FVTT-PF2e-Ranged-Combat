@@ -9,6 +9,7 @@ import { fullyReload, reload, reloadNPCs } from "./ammunition-system/actions/rel
 import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { unload } from "./ammunition-system/actions/unload.js";
 import { initialiseAmmunitionEffects } from "./ammunition-system/ammunition-effects.js";
+import { initialiseFireWeaponCheck } from "./ammunition-system/fire-weapon-check.js";
 import { initialiseFireWeaponHandler } from "./ammunition-system/fire-weapon-handler.js";
 import { initialiseChatMessageHooks } from "./chat-message-hook.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
@@ -18,6 +19,7 @@ import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
 import { initialiseCarryTypeHandler } from "./thrown-weapons/change-carry-type.js";
+import { initialiseThrownWeaponCheck } from "./thrown-weapons/throw-weapon-check.js";
 import { initialiseThrownWeaponHandler } from "./thrown-weapons/throw-weapon-handler.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
@@ -169,6 +171,9 @@ Hooks.on(
         initialiseAdvancedWeaponSystem();
         initialiseHuntPrey();
         initialiseChatMessageHooks();
+
+        initialiseFireWeaponCheck();
+        initialiseThrownWeaponCheck();
 
         initialiseFireWeaponHandler();
         initialiseThrownWeaponHandler();
