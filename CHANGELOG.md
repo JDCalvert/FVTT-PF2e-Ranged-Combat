@@ -1,3 +1,7 @@
+## Unreleased
+### Feature
+- Allow selecting Hunted Prey by posting the action from the character sheet.
+
 ## 5.3.0 - 2024-06-07 (Pathfinder 2e 5.16.1)
 ### Feature
 - Reintroduced ammunition effects, replacing the system effects, so the correct effect is applied even if ammunition is changed after loading.

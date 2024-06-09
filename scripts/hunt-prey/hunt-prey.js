@@ -1,4 +1,6 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
+import { PF2eItem } from "../types/pf2e/item.js";
+import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getControlledActorAndToken, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, showWarning } from "../utils/utils.js";
@@ -19,8 +21,17 @@ export async function huntPrey() {
         return;
     }
 
+    const checkResult = checkHuntPrey(actor);
+    if (!checkResult.valid) {
+        return;
+    }
+
+    await postActionToChat(huntPreyAction);
+    await performHuntPrey(actor, token, huntPreyAction, checkResult);
+}
+
+export function checkHuntPrey(actor) {
     const hasDoublePrey = !!getItemFromActor(actor, DOUBLE_PREY_FEAT_ID);
-    const hasSharedPrey = !!getItemFromActor(actor, SHARED_PREY_FEAT_ID);
     const hasTripleThreat = !!getItemFromActor(actor, TRIPLE_THREAT_FEAT_ID);
 
     const maxTargets = hasTripleThreat
@@ -31,26 +42,35 @@ export async function huntPrey() {
 
     const targets = getTargets(maxTargets);
     if (!targets.length) {
-        return;
+        return { valid: false };
     }
 
+    return { valid: true, targets, maxTargets };
+}
+
+/**
+ * 
+ * @param {PF2eActor} actor
+ * @param {PF2eToken} token
+ * @param {PF2eItem} huntPreyAction
+ * @param {{ targets: [], maxTargets: { num: number, word: string } }} checkResult
+ */
+export async function performHuntPrey(actor, token, huntPreyAction, checkResult) {
     const updates = new Updates(actor);
 
-    /**
-     * HUNT PREY ACTION AND EFFECT
-     */
-    const remainingTargets = maxTargets.num - targets.length;
+    const targets = checkResult.targets;
+
+    const remainingTargets = checkResult.maxTargets.num - targets.length;
     const remainingTargetsText = remainingTargets === 2
         ? localize("shareWithTwo")
-        : remainingTargets === 1 && hasSharedPrey
+        : remainingTargets === 1 && !!getItemFromActor(actor, SHARED_PREY_FEAT_ID)
             ? localize("shareWithOne")
             : "";
 
     const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
     const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
-    const targetData = { token: token.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
+    const targetData = { token: token?.name || actor.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
 
-    await postActionToChat(huntPreyAction);
     await postToChat(
         actor,
         HUNT_PREY_IMG,
@@ -98,6 +118,8 @@ export async function huntPrey() {
     await HookManager.call("hunt-prey", { actor, updates });
 
     updates.handleUpdates();
+
+    return;
 }
 
 function getTargets(maxTargets) {
