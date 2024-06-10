@@ -223,10 +223,12 @@
   "_stats": {
     "systemId": "pf2e",
     "systemVersion": "5.13.6",
-    "coreVersion": "11.315",
+    "coreVersion": "12.327",
     "createdTime": 1707129874334,
     "modifiedTime": 1707869759684,
-    "lastModifiedBy": "6cYJNd43VitcuYqD"
+    "lastModifiedBy": "6cYJNd43VitcuYqD",
+    "compendiumSource": null,
+    "duplicateSource": null
   },
   "_id": "bmDVg2hU3CSAZGJ8",
   "sort": 0,

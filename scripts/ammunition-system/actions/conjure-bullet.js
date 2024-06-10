@@ -3,8 +3,8 @@ import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postToChat, setEffectTarget, showWarning } from "../../utils/utils.js";
-import { getSingleWeapon, getWeapons } from "../../utils/weapon-utils.js";
-import { CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID } from "../constants.js";
+import { getWeapon } from "../../utils/weapon-utils.js";
+import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
 import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 
@@ -23,10 +23,7 @@ export async function conjureBullet() {
         return;
     }
 
-    const weapon = await getSingleWeapon(
-        getWeapons(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, localize("noReloadableWeapons")),
-        weapon => !isFullyLoaded(weapon)
-    );
+    const weapon = await getWeapon(actor, weapon => weapon.requiresLoading && !weapon.isRepeating, localize("noReloadableWeapons"), weapon => !isFullyLoaded(weapon));
     if (!weapon) {
         return;
     }

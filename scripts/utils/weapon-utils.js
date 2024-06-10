@@ -3,7 +3,7 @@ import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelectDialog } from "./item-select-dialog.js";
-import { showWarning } from "./utils.js";
+import { getFlag, showWarning } from "./utils.js";
 
 /**
  * Choose a single weapon from the given actor that matches the given conditions.
@@ -24,7 +24,7 @@ export async function getWeapon(actor, predicate, noResultsMessage, priorityPred
  * @param {(weapon: Weapon) => boolean} priorityPredicate 
  * @returns {Promise<Weapon | null>}
  */
-export async function getSingleWeapon(weapons, priorityPredicate = () => true) {
+async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     // If there are no weapons, then return nothing
     if (!weapons.length) {
         return;
@@ -167,7 +167,7 @@ function npcWeaponTransform(melee) {
             traits: weapon.traits,
             quantity: weapon.quantity,
             propertyRunes: weapon.system.runes.property,
-            isRanged: melee.system.weaponType.value === "ranged",
+            isRanged: melee.traits.some(trait => trait.includes("range-increment") || trait.includes("thrown")),
             usesAmmunition: usesAmmunition(weapon),
             isAmmunitionForWeapon: (ammunition) => ammunition.isAmmoFor(weapon),
             requiresAmmunition: requiresAmmunition(weapon),
@@ -196,7 +196,7 @@ function npcWeaponTransform(melee) {
             traits: melee.traits,
             quantity: 1,
             propertyRunes: [],
-            isRanged: melee.system.weaponType.value === "ranged",
+            isRanged: melee.traits.some(trait => trait.includes("range-increment") || trait.includes("thrown")),
             usesAmmunition: usesAmmunition(melee),
             isAmmunitionForWeapon: (ammunition) => isRepeating(melee) === ammunition.uses.max > 1,
             requiresAmmunition: requiresAmmunition(melee),
@@ -317,17 +317,17 @@ function requiresAmmunition(weapon) {
 
 /**
  * @param {PF2eWeapon} weapon 
- * @returns {PF2eConsumable}
+ * @returns {PF2eConsumable | null}
  */
 function getAmmunition(weapon) {
     if (!usesAmmunition(weapon)) {
-        return;
+        return null;
     } else if (weapon.actor.type === "character") {
         return weapon.ammo;
     } else if (weapon.actor.type === "npc") {
-        const ammoId = weapon.system.selectedAmmoId;
+        const ammoId = getFlag(weapon, "ammunitionId");
         return ammoId ? weapon.actor.items.get(ammoId) : null;
     } else {
-        return;
+        return null;
     }
 }

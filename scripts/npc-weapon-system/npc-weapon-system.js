@@ -1,8 +1,8 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { getControlledActor, getControlledActorAndToken } from "../utils/utils.js";
+import { getControlledActor, getFlag } from "../utils/utils.js";
 
-const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key)
+const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key);
 
 export function npcWeaponConfiguration() {
     const actor = getControlledActor();
@@ -81,12 +81,15 @@ function buildContent(actor) {
     `;
 
     for (const attack of attacks) {
-        const weaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
-        const ammoId = attack.system.selectedAmmoId;
+        const weaponId = getFlag(attack, "weaponId");
+        const ammunitionId = getFlag(attack, "ammunitionId");
+
+        const isRanged = attack.traits.some(trait => trait.startsWith("range-increment") || trait.startsWith("thrown"));
+        const usesAmmunition = attack.traits.some(trait => trait.startsWith("reload-"));
 
         content += `
             <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
-                <legend>${attack.name} [${attack.system.weaponType.value === "melee" ? localize("dialog.weaponTypeMelee") : localize("dialog.weaponTypeRanged")}]</legend>
+                <legend>${attack.name} [${isRanged ? localize("dialog.weaponTypeRanged") : localize("dialog.weaponTypeMelee")}]</legend>
                 <div class="form-group">
                     <label>${localize("dialog.labelWeapon")}</label>
                     <select id="${attack.id}-weapon" name="${attack.id}-weapon">
@@ -100,8 +103,6 @@ function buildContent(actor) {
                 </div>
         `;
 
-        const isRanged = attack.system.weaponType.value === "ranged";
-        const usesAmmunition = attack.system.traits.value.find(trait => trait.startsWith("reload-"));
         if (isRanged && usesAmmunition) {
             content += `
                 <div class="form-group">
@@ -111,7 +112,7 @@ function buildContent(actor) {
 
             ammunitions
                 .filter(ammunition => attack.traits.has("repeating") === (ammunition.uses.max > 1))
-                .map(ammunition => `<option value="${ammunition.id}" ${ammoId === ammunition.id ? `selected="selected"` : ``}>${ammunition.name}</option>`)
+                .map(ammunition => `<option value="${ammunition.id}" ${ammunitionId === ammunition.id ? `selected="selected"` : ``}>${ammunition.name}</option>`)
                 .forEach(ammunition => content += ammunition);
 
             content += `
@@ -148,16 +149,16 @@ function saveChanges($html, actor) {
     });
 
     for (const attack of actor.itemTypes.melee) {
-        const currentWeaponId = attack.flags["pf2e-ranged-combat"]?.weaponId;
-        const currentAmmoId = attack.system.selectedAmmoId;
+        const currentWeaponId = getFlag(attack, "weaponId");
+        const currentAmmunitionId = getFlag(attack, "ammunitionId");
 
         const weaponId = $html.find(`[name="${attack.id}-weapon"`).val();
-        const ammoId = $html.find(`[name="${attack.id}-ammo"]`).val();
+        const ammunitionId = $html.find(`[name="${attack.id}-ammo"]`).val();
 
         const changedWeaponId = weaponId !== currentWeaponId;
-        const changedAmmoId = ammoId !== currentAmmoId;
+        const changedAmmunitionId = ammunitionId !== currentAmmunitionId;
 
-        if (changedWeaponId || changedAmmoId) {
+        if (changedWeaponId || changedAmmunitionId) {
             const update = {
                 _id: attack.id,
                 flags: {
@@ -176,15 +177,11 @@ function saveChanges($html, actor) {
                 }
             }
 
-            if (changedAmmoId) {
-                if (ammoId) {
-                    update.system = {
-                        selectedAmmoId: ammoId
-                    };
+            if (changedAmmunitionId) {
+                if (ammunitionId) {
+                    flags.ammunitionId = ammunitionId;
                 } else {
-                    update.system = {
-                        "-=selectedAmmoId": null
-                    };
+                    flags["-=ammunitionId"] = null;
                 }
             }
 

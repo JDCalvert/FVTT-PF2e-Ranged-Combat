@@ -1,3 +1,7 @@
+## 6.0.0 - 2024-06-10 (Pathfinder 2e 6.0.1)
+### Features
+- Compatibility with Foundry v12 and Pathfinder 2e v6.
+
 ## 5.3.1 - 2024-06-09 (Pathfinder 2e 5.16.1)
 ### Feature
 - Allow selecting Hunted Prey by posting the action from the character sheet.
