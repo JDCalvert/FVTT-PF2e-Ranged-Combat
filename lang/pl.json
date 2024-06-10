@@ -32,6 +32,11 @@
             "hideTokenIcons": {
                 "name": "Ukryj Ikony Efektów Tokena",
                 "hint": "Ukryj ikony tokenów dla efektów kreowanych przez ten moduł."
+            },
+            "postToChat": {
+                "none": "Brak",
+                "simple": "Proste",
+                "full": "Całosć"
             }
         },
         "huntPrey": {
