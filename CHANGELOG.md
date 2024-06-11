@@ -1,3 +1,8 @@
+## 6.0.1 - 2024-06-11 (Pathfinder 2e 5.16.1/6.0.1)
+### Fix
+- Updated Polish translation (thanks to Liohart).
+- Verified backwards-compatibility with Foundry v11 and PF2e v5.
+
 ## 6.0.0 - 2024-06-10 (Pathfinder 2e 6.0.1)
 ### Features
 - Compatibility with Foundry v12 and Pathfinder 2e v6.
