@@ -34,10 +34,8 @@ async function handleStartTurn(combatant) {
  * 
  * @param {Weapon} weapon 
  * @param {Updates} updates 
- * 
- * @returns Promise<void>
  */
-async function handleReload({ weapon, updates }) {
+function handleReload({ weapon, updates }) {
     // Remove any existing effect
     const existing = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
     if (existing) {
@@ -51,17 +49,22 @@ async function handleReload({ weapon, updates }) {
 
     // Create the new effect if this is our first reload of the round
     if (!getFlag(crossbowCrackShotFeat, "reloadedThisTurn") || !isInCombat(weapon.actor)) {
-        const source = await getItem(CROSSBOW_CRACK_SHOT_EFFECT_ID);
-        setEffectTarget(source, weapon);
-        source.flags["pf2e-ranged-combat"].fired = false;
+        updates.deferredUpdate(
+            async () => {
+                const source = await getItem(CROSSBOW_CRACK_SHOT_EFFECT_ID);
+                setEffectTarget(source, weapon);
+                source.flags["pf2e-ranged-combat"].fired = false;
 
-        // There's currently a system bug preventing the weapon damage dice being calculated for the backstabber adjustment - set it manually now
-        const adjustModifierRule = source.system.rules.find(rule => rule.key == "AdjustModifier" && rule.slug == "backstabber");
-        if (adjustModifierRule) {
-            adjustModifierRule.value = 2 * weapon.damageDice;
-        }
+                // There's currently a system bug preventing the weapon damage dice being calculated for the backstabber adjustment - set it manually now
+                const adjustModifierRule = source.system.rules.find(rule => rule.key == "AdjustModifier" && rule.slug == "backstabber");
+                if (adjustModifierRule) {
+                    adjustModifierRule.value = 2 * weapon.damageDice;
+                }
 
-        updates.create(source);
+                updates.create(source);
+            }
+        );
+
         updates.update(
             crossbowCrackShotFeat,
             {

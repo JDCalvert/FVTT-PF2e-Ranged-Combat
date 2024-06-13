@@ -1,3 +1,8 @@
+## 6.0.2 - 2024-06-13 (Pathfinder 2e 5.16.1/6.0.1)
+### Fix
+- Fixed instances where Hunt Prey messages could be posted twice.
+- Trigger Alchemical Shot on posting the action to chat, and remove the effect after a damage roll.
+
 ## 6.0.1 - 2024-06-11 (Pathfinder 2e 5.16.1/6.0.1)
 ### Fix
 - Updated Polish translation (thanks to Liohart).

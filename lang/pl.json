@@ -215,10 +215,10 @@
                 "warningNoLesserAlchemicalBombs": "{token} nie ma pomniejszych alchemicznych bomb zadających obrażenia od energii."
             },
             "alchemicalShot": {
-                "warningNoFeat": "{token} nie ma zdolności Alchemiczny Strzał.",
-                "warningNotWieldingProperWeapon": "{token} nie nosi broni palnej ani kuszy.",
-                "warningNoAlchenicalBombs": "{token} nie ma bomb alchemicznych.",
-                "tokenPoursBombIntoWeapon": "{token} umieszcza zawartość {bomb} w {weapon}.",
+                "warningNoFeat": "{actor} nie ma zdolności Alchemiczny Strzał.",
+                "warningNotWieldingProperWeapon": "{actor} nie nosi broni palnej ani kuszy.",
+                "warningNoAlchemicalBombs": "{actor} nie ma bomb alchemicznych.",
+                "pourBombIntoWeapon": "{actor} umieszcza zawartość {bomb} w {weapon}.",
                 "alchemicalShot": "Alchemiczny Strzał"
             }
         },

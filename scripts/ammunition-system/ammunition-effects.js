@@ -51,7 +51,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
  * @param {Weapon} weapon 
  * @param {Updates} updates 
  */
-async function removeAmmunitionEffect({ weapon, updates }) {
+function removeAmmunitionEffect({ weapon, updates }) {
     const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);

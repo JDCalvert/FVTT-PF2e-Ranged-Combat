@@ -147,7 +147,7 @@ export async function performReloadMagazine(actor, token, weapon) {
         String(numActions)
     );
 
-    await HookManager.call("reload", { weapon, updates });
+    HookManager.call("reload", { weapon, updates });
 
     updates.handleUpdates();
 

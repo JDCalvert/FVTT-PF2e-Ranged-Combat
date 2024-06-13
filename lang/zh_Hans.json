@@ -191,10 +191,10 @@
                 "warningNoLesserAlchemicalBombs": "{token}没有能造成能量伤害的次级炼金炸弹。"
             },
             "alchemicalShot": {
-                "warningNoFeat": "{token}没有炼金射击专长。",
-                "warningNotWieldingProperWeapon": "{token}没有持握火器或弩。",
-                "warningNoAlchenicalBombs": "{token}没有炼金炸弹。",
-                "tokenPoursBombIntoWeapon": "{token}将{bomb}的内容物倒入{weapon}。",
+                "warningNoFeat": "{actor}没有炼金射击专长。",
+                "warningNotWieldingProperWeapon": "{actor}没有持握火器或弩。",
+                "warningNoAlchemicalBombs": "{actor}没有炼金炸弹。",
+                "pourBombIntoWeapon": "{actor}将{bomb}的内容物倒入{weapon}。",
                 "alchemicalShot": "炼金射击"
             }
         }

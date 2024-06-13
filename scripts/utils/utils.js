@@ -163,7 +163,9 @@ export function isInCombat(actor) {
 
 export async function postActionToChat(action) {
     if (game.settings.get("pf2e-ranged-combat", "postActionToChat") == postToChatConfig.full) {
+        CONFIG.pf2eRangedCombat.chatHook = false;
         await action.toMessage();
+        CONFIG.pf2eRangedCombat.chatHook = true;
     }
 }
 

@@ -65,7 +65,7 @@ export function initialiseAdvancedWeaponSystem() {
 
             // Call the weapon attack hook and handle any updates that come out of it
             const updates = new Updates(actor);
-            await HookManager.call("weapon-attack", { weapon, updates });
+            HookManager.call("weapon-attack", { weapon, updates });
             await updates.handleUpdates();
 
             return roll;
@@ -112,7 +112,7 @@ export function initialiseAdvancedWeaponSystem() {
 
             const updates = new Updates(item.actor);
 
-            await HookManager.call(
+            HookManager.call(
                 "weapon-damage",
                 {
                     weapon,

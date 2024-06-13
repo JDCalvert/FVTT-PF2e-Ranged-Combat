@@ -81,7 +81,7 @@ export async function performConjureBullet(actor, token, weapon) {
         1,
     );
 
-    await HookManager.call("reload", { weapon, updates });
+    HookManager.call("reload", { weapon, updates });
 
     updates.handleUpdates();
 

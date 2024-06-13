@@ -221,10 +221,10 @@
                 "warningNoLesserAlchemicalBombs": "{token} has no lesser alchemical bombs that deal energy damage."
             },
             "alchemicalShot": {
-                "warningNoFeat": "{token} does not have the Alchemical Shot feat.",
-                "warningNotWieldingProperWeapon": "{token} is not wielding a firearm or crossbow.",
-                "warningNoAlchenicalBombs": "{token} has no alchemical bombs.",
-                "tokenPoursBombIntoWeapon": "{token} pours the contents of {bomb} into their {weapon}.",
+                "warningNoFeat": "{actor} does not have the Alchemical Shot feat.",
+                "warningNotWieldingProperWeapon": "{actor} is not wielding a firearm or crossbow.",
+                "warningNoAlchemicalBombs": "{actor} has no alchemical bombs.",
+                "pourBombIntoWeapon": "{actor} pours the contents of {bomb} into their {weapon}.",
                 "alchemicalShot": "Alchemical Shot"
             }
         }

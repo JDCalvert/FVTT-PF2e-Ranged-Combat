@@ -12,13 +12,13 @@ export function initialiseCrossbowAce() {
     // Apply Crossbow Ace when we reload the weapon
     HookManager.register(
         "reload",
-        async ({ weapon, updates }) => {
+        ({ weapon, updates }) => {
             if (!(weapon.group == "crossbow" && weapon.isEquipped)) {
                 return;
             }
 
             if (hasLegacyCrossbowAce(weapon.actor)) {
-                await applyFeatEffect(weapon, updates);
+                applyFeatEffect(weapon, updates);
             }
         }
     );
@@ -26,11 +26,11 @@ export function initialiseCrossbowAce() {
     // Apply Crossbow Ace when we Hunt Prey
     HookManager.register(
         "hunt-prey",
-        async ({ actor, updates }) => {
+        ({ actor, updates }) => {
             if (hasLegacyCrossbowAce(actor)) {
                 const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.group == "crossbow");
                 for (const weapon of weapons) {
-                    await applyFeatEffect(weapon, updates);
+                    applyFeatEffect(weapon, updates);
                 }
             }
         }
@@ -82,7 +82,7 @@ function hasLegacyCrossbowAce(actor) {
  * @param {Weapon} weapon
  * @param {Updates} updates
  */
-async function applyFeatEffect(weapon, updates) {
+function applyFeatEffect(weapon, updates) {
     // Remove any existing effects
     const existing = getEffectFromActor(weapon.actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
     if (existing) {
@@ -90,10 +90,14 @@ async function applyFeatEffect(weapon, updates) {
     }
 
     // Add the new effect
-    const effect = await getItem(CROSSBOW_ACE_EFFECT_ID);
-    setEffectTarget(effect, weapon);
-    ensureDuration(weapon.actor, effect);
-    effect.flags["pf2e-ranged-combat"].fired = false;
+    updates.deferredUpdate(
+        async () => {
+            const effect = await getItem(CROSSBOW_ACE_EFFECT_ID);
+            setEffectTarget(effect, weapon);
+            ensureDuration(weapon.actor, effect);
+            effect.flags["pf2e-ranged-combat"].fired = false;
 
-    updates.create(effect);
+            updates.create(effect);
+        }
+    );
 }

@@ -1,3 +1,5 @@
+import { HookManager } from "./utils/hook-manager.js";
+
 export function initialiseChatMessageHooks() {
     /**
      * When rendering a chat message sent by this module, give it the "hide" class
@@ -50,6 +52,35 @@ export function initialiseChatMessageHooks() {
                 }
             );
             observer.observe(chatLog[0], { childList: true });
+        }
+    );
+
+    /**
+     * When we post a message for an item, check for anything that will trigger on it. If a trigger is found, do not post the post the message (the trigger
+     * will post it instead, if necessary).
+     */
+    Hooks.on(
+        "preCreateChatMessage",
+        message => {
+            if (!CONFIG.pf2eRangedCombat.chatHook) {
+                return true;
+            }
+
+            const actor = message.actor;
+            if (!actor) {
+                return true;
+            }
+
+            const item = message.item;
+            if (!item) {
+                return true;
+            }
+
+            const result = { match: false };
+
+            HookManager.call("post-action", { actor, item, result });
+
+            return !result.match;
         }
     );
 }

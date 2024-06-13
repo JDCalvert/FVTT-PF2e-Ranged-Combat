@@ -1,4 +1,3 @@
-import { postToChatConfig } from "../config.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
 import { FLURRY_FEATURE_ID, HUNTED_PREY_EFFECT_ID, HUNT_PREY_ACTION_ID, PRECISION_FEATURE_ID, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID } from "./constants.js";
@@ -7,27 +6,21 @@ import { checkHuntPrey, performHuntPrey } from "./hunt-prey.js";
 export function initialiseHuntPrey() {
 
     // When posting the Hunt Prey chat message, use the Hunt Prey action
-    Hooks.on(
-        "preCreateChatMessage",
-        message => {
-            const item = message.item;
-            if (!item || item.sourceId != HUNT_PREY_ACTION_ID) {
-                return true;
+    HookManager.register(
+        "post-action",
+        ({ actor, item, result }) => {
+            if (item.sourceId != HUNT_PREY_ACTION_ID) {
+                return;
             }
 
-            const actor = message.actor;
-            if (!actor) {
-                return true;
-            }
+            result.match = true;
 
             const checkResult = checkHuntPrey(actor);
             if (!checkResult.valid) {
-                return true;
+                return;
             }
 
             performHuntPrey(actor, null, item, checkResult);
-
-            return game.settings.get("pf2e-ranged-combat", "postActionToChat") == postToChatConfig.full;
         }
     );
 

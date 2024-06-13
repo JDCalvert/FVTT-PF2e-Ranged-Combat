@@ -1,16 +1,16 @@
 export class HookManager {
 
-    /** @type Map<string, ((args) => Promise<boolean>)[]> */
-    static checks = new Map();
-
-    /** @type Map<string, ((args) => Promise<void>)[]> */
+    /** @type Map<string, ((args: any) => void)[]> */
     static callbacks = new Map();
+    
+    /** @type Map<string, ((args: any) => boolean | Promise<boolean>)[]> */
+    static checks = new Map();
 
     /**
      * Register a callback for a specific key
      * 
-     * @param {string} key 
-     * @param {(args) => Promise<void>} callback 
+     * @param {string} key
+     * @param {(args: any) => void} callback
      */
     static register(key, callback) {
         let callbacks = this.callbacks.get(key);
@@ -26,7 +26,7 @@ export class HookManager {
      * Register a check for a specific key
      * 
      * @param {string} key
-     * @param {(args) => Promise<boolean>} check
+     * @param {(args: any, output?: any) => boolean | Promise<boolean>} check
      */
     static registerCheck(key, check) {
         let checks = this.checks.get(key);
@@ -44,11 +44,11 @@ export class HookManager {
      * @param {string} key
      * @param {*} args
      */
-    static async call(key, args) {
+    static call(key, args) {
         const callbacks = this.callbacks.get(key);
         if (callbacks) {
             for (let callback of callbacks) {
-                await callback(args);
+                callback(args);
             }
         }
     }
@@ -59,7 +59,7 @@ export class HookManager {
      * @param {string} key
      * @param {*} args
      * 
-     * @returns Promise<boolean>
+     * @returns {Promise<boolean>}
      */
     static async runCheck(key, args) {
         const checks = this.checks.get(key);

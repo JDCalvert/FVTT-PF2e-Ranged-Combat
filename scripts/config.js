@@ -1,5 +1,5 @@
 import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
-import { alchemicalShot, initialiseAlchemicalShort } from "./actions/alchemical-shot.js";
+import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
 import { initialiseAdvancedWeaponSystem } from "./advanced-weapon-system/initialise.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
@@ -33,7 +33,8 @@ Hooks.on(
     "init",
     () => {
         CONFIG.pf2eRangedCombat = {
-            silent: false
+            silent: false,
+            chatHook: true
         };
 
         game.settings.register(
@@ -183,7 +184,7 @@ Hooks.on(
         initialiseCrossbowCrackShot();
         initialiseCrossbowAce();
         initialiseAlchemicalCrossbow();
-        initialiseAlchemicalShort();
+        initialiseAlchemicalShot();
 
         game.pf2eRangedCombat = {
             reload,

@@ -26,8 +26,7 @@ export async function huntPrey() {
         return;
     }
 
-    await postActionToChat(huntPreyAction);
-    await performHuntPrey(actor, token, huntPreyAction, checkResult);
+    performHuntPrey(actor, token, huntPreyAction, checkResult);
 }
 
 export function checkHuntPrey(actor) {
@@ -56,8 +55,6 @@ export function checkHuntPrey(actor) {
  * @param {{ targets: [], maxTargets: { num: number, word: string } }} checkResult
  */
 export async function performHuntPrey(actor, token, huntPreyAction, checkResult) {
-    const updates = new Updates(actor);
-
     const targets = checkResult.targets;
 
     const remainingTargets = checkResult.maxTargets.num - targets.length;
@@ -71,6 +68,7 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
     const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
     const targetData = { token: token?.name || actor.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
 
+    await postActionToChat(huntPreyAction);
     await postToChat(
         actor,
         HUNT_PREY_IMG,
@@ -83,6 +81,8 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
         huntPreyAction.name,
         1
     );
+
+    const updates = new Updates(actor);
 
     updateSystemItems(actor, updates, huntPreyAction);
 
@@ -115,11 +115,9 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
         }
     }
 
-    await HookManager.call("hunt-prey", { actor, updates });
+    HookManager.call("hunt-prey", { actor, updates });
 
     updates.handleUpdates();
-
-    return;
 }
 
 function getTargets(maxTargets) {

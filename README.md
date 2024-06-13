@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/6.0.1/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/6.0.2/total)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jdcalvert)
 
@@ -33,7 +33,6 @@ The <b>Loaded</b> effect targets a specific weapon and serves as a reminder that
 The <b>Crossbow Ace</b> and <b>Crossbow Crack Shot</b> effects apply the feat effects and can be applied to a particular crossbow.
 <small>
 - <b>Note:</b> You do not need to use the "Reloaded crossbow or Hunted Prey" toggle when using these effects.
-- <b>Note:</b> You must remove the effects manually once you've made your damage roll.
 </small>
 
 ### Advanced Ammunition System

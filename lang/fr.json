@@ -190,10 +190,10 @@
                 "warningNoLesserAlchemicalBombs": "{token} ne possède pas de bombes alchimiques inférieures infligeant des dégâts d'énergie."
             },
             "alchemicalShot": {
-                "warningNoFeat": "{token} n'a pas le don Tir alchimique.",
-                "warningNotWieldingProperWeapon": "{token} ne manie pas d'arme à feu ni d'arbalète.",
-                "warningNoAlchenicalBombs": "{token} n'a pas de bombes alchimiques.",
-                "tokenPoursBombIntoWeapon": "{token} verse le contenu de {bomb} dans sa/son {weapon}.",
+                "warningNoFeat": "{actor} n'a pas le don Tir alchimique.",
+                "warningNotWieldingProperWeapon": "{actor} ne manie pas d'arme à feu ni d'arbalète.",
+                "warningNoAlchemicalBombs": "{actor} n'a pas de bombes alchimiques.",
+                "pourBombIntoWeapon": "{actor} verse le contenu de {bomb} dans sa/son {weapon}.",
                 "alchemicalShot": "Tir alchimique"
             }
         }
