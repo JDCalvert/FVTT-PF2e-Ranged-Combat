@@ -57,16 +57,14 @@
   "flags": {},
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.11.5",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": 1678729372760,
-    "modifiedTime": 1704277391990,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379281371,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
-  "folder": null,
-  "sort": 0,
+  "folder": "5tG5TrQ3S7xcPKsc",
+  "sort": 200000,
   "_id": "mVYwtEeIaI6AW9jK",
   "_key": "!items!mVYwtEeIaI6AW9jK"
 }

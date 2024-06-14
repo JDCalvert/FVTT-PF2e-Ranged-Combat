@@ -1,0 +1,80 @@
+{
+  "name": "Sword and Pistol (Ranged)",
+  "type": "effect",
+  "effects": [],
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>The enemy is @UUID[Compendium.pf2e.conditionitems.AJh5ex99aV6VTggg]{Off-Guard} against your next melee attack with a one-handed melee weapon.</p>"
+    },
+    "rules": [
+      {
+        "key": "TokenMark",
+        "slug": "sword-and-pistol-ranged"
+      },
+      {
+        "key": "EphemeralEffect",
+        "selectors": [
+          "melee-strike-attack-roll"
+        ],
+        "predicate": [
+          "item:hands-held:1",
+          "target:mark:sword-and-pistol-ranged"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.AJh5ex99aV6VTggg"
+      }
+    ],
+    "slug": "sword-and-pistol-ranged",
+    "_migration": {
+      "version": 0.926,
+      "lastMigration": null
+    },
+    "traits": {
+      "otherTags": [],
+      "value": []
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 0,
+      "unit": "rounds",
+      "expiry": "turn-end",
+      "sustained": false
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "_id": "kJvn2fXHkjUnexyD",
+  "img": "systems/pf2e/icons/features/classes/way-of-the-drifter.webp",
+  "folder": "bTr3DePhBbbQBHrc",
+  "sort": 400000,
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
+    "createdTime": 1718370957164,
+    "modifiedTime": 1718379358805,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!items!kJvn2fXHkjUnexyD"
+}

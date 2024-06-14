@@ -13,15 +13,13 @@
   "flags": {},
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": 1672850305746,
-    "modifiedTime": 1707226890731,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379581845,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
-  "folder": null,
-  "sort": 1000000,
+  "folder": "2TG2a5rTtYWYXUWU",
+  "sort": 200000,
   "_key": "!macros!NzE9Yyxa7EBHM5PH"
 }

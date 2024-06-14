@@ -45,8 +45,8 @@
   },
   "_id": "FmD8SBZdehiClhx7",
   "img": "systems/pf2e/icons/equipment/weapons/arrows.webp",
-  "folder": null,
-  "sort": 0,
+  "folder": "KZmp0bl6M1pOPRyB",
+  "sort": 100000,
   "ownership": {
     "default": 0,
     "6cYJNd43VitcuYqD": 3
@@ -55,12 +55,10 @@
   "_stats": {
     "systemId": "pf2e",
     "systemVersion": "5.16.1",
-    "coreVersion": "12.327",
+    "coreVersion": "11.315",
     "createdTime": 1717708131105,
-    "modifiedTime": 1717708362202,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379325787,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!FmD8SBZdehiClhx7"
 }

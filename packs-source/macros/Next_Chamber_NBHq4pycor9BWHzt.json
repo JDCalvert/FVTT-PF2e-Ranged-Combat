@@ -6,8 +6,8 @@
   "img": "modules/pf2e-ranged-combat/art/select-next-chamber.webp",
   "scope": "global",
   "command": "// When you have a loaded capacity weapon, switch to the next loaded chamber as an interact action that doesn't require a free hand.\ngame.pf2eRangedCombat.nextChamber();",
-  "folder": null,
-  "sort": 700000,
+  "folder": "Rf84mVsk9vaO5LqG",
+  "sort": 300000,
   "flags": {},
   "ownership": {
     "default": 0,
@@ -15,13 +15,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1707226890731,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379555079,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!macros!NBHq4pycor9BWHzt"
 }

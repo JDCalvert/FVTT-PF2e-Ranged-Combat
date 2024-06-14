@@ -6,8 +6,8 @@
   "img": "modules/pf2e-ranged-combat/art/unload.webp",
   "scope": "global",
   "command": "game.pf2eRangedCombat.unload();",
-  "folder": null,
-  "sort": 400000,
+  "folder": "Rf84mVsk9vaO5LqG",
+  "sort": 800000,
   "flags": {},
   "ownership": {
     "default": 0,
@@ -15,13 +15,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1707226890731,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379561985,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!macros!B8m6C62hMgsXZ5Tr"
 }

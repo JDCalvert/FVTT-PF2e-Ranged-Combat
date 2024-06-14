@@ -1,0 +1,87 @@
+{
+  "name": "Sword and Pistol (Melee)",
+  "type": "effect",
+  "effects": [],
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>Your next ranged Strike against the same enemy with a one-handed firearm or one-handed crossbow doesn't trigger reactions that would trigger on a ranged attack but not a melee attack, such as @UUID[Compendium.pf2e.actionspf2e.KAVf7AmRnbCAHrkT]{Reactive Strike}.</p>"
+    },
+    "rules": [
+      {
+        "key": "TokenMark",
+        "slug": "sword-and-pistol-melee"
+      },
+      {
+        "key": "Note",
+        "title": "Sword and Pistol",
+        "selector": "ranged-strike-attack-roll",
+        "text": "This Strike does not trigger reactions that would trigger on a ranged attack but not a melee attack.",
+        "predicate": [
+          {
+            "or": [
+              "item:group:firearm",
+              "item:group:crossbow"
+            ]
+          },
+          "item:hands-held:1",
+          "target:mark:sword-and-pistol-melee"
+        ]
+      }
+    ],
+    "slug": "sword-and-pistol-melee",
+    "_migration": {
+      "version": 0.926,
+      "lastMigration": null
+    },
+    "traits": {
+      "otherTags": [],
+      "value": []
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 0,
+      "unit": "rounds",
+      "expiry": "turn-end",
+      "sustained": false
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "img": "systems/pf2e/icons/features/classes/way-of-the-drifter.webp",
+  "folder": "bTr3DePhBbbQBHrc",
+  "ownership": {
+    "default": 0,
+    "6cYJNd43VitcuYqD": 3
+  },
+  "flags": {
+    "core": {}
+  },
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
+    "createdTime": 1718363652782,
+    "modifiedTime": 1718379357827,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_id": "uBNgQB5SpFpRzg3w",
+  "sort": 300000,
+  "_key": "!items!uBNgQB5SpFpRzg3w"
+}

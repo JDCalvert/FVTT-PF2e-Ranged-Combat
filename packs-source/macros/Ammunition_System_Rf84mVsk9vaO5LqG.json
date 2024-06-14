@@ -1,0 +1,19 @@
+{
+  "name": "Ammunition System",
+  "sorting": "a",
+  "folder": null,
+  "type": "Macro",
+  "_id": "Rf84mVsk9vaO5LqG",
+  "sort": 0,
+  "color": null,
+  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
+    "createdTime": 1718379542525,
+    "modifiedTime": 1718379542525,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!folders!Rf84mVsk9vaO5LqG"
+}

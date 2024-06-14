@@ -6,8 +6,8 @@
   "img": "modules/pf2e-ranged-combat/art/load-alchemical-crossbow.webp",
   "scope": "global",
   "command": "game.pf2eRangedCombat.loadAlchemicalCrossbow();",
-  "folder": null,
-  "sort": 1100000,
+  "folder": "sqpkQw9AnzxMpjL4",
+  "sort": 200000,
   "flags": {},
   "ownership": {
     "default": 0,
@@ -15,13 +15,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1707226890731,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379596717,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!macros!bHzS7gC2jneuGHcf"
 }

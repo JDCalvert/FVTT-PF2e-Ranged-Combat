@@ -4,8 +4,8 @@
   "type": "effect",
   "img": "systems/pf2e/icons/equipment/weapons/crossbow.webp",
   "effects": [],
-  "folder": null,
-  "sort": 0,
+  "folder": "bTr3DePhBbbQBHrc",
+  "sort": 200000,
   "flags": {},
   "system": {
     "description": {
@@ -100,12 +100,10 @@
   "_stats": {
     "systemId": "pf2e",
     "systemVersion": "5.16.1",
-    "coreVersion": "12.327",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1717712232995,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379355400,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!zP0vPd14V5OG9ZFv"
 }

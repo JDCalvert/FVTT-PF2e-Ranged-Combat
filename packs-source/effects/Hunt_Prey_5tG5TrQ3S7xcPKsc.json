@@ -1,0 +1,19 @@
+{
+  "name": "Hunt Prey",
+  "sorting": "a",
+  "folder": null,
+  "type": "Item",
+  "_id": "5tG5TrQ3S7xcPKsc",
+  "sort": 0,
+  "color": null,
+  "flags": {},
+  "_stats": {
+    "systemId": "pf2e",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
+    "createdTime": 1718379276915,
+    "modifiedTime": 1718379276915,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
+  },
+  "_key": "!folders!5tG5TrQ3S7xcPKsc"
+}

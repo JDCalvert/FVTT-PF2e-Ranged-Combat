@@ -6,8 +6,8 @@
   "img": "modules/pf2e-ranged-combat/art/conjure-bullet.webp",
   "scope": "global",
   "command": "game.pf2eRangedCombat.conjureBullet();",
-  "folder": null,
-  "sort": 600000,
+  "folder": "cXz14ug2zm9JWiuQ",
+  "sort": 300000,
   "flags": {},
   "ownership": {
     "default": 0,
@@ -15,13 +15,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1707226890731,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379574478,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!macros!KQvujWJZQX0yy4Jg"
 }

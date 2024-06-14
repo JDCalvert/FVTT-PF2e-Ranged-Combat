@@ -4,8 +4,8 @@
   "type": "effect",
   "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
   "effects": [],
-  "folder": null,
-  "sort": 0,
+  "folder": "bTr3DePhBbbQBHrc",
+  "sort": 100000,
   "flags": {},
   "system": {
     "description": {
@@ -192,13 +192,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1707226903927,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379354404,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!IYcN1TxztAmnKXi4"
 }

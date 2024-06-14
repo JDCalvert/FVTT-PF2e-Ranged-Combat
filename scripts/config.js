@@ -14,6 +14,7 @@ import { initialiseFireWeaponHandler } from "./ammunition-system/fire-weapon-han
 import { initialiseChatMessageHooks } from "./chat-message-hook.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
+import { initialiseSwordAndPistol } from "./feats/sword-and-pistol.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
@@ -185,6 +186,7 @@ Hooks.on(
         initialiseCrossbowAce();
         initialiseAlchemicalCrossbow();
         initialiseAlchemicalShot();
+        initialiseSwordAndPistol();
 
         game.pf2eRangedCombat = {
             reload,

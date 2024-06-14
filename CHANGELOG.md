@@ -1,3 +1,7 @@
+## 6.1.0 - 2024-06-14 (Pathfinder 2e 5.16.1/6.0.1)
+### Feature
+- Added automation to the Sword and Pistol Gunslinger feat.
+
 ## 6.0.2 - 2024-06-13 (Pathfinder 2e 5.16.1/6.0.1)
 ### Fix
 - Fixed instances where Hunt Prey messages could be posted twice.

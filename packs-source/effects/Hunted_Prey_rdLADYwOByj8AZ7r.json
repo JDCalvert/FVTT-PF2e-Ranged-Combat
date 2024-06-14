@@ -4,8 +4,8 @@
   "type": "effect",
   "img": "systems/pf2e/icons/features/classes/hunt-prey.webp",
   "effects": [],
-  "folder": null,
-  "sort": 0,
+  "folder": "5tG5TrQ3S7xcPKsc",
+  "sort": 100000,
   "flags": {},
   "system": {
     "description": {
@@ -61,13 +61,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.13.2",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1707319602061,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379279740,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!rdLADYwOByj8AZ7r"
 }

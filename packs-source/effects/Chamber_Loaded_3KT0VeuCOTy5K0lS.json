@@ -4,8 +4,8 @@
   "type": "effect",
   "img": "modules/pf2e-ranged-combat/art/chamber-loaded.webp",
   "effects": [],
-  "folder": null,
-  "sort": 0,
+  "folder": "KZmp0bl6M1pOPRyB",
+  "sort": 200000,
   "flags": {},
   "system": {
     "description": {
@@ -80,13 +80,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.12.7",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1705875817018,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379327459,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!3KT0VeuCOTy5K0lS"
 }

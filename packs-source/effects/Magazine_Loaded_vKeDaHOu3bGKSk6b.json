@@ -4,8 +4,8 @@
   "type": "effect",
   "img": "systems/pf2e/icons/equipment/weapons/magazine-with-5-bolts.webp",
   "effects": [],
-  "folder": null,
-  "sort": 0,
+  "folder": "KZmp0bl6M1pOPRyB",
+  "sort": 106250,
   "flags": {},
   "system": {
     "description": {
@@ -73,13 +73,11 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.11.5",
-    "coreVersion": "12.327",
+    "systemVersion": "5.16.1",
+    "coreVersion": "11.315",
     "createdTime": null,
-    "modifiedTime": 1704277391990,
-    "lastModifiedBy": "6cYJNd43VitcuYqD",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "modifiedTime": 1718379338062,
+    "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
   "_key": "!items!vKeDaHOu3bGKSk6b"
 }
