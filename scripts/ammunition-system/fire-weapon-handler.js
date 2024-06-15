@@ -1,4 +1,4 @@
-import { postToChatConfig } from "../config.js";
+import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { Ammunition } from "../types/pf2e-ranged-combat/ammunition.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
@@ -24,11 +24,6 @@ export function initialiseFireWeaponHandler() {
 function fireWeapon({ updates, weapon }) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
-        return;
-    }
-
-    // If the actor has a flag to say they shouldn't consume ammo, don't do anything
-    if (weapon.actor.getRollOptions().includes("skip-use-ammunition")) {
         return;
     }
 

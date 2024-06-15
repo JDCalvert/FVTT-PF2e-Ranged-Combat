@@ -1,10 +1,17 @@
+## 6.2.0 - 2024-06-16 (Pathfinder 2e 5.16.1/6.0.1)
+### Feature
+- Add automation to the Fake Out Gunslinger feat.
+
+### Fix
+- Fix warnings starting the server due to missing author.
+
 ## 6.1.0 - 2024-06-14 (Pathfinder 2e 5.16.1/6.0.1)
 ### Feature
-- Added automation to the Sword and Pistol Gunslinger feat.
+- Add automation to the Sword and Pistol Gunslinger feat.
 
 ## 6.0.2 - 2024-06-13 (Pathfinder 2e 5.16.1/6.0.1)
 ### Fix
-- Fixed instances where Hunt Prey messages could be posted twice.
+- Fix instances where Hunt Prey messages could be posted twice.
 - Trigger Alchemical Shot on posting the action to chat, and remove the effect after a damage roll.
 
 ## 6.0.1 - 2024-06-11 (Pathfinder 2e 5.16.1/6.0.1)

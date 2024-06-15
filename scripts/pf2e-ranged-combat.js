@@ -14,6 +14,7 @@ import { initialiseFireWeaponHandler } from "./ammunition-system/fire-weapon-han
 import { initialiseChatMessageHooks } from "./chat-message-hook.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
+import { initialiseFakeOut } from "./feats/fake-out.js";
 import { initialiseSwordAndPistol } from "./feats/sword-and-pistol.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
@@ -160,6 +161,23 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "fakeOutDC",
+            {
+                name: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.dc.name"),
+                scope: "world",
+                config: true,
+                type: Number,
+                choices: {
+                    15: "15",
+                    20: "20",
+                    0: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.dc.enemyDC")
+                },
+                default: 15
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "doNotShowWarningAgain",
             {
                 name: "",
@@ -187,6 +205,7 @@ Hooks.on(
         initialiseAlchemicalCrossbow();
         initialiseAlchemicalShot();
         initialiseSwordAndPistol();
+        initialiseFakeOut();
 
         game.pf2eRangedCombat = {
             reload,

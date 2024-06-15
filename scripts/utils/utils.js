@@ -1,4 +1,4 @@
-import { postToChatConfig } from "../config.js";
+import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 
@@ -171,25 +171,59 @@ export async function postActionToChat(action) {
 
 export async function postToChat(actor, img, message, actionName = "", numActions = "") {
     if (game.settings.get("pf2e-ranged-combat", "postActionToChat")) {
-        postMessage(actor, img, message, actionName, numActions);
+        postMessage(actor, img, message, { actionName, numActions });
     }
 }
 
-export async function postMessage(actor, img, message, actionName = "", numActions = "") {
-    const content = await renderTemplate("./systems/pf2e/templates/chat/action/content.hbs", { imgPath: img, message: message, });
-    const flavor = await renderTemplate("./systems/pf2e/templates/chat/action/flavor.hbs", { action: { title: actionName, glyph: String(numActions) } });
+/**
+ * 
+ * @param {PF2eActor} actor 
+ * @param {string} img 
+ * @param {string} message 
+ * @param {{
+ *      actionName?: string,
+ *      numActions?: string,
+ *      traits?: {
+ *          name: string,
+ *          label: string,
+ *          description: string
+ *      }[],
+ *      link? : string
+ * }} params 
+ */
+export async function postMessage(actor, img, message, params) {
+    const flavor = await renderTemplate(
+        "./systems/pf2e/templates/chat/action/flavor.hbs",
+        {
+            action: {
+                title: params.actionName,
+                glyph: String(params.numActions)
+            },
+            traits: params.traits
+        }
+    );
 
-    await ChatMessage.create({
-        type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
-        speaker: ChatMessage.getSpeaker({ actor }),
-        flavor,
-        content,
-        flags: {
-            "pf2e-ranged-combat": {
-                actorId: actor.id
+    const content = await renderTemplate(
+        "./systems/pf2e/templates/chat/action/content.hbs",
+        {
+            imgPath: img,
+            message: message
+        }
+    );
+
+    await ChatMessage.create(
+        {
+            type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+            speaker: ChatMessage.getSpeaker({ actor }),
+            flavor: flavor + (params.link || ""),
+            content,
+            flags: {
+                "pf2e-ranged-combat": {
+                    actorId: actor.id
+                }
             }
         }
-    });
+    );
 }
 
 export function getAttackPopout(item) {

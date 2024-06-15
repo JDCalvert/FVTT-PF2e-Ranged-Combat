@@ -63,10 +63,12 @@ export function initialiseAdvancedWeaponSystem() {
                 return;
             }
 
-            // Call the weapon attack hook and handle any updates that come out of it
-            const updates = new Updates(actor);
-            HookManager.call("weapon-attack", { weapon, updates, context, roll });
-            await updates.handleUpdates();
+            // Call the weapon attack hook and handle updates, unless we're skipping post-processing
+            if (!context.options.has("skip-post-processing")) {
+                const updates = new Updates(actor);
+                HookManager.call("weapon-attack", { weapon, updates, context, roll });
+                await updates.handleUpdates();
+            }            
 
             return roll;
         },
