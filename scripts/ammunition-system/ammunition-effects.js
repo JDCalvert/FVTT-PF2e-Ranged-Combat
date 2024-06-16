@@ -29,7 +29,20 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
         async () => {
             if (ammunition.system.rules.length) {
                 for (const rule of ammunition.system.rules) {
-                    rule.selector = "{item|flags.pf2e.rulesSelections.weapon}-damage";
+
+                    // Change the rule's selector(s) to point directly to the weapon that was fired
+                    if (rule.selector) {
+                        for (let i = 0; i < rule.selector.length; i++) {
+                            rule.selector[i] = rule.selector[i].replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
+                        }
+                    }
+
+                    // Change any definition rule to point to the weapon ID instead of the item ID
+                    if (rule.definition) {
+                        for (let i = 0; i < rule.definition.length; i++) {
+                            rule.definition[i] = rule.definition[i].replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
+                        }
+                    }
                 }
 
                 const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);

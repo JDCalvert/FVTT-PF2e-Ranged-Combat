@@ -1,3 +1,8 @@
+## 6.2.1 - 2024-06-16 (Pathfinder 2e 5.16.1/6.0.1)
+### Fix
+- Fix errors posting some messages.
+- Fix some ammunition effects not applying correctly.
+
 ## 6.2.0 - 2024-06-16 (Pathfinder 2e 5.16.1/6.0.1)
 ### Feature
 - Add automation to the Fake Out Gunslinger feat.

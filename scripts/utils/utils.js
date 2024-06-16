@@ -191,15 +191,15 @@ export async function postToChat(actor, img, message, actionName = "", numAction
  *      link? : string
  * }} params 
  */
-export async function postMessage(actor, img, message, params) {
+export async function postMessage(actor, img, message, params = {}) {
     const flavor = await renderTemplate(
         "./systems/pf2e/templates/chat/action/flavor.hbs",
         {
             action: {
-                title: params.actionName,
-                glyph: String(params.numActions)
+                title: params.actionName || "",
+                glyph: String(params.numActions || "")
             },
-            traits: params.traits
+            traits: params.traits || []
         }
     );
 
