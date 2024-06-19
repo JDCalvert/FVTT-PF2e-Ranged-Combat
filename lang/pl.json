@@ -227,6 +227,24 @@
             "rangersAnimalCompanion": "Zwierzęcy Towarzysz postaci {actor}",
             "linkedCompanion": "{companion} jest teraz towarzyszem {master}.",
             "noAnimalCompanionFeat": "{actor} nie posiada atutu łowcy Towarzysz Zwierząt."
+        },
+        "feat": {
+            "fakeOut": {
+                "config": {
+                    "dc": {
+                        "name": "ST Zmyłki",
+                        "enemyDC": "ST Wroga"
+                    }
+                },
+                "name": "Zmyłka",
+                "noTarget": "Musisz mieć wybrany pojedynczy cel.",
+                "result": {
+                    "success": "Zapewniasz sojusznikowi premię okolicznościową +{bonus} do jego testu.",
+                    "failure": "Nie udało ci się wesprzeć sojusznika.",
+                    "criticalFailure": "Twój sojusznik otrzymuje -1 karę okolicznościową do swojego testu."
+                },
+                "noWeapon": "{actor} nie dzierży naładowanej broni palnej ani kuszy."
+            }
         }
     }
 }
