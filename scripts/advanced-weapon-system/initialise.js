@@ -6,16 +6,6 @@ import { transformWeapon } from "../utils/weapon-utils.js";
 
 export function initialiseAdvancedWeaponSystem() {
 
-    // Disable the PF2e system automatically applying ammunition ammunition rules its weapon
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
-        function() {
-            Object.getPrototypeOf(CONFIG.PF2E.Item.documentClasses.weapon).prototype.prepareSiblingData.apply(this);
-        },
-        "OVERRIDE"
-    );
-
     // Disable the PF2e system's ammunition consumption
     libWrapper.register(
         "pf2e-ranged-combat",

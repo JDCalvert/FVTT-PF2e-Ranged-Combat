@@ -148,6 +148,23 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
+            "fakeOutDC",
+            {
+                name: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.dc.name"),
+                scope: "world",
+                config: true,
+                type: Number,
+                choices: {
+                    15: "15",
+                    20: "20",
+                    0: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.dc.enemyDC")
+                },
+                default: 15
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
             "hideTokenIcons",
             {
                 name: game.i18n.localize("pf2e-ranged-combat.config.hideTokenIcons.name"),
@@ -161,18 +178,32 @@ Hooks.on(
 
         game.settings.register(
             "pf2e-ranged-combat",
-            "fakeOutDC",
+            "ammunitionEffectsEnable",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.dc.name"),
+                name: game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect.config.enable.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect.config.enable.hint"),
                 scope: "world",
+                config: true,
+                type: Boolean,
+                default: true
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
+            "ammunitionEffectsWarningLevel",
+            {
+                name: game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect.config.warningLevel.name"),
+                hint: game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect.config.warningLevel.hint"),
+                scope: "client",
                 config: true,
                 type: Number,
                 choices: {
-                    15: "15",
-                    20: "20",
-                    0: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.dc.enemyDC")
+                    0: game.i18n.localize("pf2e-ranged-combat.config.postToChat.none"),
+                    1: game.i18n.localize("pf2e-ranged-combat.config.postToChat.simple"),
+                    2: game.i18n.localize("pf2e-ranged-combat.config.postToChat.full")
                 },
-                default: 15
+                default: postToChatConfig.full
             }
         );
 

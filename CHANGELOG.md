@@ -1,3 +1,7 @@
+## 6.2.2 - 2024-06-19 (Pathfinder 2e 5.16.1/6.0.3)
+### Fix
+- Add option to disable the module's ammunition effects and revert to the system's implementation.
+
 ## 6.2.1 - 2024-06-16 (Pathfinder 2e 5.16.1/6.0.1)
 ### Fix
 - Fix errors posting some messages.

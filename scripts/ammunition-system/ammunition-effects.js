@@ -1,14 +1,32 @@
+import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getItem, setEffectTarget } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getItem, setEffectTarget } from "../utils/utils.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
 
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect." + key);
+
 export function initialiseAmmunitionEffects() {
+
+    // Disable the PF2e system automatically applying ammunition ammunition rules its weapon
+    libWrapper.register(
+        "pf2e-ranged-combat",
+        "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
+        function(wrapper) {
+            if (!isAmmunitionEffectsEnabled()) {
+                wrapper();
+            } else {
+                Object.getPrototypeOf(CONFIG.PF2E.Item.documentClasses.weapon).prototype.prepareSiblingData.apply(this);
+            }
+        },
+        "MIXED"
+    );
+
     HookManager.register("ammunition-fire", handleAmmunitionFired);
-    HookManager.register("weapon-damage", removeAmmunitionEffect);
+    HookManager.register("weapon-damage", handleWeaponDamage);
     HookManager.register("reload", removeAmmunitionEffect);
 }
 
@@ -20,6 +38,10 @@ export function initialiseAmmunitionEffects() {
  * @param {Updates} updates 
  */
 function handleAmmunitionFired({ weapon, ammunition, updates }) {
+    if (!isAmmunitionEffectsEnabled()) {
+        return;
+    }
+
     const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);
@@ -51,6 +73,12 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
                 ammunitionEffectSource.img = ammunition.img;
                 ammunitionEffectSource.system.rules = ammunition.system.rules;
                 ammunitionEffectSource.system.description = ammunition.system.description;
+                ammunitionEffectSource.flags["pf2e-ranged-combat"].ammunition = {
+                    name: ammunition.name,
+                    img: ammunition.img,
+                    id: ammunition.id,
+                    sourceId: ammunition.sourceId
+                };
 
                 updates.create(ammunitionEffectSource);
             }
@@ -59,14 +87,79 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
 }
 
 /**
+ * Remove the current ammunition effect. Also, show a warning if the weapon's current ammunition doesn't match the ammunition effect, or if the weapon's current
+ * ammunition has an effect but no ammunition effect is currently applied.
+ * 
+ * @param {{ weapon: Weapon, updates: Updates}} params
+ */
+function handleWeaponDamage({ weapon, updates }) {
+    if (!isAmmunitionEffectsEnabled()) {
+        return;
+    }
+
+    const weaponAmmunition = weapon.ammunition;
+    const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
+
+    if (ammunitionEffect) {
+        const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
+        if (weaponAmmunition?.sourceId === effectAmmunition?.sourceId) {
+            showWarning("notMatched");
+        }
+
+        removeAmmunitionEffect({ weapon, updates });
+    } else if (weaponAmmunition?.rules) {
+        showWarning("damageWithoutEffect");
+    }
+}
+
+/**
  * Remove the ammunition effect for the weapon.
  * 
- * @param {Weapon} weapon 
- * @param {Updates} updates 
+ * @param {{ weapon: Weapon, updates: Updates}} params
  */
 function removeAmmunitionEffect({ weapon, updates }) {
+    if (!isAmmunitionEffectsEnabled()) {
+        return;
+    }
+
     const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);
+    }
+}
+
+function isAmmunitionEffectsEnabled() {
+    return game.settings.get("pf2e-ranged-combat", "ammunitionEffectsEnable");
+}
+
+/**
+ * Show a warning about the ammunition effect. The warning will be displayed based on the user's preference.
+ * 
+ * @param {string} warningMessage which warning message to show
+ */
+function showWarning(warningMessage) {
+    const warningLevel = game.settings.get("pf2e-ranged-combat", "ammunitionEffectsWarningLevel");
+    if (warningLevel == postToChatConfig.full) {
+        new Dialog(
+            {
+                title: "PF2e Ranged Combat",
+                content: `<p>${localize(`warning.${warningMessage}.verbose`)}</p>`,
+                buttons: {
+                    "ok": {
+                        label: localize("warning.button.ok"),
+                    },
+                    "showSimple": {
+                        label: localize("warning.button.showSimple"),
+                        callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.simple)
+                    },
+                    "doNotShow": {
+                        label: localize("warning.button.doNotShow"),
+                        callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.none)
+                    }
+                }
+            }
+        ).render(true);
+    } else if (warningLevel == postToChatConfig.simple) {
+        ui.notifications.warn(localize(`warning.${warningMessage}.simple`));
     }
 }

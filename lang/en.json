@@ -119,6 +119,33 @@
                 "noAmmunitionSelected": "{weapon} has no ammunition selected",
                 "noAmmunitionRemaining": "{weapon} has no ammunition remaining"
             },
+            "effect": {
+                "config": {
+                    "enable": {
+                        "name": "Enable Ammunition Effects",
+                        "hint": "Override the system's ammunition effects with one that uses the previously-fired ammunition effects"
+                    },
+                    "warningLevel": {
+                        "name": "Ammunition Effects Warning Level",
+                        "hint": "The level of warning to show when ammunition effects may not apply as expected."
+                    }
+                },
+                "warning": {
+                    "notMatched": {
+                        "verbose": "Your weapon's current ammunition does not match the ammunition whose effect was applied to the damage roll. The weapon's ammunition may have been changed since its last attack roll.",
+                        "simple": "Weapon ammunition does not match ammunition effect."
+                    },
+                    "damageWithoutEffect": {
+                        "verbose": "Your weapon's current ammunition has an effect, but it was not applied to this damage roll. The weapon's ammunition may have change since its last attack roll, or damage may have been rolled without a prior attack roll.",
+                        "simple": "Weapon damage rolled without ammunition effect."
+                    },
+                    "button": {
+                        "ok": "OK",
+                        "showSimple": "OK (Show Simple Messages)",
+                        "doNotShow": "OK (Do Not Show Messages)"
+                    }
+                }
+            },
             "actions": {
                 "names": {
                     "reload": "Reload",
