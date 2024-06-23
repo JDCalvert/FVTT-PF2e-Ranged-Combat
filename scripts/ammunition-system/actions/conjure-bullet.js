@@ -77,8 +77,11 @@ export async function performConjureBullet(actor, token, weapon) {
         token.actor,
         CONJURE_BULLET_IMG,
         format("chatMessage", { token: token.name, weapon: weapon.name }),
-        localize("chatActionName"),
-        1,
+        {
+            actionName: localize("chatActionName"),
+            numActions: 1,
+            traits: ["magical", "manipulate"]
+        }
     );
 
     HookManager.call("reload", { weapon, updates });

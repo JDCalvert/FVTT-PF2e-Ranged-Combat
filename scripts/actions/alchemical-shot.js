@@ -87,8 +87,11 @@ async function performForActorAndWeapon(actor, action, weapon) {
         actor,
         bomb.img,
         format("pourBombIntoWeapon", { actor: actor.name, weapon: weapon.name, bomb: bomb.name }),
-        localize("alchemicalShot"),
-        2
+        {
+            actionName: localize("alchemicalShot"),
+            numActions: 2,
+            traits: ["manipulate"]
+        }
     );
 
     const updates = new Updates(actor);

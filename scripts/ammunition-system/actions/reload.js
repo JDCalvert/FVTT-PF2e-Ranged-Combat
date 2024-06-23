@@ -5,7 +5,7 @@ import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
 import { buildLoadedEffectName, checkFullyLoaded, isFullyLoaded, updateAmmunitionQuantity } from "../utils.js";
@@ -378,11 +378,10 @@ async function postReloadToChat(token, weapon, ammunitionName) {
         desc = `${desc}.`;
     }
 
-    await postToChat(
+    await postInteractToChat(
         token.actor,
         RELOAD_AMMUNITION_IMG,
         desc,
-        game.i18n.localize("PF2E.Actions.Interact.Title"),
         reloadActions <= 3 ? String(reloadActions) : "",
     );
 }

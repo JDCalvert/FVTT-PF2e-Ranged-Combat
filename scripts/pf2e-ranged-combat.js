@@ -23,6 +23,7 @@ import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js
 import { initialiseCarryTypeHandler } from "./thrown-weapons/change-carry-type.js";
 import { initialiseThrownWeaponCheck } from "./thrown-weapons/throw-weapon-check.js";
 import { initialiseThrownWeaponHandler } from "./thrown-weapons/throw-weapon-handler.js";
+import { initialiseTraits } from "./types/pf2e/trait.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 export const postToChatConfig = {
@@ -219,6 +220,8 @@ Hooks.on(
             }
         );
 
+        initialiseTraits();
+        
         initialiseAdvancedWeaponSystem();
         initialiseHuntPrey();
         initialiseChatMessageHooks();

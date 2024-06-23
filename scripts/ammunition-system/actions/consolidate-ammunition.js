@@ -1,6 +1,6 @@
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getItem, postToChat } from "../../utils/utils.js";
+import { getControlledActorAndToken, getItem, postInteractToChat } from "../../utils/utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key)
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key, data)
@@ -114,11 +114,10 @@ export async function consolidateRepeatingWeaponAmmunition() {
     }
 
     if (updates.hasChanges()) {
-        postToChat(
+        postInteractToChat(
             actor,
             ammunitionStacks[0].img,
             format("chatMessage", { token: token.name }),
-            game.i18n.localize("PF2E.Actions.Interact.Title")
         );
         await updates.handleUpdates();
     } else {

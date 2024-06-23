@@ -78,8 +78,11 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
                 ? `${format("huntTwoTargets", targetData)} ${remainingTargetsText}`
                 : `${format("huntOneTarget", targetData)} ${remainingTargetsText}`
         ,
-        huntPreyAction.name,
-        1
+        {
+            actionName: huntPreyAction.name,
+            numActions: 1,
+            traits: ["concentrate"]
+        }
     );
 
     const updates = new Updates(actor);

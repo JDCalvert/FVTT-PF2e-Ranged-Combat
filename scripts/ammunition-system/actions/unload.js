@@ -3,7 +3,7 @@ import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postToChat, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInteractToChat, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
 import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "../utils.js";
@@ -48,11 +48,10 @@ export async function performUnload(actor, token, weapon) {
             }
             if (magazineLoadedEffect) {
                 await unloadMagazine(actor, magazineLoadedEffect, updates);
-                postToChat(
+                postInteractToChat(
                     actor,
                     magazineLoadedEffect.img,
                     format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(magazineLoadedEffect, "ammunitionName"), weapon: weapon.name }),
-                    game.i18n.localize("PF2E.Actions.Interact.Title"),
                     "1"
                 );
             }
@@ -70,17 +69,16 @@ export async function performUnload(actor, token, weapon) {
                 moveAmmunitionToInventory(actor, ammunition, updates);
                 removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
             }
-            postToChat(
+            postInteractToChat(
                 actor,
                 ammunition.img,
                 format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: ammunition.name, weapon: weapon.name }),
-                game.i18n.localize("PF2E.Actions.Interact.Title"),
                 "1"
             );
         } else {
             if (conjuredRoundEffect) {
                 updates.delete(conjuredRoundEffect);
-                postToChat(
+                postInteractToChat(
                     actor,
                     conjuredRoundEffect.img,
                     format(
@@ -91,27 +89,24 @@ export async function performUnload(actor, token, weapon) {
                             weapon: weapon.name
                         }
                     ),
-                    game.i18n.localize("PF2E.Actions.Interact.Title"),
                     "1"
                 );
             } else if (loadedEffect) {
                 unloadAmmunition(actor, weapon, loadedEffect, updates);
-                postToChat(
+                postInteractToChat(
                     actor,
                     loadedEffect.img,
                     format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(loadedEffect, "ammunition").name, weapon: weapon.name }),
-                    game.i18n.localize("PF2E.Actions.Interact.Title"),
                     "1"
                 );
             }
         }
     } else {
         removeAmmunition(weapon, updates);
-        postToChat(
+        postInteractToChat(
             actor,
             loadedEffect.img,
             format("tokenUnloadsWeapon", { token: token.name, weapon: weapon.name }),
-            game.i18n.localize("PF2E.Actions.Interact.Title"),
             "1"
         );
     }

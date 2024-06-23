@@ -1,6 +1,7 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
+import { traits } from "../types/pf2e/trait.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
@@ -169,13 +170,23 @@ export async function postActionToChat(action) {
     }
 }
 
-export async function postToChat(actor, img, message, actionName = "", numActions = "") {
+export async function postInteractToChat(actor, img, message, numActions) {
     if (game.settings.get("pf2e-ranged-combat", "postActionToChat")) {
-        postMessage(actor, img, message, { actionName, numActions });
+        postMessage(
+            actor,
+            img,
+            message,
+            {
+                actionName: game.i18n.localize("PF2E.Actions.Interact.Title"),
+                numActions,
+                traits: ["manipulate"]
+            }
+        );
     }
 }
 
 /**
+ * Post a message to chat saying that something happened, only if the postActionToChat option is enabled.
  * 
  * @param {PF2eActor} actor 
  * @param {string} img 
@@ -183,11 +194,26 @@ export async function postToChat(actor, img, message, actionName = "", numAction
  * @param {{
  *      actionName?: string,
  *      numActions?: string,
- *      traits?: {
- *          name: string,
- *          label: string,
- *          description: string
- *      }[],
+ *      traits?: string[],
+ *      link? : string
+ * }} params 
+ */
+export async function postToChat(actor, img, message, params) {
+    if (game.settings.get("pf2e-ranged-combat", "postActionToChat")) {
+        postMessage(actor, img, message, params);
+    }
+}
+
+/**
+ * Post a message to chat saying that something happened
+ * 
+ * @param {PF2eActor} actor 
+ * @param {string} img 
+ * @param {string} message 
+ * @param {{
+ *      actionName?: string,
+ *      numActions?: string,
+ *      traits?: string[],
  *      link? : string
  * }} params 
  */
@@ -199,7 +225,7 @@ export async function postMessage(actor, img, message, params = {}) {
                 title: params.actionName || "",
                 glyph: String(params.numActions || "")
             },
-            traits: params.traits || []
+            traits: params.traits?.map(trait => traits.get(trait)) || []
         }
     );
 

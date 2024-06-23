@@ -3,7 +3,7 @@ import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
 import { selectAmmunition } from "./switch-ammunition.js";
@@ -130,7 +130,7 @@ export async function performReloadMagazine(actor, token, weapon) {
         );
     }
 
-    await postToChat(
+    await postInteractToChat(
         actor,
         RELOAD_MAGAZINE_IMG,
         format(
@@ -143,7 +143,6 @@ export async function performReloadMagazine(actor, token, weapon) {
                 maxCharges: ammo.system.uses.max
             }
         ),
-        game.i18n.localize("PF2E.Actions.Interact.Title"),
         String(numActions)
     );
 

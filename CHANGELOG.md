@@ -1,6 +1,11 @@
+## Unreleased
+### Fix
+- Add traits to action messages.
+
 ## 6.2.2 - 2024-06-19 (Pathfinder 2e 5.16.1/6.0.3)
 ### Fix
 - Add option to disable the module's ammunition effects and revert to the system's implementation.
+- Add warnings for ammunition effects when weapon ammunition does not match ammunition effect.
 
 ## 6.2.1 - 2024-06-16 (Pathfinder 2e 5.16.1/6.0.1)
 ### Fix

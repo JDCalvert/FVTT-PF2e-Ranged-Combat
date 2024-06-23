@@ -142,15 +142,9 @@ function postFakeOutMessage(actor, message, bonus) {
         {
             actionName: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.name"),
             numActions: "r",
-            traits: [
-                {
-                    slug: "visual",
-                    label: "PF2E.TraitVisual",
-                    description: game.i18n.localize("PF2E.TraitDescriptionVisual")
-                }
-            ],
+            traits: ["visual"],
             link: bonus ? "@UUID[Compendium.pf2e.other-effects.Item.AHMUpMbaVkZ5A1KX]" : null
-        }        
+        }
     );
 }
 
