@@ -177,6 +177,33 @@
                     "reload": "Przeładowanie",
                     "reloadMagazine": "Przeładuj Magazynek"
                 }
+            },
+            "effect": {
+                "config": {
+                    "enable": {
+                        "name": "Włącz efekty amunicji",
+                        "hint": "Zastąpienie systemowych efektów amunicji efektem, który wykorzystuje wcześniej wystrzeloną amunicję"
+                    },
+                    "warningLevel": {
+                        "name": "Poziom ostrzeżenia o skutkach amunicji",
+                        "hint": "Poziom ostrzeżenia pokazujący, że efekty amunicji mogą nie działać zgodnie z oczekiwaniami."
+                    }
+                },
+                "warning": {
+                    "notMatched": {
+                        "simple": "Amunicja do broni nie pasuje do efektu amunicji.",
+                        "verbose": "Aktualna amunicja broni nie zgadza się z amunicją, której efekt został zastosowany do rzutu na obrażenia. Amunicja broni mogła zostać zmieniona od czasu ostatniego rzutu ataku."
+                    },
+                    "damageWithoutEffect": {
+                        "simple": "Obrażenia zadawane przez broń bez efektu amunicji.",
+                        "verbose": "Aktualna amunicja broni ma efekt, ale nie został on zastosowany do tego rzutu na obrażenia. Amunicja broni mogła ulec zmianie od ostatniego rzutu ataku lub obrażenia mogły zostać zadane bez wcześniejszego rzutu ataku."
+                    },
+                    "button": {
+                        "ok": "OK",
+                        "showSimple": "OK (Pokaż proste komunikaty)",
+                        "doNotShow": "OK (Nie pokazuj komunikatów)"
+                    }
+                }
             }
         },
         "utils": {
@@ -227,6 +254,24 @@
             "rangersAnimalCompanion": "Zwierzęcy Towarzysz postaci {actor}",
             "linkedCompanion": "{companion} jest teraz towarzyszem {master}.",
             "noAnimalCompanionFeat": "{actor} nie posiada atutu łowcy Towarzysz Zwierząt."
+        },
+        "feat": {
+            "fakeOut": {
+                "config": {
+                    "dc": {
+                        "name": "ST Zmyłki",
+                        "enemyDC": "ST Wroga"
+                    }
+                },
+                "name": "Zmyłka",
+                "noTarget": "Musisz mieć wybrany pojedynczy cel.",
+                "result": {
+                    "success": "Zapewniasz sojusznikowi premię okolicznościową +{bonus} do jego testu.",
+                    "failure": "Nie udało ci się wesprzeć sojusznika.",
+                    "criticalFailure": "Twój sojusznik otrzymuje -1 karę okolicznościową do swojego testu."
+                },
+                "noWeapon": "{actor} nie dzierży naładowanej broni palnej ani kuszy."
+            }
         }
     }
 }
