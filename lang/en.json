@@ -52,7 +52,13 @@
             "huntOneTarget": "{token} makes {target1} their hunted prey.",
             "warningNoTarget": "No target selected.",
             "warningTooManyTargets": "You may only have {maxTargets} hunted prey.",
-            "versusPreyAttack": "Vs. prey's attacks"
+            "versusPreyAttack": "Vs. prey's attacks",
+            "precision": {
+                "attackNumber": "Attack on Hunted Prey",
+                "first": "First",
+                "second": "Second",
+                "third": "Third"
+            }
         },
         "linkCompanion": {
             "noAnimalCompanionFeat": "{actor} does not have the Animal Companion ranger feat.",

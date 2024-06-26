@@ -59,8 +59,8 @@ export async function linkCompanion() {
         ...rangersAnimalCompanionSource.flags,
         "pf2e-ranged-combat": {
             "master-id": actor.id,
-            "hunters-edge": huntersEdge?.slug || "none",
-            "preyAttackNumber": 1
+            "master-signature": actor.signature,
+            "hunters-edge": huntersEdge?.slug || "none"
         }
     };
 

@@ -1,5 +1,6 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
+import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { traits } from "../types/pf2e/trait.js";
 
@@ -241,7 +242,7 @@ export async function postMessage(actor, img, message, params = {}) {
         {
             type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
             speaker: ChatMessage.getSpeaker({ actor }),
-            flavor: flavor + (params.link || ""),
+            flavor: flavor + (params.link ? `@UUID[${params.link}]` : ""),
             content,
             flags: {
                 "pf2e-ranged-combat": {
