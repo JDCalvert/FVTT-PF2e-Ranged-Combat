@@ -4,7 +4,7 @@ import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getControlledActorAndToken, getItem, getItemFromActor, postActionToChat, postToChat, showWarning } from "../utils/utils.js";
-import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
+import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
@@ -105,7 +105,7 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
 
     const updates = new Updates(actor);
 
-    updateSystemItems(actor, updates, huntPreyAction);
+    updateSystemItems(actor, updates);
 
     // Remove any existing hunted prey effects
     const existingHuntedPreyEffect = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
@@ -149,80 +149,26 @@ function getTargets(maxTargets) {
  * @param {PF2eActor} actor 
  * @param {Updates} updates
  */
-function updateSystemItems(actor, updates, huntPreyAction) {
-    updateHuntPreyAction(updates, huntPreyAction);
-
-    updateOutwitFeature(actor, updates);
-    updatePrecisionFeature(actor, updates);
-}
-
-/**
- * @param {Updates} updates
- * @param {any} huntPreyAction 
- */
-function updateHuntPreyAction(updates, huntPreyAction) {
-    updates.update(huntPreyAction, { "system.rules": HUNT_PREY_RULES });
-}
-
-/**
- * Update the Outwit feature so the AC bonus will trigger when the target attacks us.
- * 
- * @param {PF2eActor} actor 
- * @param {Updates} updates 
- */
-function updateOutwitFeature(actor, updates) {
-    const outwitFeature = getItemFromActor(actor, OUTWIT_FEATURE_ID);
-    if (outwitFeature) {
-        updates.update(
-            outwitFeature,
-            {
-                "system.rules": OUTWIT_RULES,
-                "flags.pf2e-ranged-combat.hunter-signature": actor.signature
-            }
-        );
-    }
+function updateSystemItems(actor, updates) {
+    updateRules(actor, updates, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES);
+    updateRules(actor, updates, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_RULES);
+    updateRules(actor, updates, OUTWIT_FEATURE_ID, OUTWIT_RULES);
+    updateRules(actor, updates, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES);
+    updateRules(actor, updates, PRECISION_FEATURE_ID, PRECISION_RULES);
+    updateRules(actor, updates, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES);
+    updateRules(actor, updates, FLURRY_FEATURE_ID, FLURRY_RULES);
+    updateRules(actor, updates, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES);
 }
 
 /**
  * @param {PF2eActor} actor
  * @param {Updates} updates
+ * @param {string} itemId 
+ * @param {any[]} rules 
  */
-function updatePrecisionFeature(actor, updates) {
-    const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
-    if (precisionFeature) {
-        updates.update(precisionFeature, { "system.rules": PRECISION_RULES });
-    }
-
-    const masterfulHunterPrecisionFeature = getItemFromActor(actor, MASTERFUL_HUNTER_PRECISION_FEATURE_ID);
-    if (masterfulHunterPrecisionFeature) {
-        updates.update(
-            masterfulHunterPrecisionFeature,
-            {
-                "system.rules": [
-                    {
-                        "key": "DamageDice",
-                        "selector": "strike-damage",
-                        "category": "precision",
-                        "dieSize": "d8",
-                        "diceNumber": "ternary(gte(@actor.level, 19), 2, 1)",
-                        "predicate": [
-                            "hunted-prey",
-                            "precision:second-attack"
-                        ]
-                    },
-                    {
-                        "key": "DamageDice",
-                        "selector": "strike-damage",
-                        "category": "precision",
-                        "dieSize": "d8",
-                        "diceNumber": "ternary(gte(@actor.level, 19), 1, 0)",
-                        "predicate": [
-                            "hunted-prey",
-                            "precision:third-attack"
-                        ]
-                    }
-                ]
-            }
-        );
+function updateRules(actor, updates, itemId, rules) {
+    const item = getItemFromActor(actor, itemId);
+    if (item) {
+        updates.update(item, { "system.rules": rules });
     }
 }

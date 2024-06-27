@@ -1,7 +1,7 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { Updates } from "../utils/updates.js";
 import { getControlledActor, getFlag, getItem, getItemFromActor, showWarning } from "../utils/utils.js";
-import { ANIMAL_COMPANION_RANGER_FEAT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID } from "./constants.js";
+import { ANIMAL_COMPANION_RANGER_FEAT_ID, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.linkCompanion." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.linkCompanion." + key, data);
@@ -29,12 +29,12 @@ export async function linkCompanion() {
     // Delete any link on an existing animal companion
     const existingCompanionId = getFlag(actor, "animalCompanionId");
     if (existingCompanionId === companion.id) {
-        deleteRangersAnimalCompanionFeat(companion, actor.id, companionUpdates);
+        deleteRangersAnimalCompanionFeats(companion, actor.id, companionUpdates);
     } else if (existingCompanionId) {
-        const existingCompanion = await fromUuid(`Actor.${existingCompanionId}`);
+        const existingCompanion = game.actors.get(existingCompanionId);
         if (existingCompanion) {
             const existingCompanionUpdates = new Updates(existingCompanion);
-            deleteRangersAnimalCompanionFeat(existingCompanion, actor.id, existingCompanionUpdates);
+            deleteRangersAnimalCompanionFeats(existingCompanion, actor.id, existingCompanionUpdates);
             existingCompanionUpdates.handleUpdates();
         }
     }
@@ -66,6 +66,11 @@ export async function linkCompanion() {
 
     companionUpdates.create(rangersAnimalCompanionSource);
 
+    // If we have the Masterful Companion feat, add the Masterful Animal Companion feat to the companion
+    if (getItemFromActor(actor, MASTERFUL_COMPANION_RANGER_FEAT_ID)) {
+        await createMasterfulAnimalCompanionFeat(actor, companionUpdates);
+    }
+
     await companionUpdates.handleUpdates();
 
     // Notify that the link has been successfully made
@@ -85,16 +90,43 @@ function getTarget() {
 }
 
 /**
+ * Create the Masterful Animal Companion feat
+ */
+export async function createMasterfulAnimalCompanionFeat(actor, companionUpdates) {
+    const masterfulAnimalCompanionSource = await getItem(MASTERFUL_ANIMAL_COMPANION_FEAT_ID);
+    masterfulAnimalCompanionSource.name = format("masterfulAnimalCompanion", { actor: actor.name });
+    masterfulAnimalCompanionSource.flags = {
+        ...masterfulAnimalCompanionSource.flags,
+        "pf2e-ranged-combat": {
+            "master-id": actor.id,
+            "master-signature": actor.signature
+        }
+    };
+
+    companionUpdates.create(masterfulAnimalCompanionSource);
+}
+
+/**
+ * Delete any existing feats relating to this being the ranger's animal companion
  * 
  * @param {PF2eActor} creature
  * @param {string} masterId
  * @param {Updates} updates
  */
-function deleteRangersAnimalCompanionFeat(creature, masterId, updates) {
-    const rangersAnimalCompanionFeat = creature.itemTypes.feat
-        .find(feat => feat.sourceId === RANGERS_ANIMAL_COMPANION_FEAT_ID && getFlag(feat, "master-id") === masterId);
+function deleteRangersAnimalCompanionFeats(creature, masterId, updates) {
+    deleteAnimalCompanionFeat(creature, masterId, RANGERS_ANIMAL_COMPANION_FEAT_ID, updates);
+    deleteAnimalCompanionFeat(creature, masterId, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, updates);
+}
 
-    if (rangersAnimalCompanionFeat) {
-        updates.delete(rangersAnimalCompanionFeat);
+/**
+ * @param {PF2eActor} creature 
+ * @param {string} masterId 
+ * @param {string} featId 
+ * @param {Updates} updates 
+ */
+export function deleteAnimalCompanionFeat(creature, masterId, featId, updates) {
+    const feat = getItemFromActor(creature, featId);
+    if (feat && getFlag(feat, "master-id") == masterId) {
+        updates.delete(feat);
     }
 }

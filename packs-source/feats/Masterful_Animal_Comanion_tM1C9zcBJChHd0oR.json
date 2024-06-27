@@ -1,44 +1,60 @@
 {
-  "name": "Ranger's Animal Companion",
+  "name": "Masterful Animal Comanion",
   "type": "feat",
   "effects": [],
   "system": {
     "description": {
       "gm": "",
-      "value": "<p>This creature is a ranger's animal companion and gains its master's @UUID[Compendium.pf2e.actionspf2e.JYi4MnsdFu618hPm]{Hunt Prey} benefits, and their hunter's edge benefit.</p>"
+      "value": "<p>This creature is a ranger's animal comanion and gains its master's @UUID[Compendium.pf2e.classfeatures.RVZC4wVy5B5W2OeS]{Masterful Hunter} benefits.</p>"
     },
     "rules": [
       {
-        "key": "RollOption",
-        "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
-        "option": "hunted-prey",
-        "toggleable": true
-      },
-      {
-        "key": "RollOption",
-        "option": "edge:{item|flags.pf2e-ranged-combat.hunters-edge}"
-      },
-      {
         "key": "FlatModifier",
         "label": "PF2E.SpecificRule.HuntPrey.SeekHuntedPrey",
-        "predicate": [
-          "action:seek",
-          "hunted-prey"
-        ],
         "selector": "perception",
+        "value": 4,
         "type": "circumstance",
-        "value": 2
+        "predicate": [
+          "hunted-prey",
+          "action:seek",
+          {
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
+          }
+        ]
       },
       {
         "key": "FlatModifier",
         "label": "PF2E.SpecificRule.HuntPrey.TrackHuntedPrey",
-        "predicate": [
-          "action:track",
-          "hunted-prey"
-        ],
         "selector": "survival",
         "type": "circumstance",
-        "value": 2
+        "value": 4,
+        "predicate": [
+          "hunted-prey",
+          "action:track",
+          {
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "RollOption",
+        "domain": "ranged-attack-roll",
+        "option": "ignore-range-penalty:3",
+        "predicate": [
+          "hunted-prey",
+          {
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
+          }
+        ]
       },
       {
         "key": "MultipleAttackPenalty",
@@ -48,19 +64,31 @@
         "predicate": [
           "edge:flurry",
           "hunted-prey",
-          "agile"
+          {
+            "not": "agile"
+          },
+          {
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
+          }
         ]
       },
       {
         "key": "MultipleAttackPenalty",
         "label": "pf2e-ranged-combat.huntPrey.huntersEdge.flurry",
         "selector": "attack",
-        "value": -3,
+        "value": -1,
         "predicate": [
           "edge:flurry",
           "hunted-prey",
+          "agile",
           {
-            "not": "agile"
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
           }
         ]
       },
@@ -73,10 +101,16 @@
           "stealth"
         ],
         "type": "circumstance",
-        "value": 2,
+        "value": 4,
         "predicate": [
           "edge:outwit",
-          "hunted-prey"
+          "hunted-prey",
+          {
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
+          }
         ]
       },
       {
@@ -84,11 +118,17 @@
         "label": "pf2e-ranged-combat.huntPrey.huntersEdge.outwit",
         "selector": "skill-check",
         "type": "circumstance",
-        "value": 2,
+        "value": 4,
         "predicate": [
           "edge:outwit",
           "hunted-prey",
-          "action:recall-knowledge"
+          "action:recall-knowledge",
+          {
+            "or": [
+              "proficiency:master",
+              "proficiency:legendary"
+            ]
+          }
         ]
       },
       {
@@ -96,44 +136,21 @@
         "label": "pf2e-ranged-combat.huntPrey.huntersEdge.outwit",
         "selector": "ac",
         "type": "circumstance",
-        "value": 1,
+        "value": 2,
         "predicate": [
           "edge:outwit",
           {
             "or": [
               "hunted-prey",
-              "origin:prey:{flags.pf2e-ranged-combat.master-signature}"
+              "origin:prey:{item|flags.pf2e-ranged-combat.master-signature}"
+            ]
+          },
+          {
+            "gte": [
+              "defense:unarmored:rank",
+              3
             ]
           }
-        ]
-      },
-      {
-        "key": "RollOption",
-        "domain": "all",
-        "option": "precision",
-        "label": "pf2e-ranged-combat.huntPrey.precision.attackNumber",
-        "toggleable": true,
-        "alwaysActive": true,
-        "suboptions": [
-          {
-            "label": "pf2e-ranged-combat.huntPrey.precision.first",
-            "value": "first-attack"
-          },
-          {
-            "label": "pf2e-ranged-combat.huntPrey.precision.second",
-            "value": "second-attack"
-          },
-          {
-            "label": "pf2e-ranged-combat.huntPrey.precision.third",
-            "value": "third-attack"
-          },
-          {
-            "label": "pf2e-ranged-combat.huntPrey.precision.third",
-            "value": "subsequent-attack"
-          }
-        ],
-        "predicate": [
-          "edge:precision"
         ]
       },
       {
@@ -141,17 +158,29 @@
         "selector": "strike-damage",
         "category": "precision",
         "dieSize": "d8",
-        "diceNumber": "ternary(gte(@actor.level, 19), 3, ternary(gte(@actor.level, 11), 2, 1))",
+        "diceNumber": "ternary(gte(@actor.level, 19), 2, 1)",
         "predicate": [
-          "hunted-prey",
           "edge:precision",
-          "precision:first-attack"
+          "hunted-prey",
+          "precision:second-attack"
+        ]
+      },
+      {
+        "key": "DamageDice",
+        "selector": "strike-damage",
+        "category": "precision",
+        "dieSize": "d8",
+        "diceNumber": "ternary(gte(@actor.level, 19), 1, 0)",
+        "predicate": [
+          "edge:precision",
+          "hunted-prey",
+          "precision:third-attack"
         ]
       }
     ],
     "slug": null,
     "_migration": {
-      "version": 0.917,
+      "version": 0.926,
       "lastMigration": null
     },
     "traits": {
@@ -182,24 +211,22 @@
     },
     "location": null
   },
+  "_id": "tM1C9zcBJChHd0oR",
   "img": "icons/sundries/books/book-red-exclamation.webp",
   "folder": null,
+  "sort": 0,
   "ownership": {
     "default": 0,
     "6cYJNd43VitcuYqD": 3
   },
-  "flags": {
-    "core": {}
-  },
+  "flags": {},
   "_stats": {
     "systemId": "pf2e",
     "systemVersion": "5.16.1",
     "coreVersion": "11.315",
-    "createdTime": 1707129874334,
-    "modifiedTime": 1719529128475,
+    "createdTime": 1719519806150,
+    "modifiedTime": 1719529584176,
     "lastModifiedBy": "6cYJNd43VitcuYqD"
   },
-  "_id": "bmDVg2hU3CSAZGJ8",
-  "sort": 0,
-  "_key": "!items!bmDVg2hU3CSAZGJ8"
+  "_key": "!items!tM1C9zcBJChHd0oR"
 }

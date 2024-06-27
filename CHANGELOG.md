@@ -1,6 +1,7 @@
 ## Unreleased
 ### Fix
 - Add traits to action messages.
+- Rewrite Hunt Prey automation.
 
 ## 6.2.2 - 2024-06-19 (Pathfinder 2e 5.16.1/6.0.3)
 ### Fix
