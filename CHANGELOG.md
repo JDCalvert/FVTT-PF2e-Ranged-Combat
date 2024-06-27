@@ -1,7 +1,10 @@
-## Unreleased
-### Fix
-- Add traits to action messages.
+## 6.3.0 - 2024-06-28 (Pathfinder 2e 5.16.1)
+### Features
 - Rewrite Hunt Prey automation.
+- Add traits to action messages.
+
+### Fix
+- Conjure Round auxiliary option will no longer appear on melee weapons.
 
 ## 6.2.2 - 2024-06-19 (Pathfinder 2e 5.16.1/6.0.3)
 ### Fix
