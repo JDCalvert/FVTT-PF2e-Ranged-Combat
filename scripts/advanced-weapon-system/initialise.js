@@ -1,12 +1,13 @@
 import { buildAuxiliaryActions } from "../ammunition-system/auxiliary-actions.js";
-import { disableAmmoConsumption } from "../ammunition-system/disable-ammo-consumption.js";
+import { isTargetHuntedPrey } from "../hunt-prey/hunted-prey-hook.js";
+import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { transformWeapon } from "../utils/weapon-utils.js";
 
 export function initialiseAdvancedWeaponSystem() {
 
-    // Disable the PF2e system's ammunition consumption
+    // Wrapper around preparing strikes
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareStrike",
@@ -14,7 +15,43 @@ export function initialiseAdvancedWeaponSystem() {
             const strike = wrapper(...args);
 
             buildAuxiliaryActions(strike);
-            disableAmmoConsumption(strike);
+
+            const actor = args[0]?.actor;
+
+            strike.variants = strike.variants.map(
+                variant => {
+                    return {
+                        ...variant,
+                        roll: params => {
+                            // Disable the system's ammunition consumption - we handle it ourselves
+                            params.consumeAmmo = false;
+
+                            // If our current target is our hunted prey, add the "hunted-prey" roll option
+                            params.options ??= [];
+                            if (isTargetHuntedPrey(actor)) {
+                                params.options.push("hunted-prey");
+                            }
+
+                            return variant.roll(params);
+                        }
+                    };
+                }
+            );
+
+            strike.attack = strike.roll = strike.variants[0].roll;
+
+            // When we roll damage, set the hunted-prey roll option if we're targeting our prey
+            for (const method of ["damage", "critical"]) {
+                const damage = strike[method];
+                strike[method] = async (params) => {
+                    if (isTargetHuntedPrey(actor)) {
+                        params.options ??= [];
+                        params.options.push("hunted-prey");
+                    }
+    
+                    return damage(params);
+                };
+            }
 
             return strike;
         },
@@ -28,6 +65,12 @@ export function initialiseAdvancedWeaponSystem() {
         async function(wrapper, ...args) {
             const context = args[1];
             const actor = context.actor;
+
+            // If the current target is our hunted prey, add the "hunted-prey" roll option
+            if (isTargetHuntedPrey(actor)) {
+                context.options.add("hunted-prey");
+            }
+
             const contextWeapon = context.item; // Either WeaponPF2e (for a character) or MeleePF2e (for an NPC)
 
             // If we don't have all the information we need, or this isn't an attack roll,
@@ -58,7 +101,7 @@ export function initialiseAdvancedWeaponSystem() {
                 const updates = new Updates(actor);
                 HookManager.call("weapon-attack", { weapon, updates, context, roll });
                 await updates.handleUpdates();
-            }            
+            }
 
             return roll;
         },
@@ -83,37 +126,54 @@ export function initialiseAdvancedWeaponSystem() {
                 return;
             }
 
-            if (!(flags.origin?.type == "weapon" || flags.origin?.type == "melee")) {
-                return;
-            }
-
-            const uuid = flags.origin?.uuid;
-            if (!uuid) {
-                return;
-            }
-
-            const item = await fromUuid(uuid);
-            if (!item) {
-                return;
-            }
-
-            const weapon = transformWeapon(item);
-            if (!weapon) {
-                return;
-            }
-
-            const updates = new Updates(item.actor);
+            const updates = new Updates(actor);
 
             HookManager.call(
-                "weapon-damage",
+                "damage-roll",
                 {
-                    weapon,
+                    actor,
                     target: message.target?.actor,
                     updates
                 }
             );
 
+            const weapon = await getWeapon(flags);
+            if (weapon) {
+                HookManager.call(
+                    "weapon-damage",
+                    {
+                        weapon,
+                        target: message.target?.actor,
+                        updates
+                    }
+                );
+            }
+
             updates.handleUpdates();
         }
     );
+}
+
+/**
+ * Find the weapon used for the attack on the message flags
+ * 
+ * @param {any} flags 
+ * @returns {Promise<Weapon | null>}
+ */
+async function getWeapon(flags) {
+    if (!(flags.origin?.type == "weapon" || flags.origin?.type == "melee")) {
+        return null;
+    }
+
+    const uuid = flags.origin?.uuid;
+    if (!uuid) {
+        return null;
+    }
+
+    const item = await fromUuid(uuid);
+    if (!item) {
+        return null;
+    }
+
+    return transformWeapon(item);
 }

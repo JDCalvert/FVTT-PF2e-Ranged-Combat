@@ -303,12 +303,12 @@ function canSwitchChamber(weapon) {
  * @returns 
  */
 function canConjureBullet(weapon) {
-    if (isFullyLoaded(weapon)) {
+    const conjureBulletAction = getItemFromActor(weapon.actor, CONJURE_BULLET_ACTION_ID);
+    if (!conjureBulletAction) {
         return false;
     }
 
-    const conjureBulletAction = getItemFromActor(weapon.actor, CONJURE_BULLET_ACTION_ID);
-    if (!conjureBulletAction) {
+    if (!canReload(weapon)) {
         return false;
     }
 
