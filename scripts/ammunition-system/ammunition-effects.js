@@ -102,12 +102,12 @@ function handleWeaponDamage({ weapon, updates }) {
 
     if (ammunitionEffect) {
         const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
-        if (weaponAmmunition?.sourceId === effectAmmunition?.sourceId) {
+        if (weaponAmmunition?.sourceId != effectAmmunition?.sourceId) {
             showWarning("notMatched");
         }
 
         removeAmmunitionEffect({ weapon, updates });
-    } else if (weaponAmmunition?.rules) {
+    } else if (weaponAmmunition?.rules?.length) {
         showWarning("damageWithoutEffect");
     }
 }
