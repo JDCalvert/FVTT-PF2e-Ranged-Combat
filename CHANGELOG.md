@@ -1,4 +1,4 @@
-## Unreleased - 2024-06-28 (Pathfinder 2e 5.16.1)
+## 6.3.1 - 2024-06-28 (Pathfinder 2e 5.16.1/6.0.4)
 ### Fix
 - Fix warnings about ammunition effects displaying incorrectly.
 
