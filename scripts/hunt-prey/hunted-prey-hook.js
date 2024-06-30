@@ -58,7 +58,7 @@ export function initialiseHuntPrey() {
                 this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, FLURRY_RULES, MASTERFUL_HUNTER_FLURRY_RULES].flat();
             }
 
-            wrapper(...args);
+            return wrapper(...args);
         }
     );
 
@@ -92,7 +92,7 @@ export function initialiseHuntPrey() {
                     });
             }
 
-            wrapper(...args);
+            return wrapper(...args);
         },
         "WRAPPER"
     );
@@ -125,7 +125,7 @@ export function initialiseHuntPrey() {
                     );
             }
 
-            wrapper(...args);
+            return wrapper(...args);
         },
         "WRAPPER"
     );

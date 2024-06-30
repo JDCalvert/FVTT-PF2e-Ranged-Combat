@@ -18,22 +18,20 @@ export function initialiseAdvancedWeaponSystem() {
 
             const actor = args[0]?.actor;
 
-            strike.variants = strike.variants.map(
+            strike.variants.forEach(
                 variant => {
-                    return {
-                        ...variant,
-                        roll: params => {
-                            // Disable the system's ammunition consumption - we handle it ourselves
-                            params.consumeAmmo = false;
+                    const roll = variant.roll;
+                    variant.roll = params => {
+                        // Disable the system's ammunition consumption - we handle it ourselves
+                        params.consumeAmmo = false;
 
-                            // If our current target is our hunted prey, add the "hunted-prey" roll option
+                        // If our current target is our hunted prey, add the "hunted-prey" roll option
+                        if (isTargetHuntedPrey(actor)) {
                             params.options ??= [];
-                            if (isTargetHuntedPrey(actor)) {
-                                params.options.push("hunted-prey");
-                            }
-
-                            return variant.roll(params);
+                            params.options.push("hunted-prey");
                         }
+
+                        return roll(params);
                     };
                 }
             );
@@ -43,12 +41,12 @@ export function initialiseAdvancedWeaponSystem() {
             // When we roll damage, set the hunted-prey roll option if we're targeting our prey
             for (const method of ["damage", "critical"]) {
                 const damage = strike[method];
-                strike[method] = async (params) => {
+                strike[method] = async params => {
                     if (isTargetHuntedPrey(actor)) {
                         params.options ??= [];
                         params.options.push("hunted-prey");
                     }
-    
+
                     return damage(params);
                 };
             }
