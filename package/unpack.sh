@@ -1,5 +1,5 @@
 # Set up FVTT CLI to point to this folder
-fvtt configure set dataPath E:/Foundry/Data/dev/foundrydata-v12-dev
+fvtt configure set dataPath E:/Foundry/Data/dev/foundrydata-v11-dev
 fvtt package workon "pf2e-ranged-combat" --type "Module"
 
 rm -r packs-source

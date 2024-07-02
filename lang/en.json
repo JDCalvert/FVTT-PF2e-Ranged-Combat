@@ -23,12 +23,12 @@
                 "hint": "For weapons with a reload of at least 1, prevent attack rolls using that weapon unless you have the loaded effect for that weapon."
             },
             "advancedAmmunitionSystemPlayer": {
-                "name": "Advanced Ammunition System (Player)",
-                "hint": "Track loaded ammunition for reloadable and repeating weapons. This overrides Prevent Firing Weapon if not Loaded."
+                "name": "Advanced Ammunition System",
+                "hint": "Player characters only. Track loaded ammunition for reloadable and repeating weapons. This overrides Prevent Firing Weapon if not Loaded."
             },
             "advancedThrownWeaponSystemPlayer": {
-                "name": "Advanced Thrown Weapon System (Player)",
-                "hint": "Handle thrown weapons being dropped after use, and require another weapon to be drawn before another attack."
+                "name": "Advanced Thrown Weapon System",
+                "hint": "Player characters only. Handle thrown weapons being dropped after use, and require another weapon to be drawn before another attack."
             },
             "requiredPermissionToShowMessages": {
                 "name": "Minimum Permission to See Messages",
@@ -37,6 +37,39 @@
             "hideTokenIcons": {
                 "name": "Hide Token Effect Icons",
                 "hint": "Hide the token icons for effects created by this module."
+            },
+            "category": {
+                "chatControls": {
+                    "header": "Chat Controls",
+                    "description": {
+                        "main": "Settings related to posting to chat.",
+                        "full": "Full: post the full action or item.",
+                        "simple": "Simple: post a small message describing what happened.",
+                        "none": "None: don't post a message."
+                    }
+                },
+                "ammunitionSystem": {
+                    "header": "Ammunition System",
+                    "description": {
+                        "line1": "Controls how the module checks and handles ammunition when making ranged attacks.",
+                        "line2": "Note that the Advanced Ammunition System option here applies only to player character-type actors. It can be enabled for an NPC using the NPC Weapon Configuration macro included with the module."
+                    }
+                },
+                "ammunitionEffects": {
+                    "header": "Ammunition Effects",
+                    "description": "When enabled, the module overrides the sytem's handling of ammunition effects. When firing a weapon using ammunition with an effect, an effect is applied to the next damage roll using that weapon with the effects of the ammunition. Changing the weapon's ammunition between firing and rolling damage will apply the effects from the ammunition that was fired, not the weapon's selected ammunition."
+                },
+                "advancedThrownWeaponSystem": {
+                    "header": "Advanced Thrown Weapon System",
+                    "description": {
+                        "line1": "When enabled, the module will handle stacks of thrown weapons (e.g. knives and bombs) so drawing/sheathing/stowing one will create a new stack containing one item in the new state. The rest of the stack will be left unchanged. If there is already a stack of that item in the new state, the item will be moved to that stack.",
+                        "line2": "Note that the option here applies only to player character-type actors. It can be enabled for an NPC using the NPC Weapon Configuration macro included with the module."
+                    }
+                },
+                "miscellaneous": {
+                    "header": "Miscellaneous",
+                    "description": "Other settings from the module that don't belong anywhere else."
+                }
             }
         },
         "huntPrey": {
@@ -272,7 +305,8 @@
                 "config": {
                     "dc": {
                         "name": "Fake Out DC",
-                        "enemyDC": "Enemy DC"
+                        "hint": "When using the Fake Out action, the DC to roll against. The standard Aid DC was 20 before the remaster, and is 15 after the remaster, although a popular house-rule is to use the enemy's AC.",
+                        "enemyDC": "Enemy AC"
                     }
                 },
                 "name": "Fake Out",

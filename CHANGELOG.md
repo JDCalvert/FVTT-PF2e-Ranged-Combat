@@ -1,3 +1,7 @@
+## 6.3.3 - 2024-07-02 (Pathfinder 2e 5.16.1/6.0.4)
+- Update translations.
+- Reorganise settings into categories.
+
 ## 6.3.2 - 2024-06-30 (Pathfinder 2e 5.16.1/6.0.4)
 ### Fix
 - Fix issues with applying effects.
