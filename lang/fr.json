@@ -32,6 +32,11 @@
             "preventFireNotLoaded": {
                 "name": "Empêcher de tirer avec l'arme si elle n'est pas chargée",
                 "hint": "Pour les armes avec rechargement de 1 ou plus, empêchez les jets d'attaque avec cette arme à moins que vous n'ayez l'effet rechargement pour cette arme."
+            },
+            "postToChat": {
+                "none": "Aucun",
+                "simple": "Simple",
+                "full": "Complet"
             }
         },
         "huntPrey": {
@@ -46,7 +51,19 @@
             "warningTooManyTargets": "Vous ne pouvez avoir que {maxTargets} proie(s).",
             "maxTargetsOne": "une",
             "shareWithTwo": "Il peut partager l'effet avec deux alliés.",
-            "huntOneTarget": "{token} fait de {target1} sa proie."
+            "huntOneTarget": "{token} fait de {target1} sa proie.",
+            "precision": {
+                "attackNumber": "Attaque sur la proie",
+                "first": "Première",
+                "second": "Deuxième",
+                "third": "Troisième",
+                "subsequent": "Suivante"
+            },
+            "huntersEdge": {
+                "flurry": "Déluge",
+                "outwit": "Ruse",
+                "precision": "Précision"
+            }
         },
         "thrownWeapons": {
             "warningNotEquipped": "Vous n'avez pas équipé votre {weapon} !",
@@ -78,8 +95,20 @@
             },
             "ammunitionSelect": {
                 "title": "Choisir la munition",
-                "header": "Choisir quelle munition utiliser.",
-                "loadedAmmunition": "Munition chargée"
+                "header": {
+                    "loadedAmmunition": "Munition chargée",
+                    "current": "Actuelle",
+                    "equipped": "Équipée"
+                },
+                "loadedAmmunition": "Munition chargée",
+                "action": {
+                    "unload": "Choisissez quelle munition n'est plus utilisée.",
+                    "fire": "Choisissez quelle munition tirer.",
+                    "switch": "Choisissez quelle munition utiliser désormais."
+                },
+                "option": {
+                    "setAsAmmunition": "Définir comme munition"
+                }
             },
             "check": {
                 "weaponNotLoaded": "{weapon} n'est pas chargé(e).",
@@ -136,7 +165,8 @@
                     "tokenReloadsWeapon": "{token} recharge sa/son {weapon}",
                     "withAmmunition": "avec {ammunition}.",
                     "warningAlreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
-                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger."
+                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger.",
+                    "warningNoReloadableCapacityWeapons": "Vous ne disposez pas d'armes rechargeables avec le trait capacité."
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "Vous n'avez pas d'armes utilisant des munitions.",
@@ -149,10 +179,41 @@
                     "tokenUnloadsWeapon": "{token} décharge sa/son {weapon}",
                     "noLoadedWeapons": "Vous n'avez pas d'arme chargée.",
                     "warningNotLoaded": "{weapon} n'est pas chargé(e) !"
+                },
+                "names": {
+                    "unload": "Décharger",
+                    "reload": "Recharger",
+                    "nextChamber": "Chambre suivante",
+                    "reloadMagazine": "Recharger le chargeur"
                 }
             },
             "fireConjuredRound": "{actor} tire sa balle conjurée.",
-            "fireWeaponRepeating": "{actor} utilise un(e) {ammunition} (Il en reste {remaining}/{capacity})."
+            "fireWeaponRepeating": "{actor} utilise un(e) {ammunition} (Il en reste {remaining}/{capacity}).",
+            "effect": {
+                "config": {
+                    "enable": {
+                        "name": "Autoriser les effets des munitions",
+                        "hint": "Remplacer les effets des munitions du système avec une qui utilise les effets des munitions précédemment tirées"
+                    },
+                    "warningLevel": {
+                        "name": "Niveau d'avertissement des effets des munitions",
+                        "hint": "Le niveau d'avertissement pour montrer lorsque les effets des munitions ne s'appliquent pas comme prévu."
+                    }
+                },
+                "warning": {
+                    "button": {
+                        "ok": "Ok",
+                        "doNotShow": "Ok (ne plus montrer les messages)",
+                        "showSimple": "Ok (montrer les messages simples)"
+                    },
+                    "damageWithoutEffect": {
+                        "simple": "Dégâts des armes lancés sans les effets des munitions."
+                    }
+                }
+            },
+            "itemSelect": {
+                "options": "Options"
+            }
         },
         "utils": {
             "singleCharacterSelected": "Vous ne devez choisir qu'un personnage.",
@@ -196,6 +257,27 @@
                 "pourBombIntoWeapon": "{actor} verse le contenu de {bomb} dans sa/son {weapon}.",
                 "alchemicalShot": "Tir alchimique"
             }
+        },
+        "feat": {
+            "fakeOut": {
+                "noTarget": "Vous ne pouvez sélectionner qu'une cible.",
+                "config": {
+                    "dc": {
+                        "enemyDC": "DD de l'ennemi"
+                    }
+                },
+                "result": {
+                    "criticalFailure": "Votre allié subit une pénalité de circonstances de -1 à son test.",
+                    "failure": "Vous ne parvenez pas à aider votre allié.",
+                    "success": "Vous accordez à votre allié un bonus de circonstances de +{bonus} à son test."
+                }
+            }
+        },
+        "linkCompanion": {
+            "rangersAnimalCompanion": "Compagnon animal de {actor}",
+            "linkedCompanion": "Le compagnon est désormais le compagnon de {master}.",
+            "noAnimalCompanionFeat": "{actor} ne possède pas le don Compagnon animal du rôdeur.",
+            "noTarget": "Vous devez choisir une cible unique pour qu'elle devienne votre compagnon animal."
         }
     }
 }
