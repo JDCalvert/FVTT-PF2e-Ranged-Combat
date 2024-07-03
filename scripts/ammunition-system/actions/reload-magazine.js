@@ -97,19 +97,27 @@ export async function performReloadMagazine(actor, token, weapon) {
     // Get a magazine from the existing ammunition and create an effect to represent that magazine
     const magazineLoadedEffectSource = await getItem(MAGAZINE_LOADED_EFFECT_ID);
     setEffectTarget(magazineLoadedEffectSource, weapon);
-
-    magazineLoadedEffectSource.flags["pf2e-ranged-combat"] = {
-        ...magazineLoadedEffectSource.flags["pf2e-ranged-combat"],
-        name: `${magazineLoadedEffectSource.name} (${ammo.name})`,
-        capacity: ammo.system.uses.max,
-        remaining: ammo.system.uses.value,
-        ammunitionName: ammo.name,
-        ammunitionImg: ammo.img,
-        ammunitionItemId: ammo.id,
-        ammunitionSourceId: ammo.sourceId
-    };
-
-    magazineLoadedEffectSource.name = `${magazineLoadedEffectSource.name} (${ammo.name}) (${ammo.system.uses.value}/${ammo.system.uses.max})`;
+    mergeObject(
+        magazineLoadedEffectSource,
+        {
+            "flags.pf2e-ranged-combat": {
+                "name": magazineLoadedEffectSource.name,
+                "capacity": ammo.system.uses.max,
+                "remaining": ammo.system.uses.value,
+                "ammunitionName": ammo.name,
+                "ammunitionImg": ammo.img,
+                "ammunitionItemId": ammo.id,
+                "ammunitionSourceId": ammo.sourceId
+            }
+        }
+    );
+    mergeObject(
+        magazineLoadedEffectSource,
+        {
+            "name": `${magazineLoadedEffectSource.name} (${ammo.system.uses.value}/${ammo.system.uses.max})`,
+            "system.description.value": `${magazineLoadedEffectSource.system.description.value}<p>@UUID[${ammo.sourceId}]</p>`
+        }
+    );
 
     updates.create(magazineLoadedEffectSource);
 

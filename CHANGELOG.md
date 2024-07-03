@@ -1,3 +1,7 @@
+## 6.3.4 - 2024-07-03 (Pathfinder 2e 5.16.1/6.0.4)
+### Fix
+- Moved ammunition information from effect names to the description.
+
 ## 6.3.3 - 2024-07-02 (Pathfinder 2e 5.16.1/6.0.4)
 - Update translations.
 - Reorganise settings into categories.

@@ -72,15 +72,17 @@ export async function loadAlchemicalCrossbow() {
     const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
     setEffectTarget(loadedBombEffectSource, weapon, false);
     setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
-    loadedBombEffectSource.flags["pf2e-ranged-combat"] = {
-        ...loadedBombEffectSource.flags["pf2e-ranged-combat"],
-        bombItemId: bomb.id,
-        bombSourceId: bomb.sourceId,
-        bombName: bomb.name,
-        bombCharges: 3,
-        bombMaxCharges: 3,
-        effectName: loadedBombEffectSource.name
-    };
+    mergeObject(
+        loadedBombEffectSource.flags["pf2e-ranged-combat"],
+        {
+            bombItemId: bomb.id,
+            bombSourceId: bomb.sourceId,
+            bombName: bomb.name,
+            bombCharges: 3,
+            bombMaxCharges: 3,
+            effectName: loadedBombEffectSource.name
+        }
+    );
     loadedBombEffectSource.name += ` (3/3)`;
 
     updates.create(loadedBombEffectSource);

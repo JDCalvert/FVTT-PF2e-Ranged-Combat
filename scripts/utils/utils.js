@@ -106,20 +106,19 @@ export function setEffectTarget(effectSource, item, adjustName = true) {
         effectSource.name = `${effectSource.name} (${item.name})`;
     }
 
-    effectSource.flags = {
-        ...effectSource.flags,
-        "pf2e-ranged-combat": {
-            ...effectSource.flags?.["pf2e-ranged-combat"],
-            targetId: item.id
-        },
-        pf2e: {
-            ...effectSource.flags?.pf2e,
-            rulesSelections: {
-                ...effectSource.flags?.pf2e?.rulesSelections,
-                weapon: item.id
+    mergeObject(
+        effectSource.flags,
+        {
+            "pf2e-ranged-combat": {
+                targetId: item.id
+            },
+            "pf2e": {
+                rulesSelections: {
+                    weapon: item.id
+                }
             }
         }
-    };
+    );
 
     if (game.settings.get("pf2e-ranged-combat", "hideTokenIcons")) {
         effectSource.system.tokenIcon.show = false;

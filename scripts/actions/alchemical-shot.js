@@ -106,24 +106,27 @@ async function performForActorAndWeapon(actor, action, weapon) {
     const alchemicalShotEffectSource = await getItem(ALCHEMICAL_SHOT_EFFECT_ID);
     setEffectTarget(alchemicalShotEffectSource, weapon);
     ensureDuration(actor, alchemicalShotEffectSource);
-    alchemicalShotEffectSource.name = `${alchemicalShotEffectSource.name} (${bomb.name})`;
-    alchemicalShotEffectSource.flags = {
-        ...alchemicalShotEffectSource.flags,
-        pf2e: {
-            ...alchemicalShotEffectSource.flags?.pf2e,
-            rulesSelections: {
-                ...alchemicalShotEffectSource.flags?.pf2e?.rulesSelections,
-                weapon: weapon.id,
-                damageType: bomb.damageType,
-                persistentDamageDice: bomb.level >= 17 ? 3 : bomb.level >= 11 ? 2 : 1
+    mergeObject(
+        alchemicalShotEffectSource,
+        {
+            name: `${alchemicalShotEffectSource.name} (${bomb.name})`,
+            flags: {
+                pf2e: {
+                    rulesSelections: {
+                        weapon: weapon.id,
+                        damageType: bomb.damageType,
+                        persistentDamageDice: bomb.level >= 17 ? 3 : bomb.level >= 11 ? 2 : 1
+                    }
+                },
+                "pf2e-ranged-combat": {
+                    fired: false
+                }
+            },
+            system: {
+                rules: alchemicalShotEffectSource.system.rules.filter(rule => rule.key != "ChoiceSet")
             }
-        },
-        "pf2e-ranged-combat": {
-            ...alchemicalShotEffectSource.flags?.["pf2e-ranged-combat"],
-            fired: false
         }
-    };
-    alchemicalShotEffectSource.system.rules = alchemicalShotEffectSource.system.rules.filter(rule => rule.key != "ChoiceSet");
+    );
 
     updates.create(alchemicalShotEffectSource);
     updates.update(

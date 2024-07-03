@@ -8,7 +8,10 @@ export class LoadedEffect {
 export class CapacityLoadedEffect extends LoadedEffect {
     /** @type string */
     originalName;
-    
+
+    /** @type string */
+    originalDescription;
+
     /** @type number */
     capacity;
 

@@ -69,16 +69,23 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
 
                 const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
                 setEffectTarget(ammunitionEffectSource, weapon, false);
-                ammunitionEffectSource.name = `${ammunition.name} (${weapon.name})`;
-                ammunitionEffectSource.img = ammunition.img;
-                ammunitionEffectSource.system.rules = ammunition.system.rules;
-                ammunitionEffectSource.system.description = ammunition.system.description;
-                ammunitionEffectSource.flags["pf2e-ranged-combat"].ammunition = {
-                    name: ammunition.name,
-                    img: ammunition.img,
-                    id: ammunition.id,
-                    sourceId: ammunition.sourceId
-                };
+                mergeObject(
+                    ammunitionEffectSource,
+                    {
+                        "name": `${ammunition.name} (${weapon.name})`,
+                        "img": ammunition.img,
+                        "system": {
+                            "rules": ammunition.system.rules,
+                            "description": ammunition.system.description
+                        },
+                        "flags.pf2e-ranged-combat.ammunition": {
+                            "name": ammunition.name,
+                            "img": ammunition.img,
+                            "id": ammunition.id,
+                            "sourceId": ammunition.sourceId
+                        }
+                    }
+                );
 
                 updates.create(ammunitionEffectSource);
             }

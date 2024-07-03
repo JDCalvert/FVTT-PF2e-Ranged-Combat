@@ -198,23 +198,19 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
         clearLoadedChamber(weapon, loadedAmmunition, updates);
     }
 
+    updates.floatyText(`${getFlag(loadedEffect, "originalName")} (${loadedFlags.loadedChambers}/${loadedFlags.capacity})`, false);
+    
     // If the weapon is still loaded, update the effect, otherwise remove it
     if (loadedFlags.ammunition.length) {
         updates.update(
             loadedEffect,
             {
                 "flags.pf2e-ranged-combat": loadedFlags,
-                "name": buildLoadedEffectName(loadedEffect)
+                "name": buildLoadedEffectName(loadedEffect),
+                "system.description.value": buildLoadedEffectDescription(loadedEffect)
             }
         );
-        updates.floatyText(`${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} (${loadedFlags.loadedChambers}/${loadedFlags.capacity})`, false);
     } else {
-        updates.update(
-            loadedEffect,
-            {
-                "name": `${getFlag(loadedEffect, "originalName")} ${loadedAmmunition.name} (0/${loadedFlags.capacity})`
-            }
-        );
         updates.delete(loadedEffect);
     }
 }
@@ -234,38 +230,53 @@ export function clearLoadedChamber(weapon, ammunition, updates) {
 }
 
 /**
- * For weapons with a capacity of more than one, build the 
+ * For weapons with a capacity of more than one, build the name to give the loaded effect.
  * 
  * @returns {string}
  */
 export function buildLoadedEffectName(loadedEffect) {
     /** @type LoadedEffect | CapacityLoadedEffect */
-    let loaded = getFlags(loadedEffect);
+    let flags = getFlags(loadedEffect);
 
     // We're not tracking specific ammunition, either because it's for a repeating weapon or
     // we're using the simple ammunition system
-    if (!loaded.ammunition || !loaded.ammunition.length) {
+    if (!flags.ammunition?.length) {
         return loadedEffect.name;
     }
 
     /** @type CapacityLoadedEffect */
-    const capacityLoaded = loaded;
+    const capacityLoaded = flags;
 
     const ammunitions = capacityLoaded.ammunition;
     const capacity = capacityLoaded.capacity;
     const originalName = capacityLoaded.originalName;
 
-    // We have exactly one type of ammunition, so the name is 
-    if (ammunitions.length === 1) {
-        const ammunition = ammunitions[0];
-        if (ammunition.level) {
-            return `${originalName} (${ammunition.name}) (${ammunition.quantity}/${capacity})`;
-        } else {
-            return `${originalName} (${ammunition.quantity}/${capacity})`;
-        }
-    } else {
-        const ammunitionCount = ammunitions.map(ammunition => ammunition.quantity).reduce((current, next) => current + next);
-        const ammunitionsDescription = ammunitions.map(ammunition => `${ammunition.name} x${ammunition.quantity}`).join(", ");
-        return `${originalName} (${ammunitionsDescription}) (${ammunitionCount}/${capacity})`;
+    const ammunitionCount = ammunitions.map(ammunition => ammunition.quantity).reduce((current, next) => current + next);
+    return `${originalName} (${ammunitionCount}/${capacity})`;
+}
+
+/**
+ * For weapons with a capacity of more than one, build the description to give the loaded effect.
+ * 
+ * @returns {string}
+ */
+export function buildLoadedEffectDescription(loadedEffect) {
+    /** @type LoadedEffect | CapacityLoadedEffect */
+    let loaded = getFlags(loadedEffect);
+
+    // We're not tracking specific ammunition, either because it's for a repeating weapon or
+    // we're using the simple ammunition system
+    if (!loaded.ammunition?.length) {
+        return loadedEffect.system.description.value;
     }
+
+    /** @type CapacityLoadedEffect */
+    const capacityLoaded = loaded;
+
+    return capacityLoaded.ammunition
+        .map(ammunition => `<p>@UUID[${ammunition.sourceId}] x${ammunition.quantity}</p>`)
+        .reduce(
+            (previous, current) => previous + current,
+            capacityLoaded.originalDescription ?? loadedEffect.system.description.value
+        );
 }
