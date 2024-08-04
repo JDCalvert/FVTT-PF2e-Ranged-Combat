@@ -1,3 +1,7 @@
+## 6.3.5 - 2024-08-04 (Pathfinder 2e 5.16.1/6.2.0)
+### Fix
+- Respect rolling with consumeAmmo set to false.
+
 ## 6.3.4 - 2024-07-03 (Pathfinder 2e 5.16.1/6.0.4)
 ### Fix
 - Moved ammunition information from effect names to the description.

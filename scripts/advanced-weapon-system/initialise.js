@@ -23,6 +23,11 @@ export function initialiseAdvancedWeaponSystem() {
                     const roll = variant.roll;
                     variant.roll = params => {
                         // Disable the system's ammunition consumption - we handle it ourselves
+                        if (params.consumeAmmo === false) {
+                            params.options ??= [];
+                            params.options.push("skip-post-processing")
+                        }
+                        
                         params.consumeAmmo = false;
 
                         // If our current target is our hunted prey, add the "hunted-prey" roll option
