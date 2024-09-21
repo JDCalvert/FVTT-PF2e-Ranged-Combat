@@ -6,7 +6,7 @@ import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelectDialog } from "../utils/item-select-dialog.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
@@ -31,9 +31,10 @@ export function checkFullyLoaded(weapon) {
  */
 export function isLoaded(weapon) {
     const loadedEffect = getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id);
+    const magazineLoadedEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
     const conjuredRoundEffect = getEffectFromActor(weapon.actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
 
-    return !!loadedEffect || !!conjuredRoundEffect;
+    return !!loadedEffect || !!conjuredRoundEffect || !!magazineLoadedEffect;
 }
 
 /**
