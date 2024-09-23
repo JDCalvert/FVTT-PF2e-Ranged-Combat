@@ -18,12 +18,12 @@
                 "hint": "Dla broni z cechą co najmmniej 'przeładuj 1', zapobiegaj rzutom na atak z tej broni, chyba że dla tej broni masz efekt 'załadowana'."
             },
             "advancedAmmunitionSystemPlayer": {
-                "name": "Zaawansowany System Amunicji (Gracz)",
-                "hint": "Śledź załadowaną amunicję do przeładowywalnych i powtarzalnych broni. Opcja nadpisuje opcję: Zapobiegaj Strzelaniu z Niezaładowanej Broni."
+                "name": "Zaawansowany System Amunicji",
+                "hint": "Tylko postacie graczy. Śledź załadowaną amunicję do przeładowywalnych i powtarzalnych broni. Opcja nadpisuje opcję: Zapobiegaj Strzelaniu z Niezaładowanej Broni."
             },
             "advancedThrownWeaponSystemPlayer": {
-                "name": "Zaawansowany System Broni Rzucanej (Gracz)",
-                "hint": "Obsługuj zasadę upuszczania broni rzucanej po użyciu, oraz potrzebę wyciągnięcia nowej broni przed kolejnym atakiem."
+                "name": "Zaawansowany System Broni Rzucanej",
+                "hint": "Tylko postacie graczy. Obsługuj zasadę upuszczania broni rzucanej po użyciu, oraz potrzebę wyciągnięcia nowej broni przed kolejnym atakiem."
             },
             "requiredPermissionToShowMessages": {
                 "name": "Minimum Uprawnień by Widzieć Wiadomości",
@@ -37,6 +37,39 @@
                 "none": "Brak",
                 "simple": "Proste",
                 "full": "Całosć"
+            },
+            "category": {
+                "chatControls": {
+                    "header": "Sterowanie czatem",
+                    "description": {
+                        "main": "Ustawienia związane z publikowaniem na czacie.",
+                        "full": "Pełny: opublikowanie pełnej akcji lub przedmiotu.",
+                        "simple": "Proste: opublikuj krótką wiadomość opisującą, co się stało.",
+                        "none": "Brak: nie publikuj wiadomości."
+                    }
+                },
+                "ammunitionSystem": {
+                    "header": "System amunicji",
+                    "description": {
+                        "line1": "Kontroluje sposób, w jaki moduł sprawdza i obsługuje amunicję podczas wykonywania ataków dystansowych.",
+                        "line2": "Należy pamiętać, że opcja zaawansowanego systemu amunicji dotyczy tylko aktorów typu postaci gracza. Można ją włączyć dla NPC za pomocą makra konfiguracji broni NPC dołączonego do modułu."
+                    }
+                },
+                "ammunitionEffects": {
+                    "header": "Efekty działania amunicji",
+                    "description": "Po włączeniu moduł zastępuje obsługę efektów amunicji przez system. Podczas strzelania z broni przy użyciu amunicji z efektem, efekt jest stosowany do następnego rzutu na obrażenia przy użyciu tej broni z efektami amunicji. Zmiana amunicji broni między strzałem a rzutem na obrażenia spowoduje zastosowanie efektów amunicji, która została wystrzelona, a nie wybranej amunicji broni."
+                },
+                "advancedThrownWeaponSystem": {
+                    "header": "Zaawansowany System Broni Rzucanej",
+                    "description": {
+                        "line1": "Po włączeniu moduł będzie obsługiwał stosy broni miotanych (np. noży i bomb), więc wyciągnięcie/schowanie/odłożenie jednej z nich spowoduje utworzenie nowego stosu zawierającego jeden przedmiot w nowym stanie. Reszta stosu pozostanie niezmieniona. Jeśli w nowym stanie istnieje już stos tego przedmiotu, zostanie on do niego przeniesiony.",
+                        "line2": "Należy pamiętać, że opcja ta dotyczy tylko aktorów typu postać gracza. Można ją włączyć dla NPC za pomocą makra konfiguracji broni NPC dołączonego do modułu."
+                    }
+                },
+                "miscellaneous": {
+                    "header": "Różne",
+                    "description": "Inne ustawienia z modułu, które nie pasują nigdzie indziej."
+                }
             }
         },
         "huntPrey": {
@@ -273,7 +306,8 @@
                 "config": {
                     "dc": {
                         "name": "ST Zmyłki",
-                        "enemyDC": "ST Wroga"
+                        "enemyDC": "KP Wroga",
+                        "hint": "Podczas korzystania z akcji Zmyłka, ST do rzucenia przeciwko celowi. Standardowy ST pomocy wynosił 20 przed remasterem i 15 po remasterze, choć popularną zasadą jest używanie KP przeciwnika."
                     }
                 },
                 "name": "Zmyłka",
