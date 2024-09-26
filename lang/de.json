@@ -1,1 +1,23 @@
-{}
+{
+    "pf2e-ranged-combat": {
+        "config": {
+            "schemaVersion": {
+                "hint": "Die aktuelle Version der Daten zu diesem Modul",
+                "name": ""
+            },
+            "postToChat": {
+                "none": "Keine",
+                "simple": "Einfach",
+                "full": "Vollständig"
+            },
+            "postAmmunitionToChat": {
+                "name": "Munition in den Chat stellen",
+                "hint": "Wenn Sie eine Fernkampfwaffe abfeuern, geben Sie entweder eine einfache Nachricht oder die gesamte Munition an."
+            },
+            "postActionToChat": {
+                "name": "Aktionen im Chat veröffentlichen",
+                "hint": "Wenn Sie Makros ausführen, die das Ausführen von Aktionen simulieren, senden Sie entweder eine einfache Nachricht oder die vollständige Aktion an den Chat."
+            }
+        }
+    }
+}
