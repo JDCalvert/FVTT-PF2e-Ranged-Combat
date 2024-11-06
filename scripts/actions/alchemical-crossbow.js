@@ -220,7 +220,7 @@ function getElementalBomb(actor, token) {
         weapon =>
             weapon.baseType === "alchemical-bomb"
             && DAMAGE_TYPES.some(element => weapon.traits.has(element))
-            && weapon.name.includes(localize("lesser"))
+            && (weapon.name.includes(localize("lesser")) || weapon.name.toLowerCase().includes("lesser") || weapon.flags.babele?.originalName?.includes("Lesser"))
             && weapon.quantity > 0,
         format("warningNoLesserAlchemicalBombs", { token: token.name })
     );
