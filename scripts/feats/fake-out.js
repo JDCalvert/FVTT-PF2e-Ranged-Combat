@@ -1,9 +1,10 @@
+import { MAGAZINE_LOADED_EFFECT_ID } from "../ammunition-system/constants.js";
 import { isLoaded } from "../ammunition-system/utils.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { getFlag, getItemFromActor, postActionToChat, postMessage, showWarning } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getItemFromActor, postActionToChat, postMessage, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
 const FAKE_OUT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Stydu9VtrhQZFZxt";
@@ -39,7 +40,41 @@ async function performFakeOut(actor, fakeOutFeat) {
     }
 
     // Find a wielded, loaded, firearm
-    const weapons = getWeapons(actor, weapon => weapon.isEquipped && isLoaded(weapon) && (weapon.group == "firearm" || weapon.group == "crossbow"));
+    const weapons = getWeapons(
+        actor,
+        weapon => {
+            if (!(weapon.group === "firearm" || weapon.group === "crossbow")) {
+                return false;
+            }
+
+            if (!weapon.isEquipped) {
+                return false;
+            }
+
+            if (useAdvancedAmmunitionSystem(actor)) {
+                if (weapon.isRepeating) {
+                    const loadedMagazineEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
+                    if (!loadedMagazineEffect) {
+                        return false;
+                    }
+
+                    if (getFlag(loadedMagazineEffect, "remaining") < 1) {
+                        return false;
+                    }
+                }
+
+                if (weapon.requiresLoading && !isLoaded(weapon)) {
+                    return false;
+                }
+            } else if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading) {
+                if (!isLoaded(weapon)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    );
     if (!weapons.length) {
         showWarning(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
         return;

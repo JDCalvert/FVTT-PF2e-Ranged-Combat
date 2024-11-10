@@ -1,3 +1,12 @@
+## 6.3.6 - 2024-11-10 (Pathfinder 2e 5.16.1/6.2.0)
+### Fix
+- Update French translation.
+- Update Polish translation.
+- Add German translation.
+- Add action roll option to Fake Out.
+- Fix loaded requirement of Fake Out to include repeating weapons.
+- Fix Alchemical Crossbow to use bomb slug instead of name for "lesser" check.
+
 ## 6.3.5 - 2024-08-04 (Pathfinder 2e 5.16.1/6.2.0)
 ### Fix
 - Respect rolling with consumeAmmo set to false.
