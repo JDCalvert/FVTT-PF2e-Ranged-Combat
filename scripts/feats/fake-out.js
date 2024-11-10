@@ -68,7 +68,7 @@ async function performFakeOut(actor, fakeOutFeat) {
     const strike = strikes[0];
 
     const params = {
-        options: ["skip-post-processing"],
+        options: ["skip-post-processing", "action:fake-out"],
     };
 
     if (hasDoneDamageTarget.includes(strike.item.id)) {
