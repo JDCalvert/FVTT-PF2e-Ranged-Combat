@@ -4,7 +4,7 @@ import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { getEffectFromActor, getFlag, getItemFromActor, postActionToChat, postMessage, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getItemFromActor, postActionToChat, postMessage, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
 const FAKE_OUT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Stydu9VtrhQZFZxt";
@@ -66,7 +66,7 @@ async function performFakeOut(actor, fakeOutFeat) {
                 if (weapon.requiresLoading && !isLoaded(weapon)) {
                     return false;
                 }
-            } else if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading) {
+            } else if (preventFiringWithoutLoading(weapon.actor) && weapon.requiresLoading) {
                 if (!isLoaded(weapon)) {
                     return false;
                 }

@@ -1,6 +1,6 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { getEffectFromActor, getFlag, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
@@ -45,7 +45,7 @@ async function checkLoaded({ weapon }) {
         }
 
         // If Prevent Firing Weapon if not Loaded is enabled, check the weapon is loaded
-        if (game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded") && weapon.requiresLoading) {
+        if (preventFiringWithoutLoading(weapon.actor) && weapon.requiresLoading) {
             if (!await checkLoadedRound(weapon)) {
                 return false;
             }

@@ -1,4 +1,8 @@
-## 6.3.6 - 2024-11-10 (Pathfinder 2e 5.16.1/6.2.0)
+## 6.3.7 - 2024-11-11 (Pathfinder 2e 5.16.1/6.6.2)
+### Fix
+- Split "Prevent Firing without Ammunition" setting into Player and NPC settings.
+
+## 6.3.6 - 2024-11-10 (Pathfinder 2e 5.16.1/6.6.2)
 ### Fix
 - Update French translation.
 - Update Polish translation.

@@ -273,6 +273,16 @@ export function useAdvancedAmmunitionSystem(actor) {
     }
 }
 
+export function preventFiringWithoutLoading(actor) {
+    if (actor.type === "character") {
+        return game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded");
+    } else if (actor.type === "npc") {
+        return game.settings.get("pf2e-ranged-combat", "preventFireNotLoadedNPC");
+    } else {
+        return false;
+    }
+}
+
 export function showWarning(warningMessage) {
     if (CONFIG.pf2eRangedCombat.silent) {
         return;

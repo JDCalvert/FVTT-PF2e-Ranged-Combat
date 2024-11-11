@@ -48,11 +48,15 @@
                         "none": "None: don't post a message."
                     }
                 },
-                "ammunitionSystem": {
-                    "header": "Ammunition System",
+                "ammunitionSystemPlayer": {
+                    "header": "Ammunition System (Player)",
+                    "description": "Controls how the module checks and handles ammunition when making ranged attacks with player characters."
+                },
+                "ammunitionSystemNPC": {
+                    "header": "Ammunition System (NPC)",
                     "description": {
-                        "line1": "Controls how the module checks and handles ammunition when making ranged attacks.",
-                        "line2": "Note that the Advanced Ammunition System option here applies only to player character-type actors. It can be enabled for an NPC using the NPC Weapon Configuration macro included with the module."
+                        "line1": "Controls how the module checks and handles ammunition when making ranged attacks with NPC characters.",
+                        "line2": "Note that the Advanced Ammunition System is controlled via the NPC Weapon Configuration macro included with the module."
                     }
                 },
                 "ammunitionEffects": {
