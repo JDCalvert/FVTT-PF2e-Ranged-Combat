@@ -128,7 +128,7 @@
             "value": "third-attack"
           },
           {
-            "label": "pf2e-ranged-combat.huntPrey.precision.third",
+            "label": "pf2e-ranged-combat.huntPrey.precision.subsequent",
             "value": "subsequent-attack"
           }
         ],
