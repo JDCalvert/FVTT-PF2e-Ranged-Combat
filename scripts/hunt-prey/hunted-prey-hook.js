@@ -1,6 +1,7 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
+import { User } from "../utils/user.js";
 import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
 import { FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID, SHARED_PREY_EFFECT_IDS } from "./constants.js";
 import { checkHuntPrey, performHuntPrey } from "./hunt-prey.js";
@@ -30,7 +31,7 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.effect.prototype._preCreate",
-        function(wrapper, ...args) {
+        function (wrapper, ...args) {
             const source = args[0];
             const sourceId = source.flags?.core?.sourceId;
 
@@ -66,7 +67,7 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.effect.prototype._onCreate",
-        function(wrapper, ...args) {
+        function (wrapper, ...args) {
             if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
                 const sourceActorName = this.actor.name;
                 const sourceActorID = this.actor.id;
@@ -101,7 +102,7 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.effect.prototype._onDelete",
-        function(wrapper, ...args) {
+        function (wrapper, ...args) {
             if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
                 canvas.scene.tokens
                     .map(token => token.actor)
@@ -133,7 +134,7 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.feat.prototype._onCreate",
-        function(wrapper, ...args) {
+        function (wrapper, ...args) {
             // If we're creating the Masterful Companion feat, also create the Masterful Animal Companion feat on our animal companion
             if (this.sourceId == MASTERFUL_COMPANION_RANGER_FEAT_ID) {
                 const animalCompanionId = getFlag(this.actor, "animalCompanionId");
@@ -152,7 +153,7 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.feat.prototype._onDelete",
-        function(wrapper, ...args) {
+        function (wrapper, ...args) {
             // If we're deleting the Masterful Companion feat, also delete the Masterful Animal Companion feat from our animal companion
             if (this.sourceId == MASTERFUL_COMPANION_RANGER_FEAT_ID) {
                 const animalCompanionId = getFlag(this.actor, "animalCompanionId");
@@ -172,12 +173,25 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "game.pf2e.effectTracker.constructor.prototype.onEncounterEnd",
-        async function(wrapper, encounter) {
+        async function (wrapper, encounter) {
             await wrapper(encounter);
 
             const actors = encounter.combatants.contents.flatMap((c) => c.actor ?? []);
             for (const actor of actors) {
                 resetPrecision(actor);
+            }
+        }
+    );
+
+    // When we select a token, update our hunted prey option
+    Hooks.on("controlToken", setHuntedPrey);
+
+    // When we target a token, update the hunted prey option
+    Hooks.on(
+        "targetToken",
+        user => {
+            if (user.isSelf) {
+                setHuntedPrey();
             }
         }
     );
@@ -239,6 +253,87 @@ export function initialiseHuntPrey() {
             }
         }
     );
+}
+
+async function setHuntedPrey() {
+    const targetedIds = game.user.targets.ids;
+
+    const controlledActors = new Set(canvas.tokens.controlled.map(token => token.actor).filter(actor => !!actor));
+    if (game.user.character) {
+        controlledActors.add(game.user.character);
+    }
+
+    for (const actor of controlledActors) {
+        // Only automatically update this actor if we are their preferred updater
+        if (!User.isPreferredUpdater(actor)) {
+            continue;
+        }
+
+        // The actor has the Hunt Prey action
+        const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
+        if (huntPreyAction) {
+            // If this actor has a hunted prey, tick the "Hunted Prey" box if all our targets are our hunted prey
+            const huntedPreyEffect = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
+            if (!huntedPreyEffect) {
+                continue;
+            }
+
+            const huntedPreyIds = getFlag(huntedPreyEffect, "targetIds");
+            if (!huntedPreyIds?.length) {
+                continue;
+            }
+
+            const allTargetsHuntedPrey = !!targetedIds.length && targetedIds.every(targetedId => huntedPreyIds.includes(targetedId));
+
+            const rules = huntPreyAction.toObject().system.rules;
+            const rule = rules.find(r =>
+                r.key === "RollOption"
+                && r.option === "hunted-prey"
+                && r.toggleable && r.value !== allTargetsHuntedPrey
+            );
+            if (rule) {
+                rule.value = allTargetsHuntedPrey;
+                huntPreyAction.update({ "system.rules": rules });
+            }
+        }
+
+        // The actor is the companion of an actor with Hunt Prey
+        const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
+        if (rangersAnimalCompanionFeat) {
+            const masterId = getFlag(rangersAnimalCompanionFeat, "master-id");
+            if (!masterId) {
+                continue;
+            }
+
+            const master = await fromUuid(`Actor.${masterId}`);
+            if (!master) {
+                continue;
+            }
+
+            const huntedPreyEffect = getItemFromActor(master, HUNTED_PREY_EFFECT_ID);
+            if (!huntedPreyEffect) {
+                continue;
+            }
+
+            const huntedPreyIds = getFlag(huntedPreyEffect, "targetIds");
+            if (!huntedPreyIds?.length) {
+                continue;
+            }
+
+            const allTargetsHuntedPrey = !!targetedIds.length && targetedIds.every(targetedId => huntedPreyIds.includes(targetedId));
+
+            const rules = rangersAnimalCompanionFeat.toObject().system.rules;
+            const rule = rules.find(r =>
+                r.key === "RollOption"
+                && r.option === "hunted-prey"
+                && r.toggleable && r.value !== allTargetsHuntedPrey
+            );
+            if (rule) {
+                rule.value = allTargetsHuntedPrey;
+                rangersAnimalCompanionFeat.update({ "system.rules": rules });
+            }
+        }
+    }
 }
 
 /**
