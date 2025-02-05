@@ -115,6 +115,7 @@ export async function performReloadMagazine(actor, token, weapon) {
         magazineLoadedEffectSource,
         {
             "name": `${magazineLoadedEffectSource.name} (${ammo.system.uses.value}/${ammo.system.uses.max})`,
+            "img": ammo.img,
             "system.description.value": `${magazineLoadedEffectSource.system.description.value}<p>@UUID[${ammo.sourceId}]</p>`
         }
     );

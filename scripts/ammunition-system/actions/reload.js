@@ -124,6 +124,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
             // Create the new loaded effect
             const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
             setEffectTarget(loadedEffectSource, weapon);
+
             updates.create(loadedEffectSource);
 
             await postReloadToChat(token, weapon);
@@ -196,7 +197,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
                 setEffectTarget(loadedEffectSource, weapon);
 
                 /** @type CapacityLoadedEffect */
-                mergeObject(
+                foundry.utils.mergeObject(
                     loadedEffectSource.flags["pf2e-ranged-combat"],
                     {
                         originalName: loadedEffectSource.name,
@@ -216,11 +217,12 @@ export async function performReload(actor, token, weapon, updates, options = {})
                 );
 
                 // We have to set the name and description after updating the flags, since otherwise
-                mergeObject(
+                foundry.utils.mergeObject(
                     loadedEffectSource,
                     {
                         "name": buildLoadedEffectName(loadedEffectSource),
                         "system.description.value": buildLoadedEffectDescription(loadedEffectSource),
+                        "img": ammo.img
                     }
                 );
             }
@@ -262,7 +264,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
             setEffectTarget(loadedEffectSource, weapon);
             loadedEffectSource.system.description.value += `<p>@UUID[${ammo.sourceId}]</p>`;
 
-            mergeObject(
+            foundry.utils.mergeObject(
                 loadedEffectSource.flags["pf2e-ranged-combat"],
                 {
                     ammunition: {
@@ -273,6 +275,8 @@ export async function performReload(actor, token, weapon, updates, options = {})
                     }
                 }
             );
+
+            loadedEffectSource.img = ammo.img;
 
             await postReloadToChat(token, weapon, ammo.name);
 
