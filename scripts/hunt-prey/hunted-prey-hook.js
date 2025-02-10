@@ -183,19 +183,6 @@ export function initialiseHuntPrey() {
         }
     );
 
-    // When we select a token, update our hunted prey option
-    Hooks.on("controlToken", setHuntedPrey);
-
-    // When we target a token, update the hunted prey option
-    Hooks.on(
-        "targetToken",
-        user => {
-            if (user.isSelf) {
-                setHuntedPrey();
-            }
-        }
-    );
-
     // At the start of the turn, reset the precision roll options to the first attack
     Hooks.on(
         "pf2e.startTurn",
@@ -253,87 +240,6 @@ export function initialiseHuntPrey() {
             }
         }
     );
-}
-
-async function setHuntedPrey() {
-    const targetedIds = game.user.targets.ids;
-
-    const controlledActors = new Set(canvas.tokens.controlled.map(token => token.actor).filter(actor => !!actor));
-    if (game.user.character) {
-        controlledActors.add(game.user.character);
-    }
-
-    for (const actor of controlledActors) {
-        // Only automatically update this actor if we are their preferred updater
-        if (!User.isPreferredUpdater(actor)) {
-            continue;
-        }
-
-        // The actor has the Hunt Prey action
-        const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
-        if (huntPreyAction) {
-            // If this actor has a hunted prey, tick the "Hunted Prey" box if all our targets are our hunted prey
-            const huntedPreyEffect = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
-            if (!huntedPreyEffect) {
-                continue;
-            }
-
-            const huntedPreyIds = getFlag(huntedPreyEffect, "targetIds");
-            if (!huntedPreyIds?.length) {
-                continue;
-            }
-
-            const allTargetsHuntedPrey = !!targetedIds.length && targetedIds.every(targetedId => huntedPreyIds.includes(targetedId));
-
-            const rules = huntPreyAction.toObject().system.rules;
-            const rule = rules.find(r =>
-                r.key === "RollOption"
-                && r.option === "hunted-prey"
-                && r.toggleable && r.value !== allTargetsHuntedPrey
-            );
-            if (rule) {
-                rule.value = allTargetsHuntedPrey;
-                huntPreyAction.update({ "system.rules": rules });
-            }
-        }
-
-        // The actor is the companion of an actor with Hunt Prey
-        const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
-        if (rangersAnimalCompanionFeat) {
-            const masterId = getFlag(rangersAnimalCompanionFeat, "master-id");
-            if (!masterId) {
-                continue;
-            }
-
-            const master = await fromUuid(`Actor.${masterId}`);
-            if (!master) {
-                continue;
-            }
-
-            const huntedPreyEffect = getItemFromActor(master, HUNTED_PREY_EFFECT_ID);
-            if (!huntedPreyEffect) {
-                continue;
-            }
-
-            const huntedPreyIds = getFlag(huntedPreyEffect, "targetIds");
-            if (!huntedPreyIds?.length) {
-                continue;
-            }
-
-            const allTargetsHuntedPrey = !!targetedIds.length && targetedIds.every(targetedId => huntedPreyIds.includes(targetedId));
-
-            const rules = rangersAnimalCompanionFeat.toObject().system.rules;
-            const rule = rules.find(r =>
-                r.key === "RollOption"
-                && r.option === "hunted-prey"
-                && r.toggleable && r.value !== allTargetsHuntedPrey
-            );
-            if (rule) {
-                rule.value = allTargetsHuntedPrey;
-                rangersAnimalCompanionFeat.update({ "system.rules": rules });
-            }
-        }
-    }
 }
 
 /**

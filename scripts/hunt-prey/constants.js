@@ -76,7 +76,12 @@ export const HUNT_PREY_RULES = [
         "domain": "ranged-attack-roll",
         "option": "ignore-range-penalty:2",
         "predicate": [
-            "hunted-prey"
+            {
+                "or": [
+                    "hunted-prey",
+                    "target:mark:hunt-prey"
+                ]
+            }
         ]
     }
 ];

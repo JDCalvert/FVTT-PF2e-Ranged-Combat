@@ -122,6 +122,24 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
             "targetIds": targets.map(target => target.id)
         }
     };
+    huntedPreyEffectSource.system.rules = targets.map(
+        target => (
+            {
+                "key": "TokenMark",
+                "slug": "hunt-prey",
+                "uuid": target.document.uuid
+            }
+        )
+    );
+    huntedPreyEffectSource.system.rules.push(
+        {
+            "key": "RollOption",
+            "option": "hunted-prey",
+            "predicate": [
+                "target:mark:hunt-prey"
+            ]
+        }
+    );
 
     updates.create(huntedPreyEffectSource);
 

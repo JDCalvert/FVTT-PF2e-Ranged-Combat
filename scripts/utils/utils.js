@@ -97,7 +97,7 @@ export async function getItem(id) {
     const source = (await fromUuid(id)).toObject();
     source.flags.core ??= {};
     source.flags.core.sourceId = id;
-    source._id = randomID();
+    source._id = foundry.utils.randomID();
     return source;
 }
 
@@ -239,7 +239,7 @@ export async function postMessage(actor, img, message, params = {}) {
 
     await ChatMessage.create(
         {
-            type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+            type: CONST.CHAT_MESSAGE_STYLES.EMOTE,
             speaker: ChatMessage.getSpeaker({ actor }),
             flavor: flavor + (params.link ? `@UUID[${params.link}]` : ""),
             content,

@@ -1,3 +1,7 @@
+## 6.3.9 - 2025-02-10 (Pathfinder 2e 6.9.0)
+### Fix
+- Update Hunt Prey automation to use TokenMarks.
+
 ## 6.3.8 - 2025-02-05 (Pathfinder 2e 6.8.5)
 ### Fix
 - Fix ranger's animal companions' attack number label. (#207)
