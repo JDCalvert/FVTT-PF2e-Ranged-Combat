@@ -369,3 +369,11 @@ export const MASTERFUL_HUNTER_FLURRY_RULES = [
         ]
     }
 ];
+
+export const TOKEN_MARK_RULE = uuid => (
+    {
+        "key": "TokenMark",
+        "slug": "hunt-prey",
+        "uuid": uuid
+    }
+)

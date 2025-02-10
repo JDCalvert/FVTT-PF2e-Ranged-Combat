@@ -1,3 +1,8 @@
+## 6.3.10 - 2025-02-10 (Pathfinder 2e 6.9.0)
+### Fix
+- Fix some Hunt Prey bonuses not working correctly.
+- Fix uses of deprecated functions and constants.
+
 ## 6.3.9 - 2025-02-10 (Pathfinder 2e 6.9.0)
 ### Fix
 - Update Hunt Prey automation to use TokenMarks.

@@ -72,7 +72,7 @@ export async function loadAlchemicalCrossbow() {
     const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
     setEffectTarget(loadedBombEffectSource, weapon, false);
     setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
-    mergeObject(
+    foundry.utils.mergeObject(
         loadedBombEffectSource.flags["pf2e-ranged-combat"],
         {
             bombItemId: bomb.id,

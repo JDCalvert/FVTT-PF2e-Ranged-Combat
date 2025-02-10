@@ -58,7 +58,7 @@ export class Updates {
     update(item, update) {
         const existingUpdate = this.updates.find(updateItem => updateItem._id === item.id);
         if (existingUpdate) {
-            mergeObject(existingUpdate, update);
+            foundry.utils.mergeObject(existingUpdate, update);
         } else {
             this.updates.push(
                 {

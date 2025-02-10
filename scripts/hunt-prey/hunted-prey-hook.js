@@ -1,9 +1,8 @@
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { User } from "../utils/user.js";
 import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
-import { FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID, SHARED_PREY_EFFECT_IDS } from "./constants.js";
+import { FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID, SHARED_PREY_EFFECT_IDS, TOKEN_MARK_RULE } from "./constants.js";
 import { checkHuntPrey, performHuntPrey } from "./hunt-prey.js";
 import { createMasterfulAnimalCompanionFeat, deleteAnimalCompanionFeat } from "./link-companion.js";
 
@@ -31,32 +30,45 @@ export function initialiseHuntPrey() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.effect.prototype._preCreate",
-        function (wrapper, ...args) {
-            const source = args[0];
-            const sourceId = source.flags?.core?.sourceId;
+        async function (wrapper, ...args) {
+            if (SHARED_PREY_EFFECT_IDS.includes(this.sourceId)) {
+                let tokenMarkRules = [];
 
-            if (sourceId == HUNTERS_EDGE_PRECISION_EFFECT_ID) {
-                this._source.system.rules = [HUNT_PREY_RULES, PRECISION_RULES].flat();
-            }
+                const originActor = this.origin;
+                if (originActor) {
+                    const originHuntedPreyEffect = getItemFromActor(originActor, HUNTED_PREY_EFFECT_ID);
+                    if (originHuntedPreyEffect) {
+                        const targetIds = getFlag(originHuntedPreyEffect, "targetIds");
 
-            if (sourceId == MASTERFUL_HUNTER_PRECISION_EFFECT_ID) {
-                this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, PRECISION_RULES, MASTERFUL_HUNTER_PRECISION_RULES].flat();
-            }
+                        tokenMarkRules = canvas.scene.tokens
+                            .filter(token => targetIds.includes(token.id))
+                            .map(token => TOKEN_MARK_RULE(token.uuid));
+                    }
+                }
 
-            if (sourceId == HUNTERS_EDGE_OUTWIT_EFFECT_ID) {
-                this._source.system.rules = [HUNT_PREY_RULES, OUTWIT_RULES].flat();
-            }
+                if (this.sourceId == HUNTERS_EDGE_PRECISION_EFFECT_ID) {
+                    this._source.system.rules = [HUNT_PREY_RULES, PRECISION_RULES, tokenMarkRules].flat();
+                }
 
-            if (sourceId == MASTERFUL_HUNTER_OUTWIT_EFFECT_ID) {
-                this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, MASTERFUL_HUNTER_OUTWIT_RULES].flat();
-            }
+                if (this.sourceId == MASTERFUL_HUNTER_PRECISION_EFFECT_ID) {
+                    this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, PRECISION_RULES, MASTERFUL_HUNTER_PRECISION_RULES, tokenMarkRules].flat();
+                }
 
-            if (sourceId == HUNTERS_EDGE_FLURRY_EFFECT_ID) {
-                this._source.system.rules = [HUNT_PREY_RULES, FLURRY_RULES].flat();
-            }
+                if (this.sourceId == HUNTERS_EDGE_OUTWIT_EFFECT_ID) {
+                    this._source.system.rules = [HUNT_PREY_RULES, OUTWIT_RULES, tokenMarkRules].flat();
+                }
 
-            if (sourceId == MASTERFUL_HUNTER_FLURRY_EFFECT_ID) {
-                this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, FLURRY_RULES, MASTERFUL_HUNTER_FLURRY_RULES].flat();
+                if (this.sourceId == MASTERFUL_HUNTER_OUTWIT_EFFECT_ID) {
+                    this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, MASTERFUL_HUNTER_OUTWIT_RULES, tokenMarkRules].flat();
+                }
+
+                if (this.sourceId == HUNTERS_EDGE_FLURRY_EFFECT_ID) {
+                    this._source.system.rules = [HUNT_PREY_RULES, FLURRY_RULES, tokenMarkRules].flat();
+                }
+
+                if (this.sourceId == MASTERFUL_HUNTER_FLURRY_EFFECT_ID) {
+                    this._source.system.rules = [HUNT_PREY_RULES, MASTERFUL_HUNTER_RULES, FLURRY_RULES, MASTERFUL_HUNTER_FLURRY_RULES, tokenMarkRules].flat();
+                }
             }
 
             return wrapper(...args);

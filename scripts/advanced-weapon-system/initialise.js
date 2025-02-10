@@ -30,6 +30,11 @@ export function initialiseAdvancedWeaponSystem() {
 
                         params.consumeAmmo = false;
 
+                        // If our current target is our hunted prey, add the "hunted-prey" roll option
+                        if (isTargetHuntedPrey(actor)) {
+                            extraOptions.push("hunted-prey");
+                        }
+
                         if (extraOptions.length > 0) {
                             params.options = new Set([...(params.options ?? []), ...extraOptions]);
                         }
@@ -40,6 +45,17 @@ export function initialiseAdvancedWeaponSystem() {
             );
 
             strike.attack = strike.roll = strike.variants[0].roll;
+
+            // When we roll damage, set the hunted-prey roll option if we're targeting our prey
+            for (const method of ["damage", "critical"]) {
+                const damage = strike[method];
+                strike[method] = async params => {
+                    if (isTargetHuntedPrey(actor)) {
+                        params.options = new Set([...(params.options ?? []), "hunted-prey"]);
+                    }
+                    return damage(params);
+                };
+            }
 
             return strike;
         },
@@ -53,6 +69,11 @@ export function initialiseAdvancedWeaponSystem() {
         async function(wrapper, ...args) {
             const context = args[1];
             const actor = context.actor;
+
+            // If the current target is our hunted prey, add the "hunted-prey" roll option
+            if (isTargetHuntedPrey(actor)) {
+                context.options.add("hunted-prey");
+            }
 
             const contextWeapon = context.item; // Either WeaponPF2e (for a character) or MeleePF2e (for an NPC)
 

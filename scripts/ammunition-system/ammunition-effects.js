@@ -69,7 +69,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
 
                 const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
                 setEffectTarget(ammunitionEffectSource, weapon, false);
-                mergeObject(
+                foundry.utils.mergeObject(
                     ammunitionEffectSource,
                     {
                         "name": `${ammunition.name} (${weapon.name})`,

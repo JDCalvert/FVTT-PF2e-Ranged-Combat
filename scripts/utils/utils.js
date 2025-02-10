@@ -1,6 +1,5 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { traits } from "../types/pf2e/trait.js";
 
@@ -106,7 +105,7 @@ export function setEffectTarget(effectSource, item, adjustName = true) {
         effectSource.name = `${effectSource.name} (${item.name})`;
     }
 
-    mergeObject(
+    foundry.utils.mergeObject(
         effectSource.flags,
         {
             "pf2e-ranged-combat": {
