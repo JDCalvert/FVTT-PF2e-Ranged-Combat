@@ -116,6 +116,7 @@ export function characterWeaponTransform(weapon) {
     return {
         actor: weapon.actor,
         id: weapon.id,
+        slug: weapon.slug,
         weaponId: weapon.id,
         sourceId: weapon.sourceId,
         baseType: weapon.baseType,
@@ -158,6 +159,7 @@ function npcWeaponTransform(melee) {
         return {
             actor: weapon.actor,
             id: melee.id,
+            slug: weapon.slug,
             weaponId: weapon.id,
             sourceId: weapon.sourceId,
             baseType: weapon.baseType,
@@ -188,6 +190,7 @@ function npcWeaponTransform(melee) {
         return {
             actor: melee.actor,
             id: melee.id,
+            slug: "",
             weaponId: null,
             sourceId: null,
             baseType: null,

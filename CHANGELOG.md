@@ -1,3 +1,31 @@
+## 6.3.10 - 2025-02-10 (Pathfinder 2e 6.9.0)
+### Fix
+- Fix some Hunt Prey bonuses not working correctly.
+- Fix uses of deprecated functions and constants.
+
+## 6.3.9 - 2025-02-10 (Pathfinder 2e 6.9.0)
+### Fix
+- Update Hunt Prey automation to use TokenMarks.
+
+## 6.3.8 - 2025-02-05 (Pathfinder 2e 6.8.5)
+### Fix
+- Fix ranger's animal companions' attack number label. (#207)
+- Update the "loaded" effect image to match the loaded ammunition's image.
+- Revert Hunt Prey automation to original method.
+
+## 6.3.7 - 2024-11-11 (Pathfinder 2e 5.16.1/6.6.2)
+### Fix
+- Split "Prevent Firing without Ammunition" setting into Player and NPC settings.
+
+## 6.3.6 - 2024-11-10 (Pathfinder 2e 5.16.1/6.6.2)
+### Fix
+- Update French translation.
+- Update Polish translation.
+- Add German translation.
+- Add action roll option to Fake Out.
+- Fix loaded requirement of Fake Out to include repeating weapons.
+- Fix Alchemical Crossbow to use bomb slug instead of name for "lesser" check.
+
 ## 6.3.5 - 2024-08-04 (Pathfinder 2e 5.16.1/6.2.0)
 ### Fix
 - Respect rolling with consumeAmmo set to false.

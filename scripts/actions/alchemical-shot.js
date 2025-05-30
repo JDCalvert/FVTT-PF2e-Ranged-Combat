@@ -106,7 +106,7 @@ async function performForActorAndWeapon(actor, action, weapon) {
     const alchemicalShotEffectSource = await getItem(ALCHEMICAL_SHOT_EFFECT_ID);
     setEffectTarget(alchemicalShotEffectSource, weapon);
     ensureDuration(actor, alchemicalShotEffectSource);
-    mergeObject(
+    foundry.utils.mergeObject(
         alchemicalShotEffectSource,
         {
             name: `${alchemicalShotEffectSource.name} (${bomb.name})`,

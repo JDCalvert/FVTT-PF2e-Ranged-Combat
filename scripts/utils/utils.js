@@ -1,6 +1,5 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { traits } from "../types/pf2e/trait.js";
 
@@ -97,7 +96,7 @@ export async function getItem(id) {
     const source = (await fromUuid(id)).toObject();
     source.flags.core ??= {};
     source.flags.core.sourceId = id;
-    source._id = randomID();
+    source._id = foundry.utils.randomID();
     return source;
 }
 
@@ -106,7 +105,7 @@ export function setEffectTarget(effectSource, item, adjustName = true) {
         effectSource.name = `${effectSource.name} (${item.name})`;
     }
 
-    mergeObject(
+    foundry.utils.mergeObject(
         effectSource.flags,
         {
             "pf2e-ranged-combat": {
@@ -239,7 +238,7 @@ export async function postMessage(actor, img, message, params = {}) {
 
     await ChatMessage.create(
         {
-            type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+            type: CONST.CHAT_MESSAGE_STYLES.EMOTE,
             speaker: ChatMessage.getSpeaker({ actor }),
             flavor: flavor + (params.link ? `@UUID[${params.link}]` : ""),
             content,
@@ -268,6 +267,16 @@ export function useAdvancedAmmunitionSystem(actor) {
         return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
     } else if (actor.type === "npc") {
         return getFlag(actor, "enableAdvancedAmmunitionSystem");
+    } else {
+        return false;
+    }
+}
+
+export function preventFiringWithoutLoading(actor) {
+    if (actor.type === "character") {
+        return game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded");
+    } else if (actor.type === "npc") {
+        return game.settings.get("pf2e-ranged-combat", "preventFireNotLoadedNPC");
     } else {
         return false;
     }

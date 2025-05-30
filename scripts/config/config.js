@@ -97,6 +97,20 @@ export function initialiseConfigurationSettings() {
         }
     );
 
+
+    game.settings.register(
+        "pf2e-ranged-combat",
+        "preventFireNotLoadedNPC",
+        {
+            name: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.name"),
+            hint: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.hint"),
+            scope: "world",
+            config: true,
+            type: Boolean,
+            default: false
+        }
+    );
+
     game.settings.register(
         "pf2e-ranged-combat",
         "ammunitionEffectsEnable",
@@ -213,10 +227,18 @@ export function initialiseConfigurationSettings() {
             html.find('div[data-setting-id="pf2e-ranged-combat.preventFireNotLoaded"]')
                 ?.before(
                     headerTemplate(
-                        localize("ammunitionSystem.header"),
+                        localize("ammunitionSystemPlayer.header"),
+                        `<p class="notes">${localize("ammunitionSystemPlayer.description")}</p>`,
+                    )
+                );
+
+            html.find('div[data-setting-id="pf2e-ranged-combat.preventFireNotLoadedNPC"]')
+                ?.before(
+                    headerTemplate(
+                        localize("ammunitionSystemNPC.header"),
                         `
-                            <p class="notes">${localize("ammunitionSystem.description.line1")}</p>
-                            <p class="notes">${localize("ammunitionSystem.description.line2")}</p>
+                            <p class="notes">${localize("ammunitionSystemNPC.description.line1")}</p>
+                            <p class="notes">${localize("ammunitionSystemNPC.description.line2")}</p>
                         `,
                     )
                 );

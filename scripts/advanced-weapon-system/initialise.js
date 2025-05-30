@@ -22,18 +22,21 @@ export function initialiseAdvancedWeaponSystem() {
                 variant => {
                     const roll = variant.roll;
                     variant.roll = params => {
+                        const extraOptions = [];
                         // Disable the system's ammunition consumption - we handle it ourselves
                         if (params.consumeAmmo === false) {
-                            params.options ??= [];
-                            params.options.push("skip-post-processing")
+                            extraOptions.push("skip-post-processing");
                         }
-                        
+
                         params.consumeAmmo = false;
 
                         // If our current target is our hunted prey, add the "hunted-prey" roll option
                         if (isTargetHuntedPrey(actor)) {
-                            params.options ??= [];
-                            params.options.push("hunted-prey");
+                            extraOptions.push("hunted-prey");
+                        }
+
+                        if (extraOptions.length > 0) {
+                            params.options = new Set([...(params.options ?? []), ...extraOptions]);
                         }
 
                         return roll(params);
@@ -48,10 +51,8 @@ export function initialiseAdvancedWeaponSystem() {
                 const damage = strike[method];
                 strike[method] = async params => {
                     if (isTargetHuntedPrey(actor)) {
-                        params.options ??= [];
-                        params.options.push("hunted-prey");
+                        params.options = new Set([...(params.options ?? []), "hunted-prey"]);
                     }
-
                     return damage(params);
                 };
             }

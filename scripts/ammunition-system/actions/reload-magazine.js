@@ -97,7 +97,7 @@ export async function performReloadMagazine(actor, token, weapon) {
     // Get a magazine from the existing ammunition and create an effect to represent that magazine
     const magazineLoadedEffectSource = await getItem(MAGAZINE_LOADED_EFFECT_ID);
     setEffectTarget(magazineLoadedEffectSource, weapon);
-    mergeObject(
+    foundry.utils.mergeObject(
         magazineLoadedEffectSource,
         {
             "flags.pf2e-ranged-combat": {
@@ -111,10 +111,11 @@ export async function performReloadMagazine(actor, token, weapon) {
             }
         }
     );
-    mergeObject(
+    foundry.utils.mergeObject(
         magazineLoadedEffectSource,
         {
             "name": `${magazineLoadedEffectSource.name} (${ammo.system.uses.value}/${ammo.system.uses.max})`,
+            "img": ammo.img,
             "system.description.value": `${magazineLoadedEffectSource.system.description.value}<p>@UUID[${ammo.sourceId}]</p>`
         }
     );

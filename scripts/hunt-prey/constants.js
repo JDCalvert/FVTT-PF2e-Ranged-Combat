@@ -76,7 +76,12 @@ export const HUNT_PREY_RULES = [
         "domain": "ranged-attack-roll",
         "option": "ignore-range-penalty:2",
         "predicate": [
-            "hunted-prey"
+            {
+                "or": [
+                    "hunted-prey",
+                    "target:mark:hunt-prey"
+                ]
+            }
         ]
     }
 ];
@@ -364,3 +369,11 @@ export const MASTERFUL_HUNTER_FLURRY_RULES = [
         ]
     }
 ];
+
+export const TOKEN_MARK_RULE = uuid => (
+    {
+        "key": "TokenMark",
+        "slug": "hunt-prey",
+        "uuid": uuid
+    }
+)

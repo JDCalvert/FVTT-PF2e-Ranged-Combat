@@ -72,7 +72,7 @@ export async function loadAlchemicalCrossbow() {
     const loadedBombEffectSource = await getItem(LOADED_BOMB_EFFECT_ID);
     setEffectTarget(loadedBombEffectSource, weapon, false);
     setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
-    mergeObject(
+    foundry.utils.mergeObject(
         loadedBombEffectSource.flags["pf2e-ranged-combat"],
         {
             bombItemId: bomb.id,
@@ -220,7 +220,7 @@ function getElementalBomb(actor, token) {
         weapon =>
             weapon.baseType === "alchemical-bomb"
             && DAMAGE_TYPES.some(element => weapon.traits.has(element))
-            && weapon.name.includes(localize("lesser"))
+            && weapon.slug.includes("lesser")
             && weapon.quantity > 0,
         format("warningNoLesserAlchemicalBombs", { token: token.name })
     );

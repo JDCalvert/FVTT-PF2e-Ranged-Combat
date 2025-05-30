@@ -4,7 +4,7 @@ import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getControlledActorAndToken, getItem, getItemFromActor, postActionToChat, postToChat, showWarning } from "../utils/utils.js";
-import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
+import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TOKEN_MARK_RULE, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
@@ -115,13 +115,20 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
 
     // Add the new effect
     const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
-    huntedPreyEffectSource.name = `${huntedPreyEffectSource.name} (${targetNames.join(", ")})`;
-    huntedPreyEffectSource.flags = {
-        ...huntedPreyEffectSource.flags,
-        "pf2e-ranged-combat": {
-            "targetIds": targets.map(target => target.id)
+    foundry.utils.mergeObject(
+        huntedPreyEffectSource,
+        {
+            "name": `${huntedPreyEffectSource.name} (${targetNames.join(", ")})`,
+            "flags": {
+                "pf2e-ranged-combat": {
+                    "targetIds": targets.map(target => target.id)
+                }
+            },
+            "system": {
+                "rules": targets.map(target => TOKEN_MARK_RULE(target.document.uuid))
+            }
         }
-    };
+    );
 
     updates.create(huntedPreyEffectSource);
 
