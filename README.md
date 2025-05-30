@@ -118,4 +118,4 @@ Enable the Advanced Ammunition System, as described above, for PCs.
 Enable the Advanced Thrown Weapon System, as described above, for PCs.
 
 ### Minimum Permission to See Messages (default: None)
-When the module generates a message for an action being performed (e.g. reload, hunt prey etc), the message will only appear for uses with at least the permission level set here.
+When the module generates a message for an action being performed (e.g. reload, hunt prey etc), the message will only appear for users with at least the permission level set here.
