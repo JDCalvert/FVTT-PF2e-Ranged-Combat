@@ -3,47 +3,47 @@
         "config": {
             "schemaVersion": {
                 "name": "Wersja schematu",
-                "hint": "Obecna wersja danych związanych z tym modułem"
+                "hint": "Aktualna wersja danych związanych z tym modułem"
             },
             "postActionToChat": {
-                "name": "Pokaż Pełną Akcję z Makr",
-                "hint": "Podczas uruchamiania makr symulujących wykonywanie akcji, zamieść pełny opis akcji w oknie czatu."
+                "name": "Wyślij Akcje na czat",
+                "hint": "Podczas uruchamiania makr symulujących wykonywanie akcji, wyświetl na czacie prostą wiadomość lub pełną treść akcji."
             },
             "postAmmunitionToChat": {
-                "name": "Pokaż Pełen Opis Amunicji",
-                "hint": "Strzelając z broni dystansowej niestandardową amunicją, zamieść przedmiot amunicji na czacie."
+                "name": "Wyślij amunicję na czat",
+                "hint": "Podczas strzelania z broni dystansowej należy wysłać prostą wiadomość lub cały przedmiot amunicji."
             },
             "preventFireNotLoaded": {
-                "name": "Zapobiegaj Strzelaniu z Niezaładowanej Broni",
-                "hint": "Dla broni z cechą co najmmniej 'przeładuj 1', zapobiegaj rzutom na atak z tej broni, chyba że dla tej broni masz efekt 'załadowana'."
+                "name": "Zapobiegaj wystrzeleniu broni, jeśli nie jest naładowana",
+                "hint": "W przypadku broni o przeładowaniu co najmniej 1, uniemożliwia rzuty ataku przy użyciu tej broni, chyba że masz efekt przeładowania dla tej broni."
             },
             "advancedAmmunitionSystemPlayer": {
-                "name": "Zaawansowany System Amunicji",
-                "hint": "Tylko postacie graczy. Śledź załadowaną amunicję do przeładowywalnych i powtarzalnych broni. Opcja nadpisuje opcję: Zapobiegaj Strzelaniu z Niezaładowanej Broni."
+                "name": "Zaawansowany system amunicji",
+                "hint": "Tylko postacie graczy. Śledź załadowaną amunicję dla broni przeładowywalnej i powtarzalnej. Ta opcja zastępuje opcję „Zapobiegaj strzelaniu z broni, jeśli nie jest załadowana”."
             },
             "advancedThrownWeaponSystemPlayer": {
-                "name": "Zaawansowany System Broni Rzucanej",
-                "hint": "Tylko postacie graczy. Obsługuj zasadę upuszczania broni rzucanej po użyciu, oraz potrzebę wyciągnięcia nowej broni przed kolejnym atakiem."
+                "name": "Zaawansowany system broni miotanej",
+                "hint": "Tylko postacie graczy. Broń miotana upuszczana po użyciu i wymaga wyciągnięcia innej broni przed kolejnym atakiem."
             },
             "requiredPermissionToShowMessages": {
-                "name": "Minimum Uprawnień by Widzieć Wiadomości",
-                "hint": "Wiele funkcji tego modułu wysyła wiadomości na czat, np. Przeładowanie.\nTa opcja ukryje te wiadomości dla graczy bez wymaganych uprawnień do aktora wykonującego akcję."
+                "name": "Minimalne uprawnienia do wyświetlania wiadomości",
+                "hint": "Kilka funkcji tego modułu wysyła wiadomości na czat, na przykład Przeładowanie.\nSpowoduje to ukrycie tych wiadomości dla graczy, którzy nie mają wymaganych uprawnień do aktora wykonującego daną akcję."
             },
             "hideTokenIcons": {
-                "name": "Ukryj Ikony Efektów Tokena",
-                "hint": "Ukryj ikony tokenów dla efektów kreowanych przez ten moduł."
+                "name": "Ukryj ikony efektów tokenów",
+                "hint": "Ukryj ikony tokenów dla efektów utworzonych przez ten moduł."
             },
             "postToChat": {
                 "none": "Brak",
                 "simple": "Proste",
-                "full": "Całosć"
+                "full": "Pełny"
             },
             "category": {
                 "chatControls": {
-                    "header": "Sterowanie czatem",
+                    "header": "Ustawienia czatu",
                     "description": {
-                        "main": "Ustawienia związane z publikowaniem na czacie.",
-                        "full": "Pełny: opublikowanie pełnej akcji lub przedmiotu.",
+                        "main": "Ustawienia związane z wysyłaniem wiadomości na czacie.",
+                        "full": "Pełne: opublikuj pełną akcję lub element.",
                         "simple": "Proste: opublikuj krótką wiadomość opisującą, co się stało.",
                         "none": "Brak: nie publikuj wiadomości."
                     }
@@ -56,65 +56,76 @@
                     }
                 },
                 "ammunitionEffects": {
-                    "header": "Efekty działania amunicji",
-                    "description": "Po włączeniu moduł zastępuje obsługę efektów amunicji przez system. Podczas strzelania z broni przy użyciu amunicji z efektem, efekt jest stosowany do następnego rzutu na obrażenia przy użyciu tej broni z efektami amunicji. Zmiana amunicji broni między strzałem a rzutem na obrażenia spowoduje zastosowanie efektów amunicji, która została wystrzelona, a nie wybranej amunicji broni."
+                    "header": "Efekty amunicji",
+                    "description": "Po włączeniu moduł zastępuje sposób obsługi efektów amunicji przez system. Podczas strzelania z broni używającej amunicji z efektem, efekt jest stosowany do następnego rzutu obrażeń przy użyciu tej broni wraz z efektami amunicji. Zmiana amunicji broni między strzałem a rzutem obrażeń spowoduje zastosowanie efektów amunicji, która została wystrzelona, a nie amunicji wybranej dla broni."
                 },
                 "advancedThrownWeaponSystem": {
-                    "header": "Zaawansowany System Broni Rzucanej",
+                    "header": "Zaawansowany system broni miotanej",
                     "description": {
-                        "line1": "Po włączeniu moduł będzie obsługiwał stosy broni miotanych (np. noży i bomb), więc wyciągnięcie/schowanie/odłożenie jednej z nich spowoduje utworzenie nowego stosu zawierającego jeden przedmiot w nowym stanie. Reszta stosu pozostanie niezmieniona. Jeśli w nowym stanie istnieje już stos tego przedmiotu, zostanie on do niego przeniesiony.",
-                        "line2": "Należy pamiętać, że opcja ta dotyczy tylko aktorów typu postać gracza. Można ją włączyć dla NPC za pomocą makra konfiguracji broni NPC dołączonego do modułu."
+                        "line1": "Po włączeniu moduł będzie obsługiwał stosy broni miotanej (np. noże i bomby), więc wyciągnięcie/schowanie/odłożenie jednej sztuki spowoduje utworzenie nowego stosu zawierającego jeden przedmiot w nowym stanie. Reszta stosu pozostanie bez zmian. Jeśli w nowym stanie istnieje już stos tego przedmiotu, zostanie on przeniesiony do tego stosu.",
+                        "line2": "Należy pamiętać, że ta opcja dotyczy tylko postaci gracza. Można ją włączyć dla postaci niezależnej (BN) za pomocą makra konfiguracji broni BN dołączonego do modułu."
                     }
                 },
                 "miscellaneous": {
                     "header": "Różne",
-                    "description": "Inne ustawienia z modułu, które nie pasują nigdzie indziej."
+                    "description": "Inne ustawienia modułu, które nie należą do żadnej innej kategorii."
+                },
+                "ammunitionSystemPlayer": {
+                    "header": "System amunicji (gracz)",
+                    "description": "Kontroluje sposób, w jaki moduł sprawdza i obsługuje amunicję podczas wykonywania ataków dystansowych postaciami graczy."
+                },
+                "ammunitionSystemNPC": {
+                    "header": "System amunicji (BN)",
+                    "description": {
+                        "line1": "Kontroluje sposób sprawdzania i obsługi amunicji podczas ataków z dystansu postaciami BN.",
+                        "line2": "Należy pamiętać, że zaawansowany system amunicji jest kontrolowany za pomocą makra konfiguracji broni BN dołączonego do modułu."
+                    }
                 }
             }
         },
         "huntPrey": {
-            "warningNoAction": "{token} nie ma akcji Łowy na Zwierzynę.",
-            "unknownToken": "Nieznany Token",
-            "maxTargetsOne": "jedna",
-            "maxTargetsTwo": "dwie",
+            "warningNoAction": "{token} nie posiada akcji Naznaczona Ofiara.",
+            "unknownToken": "Nieznany token",
+            "maxTargetsOne": "jeden",
+            "maxTargetsTwo": "dwa",
             "maxTargetsThree": "trzy",
-            "shareWithTwo": "Mogą dzielić efekt z dwoma sojusznikami.",
-            "shareWithOne": "Mogą dzielić efekt z jednym sojusznikiem.",
-            "huntThreeTargets": "{token} czyni {target1}, {target2}, oraz {target3} celem swoich łowów na zwierzynę.",
-            "huntTwoTargets": "{token} czyni {target1} oraz {target2} celem swojego łowów na zwierzynę.",
-            "huntOneTarget": "{token} czyni {target1} celem swojego łowów na zwierzynę.",
-            "warningNoTarget": "Nie wybrano celu.",
-            "warningTooManyTargets": "Twoja maksymalna liczba celów łowów na zwierzynę to: {maxTargets}.",
+            "shareWithTwo": "Może podzielić się efektem z dwoma sojusznikami.",
+            "shareWithOne": "Może podzielić się efektem z jednym sojusznikiem.",
+            "huntThreeTargets": "{token} sprawia, że {target1}, {target2} i {target3} stają się naznaczoną ofiarą.",
+            "huntTwoTargets": "{token} sprawia, że {target1} i {target2} stają się naznaczoną ofiarą.",
+            "huntOneTarget": "{token} sprawia, że {target1} staje się naznaczoną ofiarą.",
+            "warningNoTarget": "Nie wybrano żadnego celu.",
+            "warningTooManyTargets": "Możesz mieć tylko {maxTargets} naznaczonych ofiar.",
             "versusPreyAttack": "Przeciw atakom Naznaczonej Ofiary",
             "precision": {
-                "attackNumber": "Atak na Naznaczoną ofiarę",
+                "attackNumber": "Atak na Naznaczoną Ofiarę",
                 "first": "Pierwszy",
                 "second": "Drugi",
                 "third": "Trzeci",
-                "subsequent": "Późniejsze"
+                "subsequent": "Kolejny"
             },
             "huntersEdge": {
-                "flurry": "Grad Ciosów",
+                "flurry": "Nawałnica",
                 "precision": "Precyzja",
                 "outwit": "Przechytrzenie"
             }
         },
         "thrownWeapons": {
-            "warningNotEquipped": "Nie jesteś wyposażony w: {weapon}!",
-            "warningNoAmmoLeft": "Zabrakło ci: {weapon}!"
+            "warningNotEquipped": "{weapon} nie jest wyposażona!",
+            "warningNoAmmoLeft": "Nie masz już {weapon}!"
         },
         "npcWeaponSystem": {
-            "warningNpcOnly": "Możesz tego użyć wyłącznie na BN-ach.",
+            "warningNpcOnly": "Można używać tylko na postaciach niezależnych.",
             "dialog": {
-                "title": "Konfiguracja Broni BN",
-                "hint": "Tutaj możesz skonfigurować BN do użycia przez moduł PF2e Ranged Combat.",
+                "title": "Konfiguracja broni BN",
+                "hint": "W tym miejscu można skonfigurować BN, które będą używane przez moduł PF2e Ranged Combat.",
                 "legendGeneral": "Ogólne",
-                "enableAmmunition": "Włącz Zaawansowany System Amunicji",
-                "enableThrown": "Włącz Zaawansowany System Broni Rzucanej",
-                "legendMapping": "Mapowanie Broni",
-                "mappingHint": "Możesz zmapować każdy atak BN-a z bronią i amunicją, przez co moduł potraktuje je jak broń Gracza.",
+                "enableAmmunition": "Włącz zaawansowany system amunicji",
+                "enableThrown": "Włącz zaawansowany system broni miotanej",
+                "legendMapping": "Mapowanie broni",
+                "mappingHint": "Możesz przypisać każdemu z ataków BN broń i amunicję, dzięki czemu moduł traktuje je jak broń bohatera.",
                 "labelWeapon": "Broń",
-                "weaponTypeMelee": "Wręcz",
+                "weaponTypeMelee": "Walka Wręcz",
                 "weaponTypeRanged": "Dystansowa",
                 "labelAmmunition": "Amunicja",
                 "done": "Gotowe",
@@ -124,22 +135,22 @@
         "ammunitionSystem": {
             "fireWeapon": "{actor} wystrzeliwuje {ammunition}.",
             "fireWeaponRepeating": "{actor} używa {ammunition} (pozostało {remaining}/{capacity}).",
-            "fireConjuredRound": "{actor} wystrzeliwuje swój wyczarowany pocisk.",
+            "fireConjuredRound": "{actor} wystrzeliwuje wyczarowany pocisk.",
             "utils": {
-                "warningFullyLoaded": "{weapon} jest już w pełni naładowany/a.",
-                "warningLoaded": "{weapon} jest już naładowany/a."
+                "warningFullyLoaded": "{weapon} jest już w pełni załadowana.",
+                "warningLoaded": "{weapon} jest już załadowana."
             },
             "ammunitionSelect": {
-                "title": "Wybór Amunicji",
+                "title": "Wybór amunicji",
                 "action": {
-                    "switch": "Wybierz na jaką amunicję się przełączyć.",
-                    "unload": "Wybierz jaką amunicję rozładować.",
-                    "fire": "Wybierz jaką amunicją wystrzelić."
+                    "switch": "Wybierz amunicję, na którą chcesz się przełączyć.",
+                    "unload": "Wybierz amunicję, którą chcesz rozładować.",
+                    "fire": "Wybierz amunicję, którą chcesz wystrzelić."
                 },
                 "header": {
-                    "loadedAmmunition": "Załadowana Amunicja",
-                    "current": "Obecna",
-                    "equipped": "Wyposażona"
+                    "loadedAmmunition": "Załadowana amunicja",
+                    "current": "Bieżąca",
+                    "equipped": "Wyposażono"
                 },
                 "option": {
                     "setAsAmmunition": "Ustaw jako amunicję"
@@ -149,173 +160,173 @@
                 "options": "Opcje"
             },
             "check": {
-                "weaponNotLoaded": "{weapon} nie jest naładowany/a.",
+                "weaponNotLoaded": "{weapon} nie jest załadowana.",
                 "magazineNotLoaded": "{weapon} nie ma załadowanego magazynka.",
-                "magazineEmpty": "Pusty magazynek w: {weapon}.",
-                "chamberNotLoaded": "{weapon}: obecna komora jest niezaładowana.",
+                "magazineEmpty": "Magazynek {weapon} jest pusty.",
+                "chamberNotLoaded": "Obecna komora {weapon} nie jest załadowana.",
                 "bothBarrelsNotLoaded": "{weapon} nie ma załadowanych obu luf.",
-                "bothBarrelsNotEnough": "{weapon} nie ma wystarczająco amunicji by strzelać z dwóch luf.",
+                "bothBarrelsNotEnough": "{weapon} nie ma wystarczającej ilości amunicji, aby wystrzelić z obu luf.",
                 "noAmmunitionSelected": "{weapon} nie ma wybranej amunicji",
-                "noAmmunitionRemaining": "Brakuje amunicji do {weapon}"
+                "noAmmunitionRemaining": "{weapon} nie ma już amunicji"
             },
             "actions": {
                 "conjureBullet": {
                     "conjuredRound": "Wyczarowany Pocisk",
-                    "warningNoAction": "{token} nie posiada akcji Wyczaruj Pocisk.",
-                    "noReloadableWeapons": "Nie masz przeładowywalnej broni.",
-                    "warningSingleRound": "{weapon} możesz załadować tylko jednym wyczarowanym pociskiem.",
-                    "chatMessage": "{token} używa Wyczaruj Pocisk by załadować {weapon}.",
-                    "chatActionName": "Wyczaruj Pocisk"
+                    "warningNoAction": "{token} nie posiada akcji Wyczarowany Pocisk.",
+                    "noReloadableWeapons": "Nie masz broni, którą można ponownie załadować.",
+                    "warningSingleRound": "{weapon} może być załadowana tylko jednym wyczarowanym pociskiem.",
+                    "chatMessage": "{token} używa Wyczarowania Pocisku, aby załadować swoją {weapon}.",
+                    "chatActionName": "Wyczarowanie Pocisku"
                 },
                 "consolidateAmmunition": {
                     "chatMessage": "{token} konsoliduje swoją amunicję.",
-                    "infoAlreadyConsolidated": "Twoja powtarzalna amunicja jest już skonsolidowana!"
+                    "infoAlreadyConsolidated": "Twoja amunicja powtarzalna jest już skonsolidowana!"
                 },
                 "nextChamber": {
-                    "noCapacityWeapons": "Nie masz broni z cechą pojemności.",
-                    "warningNotLoaded": "{weapon} jest nienaładowany/a!",
-                    "warningAlreadyLoaded": "{weapon} ma już wybraną komorę naładowaną amunicją: {ammunition}!",
-                    "chatMessageSelectChamber": "{token} wybiera komorę w: {weapon} naładowaną: {ammunition}.",
-                    "warningAlreadySelected": "{weapon} ma już wybraną załadowaną komorę!",
-                    "chatMessageSelectNextChamber": "{token} wybiera następną załadowaną komorę w {weapon}."
+                    "noCapacityWeapons": "Nie posiadasz broni z cechą Pojemność.",
+                    "warningNotLoaded": "{weapon} nie jest załadowana!",
+                    "warningAlreadyLoaded": "{weapon} ma już komorę załadowaną amunicją {ammunition}!",
+                    "chatMessageSelectChamber": "{token} wybiera komorę załadowaną {ammunition} w swojej {weapon}.",
+                    "warningAlreadySelected": "{weapon} ma już wybraną komorę z nabojami!",
+                    "chatMessageSelectNextChamber": "{token} wybiera następną komorę w {weapon}."
                 },
                 "reloadMagazine": {
-                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - Przeładowanie Magazynka może być użyte tylko gdy włączony jest Zaawansowany System Amunicji.",
-                    "warningNpcNotSupported": "PF2e Ranged Combat - Przeładowanie Magazynka nie ma obecnie zastosowania dla BN-ów.",
+                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - Przeładowanie Magazynka może być użyte tylko wtedy, gdy włączony jest Zaawansowany System Amunicji.",
+                    "warningNpcNotSupported": "PF2e Ranged Combat - Przeładowanie Magazynka nie jest obecnie obsługiwane dla postaci niezależnych.",
                     "warningNoRepeatingWeapons": "Nie masz broni powtarzalnej.",
-                    "warningFullyLoaded": "{weapon} jest już naładowany/a pełnym magazynkiem.",
-                    "warningAlreadyMoreAmmo": "Magazynek w: {weapon}'s jest już naładowany odpowiednio amunicją: {ammo}",
-                    "tokenLoadsAmmo": "{token} załadowuje {weapon} używając {ammo} ({charges}/{maxCharges}).",
-                    "warningNoCompatibleAmmunition": "Nie masz wyposażonej amunicji kompatybilnej z twoją {weapon}.",
-                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do załadowania do {weapon}.</p><p>Wybierz amunicję do załadowania.",
-                    "warningNotEnoughAmmunition": "Nie masz wystarczająco amunicji by przeładować {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Wybrany rodzaj amunicji do {weapon} jest pusty.</p><p>Wybierz nową amunicję do załadowania."
+                    "warningFullyLoaded": "{weapon} jest już załadowana pełnym magazynkiem.",
+                    "warningAlreadyMoreAmmo": "Magazynek {weapon} jest już załadowany {ammo} sztukami amunicji",
+                    "tokenLoadsAmmo": "{token} ładuje swoją {weapon} - {ammo} ({charges}/{maxCharges}).",
+                    "warningNoCompatibleAmmunition": "Nie masz amunicji kompatybilnej z twoją {weapon}.",
+                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.</p><p>Wybierz amunicję do załadowania.",
+                    "warningNotEnoughAmmunition": "Nie masz wystarczającej ilości amunicji, aby przeładować {weapon}.",
+                    "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.</p><p>Wybierz nową amunicję do załadowania."
                 },
                 "reload": {
-                    "warningNoReloadableWeapons": "Nie masz broni możliwych do przeładowania.",
-                    "warningNoMagazineLoaded": "{weapon} nie ma założnego magazynka!",
-                    "warningMagazineEmpty": "Magazynek w {weapon} jest pusty!",
-                    "warningAlreadyLoaded": "{weapon} jest już naładowany/a.",
-                    "warningAlreadyFullyLoaded": "{weapon} jest już w pełni naładowany/a.",
-                    "warningAlreadyLoadedWithAmmo": "{weapon} jest już nałądowany/a amunicją: {ammo}.",
-                    "warningNoCompatibleAmmunition": "Nie masz na wyposażeniu amunicji kompatybilnej z {weapon}.",
-                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do załadowania do {weapon}.</p><p>Wybierz amunicję do załadowania.",
-                    "warningNotEnoughAmmunition": "Za mało amunicji do przeładowania {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Wybrany rodzaj amunicji do {weapon} jest pusty.</p><p>Wybierz nową amunicję do załadowania.",
-                    "tokenReloadsWeapon": "{token} przeładowuje {weapon}",
-                    "withAmmunition": "używając: {ammunition}.",
-                    "warningNoReloadableCapacityWeapons": "Nie masz broni wielokrotnego ładowania z cechą pojemności."
+                    "warningNoReloadableWeapons": "Nie masz broni, którą można ponownie załadować.",
+                    "warningNoMagazineLoaded": "{weapon} nie ma załadowanego magazynka!",
+                    "warningMagazineEmpty": "Magazynek {weapon} jest pusty!",
+                    "warningAlreadyLoaded": "{weapon} jest już załadowana.",
+                    "warningAlreadyFullyLoaded": "{weapon} jest już w pełni załadowana.",
+                    "warningAlreadyLoadedWithAmmo": "{weapon}} jest już załadowana {ammo}.",
+                    "warningNoCompatibleAmmunition": "Nie masz wyposażonej amunicji kompatybilnej z {weapon}.",
+                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.</p><p>Wybierz amunicję do załadowania.",
+                    "warningNotEnoughAmmunition": "Za mało amunicji, aby przeładować {weapon}.",
+                    "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.</p><p>Wybierz nową amunicję do załadowania.",
+                    "tokenReloadsWeapon": "{token} przeładowuje swoją {weapon}",
+                    "withAmmunition": "za pomocą {ammunition}.",
+                    "warningNoReloadableCapacityWeapons": "Nie posiadasz broni wielokrotnego ładowania z cechą Pojemności."
                 },
                 "switchAmmunition": {
-                    "warningNoWeaponUsesAmmunition": "Nie masz broni używającej amunicji.",
-                    "warningNoCompatibleAmmunitionAvailable": "Nie masz wyposażonej amunicji kompatybilnej z twoją {weapon}."
+                    "warningNoWeaponUsesAmmunition": "Nie masz broni, która używa amunicji.",
+                    "warningNoCompatibleAmmunitionAvailable": "Nie masz amunicji kompatybilnej z twoją {weapon}."
                 },
                 "unload": {
-                    "warningNotLoaded": "{weapon} nie jest naładowany/a!",
-                    "tokenUnloadsAmmunitionFromWeapon": "{token} wyjmuje {ammunition} z {weapon}.",
-                    "tokenUnloadsWeapon": "{token} rozładowuje {weapon}",
+                    "warningNotLoaded": "{weapon} nie jest załadowana!",
+                    "tokenUnloadsAmmunitionFromWeapon": "{token} rozładowuje {ammunition} ze swojej broni - {weapon}.",
+                    "tokenUnloadsWeapon": "{token} rozładowuje swoją {weapon}",
                     "noLoadedWeapons": "Nie masz naładowanej broni."
                 },
                 "names": {
                     "unload": "Rozładuj",
-                    "nextChamber": "Następna Komora",
+                    "nextChamber": "Następna komora",
                     "reload": "Przeładowanie",
-                    "reloadMagazine": "Przeładuj Magazynek"
+                    "reloadMagazine": "Przeładuj magazynek"
                 }
             },
             "effect": {
                 "config": {
                     "enable": {
                         "name": "Włącz efekty amunicji",
-                        "hint": "Zastąpienie systemowych efektów amunicji efektem, który wykorzystuje wcześniej wystrzeloną amunicję"
+                        "hint": "Zastąp efekty amunicji systemu efektami amunicji użytej wcześniej"
                     },
                     "warningLevel": {
-                        "name": "Poziom ostrzeżenia o skutkach amunicji",
-                        "hint": "Poziom ostrzeżenia pokazujący, że efekty amunicji mogą nie działać zgodnie z oczekiwaniami."
+                        "name": "Poziom ostrzegawczy efektów amunicji",
+                        "hint": "Poziom ostrzeżenia wyświetlany, gdy działanie amunicji może nie być zgodne z oczekiwaniami."
                     }
                 },
                 "warning": {
                     "notMatched": {
-                        "simple": "Amunicja do broni nie pasuje do efektu amunicji.",
-                        "verbose": "Aktualna amunicja broni nie zgadza się z amunicją, której efekt został zastosowany do rzutu na obrażenia. Amunicja broni mogła zostać zmieniona od czasu ostatniego rzutu ataku."
+                        "simple": "Amunicja broni nie pasuje do efektu amunicji.",
+                        "verbose": "Aktualna amunicja broni nie odpowiada amunicji, której efekt został zastosowany do rzutu na obrażenia. Amunicja broni mogła zostać zmieniona od czasu ostatniego rzutu na atak."
                     },
                     "damageWithoutEffect": {
-                        "simple": "Obrażenia zadawane przez broń bez efektu amunicji.",
-                        "verbose": "Aktualna amunicja broni ma efekt, ale nie został on zastosowany do tego rzutu na obrażenia. Amunicja broni mogła ulec zmianie od ostatniego rzutu ataku lub obrażenia mogły zostać zadane bez wcześniejszego rzutu ataku."
+                        "simple": "Obrażenia broni są obliczane bez uwzględnienia efektu amunicji.",
+                        "verbose": "Aktualna amunicja broni ma wpływ, ale nie została uwzględniona w tym rzucie na obrażenia. Amunicja broni mogła ulec zmianie od czasu ostatniego rzutu na atak lub obrażenia mogły zostać wyrzucone bez poprzedzającego rzutu na atak."
                     },
                     "button": {
                         "ok": "OK",
-                        "showSimple": "OK (Pokaż proste komunikaty)",
-                        "doNotShow": "OK (Nie pokazuj komunikatów)"
+                        "showSimple": "OK (Pokaż proste wiadomości)",
+                        "doNotShow": "OK (Nie pokazuj wiadomości)"
                     }
                 }
             }
         },
         "utils": {
-            "singleCharacterSelected": "Musisz mieć wybraną pojedynczą postać.",
-            "warningDialog1": "Nie możesz wykonać tej akcji, gdyż:",
-            "warningDialog2": "To jest funkcjonalność z modułu: PF2e Ranged Combat.",
-            "warningDialog3": "Możesz się nauczyć jak korzystać z modułu <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">tutaj</a>.",
+            "singleCharacterSelected": "Musisz zaznaczyć jedną postać.",
+            "warningDialog1": "Nie można wykonać tej akcji, ponieważ:",
+            "warningDialog2": "Jest to funkcja modułu PF2e Ranged Combat.",
+            "warningDialog3": "Dowiedz się, jak korzystać z modułu <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">tutaj</a>.",
             "buttonOK": "OK",
-            "buttonDoNotShowAgain": "OK (Nie pokazuj więcej)",
+            "buttonDoNotShowAgain": "OK (Nie pokazuj ponownie)",
             "migration": {
-                "multipleAmmunitions.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 1: Uaktualnienie Róźnorodnej Amunicji",
-                "thrownWeaponGroups.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 2: Grupy Broni Miotanej",
-                "huntedPrey.consoleInfo": "PF2e Ranged Combat - Uruchamiam Migrację 3: Tabela Łowy na Zwierzynę"
+                "multipleAmmunitions.consoleInfo": "PF2e Ranged Combat - Migracja 1: Aktualizacja wielu rodzajów amunicji",
+                "thrownWeaponGroups.consoleInfo": "PF2e Ranged Combat - Migracja 2: Grupy broni miotanej",
+                "huntedPrey.consoleInfo": "PF2e Ranged Combat - Migracja 3: Tabela - Naznaczona Ofiara"
             }
         },
         "actions": {
             "alchemicalCrossbow": {
-                "warningAlreadyLoaded": "Należąca do {token} broń: {weapon} jest już załadowana: {bomb}.",
-                "bombWillBeReturned": "{bomb} wróci do wyposażenia.",
-                "usesWillBeWasted": "Pozostałe użycia {bomb} będą zmarnowane.",
-                "loadInsteadDialogTitle": "{weapon} Jest Już Naładowany/a",
-                "weaponIsLoadedWithCharges": "{weapon} jest już naładowany/a: {bomb} i ma {charges}/{maxCharges} użyć.",
+                "warningAlreadyLoaded": "{token} ma już załadowaną {weapon} za pomocą {bomb}.",
+                "bombWillBeReturned": "{bomb} zostanie zwrócona do ekwipunku.",
+                "usesWillBeWasted": "Pozostałe zastosowania {bomb} zostaną zmarnowane.",
+                "loadInsteadDialogTitle": "{weapon} jest już załadowana",
+                "weaponIsLoadedWithCharges": "{weapon} jest załadowana {bomb} z {charges}/{maxCharges} pozostałych użyć.",
                 "loadInstead": "Czy chcesz zamiast tego załadować {bomb}?",
                 "buttonLoad": "Ładuj",
-                "buttonDoNotLoad": "Nie Ładuj",
-                "lesser": "Pomniejszy",
-                "tokenLoadsWeaponWithBomb": "{token} ładuje {weapon} używając {bomb}.",
-                "warningWeaponNotLoaded": "Należąca do {token} broń: {weapon} nie jest załadowana bombą alchemiczną.",
-                "shouldUnloadDialogTitle": "porzuć {bomb}",
-                "shouldUnloadDialogRestWasted": "Pozostałe użycia będą zmarnowane",
-                "shouldUnloadInstead": "Jesteś pewien, że chcesz wyjąć {bomb} z {weapon}?",
+                "buttonDoNotLoad": "Nie ładuj",
+                "lesser": "Mniejsza",
+                "tokenLoadsWeaponWithBomb": "{token} ładuje swoją {weapon} za pomocą {bomb}.",
+                "warningWeaponNotLoaded": "{weapon} {token} nie jest załadowana bombą alchemiczną.",
+                "shouldUnloadDialogTitle": "odrzuć {bomb}",
+                "shouldUnloadDialogRestWasted": "Pozostałe użycia zostaną zmarnowane",
+                "shouldUnloadInstead": "Czy na pewno chcesz wyładować {bomb} z {weapon}?",
                 "buttonUnload": "Rozładuj",
-                "buttonDoNotUnload": "Nie Rozładowuj",
-                "tokenUnloadsBombFromWeapon": "{token} wyjmuje {bomb} z {weapon}.",
-                "warningNoAlchemicalCrossbow": "{token} nie ma Alchemicznej Kuszy.",
-                "warningNoLesserAlchemicalBombs": "{token} nie ma pomniejszych alchemicznych bomb zadających obrażenia od energii."
+                "buttonDoNotUnload": "Nie rozładowuj",
+                "tokenUnloadsBombFromWeapon": "{token} rozładowuje {bomb} ze swojej broni - {weapon}.",
+                "warningNoAlchemicalCrossbow": "{token} nie posiada Alchemicznej Kuszy.",
+                "warningNoLesserAlchemicalBombs": "{token} nie ma żadnych bomb alchemicznych, które zadają obrażenia od energii."
             },
             "alchemicalShot": {
-                "warningNoFeat": "{actor} nie ma zdolności Alchemiczny Strzał.",
-                "warningNotWieldingProperWeapon": "{actor} nie nosi broni palnej ani kuszy.",
-                "warningNoAlchemicalBombs": "{actor} nie ma bomb alchemicznych.",
-                "pourBombIntoWeapon": "{actor} umieszcza zawartość {bomb} w {weapon}.",
+                "warningNoFeat": "{actor} nie posiada atutu Alchemiczny Strzał.",
+                "warningNotWieldingProperWeapon": "{actor} nie dzierży broni palnej ani kuszy.",
+                "warningNoAlchemicalBombs": "{actor} nie posiada bomb alchemicznych.",
+                "pourBombIntoWeapon": "{actor} wylewa zawartość {bomb} do swojej {weapon}.",
                 "alchemicalShot": "Alchemiczny Strzał"
             }
         },
         "linkCompanion": {
-            "noTarget": "Musisz wybrać jeden cel, który stanie się twoim zwierzęcym towarzyszem.",
-            "rangersAnimalCompanion": "Zwierzęcy Towarzysz postaci {actor}",
+            "noTarget": "Musisz wybrać jedną postać, która zostanie twoim zwierzęcym towarzyszem.",
+            "rangersAnimalCompanion": "Zwierzęcy Towarzysz należący do {actor}",
             "linkedCompanion": "{companion} jest teraz towarzyszem {master}.",
-            "noAnimalCompanionFeat": "{actor} nie posiada atutu łowcy Towarzysz Zwierząt.",
-            "masterfulAnimalCompanion": "Mistrzowski Towarzysz {actor}"
+            "noAnimalCompanionFeat": "{actor} nie posiada atutu łowcy Zwierzęcy Towarzysz.",
+            "masterfulAnimalCompanion": "Mistrzowski Towarzysz należący do {actor}"
         },
         "feat": {
             "fakeOut": {
                 "config": {
                     "dc": {
                         "name": "ST Zmyłki",
-                        "enemyDC": "KP Wroga",
-                        "hint": "Podczas korzystania z akcji Zmyłka, ST do rzucenia przeciwko celowi. Standardowy ST pomocy wynosił 20 przed remasterem i 15 po remasterze, choć popularną zasadą jest używanie KP przeciwnika."
+                        "enemyDC": "KP wroga",
+                        "hint": "Podczas używania akcji Zmyłka, przeciwko której należy wykonać rzut ST. Standardowa wartość Wsparcia wynosiła 20 przed remasterem, a po remasterze wynosi 15, chociaż popularną zasadą domową jest używanie KP przeciwnika."
                     }
                 },
                 "name": "Zmyłka",
-                "noTarget": "Musisz mieć wybrany pojedynczy cel.",
+                "noTarget": "Musisz wybrać jeden cel.",
                 "result": {
-                    "success": "Zapewniasz sojusznikowi premię okolicznościową +{bonus} do jego testu.",
-                    "failure": "Nie udało ci się wesprzeć sojusznika.",
-                    "criticalFailure": "Twój sojusznik otrzymuje -1 karę okolicznościową do swojego testu."
+                    "success": "Przyznajesz sojusznikowi premię okolicznościową +{bonus} do jego testu.",
+                    "failure": "Nie udzieliłeś wsparcia sojusznikowi.",
+                    "criticalFailure": "Twój sojusznik otrzymuje karę okoliczności -1 do testu."
                 },
                 "noWeapon": "{actor} nie dzierży naładowanej broni palnej ani kuszy."
             }
