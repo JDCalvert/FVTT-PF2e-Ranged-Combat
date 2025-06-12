@@ -1,3 +1,14 @@
+## 7.0.0 - 2025-06-12 (Pathfinder 2e 7.1.1)
+### Feature
+- Confirm basic functionality compatible with Foundry v13.
+
+### Fix
+- Move away from jQuery where possible.
+- Updated Polish translation.
+
+### Still to do
+- Convert dialogs to DialogV2.
+
 ## 6.3.10 - 2025-02-10 (Pathfinder 2e 6.9.0)
 ### Fix
 - Fix some Hunt Prey bonuses not working correctly.

@@ -22,7 +22,7 @@ export function npcWeaponConfiguration() {
             buttons: {
                 ok: {
                     label: localize("dialog.done"),
-                    callback: ($html) => saveChanges($html, actor)
+                    callback: (html) => saveChanges(html, actor)
                 },
                 cancel: {
                     label: localize("dialog.cancel")
@@ -134,10 +134,10 @@ function buildContent(actor) {
     return content;
 }
 
-function saveChanges($html, actor) {
+function saveChanges(html) {
     const updates = [];
-    const enableAdvancedAmmunitionSystem = !!$html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked");
-    const enableAdvancedThrownWeaponSystem = !!$html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked");
+    const enableAdvancedAmmunitionSystem = !!html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked");
+    const enableAdvancedThrownWeaponSystem = !!html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked");
 
     actor.update({
         flags: {
@@ -152,8 +152,8 @@ function saveChanges($html, actor) {
         const currentWeaponId = getFlag(attack, "weaponId");
         const currentAmmunitionId = getFlag(attack, "ammunitionId");
 
-        const weaponId = $html.find(`[name="${attack.id}-weapon"`).val();
-        const ammunitionId = $html.find(`[name="${attack.id}-ammo"]`).val();
+        const weaponId = html.find(`[name="${attack.id}-weapon"`).val();
+        const ammunitionId = html.find(`[name="${attack.id}-ammo"]`).val();
 
         const changedWeaponId = weaponId !== currentWeaponId;
         const changedAmmunitionId = ammunitionId !== currentAmmunitionId;

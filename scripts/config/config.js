@@ -201,14 +201,28 @@ export function initialiseConfigurationSettings() {
     Hooks.on(
         "renderSettingsConfig",
         (_, html) => {
-            const headerTemplate = (headerName, desc = "") => `
-                    <div style="border: 1px solid #a1a1a1; padding: 10px; text-align: justify;">
-                        <h3 style="text-align: center;">${headerName}</h3>
-                        ${desc}
-                    </div>
-                `;
+            const headerTemplate = (headerName, desc = "") => {
+                const doc = html.ownerDocument;
 
-            html.find('div[data-setting-id="pf2e-ranged-combat.postActionToChat"]')
+                const header = doc.createElement("h3");
+                header.style["text-align"] = "center";
+                header.appendChild(doc.createTextNode(headerName));
+
+                const description = doc.createElement("div");
+                description.innerHTML = desc;
+
+                const div = doc.createElement("div");
+                div.style.border = "1px solid #a1a1a1";
+                div.style.padding = "10px";
+                div.style["text-align"] = "justify";
+
+                div.appendChild(header);
+                div.appendChild(description);
+
+                return div;
+            };
+
+            html.querySelector('[id="settings-config-pf2e-ranged-combat.postActionToChat"]')
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
@@ -224,7 +238,8 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.find('div[data-setting-id="pf2e-ranged-combat.preventFireNotLoaded"]')
+            html.querySelector('[id="settings-config-pf2e-ranged-combat.preventFireNotLoaded"]')
+                ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
                         localize("ammunitionSystemPlayer.header"),
@@ -232,7 +247,8 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.find('div[data-setting-id="pf2e-ranged-combat.preventFireNotLoadedNPC"]')
+            html.querySelector('[id="settings-config-pf2e-ranged-combat.preventFireNotLoadedNPC"]')
+                ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
                         localize("ammunitionSystemNPC.header"),
@@ -243,7 +259,8 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.find('div[data-setting-id="pf2e-ranged-combat.ammunitionEffectsEnable"]')
+            html.querySelector('[id="settings-config-pf2e-ranged-combat.ammunitionEffectsEnable"]')
+                ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
                         localize("ammunitionEffects.header"),
@@ -251,7 +268,8 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.find('div[data-setting-id="pf2e-ranged-combat.advancedThrownWeaponSystemPlayer"]')
+            html.querySelector('[id="settings-config-pf2e-ranged-combat.advancedThrownWeaponSystemPlayer"]')
+                ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
                         localize("advancedThrownWeaponSystem.header"),
@@ -262,7 +280,8 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.find('div[data-setting-id="pf2e-ranged-combat.fakeOutDC"]')
+            html.querySelector('[id="settings-config-pf2e-ranged-combat.fakeOutDC"]')
+                ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
                         localize("miscellaneous.header"),

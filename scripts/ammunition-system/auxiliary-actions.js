@@ -337,7 +337,7 @@ async function changeCarryType(weapon, subAction, hands) {
 
     if (!game.combat) return; // Only send out messages if in encounter mode
 
-    const flavor = await renderTemplate(
+    const flavor = await foundry.applications.handlebars.renderTemplate(
         "./systems/pf2e/templates/chat/action/flavor.hbs",
         {
             action: {
@@ -348,7 +348,7 @@ async function changeCarryType(weapon, subAction, hands) {
             traits: ["manipulate"]
         }
     );
-    const content = await renderTemplate(
+    const content = await foundry.applications.handlebars.renderTemplate(
         "./systems/pf2e/templates/chat/action/content.hbs",
         {
             imgPath: weapon.img,

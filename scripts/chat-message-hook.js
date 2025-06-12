@@ -6,21 +6,21 @@ export function initialiseChatMessageHooks() {
      * if the current user doesn't have the required permission level
      */
     Hooks.on(
-        "renderChatMessage",
+        "renderChatMessageHTML",
         (message, html) => {
             const flags = message.flags["pf2e-ranged-combat"];
             if (!flags) {
                 return;
             }
 
-            html.addClass("pf2e-ranged-combat");
+            html.classList.add("pf2e-ranged-combat");
 
             const actorId = flags.actorId;
             const actor = game.actors.find(actor => actor.id === actorId);
             if (actor) {
                 const hasPermission = actor.testUserPermission(game.user, game.settings.get("pf2e-ranged-combat", "requiredPermissionToShowMessages"));
                 if (!hasPermission) {
-                    html.addClass("hide");
+                    html.classList.add("hide");
                 }
             }
         }
@@ -32,10 +32,15 @@ export function initialiseChatMessageHooks() {
      */
     Hooks.on(
         "renderChatLog",
-        ({}, html) => {
-            const chatLog = html.find("#chat-log");
-            const rangedCombatMessages = chatLog.find(".message.pf2e-ranged-combat");
-            rangedCombatMessages.filter(".hide").remove();
+        ({ }, html) => {
+            const chatLog = html.querySelector(".chat-log");
+            const rangedCombatMessages = chatLog.querySelectorAll(".message.pf2e-ranged-combat");
+
+            for (const message of rangedCombatMessages) {
+                for (const element of message.querySelectorAll(".hide")) {
+                    element.remove();
+                }
+            }
 
             const observer = new MutationObserver(
                 (mutationList) => {
@@ -44,14 +49,13 @@ export function initialiseChatMessageHooks() {
                             continue;
                         }
 
-                        $(mutation.addedNodes)
-                            .filter(".pf2e-ranged-combat")
-                            .filter(".hide")
-                            .remove();
+                        for (const node of mutation.addedNodes) {
+                            node.querySelector(".pf2e-ranged-combat")?.querySelector(".hide")?.remove();
+                        }
                     }
                 }
             );
-            observer.observe(chatLog[0], { childList: true });
+            observer.observe(chatLog, { childList: true });
         }
     );
 

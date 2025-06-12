@@ -217,7 +217,7 @@ export async function postToChat(actor, img, message, params) {
  * }} params 
  */
 export async function postMessage(actor, img, message, params = {}) {
-    const flavor = await renderTemplate(
+    const flavor = await foundry.applications.handlebars.renderTemplate(
         "./systems/pf2e/templates/chat/action/flavor.hbs",
         {
             action: {
@@ -228,7 +228,7 @@ export async function postMessage(actor, img, message, params = {}) {
         }
     );
 
-    const content = await renderTemplate(
+    const content = await foundry.applications.handlebars.renderTemplate(
         "./systems/pf2e/templates/chat/action/content.hbs",
         {
             imgPath: img,
