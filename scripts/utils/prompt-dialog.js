@@ -1,19 +1,27 @@
 export async function dialogPrompt(title, content, yesLabel, noLabel) {
     return new Promise(resolve => {
-        new Dialog(
+        new foundry.applications.api.DialogV2(
             {
-                title,
+                window: {
+                    title
+                },
+                position: {
+                    width: 600
+                },
                 content,
-                buttons: {
-                    ok: {
+                buttons: [
+                    {
+                        action: "ok",
                         label: yesLabel,
+                        default: true,
                         callback: () => resolve(true)
                     },
-                    cancel: {
+                    {
+                        action: "cancel",
                         label: noLabel,
                         callback: () => resolve(false)
                     }
-                }
+                ]
             }
         ).render(true);
     });

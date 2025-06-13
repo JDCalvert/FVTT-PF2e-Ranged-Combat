@@ -1,5 +1,6 @@
 {
     "pf2e-ranged-combat": {
+        "module-name": "PF2e Ranged Combat",
         "config": {
             "schemaVersion": {
                 "name": "Schema Version",
@@ -74,6 +75,11 @@
                     "header": "Miscellaneous",
                     "description": "Other settings from the module that don't belong anywhere else."
                 }
+            }
+        },
+        "dialog": {
+            "button": {
+                "cancel": "Cancel"
             }
         },
         "huntPrey": {
@@ -230,7 +236,7 @@
                     "warningAlreadyMoreAmmo": "{weapon}'s current magazine is already loaded with as much ammunition as {ammo}",
                     "tokenLoadsAmmo": "{token} loads their {weapon} with {ammo} ({charges}/{maxCharges}).",
                     "warningNoCompatibleAmmunition": "You have no equipped ammunition compatible with your {weapon}.",
-                    "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.</p><p>Select the ammunition to load.",
+                    "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.<br><br>Select the ammunition to load.",
                     "warningNotEnoughAmmunition": "You don't have enough ammunition to reload your {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.</p><p>Select new ammunition to load."
                 },
@@ -243,9 +249,9 @@
                     "warningAlreadyFullyLoaded": "{weapon} is already fully loaded.",
                     "warningAlreadyLoadedWithAmmo": "{weapon} is already loaded with {ammo}.",
                     "warningNoCompatibleAmmunition": "You have no equipped ammunition compatible with {weapon}.",
-                    "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.</p><p>Select the ammunition to load.",
+                    "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.<br><br>Select the ammunition to load.",
                     "warningNotEnoughAmmunition": "Not enough ammunition to reload {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.</p><p>Select new ammunition to load.",
+                    "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.<br><br>Select new ammunition to load.",
                     "tokenReloadsWeapon": "{token} reloads their {weapon}",
                     "withAmmunition": "with {ammunition}."
                 },
@@ -288,7 +294,7 @@
                 "tokenLoadsWeaponWithBomb": "{token} loads their {weapon} with {bomb}.",
                 "warningWeaponNotLoaded": "{token}'s {weapon} is not loaded with an alchemical bomb.",
                 "shouldUnloadDialogTitle": "{bomb} discard",
-                "shouldUnloadDialogRestWasted": "The remaining uses will be wasted",
+                "shouldUnloadDialogRestWasted": "The remaining uses will be wasted.",
                 "shouldUnloadInstead": "Are you sure you want to unload {bomb} from {weapon}?",
                 "buttonUnload": "Unload",
                 "buttonDoNotUnload": "Do Not Unload",

@@ -50,8 +50,16 @@ export async function loadAlchemicalCrossbow() {
 
             const shouldLoad = await dialogPrompt(
                 format("loadInsteadDialogTitle", { weapon: weapon.name }),
-                `<p>${format("weaponIsLoadedWithCharges", { weapon: weapon.name, bomb: loadedBombFlags.bombName, bombCharges: loadedBombFlags.bombCharges, bombMaxCharges: loadedBombFlags.bombMaxCharges })}<p>
-                <p>${format("loadInstead", { bomb: bomb.name })} ${existingResult}<p>`,
+                `<p>${format(
+                    "weaponIsLoadedWithCharges",
+                    {
+                        weapon: weapon.name,
+                        bomb: loadedBombFlags.bombName,
+                        charges: loadedBombFlags.bombCharges,
+                        maxCharges: loadedBombFlags.bombMaxCharges
+                    }
+                )}</p>
+                <p>${format("loadInstead", { bomb: bomb.name })} ${existingResult}</p>`,
                 localize("buttonLoad"),
                 localize("buttonDoNotLoad")
             );
@@ -126,9 +134,17 @@ export async function unloadAlchemicalCrossbow() {
         const shouldUnload = await dialogPrompt(
             format("shouldUnloadDialogTitle", { bomb: loadedBombFlags.bombName }),
             `
-                <p>${format("weaponIsLoadedWithCharges", { weapon: weapon.name, bomb: loadedBombFlags.bombName, charges: loadedBombFlags.bombCharges, maxCharges: loadedBombFlags.bombMaxCharges })}
-                ${localize("shouldUnloadDialogRestWasted")}</p>
-                <p>${format("shouldUnloadInstead", { bomb: loadedBombFlags.bombName, weapon: weapon.name })}</p>
+            <p>${format(
+                "weaponIsLoadedWithCharges",
+                {
+                    weapon: weapon.name,
+                    bomb: loadedBombFlags.bombName,
+                    charges: loadedBombFlags.bombCharges,
+                    maxCharges: loadedBombFlags.bombMaxCharges
+                }
+            )}
+            ${localize("shouldUnloadDialogRestWasted")}</p>
+            <p>${format("shouldUnloadInstead", { bomb: loadedBombFlags.bombName, weapon: weapon.name })}</p>
             `,
             localize("buttonUnload"),
             localize("buttonDoNotUnload")

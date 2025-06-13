@@ -1,3 +1,7 @@
+## 7.0.1 - 2025-06-13 (Pathfinder 2e 7.1.1)
+### Fix
+- Update dialogs to ApplicationV2
+
 ## 7.0.0 - 2025-06-12 (Pathfinder 2e 7.1.1)
 ### Feature
 - Confirm basic functionality compatible with Foundry v13.

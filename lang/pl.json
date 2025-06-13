@@ -83,6 +83,11 @@
                 }
             }
         },
+        "dialog": {
+            "button": {
+                "cancel": "Anuluj"
+            }
+        },
         "huntPrey": {
             "warningNoAction": "{token} nie posiada akcji Naznaczona Ofiara.",
             "unknownToken": "Nieznany token",

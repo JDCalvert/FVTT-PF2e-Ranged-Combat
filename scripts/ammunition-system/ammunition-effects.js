@@ -15,7 +15,7 @@ export function initialiseAmmunitionEffects() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
-        function(wrapper) {
+        function (wrapper) {
             if (!isAmmunitionEffectsEnabled()) {
                 wrapper();
             } else {
@@ -147,23 +147,31 @@ function isAmmunitionEffectsEnabled() {
 function showWarning(warningMessage) {
     const warningLevel = game.settings.get("pf2e-ranged-combat", "ammunitionEffectsWarningLevel");
     if (warningLevel == postToChatConfig.full) {
-        new Dialog(
+        new foundry.applications.api.DialogV2(
             {
-                title: "PF2e Ranged Combat",
+                window: {
+                    title: game.i18n.localize("pf2e-ranged-combat.module-name")
+                },
+                position: {
+                    width: 600
+                },
                 content: `<p>${localize(`warning.${warningMessage}.verbose`)}</p>`,
-                buttons: {
-                    "ok": {
-                        label: localize("warning.button.ok"),
+                buttons: [
+                    {
+                        action: "ok",
+                        label: localize("warning.button.ok")
                     },
-                    "showSimple": {
+                    {
+                        action: "showSimple",
                         label: localize("warning.button.showSimple"),
                         callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.simple)
                     },
-                    "doNotShow": {
+                    {
+                        action: "doNotShow",
                         label: localize("warning.button.doNotShow"),
                         callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.none)
                     }
-                }
+                ]
             }
         ).render(true);
     } else if (warningLevel == postToChatConfig.simple) {

@@ -39,6 +39,11 @@
                 "full": "Complet"
             }
         },
+        "dialog": {
+            "button": {
+                "cancel": "Annuler"
+            }
+        },
         "huntPrey": {
             "warningNoAction": "{token} n'a pas l'action Chasser une proie.",
             "unknownToken": "Jeton inconnu",

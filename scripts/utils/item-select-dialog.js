@@ -1,13 +1,19 @@
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.itemSelect." + key);
 
-export class ItemSelectDialog extends Dialog {
+export class ItemSelectDialog extends foundry.applications.api.DialogV2 {
     constructor(title, content) {
         super(
             {
-                title,
+                window: {
+                    title
+                },
                 content: content,
-                buttons: {
-                }
+                buttons: [
+                    {
+                        action: "cancel",
+                        label: game.i18n.localize("pf2e-ranged-combat.dialog.button.cancel")
+                    }
+                ]
             },
             {
                 height: "100%",
@@ -42,7 +48,7 @@ export class ItemSelectDialog extends Dialog {
 
         for (const itemCategory of items.keys()) {
             content += `
-                <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
+                <fieldset style="border: 1px solid #a1a1a1; width: 100%; padding: 5px;  gap: 0px;">
                     <legend>${itemCategory}</legend>
             `;
 
@@ -65,7 +71,7 @@ export class ItemSelectDialog extends Dialog {
 
         if (options.length) {
             content += `
-                <fieldset style="border: 1px solid #a1a1a1; paddng: 5px;">
+                <fieldset style="border: 1px solid #a1a1a1; width: 100%; padding: 5px; gap: 0px;">
                     <legend>${localize("options")}</legend>
                     <form>
             `;
@@ -104,21 +110,27 @@ export class ItemSelectDialog extends Dialog {
         };
     }
 
-    activateListeners(html) {
-        html.find(".item-button").on(
-            "click",
-            (event) => {
-                this.itemId = event.currentTarget.value;
-                this.close();
-            }
-        );
+    _onRender(context, options) {
+        const itemButtons = this.element.querySelectorAll(`[class="item-button"]`);
+        for (const button of itemButtons) {
+            button.addEventListener(
+                "click",
+                (event) => {
+                    this.itemId = event.currentTarget.value;
+                    this.close();
+                }
+            );
+        }
 
-        html.find(".option-checkbox").on(
-            "change",
-            (event) => this.selectionOptions[event.currentTarget.id] = event.currentTarget.checked
-        );
+        const checkboxes = this.element.querySelectorAll(`[class="option-checkbox"]`);
+        for (const checkbox of checkboxes) {
+            checkbox.addEventListener(
+                "change",
+                (event) => this.selectionOptions[event.currentTarget.id] = event.currentTarget.checked
+            );
+        }
 
-        super.activateListeners(html);
+        super._onRender(context, options);
     }
 
     async close() {

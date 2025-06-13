@@ -290,23 +290,33 @@ export function showWarning(warningMessage) {
     if (game.settings.get("pf2e-ranged-combat", "doNotShowWarningAgain")) {
         ui.notifications.warn(warningMessage);
     } else {
-        new Dialog(
+        new foundry.applications.api.DialogV2(
             {
-                "title": "PF2e Ranged Combat",
-                "content": `
-                    <p>${localize("warningDialog1")} ${warningMessage}<p>
-                    <p>${localize("warningDialog2")} 
-                    ${localize("warningDialog3")}</p>
+                window: {
+                    title: game.i18n.localize("pf2e-ranged-combat.module-name")
+                },
+                position: {
+                    width: 400
+                },
+                content: `
+                    <p>
+                        ${localize("warningDialog1")} ${warningMessage}
+                        <br><br>
+                        ${localize("warningDialog2")} 
+                        ${localize("warningDialog3")}
+                    </p>
                 `,
-                "buttons": {
-                    "ok": {
-                        "label": localize("buttonOK"),
+                buttons: [
+                    {
+                        action: "ok",
+                        label: localize("buttonOK"),
                     },
-                    "doNotShowAgain": {
-                        "label": localize("buttonDoNotShowAgain"),
-                        "callback": () => game.settings.set("pf2e-ranged-combat", "doNotShowWarningAgain", true)
+                    {
+                        action: "doNotShowAgain",
+                        label: localize("buttonDoNotShowAgain"),
+                        callback: () => game.settings.set("pf2e-ranged-combat", "doNotShowWarningAgain", true)
                     }
-                }
+                ]
             }
         ).render(true);
     }

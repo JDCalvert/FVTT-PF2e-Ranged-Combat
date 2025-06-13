@@ -15,19 +15,26 @@ export function npcWeaponConfiguration() {
         return;
     }
 
-    new Dialog(
+    new foundry.applications.api.DialogV2(
         {
-            title: localize("dialog.title"),
+            window: {
+                title: localize("dialog.title")
+            },
+            position: {
+                width: 600
+            },
             content: buildContent(actor),
-            buttons: {
-                ok: {
+            buttons: [
+                {
+                    action: "ok",
                     label: localize("dialog.done"),
                     callback: (html) => saveChanges(html, actor)
                 },
-                cancel: {
+                {
+                    action: "cancel",
                     label: localize("dialog.cancel")
                 }
-            }
+            ]
         }
     ).render(true);
 }
@@ -48,22 +55,21 @@ function buildContent(actor) {
     let content = "";
 
     content += `
-        <div>
+        <div class="dialog-content standard-form" style="gap: 0px">
+        <div style="padding-bottom: 10px">
             ${localize("dialog.hint")}
         </div>
 
-        <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
+        <fieldset style="border: 1px solid #a1a1a1; padding: 5px; padding-left: 10px; padding-right: 10px; gap: 0px">
             <legend>${localize("dialog.legendGeneral")}</legend>
             <form>
-                <div class = "form-group">
+                <div class="form-group">
                     <input type="checkbox" id="enableAdvancedAmmunitionSystem" name="enableAdvancedAmmunitionSystem" ${enableAdvancedAmmunitionSystem ? `checked` : ``}>
-                    <label>${localize("dialog.enableAmmunition")}</label>
+                    <label for="enableAdvancedAmmunitionSystem">${localize("dialog.enableAmmunition")}</label>
                 </div>
-            </form>
-            <form>
-                <div class = "form-group">
+                <div class="form-group">
                     <input type="checkbox" id="enableAdvancedThrownWeaponSystem" name="enableAdvancedThrownWeaponSystem" ${enableAdvancedThrownWeaponSystem ? `checked` : ``}>
-                    <label>${localize("dialog.enableThrown")}</label>
+                    <label for="enableAdvancedThrownWeaponSystem">${localize("dialog.enableThrown")}</label>
                 </div>
             </form>
         </fieldset>
@@ -129,6 +135,7 @@ function buildContent(actor) {
     content += `
             </form>
         </fieldset>
+        </div>
     `;
 
     return content;

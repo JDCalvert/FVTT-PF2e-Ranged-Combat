@@ -34,6 +34,11 @@
                 "hint": "隐藏本模组创建的指示物效果图标。"
             }
         },
+        "dialog": {
+            "button": {
+                "cancel": "取消"
+            }
+        },
         "huntPrey": {
             "warningNoAction": "{token}没有猎杀目标动作。",
             "maxTargetsOne": "一个",
