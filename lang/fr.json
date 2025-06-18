@@ -14,12 +14,12 @@
                 "hint": "La version actuelle des données relatives à ce module"
             },
             "advancedAmmunitionSystemPlayer": {
-                "name": "Système de munitions avancé (Joueur)",
-                "hint": "Suivre les munitions chargées pour les armes rechargeables et à répétition. Cette option est prioritaire sur l'option Empêcher de tirer avec l'arme si elle n'est pas chargée."
+                "name": "Système de munitions avancé",
+                "hint": "Personnages joueurs seulement. Suivre les munitions chargées pour les armes rechargeables et à répétition. Cette option est prioritaire sur l'option Empêcher de tirer avec l'arme si elle n'est pas chargée."
             },
             "advancedThrownWeaponSystemPlayer": {
-                "name": "Système d'arme de jet avancé (Joueur)",
-                "hint": "Gérer les armes de jet qui sont lâchées après utilisation et exiger qu'une autre arme soit dégainée avant une nouvelle attaque."
+                "name": "Système d'arme de jet avancé",
+                "hint": "Personnages joueurs seulement. S'assure que les armes de jet soient lâchées après utilisation et nécessite qu'une autre arme soit dégainée avant une nouvelle attaque."
             },
             "requiredPermissionToShowMessages": {
                 "name": "Autorisation minimale pour voir les messages",
@@ -37,6 +37,43 @@
                 "none": "Aucun",
                 "simple": "Simple",
                 "full": "Complet"
+            },
+            "category": {
+                "ammunitionSystemPlayer": {
+                    "header": "Système de munition (Joueur)",
+                    "description": "Contrôle la manière dont le module test et régit les munitions en faisant des attaques à distance avec des personnages joueurs."
+                },
+                "ammunitionSystemNPC": {
+                    "header": "Système de munition (PNJ)",
+                    "description": {
+                        "line1": "Contrôle la manière dont le module test et régit les munitions en faisant les attaques à distance avec des personnages PNJ.",
+                        "line2": "Prenez note que le Système de munition avancé est contrôlé par le biais de la macro Configuration d'arme de PNJ incluse dans le module."
+                    }
+                },
+                "chatControls": {
+                    "description": {
+                        "simple": "Simple : Poster un petit message décrivant ce qui s'est passé.",
+                        "main": "Paramètres permettant de poster dans la conversation.",
+                        "full": "Plein : Poster l'action ou l'objet au complet.",
+                        "none": "Aucun : Ne pas poster de message."
+                    },
+                    "header": "Contrôles de la conversation"
+                },
+                "ammunitionEffects": {
+                    "header": "Effets des munitions",
+                    "description": "Lorsqu'il est activé, ce module remplace la gestion des effets des munitions du système. Lorsque vous tirez avec une arme utilisant des munitions avec un effet, l'effet est appliqué au prochain jet de dégâts en utilisant cette arme avec les effets de la munition. Changer les munitions de l'arme entre le tir et le jet de dégâts appliquera les effets de la munition qui a été tirée et pas ceux de la munition sélectionnée pour l'arme."
+                },
+                "advancedThrownWeaponSystem": {
+                    "header": "Système d'arme de jet avancé",
+                    "description": {
+                        "line2": "Notez que cette option ne s'applique qu'aux acteurs de type personnage joueur. Elle peut être activée pour un PNJ en utilisant la macro Configuration des armes de PNJ incluse dans le module.",
+                        "line1": "Lorsque cette option est activée, le module gère les piles d'armes de jet lancées (ex. les couteaux et les bombes). Le fait de tirer, rengainer ou ranger une arme crée une nouvelle pile contenant un objet dans le nouvel état. Le reste de la pile restera inchangé. S'il existe déjà une pile contenant cet objet dans le nouvel état, l'objet sera déplacé vers cette pile."
+                    }
+                },
+                "miscellaneous": {
+                    "header": "Divers",
+                    "description": "Autres paramètres du module qui n'ont pas leur place ailleurs."
+                }
             }
         },
         "dialog": {
@@ -212,7 +249,12 @@
                         "showSimple": "Ok (montrer les messages simples)"
                     },
                     "damageWithoutEffect": {
-                        "simple": "Dégâts des armes lancés sans les effets des munitions."
+                        "simple": "Dégâts des armes lancés sans les effets des munitions.",
+                        "verbose": "Les munitions actuelles de votre arme possèdent un effet, mais il n'a pas été appliqué à ce jet de dégâts. Il se peut que les munitions de l'arme aient changé depuis le dernier jet d'attaque ou que des dégâts aient été lancés sans qu'il n'y ait eu de jet d'attaque préalable."
+                    },
+                    "notMatched": {
+                        "simple": "Les munitions de l'arme ne correspondent pas à l'effet des munitions.",
+                        "verbose": "Les munitions actuelles de votre arme ne correspondent pas aux munitions dont l'effet a été appliqué au jet de dégâts. Les munitions de l'arme peuvent avoir été modifiées depuis son dernier jet d'attaque."
                     }
                 }
             },
@@ -282,7 +324,9 @@
             "rangersAnimalCompanion": "Compagnon animal de {actor}",
             "linkedCompanion": "Le compagnon est désormais le compagnon de {master}.",
             "noAnimalCompanionFeat": "{actor} ne possède pas le don Compagnon animal du rôdeur.",
-            "noTarget": "Vous devez choisir une cible unique pour qu'elle devienne votre compagnon animal."
-        }
+            "noTarget": "Vous devez choisir une cible unique pour qu'elle devienne votre compagnon animal.",
+            "masterfulAnimalCompanion": "Compagnon magistral de {actor}"
+        },
+        "module-name": "PF2e Combat à distance"
     }
 }
