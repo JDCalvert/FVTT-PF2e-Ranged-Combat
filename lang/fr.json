@@ -193,7 +193,7 @@
                     "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.</p><p>Sélectionnez de nouvelles munitions à charger.",
                     "warningNpcNotSupported": "PF2e Ranged Combat - Le rechargement des chargeurs n'est actuellement pas pris en charge pour les PNJ.",
                     "warningNoCompatibleAmmunition": "Vous ne disposez pas de munitions compatibles avec votre {weapon}.",
-                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger."
+                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.<br><br>Sélectionnez les munitions à charger."
                 },
                 "reload": {
                     "warningNoReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
@@ -203,11 +203,11 @@
                     "warningAlreadyLoadedWithAmmo": "{weapon} est déjà chargé(e) avec {ammo}.",
                     "warningNoCompatibleAmmunition": "Vous n'avez pas de munitions compatibles avec votre {weapon}.",
                     "warningNotEnoughAmmunition": "Pas assez de munitions pour recharger votre {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.</p><p>Sélectionnez de nouvelles munitions à charger.",
+                    "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.<br><br>Sélectionnez de nouvelles munitions à charger.",
                     "tokenReloadsWeapon": "{token} recharge sa/son {weapon}",
                     "withAmmunition": "avec {ammunition}.",
                     "warningAlreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
-                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.</p><p>Sélectionnez les munitions à charger.",
+                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.<br><br>Sélectionnez les munitions à charger.",
                     "warningNoReloadableCapacityWeapons": "Vous ne disposez pas d'armes rechargeables avec le trait capacité."
                 },
                 "switchAmmunition": {
@@ -264,7 +264,7 @@
         },
         "utils": {
             "singleCharacterSelected": "Vous ne devez choisir qu'un personnage.",
-            "warningDialog1": "Vous ne pouvez pas tirer avec cette arme parce que :",
+            "warningDialog1": "Vous ne pouvez accomplir cette action parce que :",
             "buttonOK": "Ok",
             "buttonDoNotShowAgain": "Ok (Ne plus afficher)",
             "migration": {
@@ -294,7 +294,7 @@
                 "tokenUnloadsBombFromWeapon": "{token} décharge {bomb} de sa/son {weapon}.",
                 "warningNoAlchemicalCrossbow": "{token} n'a pas d'Arbalète alchimique.",
                 "weaponIsLoadedWithCharges": "{weapon} est chargé(e) avec {bomb} avec {charges}/{maxCharges} utilisations restantes.",
-                "shouldUnloadDialogRestWasted": "Les utilisations restantes seront gâchées",
+                "shouldUnloadDialogRestWasted": "Les utilisations restantes seront gâchées.",
                 "warningNoLesserAlchemicalBombs": "{token} ne possède pas de bombes alchimiques inférieures infligeant des dégâts d'énergie."
             },
             "alchemicalShot": {
@@ -310,14 +310,18 @@
                 "noTarget": "Vous ne pouvez sélectionner qu'une cible.",
                 "config": {
                     "dc": {
-                        "enemyDC": "DD de l'ennemi"
+                        "enemyDC": "CA de l'ennemi",
+                        "name": "Tromper le DD",
+                        "hint": "Lors de l'utilisation de l'action Tromper le DD, le DD contre lequel il faut lancer le dé est le même que celui de l'action Tromper. Le DD standard de l'aide était de 20 avant le remaster et de 15 après le remaster, bien qu'une règle maison populaire consiste à utiliser la CA de l'ennemi."
                     }
                 },
                 "result": {
                     "criticalFailure": "Votre allié subit une pénalité de circonstances de -1 à son test.",
                     "failure": "Vous ne parvenez pas à aider votre allié.",
                     "success": "Vous accordez à votre allié un bonus de circonstances de +{bonus} à son test."
-                }
+                },
+                "noWeapon": "{actor} ne brandit pas d'arme à feu ou d'arbalète chargée.",
+                "name": "Tromper"
             }
         },
         "linkCompanion": {
