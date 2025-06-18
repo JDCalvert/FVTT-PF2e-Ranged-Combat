@@ -6,24 +6,24 @@
                 "hint": "与本模组相关联的系统版本"
             },
             "postActionToChat": {
-                "name": "发布宏中的完整动作",
-                "hint": "执行模拟行动的宏时，将完整描述发送至聊天。"
+                "name": "发送动作至聊天栏",
+                "hint": "在运行模拟执行动作的宏时，发送一条简洁信息或完整动作至聊天栏。"
             },
             "postAmmunitionToChat": {
-                "name": "发布完整弹药描述",
-                "hint": "远程武器使用非标准弹药射击时，将弹药道具发送至聊天。"
+                "name": "发送弹药至聊天栏",
+                "hint": "在使用远程武器射击时，发送简短信息或完整弹药物品描述。"
             },
             "preventFireNotLoaded": {
                 "name": "未装填时禁止射击",
                 "hint": "对于装填至少为1的武器，禁止骰攻击检定，除非角色已有该武器的装填状态。"
             },
             "advancedAmmunitionSystemPlayer": {
-                "name": "进阶弹药系统（玩家）",
-                "hint": "追踪连发武器和再装填武器的弹药数量。若武器未装填，这会覆盖“禁止武器射击”的设置。"
+                "name": "进阶弹药系统",
+                "hint": "（仅PC角色）追踪连发武器和再装填武器的弹药数量。若武器未装填，这会覆盖“禁止武器射击”的设置。"
             },
             "advancedThrownWeaponSystemPlayer": {
-                "name": "进阶投掷武器系统（玩家）",
-                "hint": "使用后将投掷武器标记为“放开”，并在下一攻击前要求玩家拔出另一把武器。"
+                "name": "进阶投掷武器系统",
+                "hint": "（仅PC角色）使用后将投掷武器标记为“放开”，并在下一攻击前要求玩家拔出另一把武器。"
             },
             "requiredPermissionToShowMessages": {
                 "name": "查看消息的最低权限",
@@ -32,6 +32,48 @@
             "hideTokenIcons": {
                 "name": "隐藏指示物效果图标",
                 "hint": "隐藏本模组创建的指示物效果图标。"
+            },
+            "postToChat": {
+                "none": "禁止",
+                "simple": "简洁",
+                "full": "详细"
+            },
+            "category": {
+                "ammunitionSystemPlayer": {
+                    "header": "弹药系统（玩家）",
+                    "description": "管理模组在玩家进行远程攻击时检查和处理弹药的方式。"
+                },
+                "ammunitionSystemNPC": {
+                    "header": "弹药系统（NPC）",
+                    "description": {
+                        "line1": "管理模组在NPC角色进行远程攻击时检查和处理弹药的方式。",
+                        "line2": "请注意，进阶弹药系统是通过模组中的NPC武器配置宏来管理的。"
+                    }
+                },
+                "chatControls": {
+                    "header": "聊天栏管理",
+                    "description": {
+                        "main": "与发送至聊天栏相关的设置。",
+                        "full": "详细：发送完整的动作或物品。",
+                        "simple": "简洁：发送描述发生了什么的简短信息。",
+                        "none": "禁止：不发送信息。"
+                    }
+                },
+                "ammunitionEffects": {
+                    "header": "弹药效果",
+                    "description": "启用时，模组将覆盖系统对弹药效果的处理。当武器使用带有效果的弹药射击时，该效果将应用于使用该弹药武器接下来的伤害掷骰。在射击后，骰掷伤害前改变武器的弹药将应用所击发弹药的效果，而不是武器所选择的弹药。"
+                },
+                "advancedThrownWeaponSystem": {
+                    "description": {
+                        "line2": "请注意，此处选项仅适用于玩家角色类型的角色。该功能可以使用模组中的NPC武器配置宏为NPC启用。",
+                        "line1": "启用时，模组将处理成堆的投掷武器（如小刀和炸弹），所以取出/收起/存放将创建一个包含状态更新物品的新物品堆，其中。物品堆的其余部分将保持不变。如果状态更新物品已经存在一个物品堆，则物品将被移动到该物品堆中。"
+                    },
+                    "header": "进阶投掷武器系统"
+                },
+                "miscellaneous": {
+                    "header": "杂项",
+                    "description": "模组中不属于任何一个模块的其他设置。"
+                }
             }
         },
         "dialog": {
@@ -48,10 +90,22 @@
             "huntTwoTargets": "{token}指定{target1}和{target2}为猎杀目标。",
             "huntOneTarget": "{token}指定{target1}为猎杀目标。",
             "warningNoTarget": "没有选择目标。",
-            "warningTooManyTargets": "你只能指定{maxTargets}猎杀目标。",
+            "warningTooManyTargets": "你只能指定{maxTargets}为猎杀目标。",
             "shareWithOne": "他们可以与一个盟友共享效果。",
             "huntThreeTargets": "{token}指定{target1}、{target2}和{target3}为猎杀目标。",
-            "unknownToken": "未知指示物"
+            "unknownToken": "未知指示物",
+            "precision": {
+                "attackNumber": "攻击猎杀目标",
+                "first": "第一",
+                "second": "第二",
+                "third": "第三",
+                "subsequent": "后续"
+            },
+            "huntersEdge": {
+                "precision": "精准",
+                "outwit": "机智",
+                "flurry": "连击"
+            }
         },
         "thrownWeapons": {
             "warningNotEquipped": "{weapon}未被装备！",
@@ -86,7 +140,19 @@
             "ammunitionSelect": {
                 "title": "选择弹药",
                 "loadedAmmunition": "装填中的弹药",
-                "header": "选择要使用的弹药。"
+                "header": {
+                    "equipped": "装备弹药",
+                    "current": "当前弹药",
+                    "loadedAmmunition": "已装填弹药"
+                },
+                "option": {
+                    "setAsAmmunition": "设置为弹药"
+                },
+                "action": {
+                    "switch": "选择要切换的弹药。",
+                    "unload": "选择要卸载的弹药。",
+                    "fire": "选择要击发的弹药。"
+                }
             },
             "check": {
                 "weaponNotLoaded": "{weapon}尚未装填。",
@@ -130,7 +196,7 @@
                     "warningNoCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。",
                     "warningNotEnoughAmmunition": "你没有足够弹药来装填{weapon}。",
                     "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为零。</p><p>选择新弹药装填。",
-                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。</p><p>选择要装填的弹药。"
+                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。<br><br>选择要装填的弹药。"
                 },
                 "reload": {
                     "warningNoReloadableWeapons": "你没有可再装填的武器。",
@@ -140,11 +206,12 @@
                     "warningAlreadyFullyLoaded": "{weapon}已装填满。",
                     "warningAlreadyLoadedWithAmmo": "{weapon}已装填{ammo}。",
                     "warningNoCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。",
-                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。</p><p>选择要装填的弹药。",
+                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。<br><br>选择要装填的弹药。",
                     "warningNotEnoughAmmunition": "你没有足够弹药装填{weapon}。",
-                    "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为空。</p><p>选择新弹药装填。",
+                    "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为空。<br><br>选择新弹药装填。",
                     "tokenReloadsWeapon": "{token}装填了{weapon}",
-                    "withAmmunition": "使用{ammunition}。"
+                    "withAmmunition": "使用{ammunition}。",
+                    "warningNoReloadableCapacityWeapons": "你没有具备弹容特征的可装填武器。"
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "你没有使用弹药的武器。",
@@ -154,19 +221,55 @@
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon}尚未装填！",
-                    "tokenUnloadsAmmunitionFromWeapon": "{token}将{ammunition}退出{weapon}。",
-                    "tokenUnloadsWeapon": "{token}退出{weapon}的弹药",
+                    "tokenUnloadsAmmunitionFromWeapon": "{token}将{ammunition}从{weapon}上卸载。",
+                    "tokenUnloadsWeapon": "{token}卸载{weapon}的弹药",
                     "noLoadedWeapons": "你没有已装填的武器。"
+                },
+                "names": {
+                    "reload": "装填",
+                    "unload": "卸载",
+                    "reloadMagazine": "装填弹匣",
+                    "nextChamber": "下一个弹仓"
                 }
+            },
+            "effect": {
+                "config": {
+                    "enable": {
+                        "hint": "使用先前击发的弹药效果覆盖系统的弹药效果",
+                        "name": "启用弹药效果"
+                    },
+                    "warningLevel": {
+                        "name": "弹药效果警告级别",
+                        "hint": "当弹药效果可能无法像预期般应用时显示的警告级别。"
+                    }
+                },
+                "warning": {
+                    "button": {
+                        "showSimple": "确认（显示简洁信息）",
+                        "doNotShow": "确认（不显示信息）",
+                        "ok": "确认"
+                    },
+                    "notMatched": {
+                        "verbose": "你的武器当前的弹药与应用于伤害掷骰的弹药不匹配。武器弹药可能在上一次攻击掷骰后被更换。",
+                        "simple": "武器弹药与弹药效果不匹配。"
+                    },
+                    "damageWithoutEffect": {
+                        "simple": "武器伤害掷骰不包含弹药效果。",
+                        "verbose": "你的武器当前的弹药具有某种效果，但它不适用于此次伤害掷骰。武器弹药可能在上一次次攻击掷骰后被更换，或者在没有进行攻击掷骰的情况下便投掷了伤害。"
+                    }
+                }
+            },
+            "itemSelect": {
+                "options": "选项"
             }
         },
         "utils": {
             "singleCharacterSelected": "你必须选择一个角色。",
-            "warningDialog1": "你无法击发此武器：",
+            "warningDialog1": "你无法使用此动作：",
             "warningDialog2": "这是PF2e Ranged Combat模组提供的功能。",
             "warningDialog3": "你可以在<a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">这里</a>学习如何使用模组。",
-            "buttonOK": "好的",
-            "buttonDoNotShowAgain": "好的（不要再显示）",
+            "buttonOK": "确认",
+            "buttonDoNotShowAgain": "确认（不要再显示）",
             "migration": {
                 "multipleAmmunitions.consoleInfo": "PF2e Ranged Combat - 开始迁移 1：多种弹药更新",
                 "thrownWeaponGroups.consoleInfo": "PF2e Ranged Combat - 开始迁移 2：投掷武器组",
@@ -187,11 +290,11 @@
                 "tokenLoadsWeaponWithBomb": "{token}用{bomb}装填了{weapon}。",
                 "warningWeaponNotLoaded": "{token}的{weapon}尚未装填炼金炸弹。",
                 "shouldUnloadDialogTitle": "{bomb}已废弃",
-                "shouldUnloadDialogRestWasted": "剩余炸弹将被浪费",
-                "shouldUnloadInstead": "确定从{weapon}中退出{bomb}吗？",
-                "buttonUnload": "确定",
-                "buttonDoNotUnload": "不要退出",
-                "tokenUnloadsBombFromWeapon": "{token}从{weapon}中退出{bomb}。",
+                "shouldUnloadDialogRestWasted": "剩余炸弹将被浪费。",
+                "shouldUnloadInstead": "确定从{weapon}中卸载{bomb}吗？",
+                "buttonUnload": "确定卸载",
+                "buttonDoNotUnload": "不要卸载",
+                "tokenUnloadsBombFromWeapon": "{token}从{weapon}中卸载{bomb}。",
                 "warningNoAlchemicalCrossbow": "{token}没有炼金弩。",
                 "warningNoLesserAlchemicalBombs": "{token}没有能造成能量伤害的次级炼金炸弹。"
             },
@@ -199,8 +302,34 @@
                 "warningNoFeat": "{actor}没有炼金射击专长。",
                 "warningNotWieldingProperWeapon": "{actor}没有持握火器或弩。",
                 "warningNoAlchemicalBombs": "{actor}没有炼金炸弹。",
-                "pourBombIntoWeapon": "{actor}将{bomb}的内容物倒入{weapon}。",
+                "pourBombIntoWeapon": "{actor}将{bomb}的成分混合进{weapon}中。",
                 "alchemicalShot": "炼金射击"
+            }
+        },
+        "linkCompanion": {
+            "masterfulAnimalCompanion": "{actor}的大师伙伴",
+            "noAnimalCompanionFeat": "{actor}没有动物伙伴游侠专长。",
+            "noTarget": "你必须选取一个目标作为你的动物伙伴。",
+            "linkedCompanion": "{companion}现在是{master}的伙伴。",
+            "rangersAnimalCompanion": "{actor}的动物伙伴"
+        },
+        "feat": {
+            "fakeOut": {
+                "config": {
+                    "dc": {
+                        "name": "空枪嘲弄DC",
+                        "enemyDC": "敌人AC",
+                        "hint": "使用空枪嘲弄动作时需要掷骰对抗的DC。标准的协助DC在重制前是20，在重制后是15，尽管某一流行房规使用的是敌人的AC。"
+                    }
+                },
+                "name": "空枪嘲弄",
+                "noWeapon": "{actor}并未在挥舞已装填火器或弩。",
+                "noTarget": "你必须选择一个目标。",
+                "result": {
+                    "success": "你对盟友的检定给予 +{bonus}环境加值。",
+                    "failure": "你对盟友的协助失败。",
+                    "criticalFailure": "你的盟友的检定获得-1环境减值。"
+                }
             }
         }
     }
