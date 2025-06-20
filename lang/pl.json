@@ -203,7 +203,7 @@
                     "warningAlreadyMoreAmmo": "Magazynek {weapon} jest już załadowany {ammo} sztukami amunicji",
                     "tokenLoadsAmmo": "{token} ładuje swoją {weapon} - {ammo} ({charges}/{maxCharges}).",
                     "warningNoCompatibleAmmunition": "Nie masz amunicji kompatybilnej z twoją {weapon}.",
-                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.</p><p>Wybierz amunicję do załadowania.",
+                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.<br><br>Wybierz amunicję do załadowania.",
                     "warningNotEnoughAmmunition": "Nie masz wystarczającej ilości amunicji, aby przeładować {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.</p><p>Wybierz nową amunicję do załadowania."
                 },
@@ -215,9 +215,9 @@
                     "warningAlreadyFullyLoaded": "{weapon} jest już w pełni załadowana.",
                     "warningAlreadyLoadedWithAmmo": "{weapon}} jest już załadowana {ammo}.",
                     "warningNoCompatibleAmmunition": "Nie masz wyposażonej amunicji kompatybilnej z {weapon}.",
-                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.</p><p>Wybierz amunicję do załadowania.",
+                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.<br><br>Wybierz amunicję do załadowania.",
                     "warningNotEnoughAmmunition": "Za mało amunicji, aby przeładować {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.</p><p>Wybierz nową amunicję do załadowania.",
+                    "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.<br><br>Wybierz nową amunicję do załadowania.",
                     "tokenReloadsWeapon": "{token} przeładowuje swoją {weapon}",
                     "withAmmunition": "za pomocą {ammunition}.",
                     "warningNoReloadableCapacityWeapons": "Nie posiadasz broni wielokrotnego ładowania z cechą Pojemności."
@@ -294,7 +294,7 @@
                 "tokenLoadsWeaponWithBomb": "{token} ładuje swoją {weapon} za pomocą {bomb}.",
                 "warningWeaponNotLoaded": "{weapon} {token} nie jest załadowana bombą alchemiczną.",
                 "shouldUnloadDialogTitle": "odrzuć {bomb}",
-                "shouldUnloadDialogRestWasted": "Pozostałe użycia zostaną zmarnowane",
+                "shouldUnloadDialogRestWasted": "Pozostałe użycia zostaną zmarnowane.",
                 "shouldUnloadInstead": "Czy na pewno chcesz wyładować {bomb} z {weapon}?",
                 "buttonUnload": "Rozładuj",
                 "buttonDoNotUnload": "Nie rozładowuj",
@@ -335,6 +335,7 @@
                 },
                 "noWeapon": "{actor} nie dzierży naładowanej broni palnej ani kuszy."
             }
-        }
+        },
+        "module-name": "PF2e Ranged Combat"
     }
 }
