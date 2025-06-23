@@ -27,17 +27,17 @@ export function initialiseAmmunitionEffects() {
 
     HookManager.register("ammunition-fire", handleAmmunitionFired);
     HookManager.register("weapon-damage", handleWeaponDamage);
-    HookManager.register("reload", removeAmmunitionEffect);
+    HookManager.register("unload", removeAmmunitionEffect);
 }
 
 /**
- * When rolling a weapon attack, remove any previous ammunition effect and create a new one if required. 
+ * Apply the effects of the given ammunition to the weapon.
  * 
  * @param {Weapon} weapon               The weapon firing the ammunition
  * @param {PF2eConsumable} ammunition   The ammunition being fired
  * @param {Updates} updates 
  */
-function handleAmmunitionFired({ weapon, ammunition, updates }) {
+export function applyAmmunitionEffect(weapon, ammunition, updates) {
     if (!isAmmunitionEffectsEnabled()) {
         return;
     }
@@ -50,22 +50,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
     updates.deferredUpdate(
         async () => {
             if (ammunition.system.rules.length) {
-                for (const rule of ammunition.system.rules) {
-
-                    // Change the rule's selector(s) to point directly to the weapon that was fired
-                    if (rule.selector) {
-                        for (let i = 0; i < rule.selector.length; i++) {
-                            rule.selector[i] = rule.selector[i].replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
-                        }
-                    }
-
-                    // Change any definition rule to point to the weapon ID instead of the item ID
-                    if (rule.definition) {
-                        for (let i = 0; i < rule.definition.length; i++) {
-                            rule.definition[i] = rule.definition[i].replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
-                        }
-                    }
-                }
+                const rules = buildAmmunitionRules(ammunition);
 
                 const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
                 setEffectTarget(ammunitionEffectSource, weapon, false);
@@ -75,7 +60,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
                         "name": `${ammunition.name} (${weapon.name})`,
                         "img": ammunition.img,
                         "system": {
-                            "rules": ammunition.system.rules,
+                            "rules": rules,
                             "description": ammunition.system.description
                         },
                         "flags.pf2e-ranged-combat.ammunition": {
@@ -91,6 +76,50 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
             }
         }
     );
+}
+
+function handleAmmunitionFired({ weapon, ammunition, updates }) {
+    if (!isAmmunitionEffectsEnabled()) {
+        return;
+    }
+
+    // If we already have an effect for the ammunition we're firing, do nothing
+    const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
+    if (ammunitionEffect) {
+        const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
+        if (effectAmmunition.sourceId === ammunition.sourceId) {
+            return;
+        }
+    }
+
+    applyAmmunitionEffect(weapon, ammunition, updates);
+}
+
+/**
+ * @param {PF2eConsumable} ammunition 
+ */
+function buildAmmunitionRules(ammunition) {
+    for (const rule of ammunition.system.rules) {
+        // Change the rule's selector(s) to point directly to the weapon that was fired
+        if (rule.selector) {
+            for (let i = 0; i < rule.selector.length; i++) {
+                rule.selector[i] = rule.selector[i].replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
+            }
+        }
+
+        // Change any definition rule to point to the weapon ID instead of the item ID
+        if (rule.definition) {
+            for (let i = 0; i < rule.definition.length; i++) {
+                rule.definition[i] = rule.definition[i].replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
+            }
+        }
+
+        if (rule.itemId) {
+            rule.itemId = rule.itemId.replace(/{item\|\_?id}/, "{item|flags.pf2e.rulesSelections.weapon}");
+        }
+    }
+
+    return ammunition.system.rules;
 }
 
 /**

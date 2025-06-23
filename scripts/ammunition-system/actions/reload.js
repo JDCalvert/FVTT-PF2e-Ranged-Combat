@@ -7,6 +7,7 @@ import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { applyAmmunitionEffect } from "../ammunition-effects.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
 import { buildLoadedEffectDescription, buildLoadedEffectName, checkFullyLoaded, isFullyLoaded, updateAmmunitionQuantity } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
@@ -263,6 +264,8 @@ export async function performReload(actor, token, weapon, updates, options = {})
 
             setEffectTarget(loadedEffectSource, weapon);
             loadedEffectSource.system.description.value += `<p>@UUID[${ammo.sourceId}]</p>`;
+
+            applyAmmunitionEffect(weapon, ammo, updates);
 
             foundry.utils.mergeObject(
                 loadedEffectSource.flags["pf2e-ranged-combat"],

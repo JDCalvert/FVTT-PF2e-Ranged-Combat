@@ -7,3 +7,5 @@ rm -r packs
 fvtt package pack effects --in packs-source/effects --out packs
 fvtt package pack feats --in packs-source/feats --out packs
 fvtt package pack macros --in packs-source/macros --out packs
+
+7z u pf2e-ranged-combat.zip -uq0 art/ lang/ packs/ scripts/ styles/ CHANGELOG.md module.json README.md

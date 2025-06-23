@@ -2,6 +2,7 @@ import { Ammunition } from "../../types/pf2e-ranged-combat/ammunition.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
+import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInteractToChat, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
@@ -110,6 +111,8 @@ export async function performUnload(actor, token, weapon) {
             "1"
         );
     }
+
+    HookManager.call("unload", { weapon, updates });
 
     updates.handleUpdates();
     Hooks.callAll("pf2eRangedCombatUnload", actor, token, weapon);

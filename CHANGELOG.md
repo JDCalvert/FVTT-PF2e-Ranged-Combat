@@ -1,6 +1,14 @@
+## 7.0.2 - 2025-06-23 (Pathfinder 2e 7.2.0)
+### Fix (System API Change)
+- Fixed PF2eWeapon's `ammoRequired` function being replaced with `system.expend`.
+- Reworked ammunition effects:
+  - On-hit effects apply.
+  - Damage effects should apply when using automatic damage rolling from PF2e Workbench.
+- Updated translations from Weblate (#218).
+
 ## 7.0.1 - 2025-06-13 (Pathfinder 2e 7.1.1)
 ### Fix
-- Update dialogs to ApplicationV2
+- Update dialogs to ApplicationV2.
 
 ## 7.0.0 - 2025-06-12 (Pathfinder 2e 7.1.1)
 ### Feature

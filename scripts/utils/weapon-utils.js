@@ -295,10 +295,10 @@ function getReloadTime(weapon) {
  */
 function usesAmmunition(weapon) {
     if (weapon.actor.type === "character") {
-        return weapon.ammoRequired > 0;
+        return weapon.system.expend > 0;
     } else if (weapon.actor.type === "npc") {
         if (weapon.type === "weapon") {
-            return weapon.ammoRequired > 0;
+            return weapon.system.expend > 0;
         } else {
             return weapon.system.traits.value.some(trait => trait.startsWith("reload-"));
         }

@@ -2,8 +2,9 @@ import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { findItemOnActor, getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
+import { applyAmmunitionEffect } from "../ammunition-effects.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_ITEM_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
 import { getSelectedAmmunition, isLoaded } from "../utils.js";
 
@@ -129,6 +130,11 @@ async function addChamberLoaded(actor, weapon, ammo, updates) {
                 unit: "rounds",
                 value: actor.getActiveTokens().some(token => token.inCombat) ? 0 : 1
             };
+        }
+
+        const ammunitionItem = findItemOnActor(actor, ammo.id, ammo.sourceId);
+        if (ammunitionItem) {
+            applyAmmunitionEffect(weapon, ammunitionItem, updates);
         }
     }
 

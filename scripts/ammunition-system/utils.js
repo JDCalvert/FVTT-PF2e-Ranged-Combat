@@ -199,7 +199,7 @@ export function removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, upda
     }
 
     updates.floatyText(`${getFlag(loadedEffect, "originalName")} (${loadedFlags.loadedChambers}/${loadedFlags.capacity})`, false);
-    
+
     // If the weapon is still loaded, update the effect, otherwise remove it
     if (loadedFlags.ammunition.length) {
         updates.update(
