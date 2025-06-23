@@ -1,3 +1,7 @@
+## 7.0.3 - 2025-06-23 
+### Fix
+- Fix NPC weapon configuration dialog that was broken on the move to ApplicationV2.
+
 ## 7.0.2 - 2025-06-23 (Pathfinder 2e 7.2.0)
 ### Fix (System API Change)
 - Fixed PF2eWeapon's `ammoRequired` function being replaced with `system.expend`.

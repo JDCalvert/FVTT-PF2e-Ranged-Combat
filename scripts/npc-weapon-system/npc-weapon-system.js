@@ -28,7 +28,7 @@ export function npcWeaponConfiguration() {
                 {
                     action: "ok",
                     label: localize("dialog.done"),
-                    callback: (html) => saveChanges(html, actor)
+                    callback: (_0, _1, dialog) => saveChanges(dialog, actor)
                 },
                 {
                     action: "cancel",
@@ -141,10 +141,12 @@ function buildContent(actor) {
     return content;
 }
 
-function saveChanges(html) {
+function saveChanges(dialog, actor) {
+    const element = dialog.element;
+
     const updates = [];
-    const enableAdvancedAmmunitionSystem = !!html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked");
-    const enableAdvancedThrownWeaponSystem = !!html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked");
+    const enableAdvancedAmmunitionSystem = !!element.querySelector(`[name="enableAdvancedAmmunitionSystem"]`).checked;
+    const enableAdvancedThrownWeaponSystem = !!element.querySelector(`[name="enableAdvancedThrownWeaponSystem"]`).checked;
 
     actor.update({
         flags: {
@@ -159,8 +161,8 @@ function saveChanges(html) {
         const currentWeaponId = getFlag(attack, "weaponId");
         const currentAmmunitionId = getFlag(attack, "ammunitionId");
 
-        const weaponId = html.find(`[name="${attack.id}-weapon"`).val();
-        const ammunitionId = html.find(`[name="${attack.id}-ammo"]`).val();
+        const weaponId = element.querySelector(`[name="${attack.id}-weapon"`).value;
+        const ammunitionId = element.querySelector(`[name="${attack.id}-ammo"]`)?.value;
 
         const changedWeaponId = weaponId !== currentWeaponId;
         const changedAmmunitionId = ammunitionId !== currentAmmunitionId;
