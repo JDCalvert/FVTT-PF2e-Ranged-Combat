@@ -1,4 +1,8 @@
-## 7.0.3 - 2025-06-23 
+## 7.1.0 - Unreleased (Pathfinder 2e 7.2.1)
+### Feature
+- Add automation for Hunt Prey on NPCs.
+
+## 7.0.3 - 2025-06-23 (Pathfinder 2e 7.2.0)
 ### Fix
 - Fix NPC weapon configuration dialog that was broken on the move to ApplicationV2.
 

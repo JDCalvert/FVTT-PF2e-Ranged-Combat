@@ -12,7 +12,7 @@ export function initialiseHuntPrey() {
     HookManager.register(
         "post-action",
         ({ actor, item, result }) => {
-            if (item.sourceId != HUNT_PREY_ACTION_ID) {
+            if (!(item.sourceId === HUNT_PREY_ACTION_ID || item.name === "Hunt Prey")) {
                 return;
             }
 
@@ -214,6 +214,7 @@ export function initialiseHuntPrey() {
                 return;
             }
 
+            // A PC ranger's precision feature
             const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
             if (precisionFeature) {
                 const targetIsHuntedPrey =
@@ -225,6 +226,7 @@ export function initialiseHuntPrey() {
                 }
             }
 
+            // An animal companion's precision shared from its master
             const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
             if (rangersAnimalCompanionFeat) {
                 const masterSignature = getFlag(rangersAnimalCompanionFeat, "master-signature");
@@ -237,6 +239,7 @@ export function initialiseHuntPrey() {
                 }
             }
 
+            // The precision ability shared from another player
             for (const effectId of [HUNTERS_EDGE_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_EFFECT_ID]) {
                 const effect = getItemFromActor(actor, effectId);
                 if (effect) {
@@ -249,6 +252,16 @@ export function initialiseHuntPrey() {
                         updateForPrecision(effect, updates);
                     }
                 }
+            }
+
+            if (
+                actor.type === "npc" &&
+                (
+                    target?.getRollOptions()?.includes(`self:prey:${actor.signature}`) ||
+                    actor.getRollOptions().includes("hunted-prey")
+                )
+            ) {
+                updateNPCPrecision(actor, updates, false);
             }
         }
     );
@@ -282,6 +295,10 @@ function resetPrecision(actor) {
             }
         });
 
+        if (actor.type === "npc") {
+            updateNPCPrecision(actor, updates, true);
+        }
+
         updates.handleUpdates();
     }
 
@@ -290,6 +307,28 @@ function resetPrecision(actor) {
     const animalCompanion = game.actors.get(animalCompanionId);
     if (animalCompanion) {
         resetPrecision(animalCompanion);
+    }
+}
+
+/**
+ * NPCs can have their precision ability on their Hunt Prey ability or a separate Precision ability,
+ * which varies by NPC. They may also not have one at all. Find any such rule and update its value.
+ * 
+ * @param {PF2eActor} actor
+ * @param {Updates} updates
+ * @param {boolean} enableRule whether to set the rule (if found) to enabled or disabled
+ */
+function updateNPCPrecision(actor, updates, enableRule) {
+    for (const name of ["hunt-prey", "precision"]) {
+        const action = actor.itemTypes.action.find(action => action.name.slugify().includes(name));
+        if (action) {
+            const rules = action.toObject().system.rules;
+            const precisionRule = rules.find(rule => rule.key == "RollOption" && rule.option == "first-attack");
+            if (precisionRule) {
+                precisionRule.value = enableRule;
+                updates.update(action, { "system.rules": rules });
+            }
+        }
     }
 }
 

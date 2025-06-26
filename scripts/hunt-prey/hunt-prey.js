@@ -15,7 +15,7 @@ export async function huntPrey() {
         return;
     }
 
-    const huntPreyAction = getItemFromActor(actor, HUNT_PREY_ACTION_ID);
+    const huntPreyAction = getHuntPreyAction(actor);
     if (!huntPreyAction) {
         showWarning(format("warningNoAction", { token: token.name }));
         return;
@@ -27,6 +27,22 @@ export async function huntPrey() {
     }
 
     performHuntPrey(actor, token, huntPreyAction, checkResult);
+}
+
+function getHuntPreyAction(actor) {
+    const findFunctions = [
+        actor => getItemFromActor(actor, HUNT_PREY_ACTION_ID),
+        actor => actor.itemTypes.action.find(action => action.name === "Hunt Prey")
+    ];
+
+    for (const f of findFunctions) {
+        const huntPreyAction = f(actor);
+        if (huntPreyAction) {
+            return huntPreyAction;
+        }
+    }
+
+    return null;
 }
 
 export function checkHuntPrey(actor) {
@@ -165,6 +181,37 @@ function updateSystemItems(actor, updates) {
     updateRules(actor, updates, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES);
     updateRules(actor, updates, FLURRY_FEATURE_ID, FLURRY_RULES);
     updateRules(actor, updates, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES);
+
+    // If this is an NPC with the Hunt Prey action, they may have some rules and not others, so look for
+    // specific rules and update them as necessary.
+    if (actor.type === "npc") {
+        const huntPreyAction = actor.itemTypes.action.find(action => action.name === "Hunt Prey");
+        if (huntPreyAction) {
+            let haveUpdatedRules = false;
+
+            const rules = huntPreyAction.toObject().system.rules;
+            for (const rule of rules) {
+                if (
+                    rule.key === "RollOption" &&
+                    rule.option === "ignore-range-penalty:2"
+                ) {
+                    rule.predicate = [
+                        {
+                            or: [
+                                "hunted-prey",
+                                "target:mark:hunt-prey"
+                            ]
+                        }
+                    ];
+                    haveUpdatedRules = true;
+                }
+            }
+
+            if (haveUpdatedRules) {
+                updates.update(huntPreyAction, { "system.rules": rules });
+            }
+        }
+    }
 }
 
 /**
