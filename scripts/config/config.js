@@ -1,4 +1,5 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
+import { isUsingApplicationV2 } from "../utils/utils.js";
 
 const localize = (path) => game.i18n.localize(`pf2e-ranged-combat.config.category.${path}`);
 
@@ -203,7 +204,7 @@ export function initialiseConfigurationSettings() {
         (_, html) => {
             let headerTemplate;
             let htmlFind;
-            if (foundry.utils.isNewerVersion(game.version, "13")) {
+            if (isUsingApplicationV2()) {
                 headerTemplate = (headerName, desc = "") => {
                     const doc = html.ownerDocument;
 

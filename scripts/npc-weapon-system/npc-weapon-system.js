@@ -1,6 +1,7 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { getControlledActor, getFlag } from "../utils/utils.js";
+import { showDialog } from "../utils/dialog.js";
+import { getControlledActor, getFlag, isUsingApplicationV2 } from "../utils/utils.js";
 
 const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key);
 
@@ -15,64 +16,23 @@ export function npcWeaponConfiguration() {
         return;
     }
 
-    if (foundry.utils.isNewerVersion(game.version, "13")) {
-        renderDialogV2(actor);
-    } else {
-        renderDialogV1(actor);
-    }
-}
-
-/**
- * @param {PF2eActor} actor 
- */
-function renderDialogV2(actor) {
-    new foundry.applications.api.DialogV2(
-        {
-            window: {
-                title: localize("dialog.title")
+    showDialog(
+        localize("dialog.title"),
+        buildContent(),
+        [
+            {
+                action: "ok",
+                label: localize("dialog.done"),
+                callback: isUsingApplicationV2()
+                    ? (_0, _1, dialog) => saveChangesV2(dialog, actor)
+                    : ($html) => saveChangesV1($html, actor)
             },
-            position: {
-                width: 600
-            },
-            content: `
-                <div class="dialog-content standard-form" style="gap: 0px">
-                    ${buildContent(actor)}
-                </div>
-            `,
-            buttons: [
-                {
-                    action: "ok",
-                    label: localize("dialog.done"),
-                    callback: (_0, _1, dialog) => saveChangesV2(dialog, actor)
-                },
-                {
-                    action: "cancel",
-                    label: localize("dialog.cancel")
-                }
-            ]
-        }
-    ).render(true);
-}
-
-/**
- * @param {PF2eActor} actor 
- */
-function renderDialogV1(actor) {
-    new Dialog(
-        {
-            title: localize("dialog.title"),
-            content: buildContent(actor),
-            buttons: {
-                ok: {
-                    label: localize("dialog.done"),
-                    callback: ($html) => saveChangesV1($html, actor)
-                },
-                cancel: {
-                    label: localize("dialog.cancel")
-                }
+            {
+                action: "cancel",
+                label: localize("dialog.cancel")
             }
-        }
-    ).render(true);
+        ]
+    );
 }
 
 /**
@@ -89,6 +49,11 @@ function buildContent(actor) {
     const ammunitions = actor.itemTypes.consumable.filter(consumable => consumable.isAmmo && !consumable.isStowed);
 
     let content = "";
+
+    // The ApplicationV2 form has a lot of unnecessary space, wrap everything inside a form with no gaps
+    if (isUsingApplicationV2()) {
+        content += `<div class="dialog-content standard-form" style="gap: 0px"></div>`;
+    }
 
     content += `
         <div style="padding-bottom: 10px">
@@ -171,6 +136,10 @@ function buildContent(actor) {
             </form>
         </fieldset>
     `;
+
+    if (isUsingApplicationV2()) {
+        content += `</div>`;
+    }
 
     return content;
 }
