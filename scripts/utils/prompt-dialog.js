@@ -21,4 +21,3 @@ export async function dialogPrompt(title, content, yesLabel, noLabel) {
         );
     });
 }
-
