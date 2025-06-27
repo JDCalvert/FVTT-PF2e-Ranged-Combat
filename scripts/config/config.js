@@ -225,7 +225,7 @@ export function initialiseConfigurationSettings() {
 
                     return div;
                 };
-                htmlFind = (name) => html.querySelector(`[id="settings-config-${name}}"]`);
+                htmlFind = (name) => html.querySelector(`[id="settings-config-${name}"]`);
             } else {
                 headerTemplate = (headerName, desc = "") => `
                     <div style="border: 1px solid #a1a1a1; padding: 10px; text-align: justify;">

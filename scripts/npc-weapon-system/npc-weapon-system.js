@@ -18,7 +18,7 @@ export function npcWeaponConfiguration() {
 
     showDialog(
         localize("dialog.title"),
-        buildContent(),
+        buildContent(actor),
         [
             {
                 action: "ok",
