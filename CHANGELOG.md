@@ -1,4 +1,8 @@
-## 7.1.0 - Unreleased (Pathfinder 2e 7.2.1)
+## 7.2.0 - 2025-06-27 (Pathfinder 2e 7.2.1)
+### Feature
+- Re-enabled compatibility with Foundry v12.
+
+## 7.1.0 - 2025-06-26 (Pathfinder 2e 7.2.1)
 ### Feature
 - Add automation for Hunt Prey on NPCs.
 
