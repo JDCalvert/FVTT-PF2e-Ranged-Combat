@@ -34,7 +34,11 @@ function renderDialogV2(actor) {
             position: {
                 width: 600
             },
-            content: buildContent(actor),
+            content: `
+                <div class="dialog-content standard-form" style="gap: 0px">
+                    ${buildContent(actor)}
+                </div>
+            `,
             buttons: [
                 {
                     action: "ok",
@@ -87,7 +91,6 @@ function buildContent(actor) {
     let content = "";
 
     content += `
-        <div class="dialog-content standard-form" style="gap: 0px">
         <div style="padding-bottom: 10px">
             ${localize("dialog.hint")}
         </div>
@@ -167,7 +170,6 @@ function buildContent(actor) {
     content += `
             </form>
         </fieldset>
-        </div>
     `;
 
     return content;
@@ -201,7 +203,8 @@ function saveChangesV2(dialog, actor) {
 function saveChangesV1($html, actor) {
     const data = {
         enableAdvancedAmmunitionSystem: !!$html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked"),
-        enableAdvancedThrownWeaponSystem: !!$html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked")
+        enableAdvancedThrownWeaponSystem: !!$html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked"),
+        attacks: {}
     };
 
     for (const attack of actor.itemTypes.melee) {
@@ -210,6 +213,8 @@ function saveChangesV1($html, actor) {
             ammunitionId: $html.find(`[name="${attack.id}-ammo"]`).val()
         };
     }
+
+    saveChanges(actor, data);
 }
 
 function saveChanges(actor, data) {

@@ -217,7 +217,7 @@ export async function postToChat(actor, img, message, params) {
  * }} params 
  */
 export async function postMessage(actor, img, message, params = {}) {
-    const flavor = await foundry.applications.handlebars.renderTemplate(
+    const flavor = await render(
         "./systems/pf2e/templates/chat/action/flavor.hbs",
         {
             action: {
@@ -228,7 +228,7 @@ export async function postMessage(actor, img, message, params = {}) {
         }
     );
 
-    const content = await foundry.applications.handlebars.renderTemplate(
+    const content = await render(
         "./systems/pf2e/templates/chat/action/content.hbs",
         {
             imgPath: img,
@@ -249,6 +249,14 @@ export async function postMessage(actor, img, message, params = {}) {
             }
         }
     );
+}
+
+export async function render(path, data) {
+    if (foundry.utils.isNewerVersion(game.version, "13")) {
+        return foundry.applications.handlebars.renderTemplate(path, data);
+    } else {
+        return renderTemplate(path, data);
+    }
 }
 
 export function getAttackPopout(item) {

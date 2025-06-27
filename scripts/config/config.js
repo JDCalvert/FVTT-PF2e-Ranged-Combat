@@ -201,28 +201,42 @@ export function initialiseConfigurationSettings() {
     Hooks.on(
         "renderSettingsConfig",
         (_, html) => {
-            const headerTemplate = (headerName, desc = "") => {
-                const doc = html.ownerDocument;
+            let headerTemplate;
+            let htmlFind;
+            if (foundry.utils.isNewerVersion(game.version, "13")) {
+                headerTemplate = (headerName, desc = "") => {
+                    const doc = html.ownerDocument;
 
-                const header = doc.createElement("h3");
-                header.style["text-align"] = "center";
-                header.appendChild(doc.createTextNode(headerName));
+                    const header = doc.createElement("h3");
+                    header.style["text-align"] = "center";
+                    header.appendChild(doc.createTextNode(headerName));
 
-                const description = doc.createElement("div");
-                description.innerHTML = desc;
+                    const description = doc.createElement("div");
+                    description.innerHTML = desc;
 
-                const div = doc.createElement("div");
-                div.style.border = "1px solid #a1a1a1";
-                div.style.padding = "10px";
-                div.style["text-align"] = "justify";
+                    const div = doc.createElement("div");
+                    div.style.border = "1px solid #a1a1a1";
+                    div.style.padding = "10px";
+                    div.style["text-align"] = "justify";
 
-                div.appendChild(header);
-                div.appendChild(description);
+                    div.appendChild(header);
+                    div.appendChild(description);
 
-                return div;
-            };
+                    return div;
+                };
+                htmlFind = (name) => html.querySelector(`[id="settings-config-${name}}"]`);
+            } else {
+                headerTemplate = (headerName, desc = "") => `
+                    <div style="border: 1px solid #a1a1a1; padding: 10px; text-align: justify;">
+                        <h3 style="text-align: center;">${headerName}</h3>
+                        ${desc}
+                    </div>
+                `;
+                htmlFind = (name) => html.find(`div[data-setting-id="${name}"]`);
+            }
 
-            html.querySelector('[id="settings-config-pf2e-ranged-combat.postActionToChat"]')
+
+            htmlFind("pf2e-ranged-combat.postActionToChat")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
@@ -238,7 +252,7 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.querySelector('[id="settings-config-pf2e-ranged-combat.preventFireNotLoaded"]')
+            htmlFind("pf2e-ranged-combat.preventFireNotLoaded")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
@@ -247,7 +261,7 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.querySelector('[id="settings-config-pf2e-ranged-combat.preventFireNotLoadedNPC"]')
+            htmlFind("pf2e-ranged-combat.preventFireNotLoadedNPC")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
@@ -259,7 +273,7 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.querySelector('[id="settings-config-pf2e-ranged-combat.ammunitionEffectsEnable"]')
+            htmlFind("pf2e-ranged-combat.ammunitionEffectsEnable")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
@@ -268,7 +282,7 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.querySelector('[id="settings-config-pf2e-ranged-combat.advancedThrownWeaponSystemPlayer"]')
+            htmlFind("pf2e-ranged-combat.advancedThrownWeaponSystemPlayer")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
@@ -280,7 +294,7 @@ export function initialiseConfigurationSettings() {
                     )
                 );
 
-            html.querySelector('[id="settings-config-pf2e-ranged-combat.fakeOutDC"]')
+            htmlFind("pf2e-ranged-combat.fakeOutDC")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(
