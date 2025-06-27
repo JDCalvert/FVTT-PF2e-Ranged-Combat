@@ -15,6 +15,17 @@ export function npcWeaponConfiguration() {
         return;
     }
 
+    if (foundry.utils.isNewerVersion(game.version, "13")) {
+        renderDialogV2(actor);
+    } else {
+        renderDialogV1(actor);
+    }
+}
+
+/**
+ * @param {PF2eActor} actor 
+ */
+function renderDialogV2(actor) {
     new foundry.applications.api.DialogV2(
         {
             window: {
@@ -28,13 +39,34 @@ export function npcWeaponConfiguration() {
                 {
                     action: "ok",
                     label: localize("dialog.done"),
-                    callback: (_0, _1, dialog) => saveChanges(dialog, actor)
+                    callback: (_0, _1, dialog) => saveChangesV2(dialog, actor)
                 },
                 {
                     action: "cancel",
                     label: localize("dialog.cancel")
                 }
             ]
+        }
+    ).render(true);
+}
+
+/**
+ * @param {PF2eActor} actor 
+ */
+function renderDialogV1(actor) {
+    new Dialog(
+        {
+            title: localize("dialog.title"),
+            content: buildContent(actor),
+            buttons: {
+                ok: {
+                    label: localize("dialog.done"),
+                    callback: ($html) => saveChangesV1($html, actor)
+                },
+                cancel: {
+                    label: localize("dialog.cancel")
+                }
+            }
         }
     ).render(true);
 }
@@ -141,28 +173,63 @@ function buildContent(actor) {
     return content;
 }
 
-function saveChanges(dialog, actor) {
+/**
+ * @param {PF2eActor} actor 
+ */
+function saveChangesV2(dialog, actor) {
     const element = dialog.element;
 
-    const updates = [];
-    const enableAdvancedAmmunitionSystem = !!element.querySelector(`[name="enableAdvancedAmmunitionSystem"]`).checked;
-    const enableAdvancedThrownWeaponSystem = !!element.querySelector(`[name="enableAdvancedThrownWeaponSystem"]`).checked;
+    const data = {
+        enableAdvancedAmmunitionSystem: element.querySelector(`[name="enableAdvancedAmmunitionSystem"]`).checked,
+        enableAdvancedThrownWeaponSystem: element.querySelector(`[name="enableAdvancedThrownWeaponSystem"]`).checked,
+        attacks: {},
+    };
 
+    for (const attack of actor.itemTypes.melee) {
+        data.attacks[attack.id] = {
+            weaponId: element.querySelector(`[name="${attack.id}-weapon"`).value,
+            ammunitionId: element.querySelector(`[name="${attack.id}-ammo"]`)?.value
+        };
+    }
+
+    saveChanges(actor, data);
+}
+
+/**
+ * @param {PF2eActor} actor 
+ */
+function saveChangesV1($html, actor) {
+    const data = {
+        enableAdvancedAmmunitionSystem: !!$html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked"),
+        enableAdvancedThrownWeaponSystem: !!$html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked")
+    };
+
+    for (const attack of actor.itemTypes.melee) {
+        data.attacks[attack.id] = {
+            weaponId: $html.find(`[name="${attack.id}-weapon"`).val(),
+            ammunitionId: $html.find(`[name="${attack.id}-ammo"]`).val()
+        };
+    }
+}
+
+function saveChanges(actor, data) {
     actor.update({
         flags: {
             "pf2e-ranged-combat": {
-                enableAdvancedAmmunitionSystem,
-                enableAdvancedThrownWeaponSystem
+                enableAdvancedAmmunitionSystem: data.enableAdvancedAmmunitionSystem,
+                enableAdvancedThrownWeaponSystem: data.enableAdvancedThrownWeaponSystem
             }
         }
     });
+
+    const updates = [];
 
     for (const attack of actor.itemTypes.melee) {
         const currentWeaponId = getFlag(attack, "weaponId");
         const currentAmmunitionId = getFlag(attack, "ammunitionId");
 
-        const weaponId = element.querySelector(`[name="${attack.id}-weapon"`).value;
-        const ammunitionId = element.querySelector(`[name="${attack.id}-ammo"]`)?.value;
+        const weaponId = data.attacks[attack.id].weaponId;
+        const ammunitionId = data.attacks[attack.id].ammunitionId;
 
         const changedWeaponId = weaponId !== currentWeaponId;
         const changedAmmunitionId = ammunitionId !== currentAmmunitionId;
