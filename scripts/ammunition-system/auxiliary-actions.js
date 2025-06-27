@@ -2,7 +2,7 @@ import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getFlags, getItemFromActor, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getFlags, getItemFromActor, render, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { characterWeaponTransform } from "../utils/weapon-utils.js";
 import { performConjureBullet } from "./actions/conjure-bullet.js";
 import { performNextChamber } from "./actions/next-chamber.js";
@@ -337,7 +337,7 @@ async function changeCarryType(weapon, subAction, hands) {
 
     if (!game.combat) return; // Only send out messages if in encounter mode
 
-    const flavor = await foundry.applications.handlebars.renderTemplate(
+    const flavor = await render(
         "./systems/pf2e/templates/chat/action/flavor.hbs",
         {
             action: {
@@ -348,7 +348,7 @@ async function changeCarryType(weapon, subAction, hands) {
             traits: ["manipulate"]
         }
     );
-    const content = await foundry.applications.handlebars.renderTemplate(
+    const content = await render(
         "./systems/pf2e/templates/chat/action/content.hbs",
         {
             imgPath: weapon.img,

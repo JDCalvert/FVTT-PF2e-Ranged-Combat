@@ -2,6 +2,7 @@ import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { traits } from "../types/pf2e/trait.js";
+import { showDialog } from "./dialog.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
@@ -217,7 +218,7 @@ export async function postToChat(actor, img, message, params) {
  * }} params 
  */
 export async function postMessage(actor, img, message, params = {}) {
-    const flavor = await foundry.applications.handlebars.renderTemplate(
+    const flavor = await render(
         "./systems/pf2e/templates/chat/action/flavor.hbs",
         {
             action: {
@@ -228,7 +229,7 @@ export async function postMessage(actor, img, message, params = {}) {
         }
     );
 
-    const content = await foundry.applications.handlebars.renderTemplate(
+    const content = await render(
         "./systems/pf2e/templates/chat/action/content.hbs",
         {
             imgPath: img,
@@ -249,6 +250,14 @@ export async function postMessage(actor, img, message, params = {}) {
             }
         }
     );
+}
+
+export async function render(path, data) {
+    if (isUsingApplicationV2()) {
+        return foundry.applications.handlebars.renderTemplate(path, data);
+    } else {
+        return renderTemplate(path, data);
+    }
 }
 
 export function getAttackPopout(item) {
@@ -290,35 +299,39 @@ export function showWarning(warningMessage) {
     if (game.settings.get("pf2e-ranged-combat", "doNotShowWarningAgain")) {
         ui.notifications.warn(warningMessage);
     } else {
-        new foundry.applications.api.DialogV2(
-            {
-                window: {
-                    title: game.i18n.localize("pf2e-ranged-combat.module-name")
+        let content;
+        if (isUsingApplicationV2()) {
+            content = `
+            <p>
+                ${localize("warningDialog1")} ${warningMessage}
+                <br><br>
+                ${localize("warningDialog2")} 
+                ${localize("warningDialog3")}
+            </p>
+        `;
+        } else {
+            content = `
+            <p>${localize("warningDialog1")} ${warningMessage}<p>
+            <p>${localize("warningDialog2")} 
+            ${localize("warningDialog3")}</p>
+        `;
+        }
+
+        showDialog(
+            game.i18n.localize("pf2e-ranged-combat.module-name"),
+            content,
+            [
+                {
+                    action: "ok",
+                    label: localize("buttonOK"),
                 },
-                position: {
-                    width: 400
-                },
-                content: `
-                    <p>
-                        ${localize("warningDialog1")} ${warningMessage}
-                        <br><br>
-                        ${localize("warningDialog2")} 
-                        ${localize("warningDialog3")}
-                    </p>
-                `,
-                buttons: [
-                    {
-                        action: "ok",
-                        label: localize("buttonOK"),
-                    },
-                    {
-                        action: "doNotShowAgain",
-                        label: localize("buttonDoNotShowAgain"),
-                        callback: () => game.settings.set("pf2e-ranged-combat", "doNotShowWarningAgain", true)
-                    }
-                ]
-            }
-        ).render(true);
+                {
+                    action: "doNotShowAgain",
+                    label: localize("buttonDoNotShowAgain"),
+                    callback: () => game.settings.set("pf2e-ranged-combat", "doNotShowWarningAgain", true)
+                }
+            ]
+        );
     }
 }
 
@@ -328,4 +341,8 @@ export function getFlags(item) {
 
 export function getFlag(item, flagName) {
     return item.flags["pf2e-ranged-combat"]?.[flagName];
+}
+
+export function isUsingApplicationV2() {
+    return foundry.utils.isNewerVersion(game.version, "13");
 }

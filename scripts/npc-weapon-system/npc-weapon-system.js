@@ -1,6 +1,7 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
-import { getControlledActor, getFlag } from "../utils/utils.js";
+import { showDialog } from "../utils/dialog.js";
+import { getControlledActor, getFlag, isUsingApplicationV2 } from "../utils/utils.js";
 
 const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key);
 
@@ -15,28 +16,23 @@ export function npcWeaponConfiguration() {
         return;
     }
 
-    new foundry.applications.api.DialogV2(
-        {
-            window: {
-                title: localize("dialog.title")
+    showDialog(
+        localize("dialog.title"),
+        buildContent(actor),
+        [
+            {
+                action: "ok",
+                label: localize("dialog.done"),
+                callback: isUsingApplicationV2()
+                    ? (_0, _1, dialog) => saveChangesV2(dialog, actor)
+                    : ($html) => saveChangesV1($html, actor)
             },
-            position: {
-                width: 600
-            },
-            content: buildContent(actor),
-            buttons: [
-                {
-                    action: "ok",
-                    label: localize("dialog.done"),
-                    callback: (_0, _1, dialog) => saveChanges(dialog, actor)
-                },
-                {
-                    action: "cancel",
-                    label: localize("dialog.cancel")
-                }
-            ]
-        }
-    ).render(true);
+            {
+                action: "cancel",
+                label: localize("dialog.cancel")
+            }
+        ]
+    );
 }
 
 /**
@@ -54,8 +50,12 @@ function buildContent(actor) {
 
     let content = "";
 
+    // The ApplicationV2 form has a lot of unnecessary space, wrap everything inside a form with no gaps
+    if (isUsingApplicationV2()) {
+        content += `<div class="dialog-content standard-form" style="gap: 0px"></div>`;
+    }
+
     content += `
-        <div class="dialog-content standard-form" style="gap: 0px">
         <div style="padding-bottom: 10px">
             ${localize("dialog.hint")}
         </div>
@@ -135,34 +135,75 @@ function buildContent(actor) {
     content += `
             </form>
         </fieldset>
-        </div>
     `;
+
+    if (isUsingApplicationV2()) {
+        content += `</div>`;
+    }
 
     return content;
 }
 
-function saveChanges(dialog, actor) {
+/**
+ * @param {PF2eActor} actor 
+ */
+function saveChangesV2(dialog, actor) {
     const element = dialog.element;
 
-    const updates = [];
-    const enableAdvancedAmmunitionSystem = !!element.querySelector(`[name="enableAdvancedAmmunitionSystem"]`).checked;
-    const enableAdvancedThrownWeaponSystem = !!element.querySelector(`[name="enableAdvancedThrownWeaponSystem"]`).checked;
+    const data = {
+        enableAdvancedAmmunitionSystem: element.querySelector(`[name="enableAdvancedAmmunitionSystem"]`).checked,
+        enableAdvancedThrownWeaponSystem: element.querySelector(`[name="enableAdvancedThrownWeaponSystem"]`).checked,
+        attacks: {},
+    };
 
+    for (const attack of actor.itemTypes.melee) {
+        data.attacks[attack.id] = {
+            weaponId: element.querySelector(`[name="${attack.id}-weapon"`).value,
+            ammunitionId: element.querySelector(`[name="${attack.id}-ammo"]`)?.value
+        };
+    }
+
+    saveChanges(actor, data);
+}
+
+/**
+ * @param {PF2eActor} actor 
+ */
+function saveChangesV1($html, actor) {
+    const data = {
+        enableAdvancedAmmunitionSystem: !!$html.find(`[name="enableAdvancedAmmunitionSystem"]`).is(":checked"),
+        enableAdvancedThrownWeaponSystem: !!$html.find(`[name="enableAdvancedThrownWeaponSystem"]`).is(":checked"),
+        attacks: {}
+    };
+
+    for (const attack of actor.itemTypes.melee) {
+        data.attacks[attack.id] = {
+            weaponId: $html.find(`[name="${attack.id}-weapon"`).val(),
+            ammunitionId: $html.find(`[name="${attack.id}-ammo"]`).val()
+        };
+    }
+
+    saveChanges(actor, data);
+}
+
+function saveChanges(actor, data) {
     actor.update({
         flags: {
             "pf2e-ranged-combat": {
-                enableAdvancedAmmunitionSystem,
-                enableAdvancedThrownWeaponSystem
+                enableAdvancedAmmunitionSystem: data.enableAdvancedAmmunitionSystem,
+                enableAdvancedThrownWeaponSystem: data.enableAdvancedThrownWeaponSystem
             }
         }
     });
+
+    const updates = [];
 
     for (const attack of actor.itemTypes.melee) {
         const currentWeaponId = getFlag(attack, "weaponId");
         const currentAmmunitionId = getFlag(attack, "ammunitionId");
 
-        const weaponId = element.querySelector(`[name="${attack.id}-weapon"`).value;
-        const ammunitionId = element.querySelector(`[name="${attack.id}-ammo"]`)?.value;
+        const weaponId = data.attacks[attack.id].weaponId;
+        const ammunitionId = data.attacks[attack.id].ammunitionId;
 
         const changedWeaponId = weaponId !== currentWeaponId;
         const changedAmmunitionId = ammunitionId !== currentAmmunitionId;

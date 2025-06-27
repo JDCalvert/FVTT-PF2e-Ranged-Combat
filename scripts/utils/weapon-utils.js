@@ -292,13 +292,19 @@ function getReloadTime(weapon) {
 
 /**
  * Find out if the weapon uses ammunition
+ * 
+ * @param {PF2eWeapon} weapon 
  */
 function usesAmmunition(weapon) {
+    const expend = foundry.utils.isNewerVersion(game.system.version, "7.1.1")
+        ? weapon => weapon.system.expend
+        : weapon => weapon.ammoRequired;
+
     if (weapon.actor.type === "character") {
-        return weapon.system.expend > 0;
+        return expend(weapon) > 0;
     } else if (weapon.actor.type === "npc") {
         if (weapon.type === "weapon") {
-            return weapon.system.expend > 0;
+            return expend(weapon) > 0;
         } else {
             return weapon.system.traits.value.some(trait => trait.startsWith("reload-"));
         }

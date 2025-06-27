@@ -1,27 +1,8 @@
+import { isUsingApplicationV2 } from "./utils.js";
+
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.itemSelect." + key);
 
-export class ItemSelectDialog extends foundry.applications.api.DialogV2 {
-    constructor(title, content) {
-        super(
-            {
-                window: {
-                    title
-                },
-                content: content,
-                buttons: [
-                    {
-                        action: "cancel",
-                        label: game.i18n.localize("pf2e-ranged-combat.dialog.button.cancel")
-                    }
-                ]
-            },
-            {
-                height: "100%",
-                width: "100%",
-                id: "item-dialog"
-            }
-        );
-    }
+export class ItemSelectDialog {
 
     /**
      * @template T
@@ -93,7 +74,10 @@ export class ItemSelectDialog extends foundry.applications.api.DialogV2 {
 
         content += `</div > `;
 
-        const itemSelectDialog = new this(title, content);
+        const itemSelectDialog = isUsingApplicationV2()
+            ? new ItemSelectDialogV2(title, content)
+            : new ItemSelectDialogV1(title, content);
+
         itemSelectDialog.selectionOptions = {};
         for (const option of options) {
             itemSelectDialog.selectionOptions[option.id] = option.defaultValue;
@@ -108,6 +92,30 @@ export class ItemSelectDialog extends foundry.applications.api.DialogV2 {
             item: Array.from(items.values()).flat().find(item => item.id === result.itemId),
             options: result.options
         };
+    }
+}
+
+export class ItemSelectDialogV2 extends foundry.applications.api.DialogV2 {
+    constructor(title, content) {
+        super(
+            {
+                window: {
+                    title
+                },
+                content: content,
+                buttons: [
+                    {
+                        action: "cancel",
+                        label: game.i18n.localize("pf2e-ranged-combat.dialog.button.cancel")
+                    }
+                ]
+            },
+            {
+                height: "100%",
+                width: "100%",
+                id: "item-dialog"
+            }
+        );
     }
 
     _onRender(context, options) {
@@ -131,6 +139,58 @@ export class ItemSelectDialog extends foundry.applications.api.DialogV2 {
         }
 
         super._onRender(context, options);
+    }
+
+    async close() {
+        await super.close();
+        this.result?.(
+            {
+                itemId: this.itemId,
+                options: this.selectionOptions
+            }
+        );
+    }
+
+    async getItemId() {
+        this.render(true);
+        return new Promise(result => {
+            this.result = result;
+        });
+    }
+}
+
+class ItemSelectDialogV1 extends Dialog {
+    constructor(title, content) {
+        super(
+            {
+                title,
+                content: content,
+                buttons: {
+                }
+            },
+            {
+                height: "100%",
+                width: "100%",
+                id: "item-dialog"
+            }
+        );
+    }
+
+    activateListeners(html) {
+        html.find(".item-button").on(
+            "click",
+            (event) => {
+                this.itemId = event.currentTarget.value;
+                this.close();
+            }
+        );
+
+        html.find(".option-checkbox").on(
+            "change",
+            (event) => this.selectionOptions[event.currentTarget.id] = event.currentTarget.checked
+        );
+
+        super.activateListeners(html);
     }
 
     async close() {

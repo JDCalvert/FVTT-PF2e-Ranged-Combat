@@ -1,9 +1,10 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
+import { showDialog } from "../utils/dialog.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getItem, setEffectTarget } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getItem, isUsingApplicationV2, setEffectTarget } from "../utils/utils.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
 
@@ -176,33 +177,26 @@ function isAmmunitionEffectsEnabled() {
 function showWarning(warningMessage) {
     const warningLevel = game.settings.get("pf2e-ranged-combat", "ammunitionEffectsWarningLevel");
     if (warningLevel == postToChatConfig.full) {
-        new foundry.applications.api.DialogV2(
-            {
-                window: {
-                    title: game.i18n.localize("pf2e-ranged-combat.module-name")
+        showDialog(
+            game.i18n.localize("pf2e-ranged-combat.module-name"),
+            `<p>${localize(`warning.${warningMessage}.verbose`)}</p>`,
+            [
+                {
+                    action: "ok",
+                    label: localize("warning.button.ok")
                 },
-                position: {
-                    width: 600
+                {
+                    action: "showSimple",
+                    label: localize("warning.button.showSimple"),
+                    callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.simple)
                 },
-                content: `<p>${localize(`warning.${warningMessage}.verbose`)}</p>`,
-                buttons: [
-                    {
-                        action: "ok",
-                        label: localize("warning.button.ok")
-                    },
-                    {
-                        action: "showSimple",
-                        label: localize("warning.button.showSimple"),
-                        callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.simple)
-                    },
-                    {
-                        action: "doNotShow",
-                        label: localize("warning.button.doNotShow"),
-                        callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.none)
-                    }
-                ]
-            }
-        ).render(true);
+                {
+                    action: "doNotShow",
+                    label: localize("warning.button.doNotShow"),
+                    callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.none)
+                }
+            ]
+        );
     } else if (warningLevel == postToChatConfig.simple) {
         ui.notifications.warn(localize(`warning.${warningMessage}.simple`));
     }
