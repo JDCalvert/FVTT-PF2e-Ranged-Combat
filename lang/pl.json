@@ -161,9 +161,6 @@
                     "setAsAmmunition": "Ustaw jako amunicję"
                 }
             },
-            "itemSelect": {
-                "options": "Opcje"
-            },
             "check": {
                 "weaponNotLoaded": "{weapon} nie jest załadowana.",
                 "magazineNotLoaded": "{weapon} nie ma załadowanego magazynka.",

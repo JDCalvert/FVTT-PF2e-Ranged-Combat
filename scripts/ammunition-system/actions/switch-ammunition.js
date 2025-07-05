@@ -1,5 +1,6 @@
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
-import { ItemSelectDialog } from "../../utils/item-select-dialog.js";
+import { PF2eConsumable } from "../../types/pf2e/consumable.js";
+import * as ItemSelect from "../../utils/item-select-dialog.js";
 import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, showWarning } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
@@ -59,7 +60,7 @@ export async function selectAmmunition(
     const weaponAmmunition = weapon.actor.itemTypes.weapon
         .filter(item => !item.isStowed)
         .filter(item => item.quantity > 0)
-        .filter(item => weapon.isAmmunitionForWeapon(item))
+        .filter(item => weapon.isAmmunitionForWeapon(item));
 
     const availableAmmunition = consumableAmmunition.concat(weaponAmmunition);
 
@@ -70,36 +71,42 @@ export async function selectAmmunition(
 
     const availableAmmunitionChoices = availableAmmunition.map(
         ammunition => {
-            return {
-                id: ammunition.id,
-                name: `${ammunition.name} (${ammunition.quantity})`,
-                img: ammunition.img
-            };
+            return new ItemSelect.Choice(
+                ammunition.id,
+                `${ammunition.name} (${ammunition.quantity})`,
+                null,
+                ammunition.img,
+                ammunition
+            );
         }
     );
 
-    const ammunitionMap = new Map();
+    /** @type ItemSelect.Section<PF2eConsumable>[] */
+    const sections = [];
+
     if (weapon.ammunition) {
         const currentAmmunition = availableAmmunitionChoices.findSplice(ammo => ammo.id === weapon.ammunition.id);
         if (currentAmmunition) {
-            ammunitionMap.set(localizeDialog("header.current"), [currentAmmunition]);
+            sections.push(
+                new ItemSelect.Section(localizeDialog("header.current"), [currentAmmunition])
+            );
         }
     };
     if (availableAmmunitionChoices.length) {
-        ammunitionMap.set(localizeDialog("header.equipped"), availableAmmunitionChoices);
+        sections.push(new ItemSelect.Section(localizeDialog("header.equipped"), availableAmmunitionChoices));
     }
 
-    const result = await ItemSelectDialog.getItemWithOptions(
+    const result = await ItemSelect.getItemWithOptions(
         localizeDialog("title"),
         selectNewMessage,
-        ammunitionMap,
+        sections,
         alwaysSetAsAmmunition
             ? []
             : [
                 {
                     id: "set-as-ammunition",
                     label: localizeDialog("option.setAsAmmunition"),
-                    defaultValue: defaultSetAsAmmunition
+                    value: defaultSetAsAmmunition
                 }
             ]
     );
@@ -108,7 +115,7 @@ export async function selectAmmunition(
         return;
     }
 
-    const selectedAmmunition = availableAmmunition.find(ammunition => ammunition.id === result.item.id);
+    const selectedAmmunition = availableAmmunition.find(ammunition => ammunition.id === result.choice.id);
 
     if (alwaysSetAsAmmunition || result.options["set-as-ammunition"]) {
         updates.update(

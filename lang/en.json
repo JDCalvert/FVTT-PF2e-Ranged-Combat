@@ -161,9 +161,6 @@
                     "setAsAmmunition": "Set as ammunition"
                 }
             },
-            "itemSelect": {
-                "options": "Options"
-            },
             "check": {
                 "weaponNotLoaded": "{weapon} is not loaded.",
                 "magazineNotLoaded": "{weapon} has no magazine loaded.",
@@ -265,6 +262,13 @@
                     "tokenUnloadsWeapon": "{token} unloads their {weapon}",
                     "noLoadedWeapons": "You have no loaded weapons."
                 }
+            }
+        },
+        "weaponSystem": {
+            "carried": {
+                "equipped": "Equipped",
+                "worn": "Worn",
+                "stowed": "Stowed"
             }
         },
         "utils": {

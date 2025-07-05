@@ -1,3 +1,7 @@
+## 7.2.1 - 2025-07-05 (Pathfinder 2e 7.2.2)
+### Under the Hood
+- Refactored Item Select Dialog into library module.
+
 ## 7.2.0 - 2025-06-27 (Pathfinder 2e 7.2.1)
 ### Feature
 - Re-enabled compatibility with Foundry v12.

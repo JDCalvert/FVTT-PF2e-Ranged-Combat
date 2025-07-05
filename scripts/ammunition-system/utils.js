@@ -3,7 +3,7 @@ import { CapacityLoadedEffect, LoadedEffect } from "../types/pf2e-ranged-combat/
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable, PF2eConsumableUses } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import { ItemSelectDialog } from "../utils/item-select-dialog.js";
+import * as ItemSelect from "../utils/item-select-dialog.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
@@ -76,10 +76,15 @@ export function isFullyLoaded(weapon) {
 export async function getSelectedAmmunition(weapon, action) {
     const loadedAmmunitions = getLoadedAmmunitions(weapon);
     if (loadedAmmunitions.length > 1) {
-        return await ItemSelectDialog.getItem(
+        return await ItemSelect.getItem(
             localize("ammunitionSelect.title"),
             localize(`ammunitionSelect.action.${action}`),
-            new Map([[localize("ammunitionSelect.header.loadedAmmunition"), loadedAmmunitions]])
+            [
+                new ItemSelect.Section(
+                    localize("ammunitionSelect.header.loadedAmmunition"),
+                    loadedAmmunitions.map(ItemSelect.buildChoice)
+                )
+            ]
         );
     } else {
         return loadedAmmunitions[0];

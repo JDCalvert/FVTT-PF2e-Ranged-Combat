@@ -2,8 +2,10 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import { ItemSelectDialog } from "./item-select-dialog.js";
+import * as ItemSelect from "./item-select-dialog.js";
 import { getFlag, showWarning } from "./utils.js";
+
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.weaponSystem." + key);
 
 /**
  * Choose a single weapon from the given actor that matches the given conditions.
@@ -20,7 +22,7 @@ export async function getWeapon(actor, predicate, noResultsMessage, priorityPred
 
 /**
  * 
- * @param {Array<PF2eWeapon>} weapons 
+ * @param {Array<Weapon>} weapons 
  * @param {(weapon: Weapon) => boolean} priorityPredicate 
  * @returns {Promise<Weapon | null>}
  */
@@ -44,18 +46,23 @@ async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     }
 
     // We need to choose a weapon
-    /** @type Map<string, Weapon> */
-    const weaponsByEquipped = new Map();
+    /** @type ItemSelect.Section<Weapon>[] */
+    const sections = [];
     const equippedWeapons = weapons.filter(weapon => weapon.isEquipped);
     if (equippedWeapons.length) {
-        weaponsByEquipped.set("Equipped", equippedWeapons);
+        sections.push(new ItemSelect.Section(localize("carried.equipped"), equippedWeapons.map(ItemSelect.buildChoice)));
     }
     const unequippedWeapons = weapons.filter(weapon => !weapon.isEquipped);
     if (unequippedWeapons.length) {
-        weaponsByEquipped.set("Unequipped", unequippedWeapons);
+        sections.push(
+            new ItemSelect.Section(
+                `${localize("carried.worn")}/${localize("carried.stowed")}`,
+                unequippedWeapons.map(ItemSelect.buildChoice)
+            )
+        );
     }
 
-    return ItemSelectDialog.getItem("Weapon Select", "Select a Weapon", weaponsByEquipped);
+    return ItemSelect.getItem("Weapon Select", "Select a Weapon", sections);
 }
 
 /**
