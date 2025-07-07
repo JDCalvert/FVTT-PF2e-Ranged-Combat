@@ -1,15 +1,14 @@
-import * as ItemSelect from "../../../lib-item-select-dialog/scripts/item-select-dialog.js";
+import { Choice, Option, Response, Section } from "../../lib/lib-item-select-dialog-types/types.js";
+import { PF2eItem } from "../types/pf2e/item.js";
 
-export { Section, Choice, Option } from "../../../lib-item-select-dialog/scripts/item-select-dialog.js";
-
+/**
+ * @template {PF2eItem} T
+ * 
+ * @param {T} item 
+ * @returns {Choice<T>}
+ */
 export function buildChoice(item) {
-    return new ItemSelect.Choice(
-        item.id,
-        item.name,
-        null,
-        item.img,
-        item
-    );
+    return new Choice(item.id, item.name, item.img, item);
 }
 
 /**
@@ -17,7 +16,7 @@ export function buildChoice(item) {
  * 
  * @param {string} title 
  * @param {string} header 
- * @param {ItemSelect.Section<T>[]} items 
+ * @param {Section<T>[]} items 
  * 
  * @returns {Promise<T | null>}
  */
@@ -31,17 +30,17 @@ export async function getItem(title, header, items) {
  * 
  * @param {string} title 
  * @param {string} header 
- * @param {ItemSelect.Section<T>[]} items 
- * @param {ItemSelect.Option[]} options 
+ * @param {Section<T>[]} items 
+ * @param {Option[]} options 
  * 
- * @returns {Promise<ItemSelect.Response<T> | null>}
+ * @returns {Promise<Response<T> | null>}
  */
 export async function getItemWithOptions(title, header, items, options) {
     if (CONFIG.pf2eRangedCombat.silent) {
         return null;
     }
 
-    return ItemSelect.getItem(
+    return CONFIG.itemSelectDialog.getItem(
         {
             title,
             heading: header,

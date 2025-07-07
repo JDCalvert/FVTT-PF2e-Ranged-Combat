@@ -1,0 +1,3 @@
+[submodule "lib/lib-item-select-dialog-types"]
+	path = lib/lib-item-select-dialog-types
+	url = https://github.com/JDCalvert/lib-item-select-dialog-types

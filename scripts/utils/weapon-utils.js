@@ -1,3 +1,4 @@
+import { Section } from "../../lib/lib-item-select-dialog-types/types.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
@@ -46,16 +47,16 @@ async function getSingleWeapon(weapons, priorityPredicate = () => true) {
     }
 
     // We need to choose a weapon
-    /** @type ItemSelect.Section<Weapon>[] */
+    /** @type Section<Weapon>[] */
     const sections = [];
     const equippedWeapons = weapons.filter(weapon => weapon.isEquipped);
     if (equippedWeapons.length) {
-        sections.push(new ItemSelect.Section(localize("carried.equipped"), equippedWeapons.map(ItemSelect.buildChoice)));
+        sections.push(new Section(localize("carried.equipped"), equippedWeapons.map(ItemSelect.buildChoice)));
     }
     const unequippedWeapons = weapons.filter(weapon => !weapon.isEquipped);
     if (unequippedWeapons.length) {
         sections.push(
-            new ItemSelect.Section(
+            new Section(
                 `${localize("carried.worn")}/${localize("carried.stowed")}`,
                 unequippedWeapons.map(ItemSelect.buildChoice)
             )

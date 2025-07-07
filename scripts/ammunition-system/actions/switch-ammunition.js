@@ -1,3 +1,4 @@
+import { Choice, Section } from "../../../lib/lib-item-select-dialog-types/types.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import * as ItemSelect from "../../utils/item-select-dialog.js";
@@ -71,29 +72,28 @@ export async function selectAmmunition(
 
     const availableAmmunitionChoices = availableAmmunition.map(
         ammunition => {
-            return new ItemSelect.Choice(
+            return new Choice(
                 ammunition.id,
                 `${ammunition.name} (${ammunition.quantity})`,
-                null,
                 ammunition.img,
                 ammunition
             );
         }
     );
 
-    /** @type ItemSelect.Section<PF2eConsumable>[] */
+    /** @type Section<PF2eConsumable>[] */
     const sections = [];
 
     if (weapon.ammunition) {
         const currentAmmunition = availableAmmunitionChoices.findSplice(ammo => ammo.id === weapon.ammunition.id);
         if (currentAmmunition) {
             sections.push(
-                new ItemSelect.Section(localizeDialog("header.current"), [currentAmmunition])
+                new Section(localizeDialog("header.current"), [currentAmmunition])
             );
         }
     };
     if (availableAmmunitionChoices.length) {
-        sections.push(new ItemSelect.Section(localizeDialog("header.equipped"), availableAmmunitionChoices));
+        sections.push(new Section(localizeDialog("header.equipped"), availableAmmunitionChoices));
     }
 
     const result = await ItemSelect.getItemWithOptions(
