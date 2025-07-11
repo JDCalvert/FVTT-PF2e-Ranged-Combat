@@ -63,10 +63,12 @@
   "_stats": {
     "systemId": "pf2e",
     "systemVersion": "5.16.1",
-    "coreVersion": "11.315",
+    "coreVersion": "12.343",
     "createdTime": 1678729372760,
     "modifiedTime": 1719405601716,
-    "lastModifiedBy": "6cYJNd43VitcuYqD"
+    "lastModifiedBy": "6cYJNd43VitcuYqD",
+    "compendiumSource": null,
+    "duplicateSource": null
   },
   "folder": "5tG5TrQ3S7xcPKsc",
   "sort": 200000,

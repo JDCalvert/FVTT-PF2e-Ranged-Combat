@@ -6,6 +6,7 @@ import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { MAGAZINE_LOADED_EFFECT_ID, RELOAD_MAGAZINE_IMG } from "../constants.js";
+import { checkWeaponJammed } from "../utils.js";
 import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadMagazine } from "./unload.js";
 
@@ -60,6 +61,10 @@ export async function reloadMagazine() {
  */
 export async function performReloadMagazine(actor, token, weapon) {
     const updates = new Updates(actor);
+
+    if (checkWeaponJammed(weapon)) {
+        return;
+    }
 
     // If we have no ammunition selected, or we have none left in the stack, we can't reload
     const ammo = await getAmmunition(weapon, updates);

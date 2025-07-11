@@ -10,7 +10,7 @@ import { performReloadMagazine } from "./actions/reload-magazine.js";
 import { performReload } from "./actions/reload.js";
 import { isWeaponLoaded, performUnload } from "./actions/unload.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURE_BULLET_ACTION_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { getLoadedAmmunitions, isFullyLoaded } from "./utils.js";
+import { getLoadedAmmunitions, isFullyLoaded, isWeaponJammed } from "./utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.names." + key);
 
@@ -23,6 +23,25 @@ export function buildAuxiliaryActions(strike) {
     const token = tokens?.length === 1 ? tokens[0] : { name: actor.name, actor: actor };
 
     const auxiliaryActions = strike.auxiliaryActions;
+
+    // Clear Jam
+    if (isWeaponJammed(weapon)) {
+        auxiliaryActions.push(
+            buildAuxiliaryAction(
+                pf2eWeapon,
+                localize("clearJam"),
+                "interact",
+                1,
+                1,
+                2,
+                async () => {
+                    const updates = new Updates(actor);
+                    await peformClearJam(actor, weapon, updates);
+                    updates.handleUpdates();
+                }
+            )
+        );
+    }
 
     // Reload
     if (canReload(weapon)) {
@@ -200,6 +219,10 @@ function canReload(weapon) {
         return false;
     }
 
+    if (isWeaponJammed(weapon)) {
+        return false;
+    }
+
     if (isFullyLoaded(weapon)) {
         return false;
     }
@@ -230,6 +253,10 @@ function canReload(weapon) {
  */
 function canReloadMagazine(weapon) {
     if (!weapon.isRepeating) {
+        return false;
+    }
+
+    if (isWeaponJammed(weapon)) {
         return false;
     }
 

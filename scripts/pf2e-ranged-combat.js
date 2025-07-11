@@ -1,6 +1,7 @@
 import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
 import { initialiseAdvancedWeaponSystem } from "./advanced-weapon-system/initialise.js";
+import { clearJam } from "./ammunition-system/actions/clear-jam.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
@@ -67,6 +68,7 @@ Hooks.on(
         game.pf2eRangedCombat = {
             reload,
             unload,
+            clearJam,
             switchAmmunition,
             nextChamber,
             conjureBullet,

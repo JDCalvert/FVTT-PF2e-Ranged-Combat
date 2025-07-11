@@ -84,7 +84,7 @@ export function getItemFromActor(actor, sourceId) {
 export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
         effect.sourceId === sourceId
-        && getFlag(effect, "targetId") === targetId
+        && (getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
         && !effect.isExpired
     );
 }

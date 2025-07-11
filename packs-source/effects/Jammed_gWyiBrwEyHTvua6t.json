@@ -1,45 +1,36 @@
 {
-  "_id": "vKeDaHOu3bGKSk6b",
-  "name": "Magazine Loaded",
-  "type": "effect",
-  "img": "systems/pf2e/icons/equipment/weapons/magazine-with-5-bolts.webp",
-  "effects": [],
   "folder": "KZmp0bl6M1pOPRyB",
-  "sort": 106250,
-  "flags": {},
+  "name": "Jammed",
+  "type": "effect",
+  "effects": [],
   "system": {
     "description": {
       "gm": "",
-      "value": "<p>Your weapon is loaded with a magazine.</p>"
+      "value": "<p>This weapon is jammed. You must use an Interact action to clear the jam before you can reload the weapon and fire again.</p>"
     },
     "rules": [
       {
         "key": "ChoiceSet",
+        "flag": "weapon",
         "choices": {
           "ownedItems": true,
           "types": [
             "weapon"
           ],
           "predicate": [
-            "item:trait:repeating"
+            "item:group:firearm"
           ]
         }
       }
     ],
-    "slug": null,
+    "slug": "jammed",
     "_migration": {
-      "version": 0.911,
-      "lastMigration": null,
-      "previous": {
-        "schema": 0.716,
-        "foundry": "11.315",
-        "system": "5.11.5"
-      }
+      "version": 0.935,
+      "lastMigration": null
     },
     "traits": {
       "otherTags": [],
-      "value": [],
-      "rarity": "common"
+      "value": []
     },
     "publication": {
       "title": "",
@@ -65,22 +56,25 @@
     },
     "badge": null,
     "context": null,
-    "target": null,
     "unidentified": false
   },
+  "_id": "gWyiBrwEyHTvua6t",
+  "img": "icons/skills/ranged/cannon-barrel-firing-white-yellow.webp",
+  "sort": 0,
   "ownership": {
     "default": 0,
-    "I90qJ09IMT0McqwG": 3
+    "roffVas4vljvd355": 3
   },
+  "flags": {},
   "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.343",
     "systemId": "pf2e",
     "systemVersion": "6.12.4",
-    "coreVersion": "12.343",
-    "createdTime": null,
-    "modifiedTime": 1752272093846,
-    "lastModifiedBy": "roffVas4vljvd355",
-    "compendiumSource": null,
-    "duplicateSource": null
+    "createdTime": 1752268830944,
+    "modifiedTime": 1752272188825,
+    "lastModifiedBy": "roffVas4vljvd355"
   },
-  "_key": "!items!vKeDaHOu3bGKSk6b"
+  "_key": "!items!gWyiBrwEyHTvua6t"
 }

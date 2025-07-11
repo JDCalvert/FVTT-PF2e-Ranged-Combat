@@ -76,10 +76,12 @@
   "_stats": {
     "systemId": "pf2e",
     "systemVersion": "5.16.1",
-    "coreVersion": "11.315",
+    "coreVersion": "12.343",
     "createdTime": 1718363652782,
     "modifiedTime": 1718379357827,
-    "lastModifiedBy": "6cYJNd43VitcuYqD"
+    "lastModifiedBy": "6cYJNd43VitcuYqD",
+    "compendiumSource": null,
+    "duplicateSource": null
   },
   "_id": "uBNgQB5SpFpRzg3w",
   "sort": 300000,
