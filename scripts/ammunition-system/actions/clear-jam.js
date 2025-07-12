@@ -1,11 +1,11 @@
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActor, getEffectFromActor } from "../../utils/utils.js";
+import { getControlledActor, getEffectFromActor, getPreferredName, postInteractToChat } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
-import { JAMMED_EFFECT_ID } from "../constants.js";
+import { JAMMED_EFFECT_ID, CLEAR_JAM_IMG } from "../constants.js";
 import { isWeaponJammed } from "../utils.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.clearJam." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.clearJam." + key, data);
 
 export async function clearJam() {
     const actor = getControlledActor();
@@ -16,7 +16,7 @@ export async function clearJam() {
     const weapon = await getWeapon(
         actor,
         isWeaponJammed,
-        localize("warningNoJammedWeapons")
+        format("warningNoJammedWeapons", { actor: getPreferredName(actor) })
     );
     if (!weapon) {
         return;
@@ -34,6 +34,13 @@ export async function clearJam() {
 export async function performClearJam(weapon, updates) {
     const jammedEffect = getEffectFromActor(weapon.actor, JAMMED_EFFECT_ID, weapon.id);
     if (jammedEffect) {
-        updates.delete(weapon);
+        updates.delete(jammedEffect);
+
+        await postInteractToChat(
+            weapon.actor,
+            CLEAR_JAM_IMG,
+            format("clearJamMessage", { actor: getPreferredName(weapon.actor), weapon: weapon.name }),
+            "1",
+        );
     }
 }

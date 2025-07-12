@@ -4,6 +4,7 @@ import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getFlags, getItemFromActor, render, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { characterWeaponTransform } from "../utils/weapon-utils.js";
+import { performClearJam } from "./actions/clear-jam.js";
 import { performConjureBullet } from "./actions/conjure-bullet.js";
 import { performNextChamber } from "./actions/next-chamber.js";
 import { performReloadMagazine } from "./actions/reload-magazine.js";
@@ -36,7 +37,7 @@ export function buildAuxiliaryActions(strike) {
                 2,
                 async () => {
                     const updates = new Updates(actor);
-                    await peformClearJam(actor, weapon, updates);
+                    await performClearJam(weapon, updates);
                     updates.handleUpdates();
                 }
             )

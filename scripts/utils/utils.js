@@ -52,6 +52,26 @@ export function getControlledActorAndToken() {
 }
 
 /**
+ * @param {PF2eActor} actor 
+ */
+export function getPreferredName(actor) {
+    // First try to find a single controlled token for this actor
+    const controlledTokensForActor = canvas.tokens.controlled.filter(token => token.actor === actor);
+    if (controlledTokensForActor.length === 1) {
+        return controlledTokensForActor[0].name;
+    }
+
+    // Next try to find a single active token for this actor
+    const tokens = actor.getActiveTokens();
+    if (tokens.length === 1) {
+        return tokens[0].name;
+    }
+
+    // Fall back on the actor's name
+    return actor.name;
+}
+
+/**
  * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
  * with the same source ID if one cannot be found.
  * 

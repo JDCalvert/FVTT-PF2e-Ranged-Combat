@@ -1,0 +1,27 @@
+{
+  "folder": "Rf84mVsk9vaO5LqG",
+  "name": "Clear Jam",
+  "type": "script",
+  "_id": "tzE6pngILYv9ZVm1",
+  "author": "roffVas4vljvd355",
+  "img": "modules/pf2e-ranged-combat/art/clear-jam.webp",
+  "scope": "global",
+  "command": "game.pf2eRangedCombat.clearJam();",
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "roffVas4vljvd355": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.343",
+    "systemId": "pf2e",
+    "systemVersion": "6.12.4",
+    "createdTime": 1752361970848,
+    "modifiedTime": 1752362000035,
+    "lastModifiedBy": "roffVas4vljvd355"
+  },
+  "_key": "!macros!tzE6pngILYv9ZVm1"
+}

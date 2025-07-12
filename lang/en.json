@@ -210,7 +210,8 @@
                     "clearJam": "Clear Jam"
                 },
                 "clearJam": {
-                    "warningNoJammedWeapons": "{actor} has no jammed weapons."
+                    "warningNoJammedWeapons": "{actor} has no jammed weapons.",
+                    "clearJamMessage": "{actor} clears the jam on their {weapon}."
                 },
                 "conjureBullet": {
                     "conjuredRound": "Conjured Round",
