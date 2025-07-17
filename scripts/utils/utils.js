@@ -1,7 +1,6 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
-import { traits } from "../types/pf2e/trait.js";
 import { showDialog } from "./dialog.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
@@ -245,7 +244,13 @@ export async function postMessage(actor, img, message, params = {}) {
                 title: params.actionName || "",
                 glyph: String(params.numActions || "")
             },
-            traits: params.traits?.map(trait => traits.get(trait)) || []
+            traits: params.traits?.sort()?.map(trait => {
+                return {
+                    name: trait,
+                    label: CONFIG.PF2E.featTraits[trait],
+                    description: CONFIG.PF2E.traitsDescriptions[trait]
+                };
+            })
         }
     );
 

@@ -2,7 +2,7 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getItem, getItemFromActor, setEffectTarget, showWarning } from "../utils/utils.js";
+import { getEffectFromActor, getItem, getItemFromActor } from "../utils/utils.js";
 
 const SWORD_AND_PISTOL_FEAT_ID = "Compendium.pf2e.feats-srd.Item.dWbISC0di0r4oPCi";
 const SWORD_AND_PISTOL_MELEE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.uBNgQB5SpFpRzg3w";

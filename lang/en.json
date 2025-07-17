@@ -320,6 +320,10 @@
                 "warningNoAlchemicalBombs": "{actor} has no alchemical bombs.",
                 "pourBombIntoWeapon": "{actor} pours the contents of {bomb} into their {weapon}.",
                 "alchemicalShot": "Alchemical Shot"
+            },
+            "riskyReload": {
+                "warningNotWieldingProperWeapon": "{actor} is not wielding a firearm.",
+                "weaponJammed": "{actor}'s weapon has jammed after their Risky Reload Strike failed!"
             }
         },
         "feat": {

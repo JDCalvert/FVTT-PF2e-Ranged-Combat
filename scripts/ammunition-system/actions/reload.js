@@ -5,7 +5,7 @@ import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInteractToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { applyAmmunitionEffect } from "../ammunition-effects.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
@@ -132,7 +132,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
 
             updates.create(loadedEffectSource);
 
-            await postReloadToChat(token, weapon);
+            await postReloadToChat(token, weapon, null, options);
         } else if (weapon.capacity) {
             if (isFullyLoaded(weapon)) {
                 showWarning(format("warningAlreadyFullyLoaded", { weapon: weapon.name }));
@@ -237,7 +237,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
                 await setLoadedChamber(actor, weapon, ammo, updates);
             }
 
-            await postReloadToChat(token, weapon, ammo.name);
+            await postReloadToChat(token, weapon, ammo.name, options);
             updateAmmunitionQuantity(updates, ammo, -numRoundsToLoad);
         } else {
             // If we have no ammunition selected, or we don't have any left in the stack, we can't reload
@@ -285,7 +285,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
 
             loadedEffectSource.img = ammo.img;
 
-            await postReloadToChat(token, weapon, ammo.name);
+            await postReloadToChat(token, weapon, ammo.name, options);
 
             // Remove one piece of ammunition from the stack
             updateAmmunitionQuantity(updates, ammo, -1);
@@ -347,12 +347,14 @@ export async function performReload(actor, token, weapon, updates, options = {})
             setEffectTarget(loadedEffectSource, weapon);
             updates.create(loadedEffectSource);
         }
-        await postReloadToChat(token, weapon);
+        await postReloadToChat(token, weapon, null, options);
     }
 
     HookManager.call("reload", { weapon, updates });
 
     Hooks.callAll("pf2eRangedCombatReload", actor, token, weapon);
+
+    return true;
 };
 
 /**
@@ -387,7 +389,7 @@ async function getAmmunition(weapon, updates, ammunitionRequired = 1) {
     }
 }
 
-async function postReloadToChat(token, weapon, ammunitionName) {
+async function postReloadToChat(token, weapon, ammunitionName = null, options = {}) {
     const reloadActions = weapon.reload;
     let desc = format("tokenReloadsWeapon", { token: token.name, weapon: weapon.name });
     if (ammunitionName) {
@@ -396,10 +398,14 @@ async function postReloadToChat(token, weapon, ammunitionName) {
         desc = `${desc}.`;
     }
 
-    await postInteractToChat(
+    postToChat(
         token.actor,
-        RELOAD_AMMUNITION_IMG,
+        options.message?.img ?? RELOAD_AMMUNITION_IMG,
         desc,
-        reloadActions <= 3 ? String(reloadActions) : "",
+        {
+            actionName: options.message?.actionName ?? game.i18n.localize("PF2E.Actions.Interact.Title"),
+            numActions: reloadActions <= 3 ? String(reloadActions) : "",
+            traits: ["manipulate", ...options.message?.traits ?? []]
+        }
     );
 }

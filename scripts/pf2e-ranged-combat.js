@@ -1,5 +1,6 @@
 import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
+import { initialiseRiskyReload } from "./actions/risky-reload.js";
 import { initialiseAdvancedWeaponSystem } from "./advanced-weapon-system/initialise.js";
 import { clearJam } from "./ammunition-system/actions/clear-jam.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
@@ -25,7 +26,6 @@ import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js
 import { initialiseCarryTypeHandler } from "./thrown-weapons/change-carry-type.js";
 import { initialiseThrownWeaponCheck } from "./thrown-weapons/throw-weapon-check.js";
 import { initialiseThrownWeaponHandler } from "./thrown-weapons/throw-weapon-handler.js";
-import { initialiseTraits } from "./types/pf2e/trait.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 export const postToChatConfig = {
@@ -43,8 +43,6 @@ Hooks.on(
         };
 
         initialiseConfigurationSettings();
-
-        initialiseTraits();
 
         initialiseAdvancedWeaponSystem();
         initialiseHuntPrey();
@@ -64,6 +62,7 @@ Hooks.on(
         initialiseAlchemicalShot();
         initialiseSwordAndPistol();
         initialiseFakeOut();
+        initialiseRiskyReload();
 
         game.pf2eRangedCombat = {
             reload,

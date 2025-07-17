@@ -86,6 +86,9 @@ You can use the <b>Unload Alchemical Crossbow</b> macro to unload the bomb from 
 ### Alchemical Shot
 You can use the <b>Alchemical Shot</b> macro to pour an alchemical bomb into a firearm or crossbow. This will give your weapon the <b>Alchemical Shot</b> effect, changing its damage type, and adding persistent damage to its damage rolls. It will also add a roll note to the weapon's attack rolls in case of a failure, informing you to take damage. The effect will be removed upon the end of your turn or firing another shot with that weapon.
 
+### Risky Reload
+When you post the <b>Risky Reload</b> action to chat, you will be prompted to choose a firearm, as with reloading, but this will also give your weapon the <b>Risky Reload</b> effect. You can then make a Strike. If the Strike fails, the weapon will misfire and gain the <b>Jammed</b> effect. You can clear the jam either by using the <b>Clear Jam</b> macro, clicking the Clear Jam button in the auxiliary actions on your character sheet, or simply removing the effect. The Strike will have a note to remind you that a miss results in a misfire, in case the attack roll had no target to determine the degree of success.
+
 ### Advanced Thrown Weapon System
 This enhancement to thrown weapons handles the management of which weapons are worn, held, and dropped. A Game Master can enable or disable this system in the module settings <i>(default: disabled)</i>. This feature is currently implemented only for PCs.
 
