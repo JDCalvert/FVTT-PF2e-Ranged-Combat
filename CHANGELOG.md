@@ -1,4 +1,4 @@
-## Unreleased (Pathfinder 2e 7.2.3)
+## 7.3.0 (Pathfinder 2e 7.2.3)
 ### Feature
 - Add Jammed effect to represent a firearm which has misfired.
 - Add automation for Risky Reload.
