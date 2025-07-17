@@ -7,7 +7,7 @@ import * as ItemSelect from "../utils/item-select-dialog.js";
 import { Section } from "../../lib/lib-item-select-dialog-types/types.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID } from "./constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, JAMMED_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
@@ -285,4 +285,30 @@ export function buildLoadedEffectDescription(loadedEffect) {
             (previous, current) => previous + current,
             capacityLoaded.originalDescription ?? loadedEffect.system.description.value
         );
+}
+
+/**
+ * Check if the weapon is jammed, showing a warning if it is.
+ * 
+ * @param {Weapon} weapon
+ * @returns {boolean} true if the weapon is jammed
+ */
+export function checkWeaponJammed(weapon) {
+    if (isWeaponJammed(weapon)) {
+        showWarning(format("jammed.weaponJammed", { weapon: weapon.name }));
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Check if the weapon is jammed.
+ * 
+ * @param {Weapon} weapon
+ * @returns {boolean} true if the weapon is jammed
+ */
+export function isWeaponJammed(weapon) {
+    return !!getEffectFromActor(weapon.actor, JAMMED_EFFECT_ID, weapon.id);
 }

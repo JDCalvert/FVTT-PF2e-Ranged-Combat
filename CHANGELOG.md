@@ -1,3 +1,8 @@
+## Unreleased (Pathfinder 2e 7.2.3)
+### Feature
+- Add Jammed effect to represent a firearm which has misfired.
+- Add automation for Risky Reload.
+
 ## 7.2.2 - 2025-07-07 (Pathfinder 2e 7.2.2)
 ### Fix
 - Fix issue with the Item Select Dialog.

@@ -161,6 +161,9 @@
                     "setAsAmmunition": "Set as ammunition"
                 }
             },
+            "jammed": {
+                "weaponJammed": "{weapon} is jammed."
+            },
             "check": {
                 "weaponNotLoaded": "{weapon} is not loaded.",
                 "magazineNotLoaded": "{weapon} has no magazine loaded.",
@@ -203,7 +206,12 @@
                     "reload": "Reload",
                     "unload": "Unload",
                     "reloadMagazine": "Reload Magazine",
-                    "nextChamber": "Next Chamber"
+                    "nextChamber": "Next Chamber",
+                    "clearJam": "Clear Jam"
+                },
+                "clearJam": {
+                    "warningNoJammedWeapons": "{actor} has no jammed weapons.",
+                    "clearJamMessage": "{actor} clears the jam on their {weapon}."
                 },
                 "conjureBullet": {
                     "conjuredRound": "Conjured Round",
@@ -312,6 +320,10 @@
                 "warningNoAlchemicalBombs": "{actor} has no alchemical bombs.",
                 "pourBombIntoWeapon": "{actor} pours the contents of {bomb} into their {weapon}.",
                 "alchemicalShot": "Alchemical Shot"
+            },
+            "riskyReload": {
+                "warningNotWieldingProperWeapon": "{actor} is not wielding a firearm.",
+                "weaponJammed": "{actor}'s weapon has jammed after their Risky Reload Strike failed!"
             }
         },
         "feat": {

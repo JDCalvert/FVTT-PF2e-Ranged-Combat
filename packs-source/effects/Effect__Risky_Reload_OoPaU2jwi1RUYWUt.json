@@ -1,0 +1,104 @@
+{
+  "folder": "bTr3DePhBbbQBHrc",
+  "name": "Effect: Risky Reload",
+  "type": "effect",
+  "effects": [],
+  "system": {
+    "description": {
+      "gm": "",
+      "value": "<p>You have rapidly reloaded your firearm, but attempting to use this technique is a dangerous gamble with your firearm's functionality.</p><p>If your Strike fails, the firearm misfires.</p>"
+    },
+    "rules": [
+      {
+        "key": "ChoiceSet",
+        "flag": "weapon",
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ],
+          "predicate": [
+            {
+              "gt": [
+                "item:reload",
+                0
+              ]
+            },
+            "item:group:firearm"
+          ]
+        }
+      },
+      {
+        "key": "AdjustDegreeOfSuccess",
+        "label": "Risky Reload",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-attack",
+        "adjustment": {
+          "failure": "to-critical-failure"
+        }
+      },
+      {
+        "key": "Note",
+        "title": "Risky Reload",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-attack",
+        "text": "If your Strike fails, the firearm misfires and becomes @UUID[Compendium.pf2e-ranged-combat.effects.Item.gWyiBrwEyHTvua6t].",
+        "outcome": [
+          "criticalFailure",
+          "failure"
+        ]
+      }
+    ],
+    "slug": "effect-risky-reload",
+    "_migration": {
+      "version": 0.935,
+      "lastMigration": null
+    },
+    "traits": {
+      "otherTags": [],
+      "value": []
+    },
+    "publication": {
+      "title": "",
+      "authors": "",
+      "license": "OGL",
+      "remaster": false
+    },
+    "level": {
+      "value": 1
+    },
+    "duration": {
+      "value": 0,
+      "unit": "rounds",
+      "expiry": "turn-end",
+      "sustained": false
+    },
+    "start": {
+      "value": 0,
+      "initiative": null
+    },
+    "tokenIcon": {
+      "show": true
+    },
+    "badge": null,
+    "context": null,
+    "unidentified": false
+  },
+  "_id": "OoPaU2jwi1RUYWUt",
+  "img": "modules/pf2e-ranged-combat/art/risky-reload.webp",
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "roffVas4vljvd355": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.343",
+    "systemId": "pf2e",
+    "systemVersion": "6.12.4",
+    "createdTime": 1752700070356,
+    "modifiedTime": 1752747936956,
+    "lastModifiedBy": "roffVas4vljvd355"
+  },
+  "_key": "!items!OoPaU2jwi1RUYWUt"
+}

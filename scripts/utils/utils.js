@@ -1,7 +1,6 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eToken } from "../types/pf2e/token.js";
-import { traits } from "../types/pf2e/trait.js";
 import { showDialog } from "./dialog.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
@@ -52,6 +51,26 @@ export function getControlledActorAndToken() {
 }
 
 /**
+ * @param {PF2eActor} actor 
+ */
+export function getPreferredName(actor) {
+    // First try to find a single controlled token for this actor
+    const controlledTokensForActor = canvas.tokens.controlled.filter(token => token.actor === actor);
+    if (controlledTokensForActor.length === 1) {
+        return controlledTokensForActor[0].name;
+    }
+
+    // Next try to find a single active token for this actor
+    const tokens = actor.getActiveTokens();
+    if (tokens.length === 1) {
+        return tokens[0].name;
+    }
+
+    // Fall back on the actor's name
+    return actor.name;
+}
+
+/**
  * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
  * with the same source ID if one cannot be found.
  * 
@@ -84,7 +103,7 @@ export function getItemFromActor(actor, sourceId) {
 export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
         effect.sourceId === sourceId
-        && getFlag(effect, "targetId") === targetId
+        && (getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
         && !effect.isExpired
     );
 }
@@ -225,7 +244,13 @@ export async function postMessage(actor, img, message, params = {}) {
                 title: params.actionName || "",
                 glyph: String(params.numActions || "")
             },
-            traits: params.traits?.map(trait => traits.get(trait)) || []
+            traits: params.traits?.sort()?.map(trait => {
+                return {
+                    name: trait,
+                    label: CONFIG.PF2E.featTraits[trait],
+                    description: CONFIG.PF2E.traitsDescriptions[trait]
+                };
+            })
         }
     );
 

@@ -104,7 +104,8 @@
     },
     "badge": null,
     "context": null,
-    "target": null
+    "target": null,
+    "unidentified": false
   },
   "ownership": {
     "default": 0,
@@ -112,11 +113,13 @@
   },
   "_stats": {
     "systemId": "pf2e",
-    "systemVersion": "5.16.1",
-    "coreVersion": "11.315",
+    "systemVersion": "6.12.4",
+    "coreVersion": "12.343",
     "createdTime": null,
-    "modifiedTime": 1718379336470,
-    "lastModifiedBy": "6cYJNd43VitcuYqD"
+    "modifiedTime": 1752272089195,
+    "lastModifiedBy": "roffVas4vljvd355",
+    "compendiumSource": null,
+    "duplicateSource": null
   },
   "_key": "!items!cA9sBCFAxY2EJgrC"
 }

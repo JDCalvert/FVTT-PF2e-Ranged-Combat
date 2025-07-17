@@ -2,18 +2,22 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { getEffectFromActor, getFlag, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
+import { checkWeaponJammed, getSelectedAmmunition, isFullyLoaded, isLoaded, isWeaponJammed } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.check." + key, data);
 
 export function initialiseFireWeaponCheck() {
-    HookManager.registerCheck("weapon-attack", checkLoaded);
+    HookManager.registerCheck("weapon-attack", checkCanWeaponFire);
 }
 
 /**
  * @param {Weapon} weapon 
  */
-async function checkLoaded({ weapon }) {
+async function checkCanWeaponFire({ weapon }) {
+    if (checkWeaponJammed(weapon)) {
+        return false;
+    }
+
     if (useAdvancedAmmunitionSystem(weapon.actor)) {
         // For repeating weapons, check that a magazine is loaded
         if (weapon.isRepeating) {
