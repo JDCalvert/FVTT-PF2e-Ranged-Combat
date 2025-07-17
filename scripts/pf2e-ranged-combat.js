@@ -1,6 +1,6 @@
 import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
-import { initialiseRiskyReload } from "./actions/risky-reload.js";
+import { initialiseRiskyReload } from "./feats/risky-reload.js";
 import { initialiseAdvancedWeaponSystem } from "./advanced-weapon-system/initialise.js";
 import { clearJam } from "./ammunition-system/actions/clear-jam.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";

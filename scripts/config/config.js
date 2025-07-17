@@ -176,6 +176,19 @@ export function initialiseConfigurationSettings() {
 
     game.settings.register(
         "pf2e-ranged-combat",
+        "fakeOutFireWeapon",
+        {
+            name: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.fireWeapon.name"),
+            hint: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.fireWeapon.hint"),
+            scope: "world",
+            config: true,
+            type: Boolean,
+            default: false
+        }
+    );
+
+    game.settings.register(
+        "pf2e-ranged-combat",
         "hideTokenIcons",
         {
             name: game.i18n.localize("pf2e-ranged-combat.config.hideTokenIcons.name"),
@@ -296,6 +309,17 @@ export function initialiseConfigurationSettings() {
                 );
 
             htmlFind("pf2e-ranged-combat.fakeOutDC")
+                ?.closest(".form-group")
+                ?.before(
+                    headerTemplate(
+                        game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.name"),
+                        `
+                            <p class="notes">${game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.config.description")}
+                        `
+                    )
+                );
+
+            htmlFind("pf2e-ranged-combat.hideTokenIcons")
                 ?.closest(".form-group")
                 ?.before(
                     headerTemplate(

@@ -17,11 +17,10 @@ export function initialiseFireWeaponHandler() {
 /**
  * Handle firing a weapon, including updating/removing loaded effects and consuming ammunition.
  * 
- * @param {Weapon} weapon 
- * @param {Updates} updates 
+ * @param {{ weapon: Weapon, updates: Updates}} param
  * @returns 
  */
-function fireWeapon({ updates, weapon }) {
+export function fireWeapon({ updates, weapon }) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
         return;

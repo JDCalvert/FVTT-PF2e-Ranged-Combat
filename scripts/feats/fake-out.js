@@ -1,9 +1,11 @@
 import { MAGAZINE_LOADED_EFFECT_ID } from "../ammunition-system/constants.js";
+import { fireWeapon } from "../ammunition-system/fire-weapon-handler.js";
 import { isLoaded } from "../ammunition-system/utils.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
+import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getItemFromActor, postActionToChat, postMessage, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
@@ -127,6 +129,18 @@ async function performFakeOut(actor, fakeOutFeat) {
     }
 
     await postActionToChat(fakeOutFeat);
+
+    if (game.settings.get("pf2e-ranged-combat", "fakeOutFireWeapon")) {
+        const updates = new Updates(actor);
+        fireWeapon(
+            {
+                updates,
+                weapon: weapons.find(weapon => weapon.id === strike.item.id)
+            }
+        );
+        updates.handleUpdates();
+    }
+
 
     const roll = await strike.roll(params);
 

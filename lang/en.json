@@ -329,10 +329,15 @@
         "feat": {
             "fakeOut": {
                 "config": {
+                    "description": "Controls how the module handles Fake Out automation.",
                     "dc": {
                         "name": "Fake Out DC",
                         "hint": "When using the Fake Out action, the DC to roll against. The standard Aid DC was 20 before the remaster, and is 15 after the remaster, although a popular house-rule is to use the enemy's AC.",
                         "enemyDC": "Enemy AC"
+                    },
+                    "fireWeapon": {
+                        "name": "Fire Weapon",
+                        "hint": "Whether to actually fire the weapon when using Fake Out. Pathfinder Society rules specify that you do not."
                     }
                 },
                 "name": "Fake Out",

@@ -2,6 +2,7 @@
 ### Feature
 - Add Jammed effect to represent a firearm which has misfired.
 - Add automation for Risky Reload.
+- Add option to actually fire the weapon when using the Fake Out feat.
 
 ## 7.2.2 - 2025-07-07 (Pathfinder 2e 7.2.2)
 ### Fix
