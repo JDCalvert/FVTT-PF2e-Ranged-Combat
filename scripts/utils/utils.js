@@ -286,6 +286,10 @@ export async function render(path, data) {
 }
 
 export function getAttackPopout(item) {
+    if (!item.actor?.apps) {
+        return;
+    }
+
     return Object.values(item.actor.apps).find(window => window.constructor.name === "AttackPopout" && window.options.strikeItemId === item.id);
 }
 
