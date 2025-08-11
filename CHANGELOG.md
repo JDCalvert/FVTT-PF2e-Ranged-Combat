@@ -1,4 +1,4 @@
-## Unreleased (Pathfinder 2e 7.3.1)
+## 7.3.1 (Pathfinder 2e 7.3.1)
 ### Fix
 - Fix a bug deleting an item with no actor.
 
