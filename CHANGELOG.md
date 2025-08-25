@@ -1,3 +1,6 @@
+## 7.3.2 - 2025-08-25 (Pathfinder 2e 7.3.2)
+- Update Chinese translation.
+
 ## 7.3.1 - 2025-08-11 (Pathfinder 2e 7.3.1)
 ### Fix
 - Fix a bug deleting an item with no actor.
