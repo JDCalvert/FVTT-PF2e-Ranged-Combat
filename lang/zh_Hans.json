@@ -232,10 +232,10 @@
                     "reload": "装填",
                     "reloadMagazine": "装填弹匣",
                     "nextChamber": "下一个弹仓",
-                    "unload": "卸载",
-                    "clearJam": "清理卡弹"
+                    "unload": "卸载"
                 },
                 "clearJam": {
+                    "actionName": "清理卡弹",
                     "warningNoJammedWeapons": "{actor}未持有卡弹的武器。",
                     "clearJamMessage": "{actor}清理了{weapon}内的卡弹。"
                 }

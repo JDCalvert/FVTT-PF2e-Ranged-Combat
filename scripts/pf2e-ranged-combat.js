@@ -1,8 +1,7 @@
 import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
-import { initialiseRiskyReload } from "./feats/risky-reload.js";
 import { initialiseAdvancedWeaponSystem } from "./advanced-weapon-system/initialise.js";
-import { clearJam } from "./ammunition-system/actions/clear-jam.js";
+import { clearJam, initialiseClearJam } from "./actions/clear-jam.js";
 import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
 import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
@@ -10,14 +9,13 @@ import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
 import { fullyReload, reload, reloadNPCs } from "./ammunition-system/actions/reload.js";
 import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { unload } from "./ammunition-system/actions/unload.js";
-import { initialiseAmmunitionEffects } from "./ammunition-system/ammunition-effects.js";
-import { initialiseFireWeaponCheck } from "./ammunition-system/fire-weapon-check.js";
-import { initialiseFireWeaponHandler } from "./ammunition-system/fire-weapon-handler.js";
+import { initialiseAmmunitionSystem } from "./ammunition-system/ammunition-system.js";
 import { initialiseChatMessageHooks } from "./chat-message-hook.js";
 import { initialiseConfigurationSettings } from "./config/config.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
 import { initialiseFakeOut } from "./feats/fake-out.js";
+import { initialiseRiskyReload } from "./feats/risky-reload.js";
 import { initialiseSwordAndPistol } from "./feats/sword-and-pistol.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
@@ -44,18 +42,17 @@ Hooks.on(
 
         initialiseConfigurationSettings();
 
+        initialiseClearJam();
+        initialiseAmmunitionSystem();
         initialiseAdvancedWeaponSystem();
         initialiseHuntPrey();
         initialiseChatMessageHooks();
 
-        initialiseFireWeaponCheck();
         initialiseThrownWeaponCheck();
 
-        initialiseFireWeaponHandler();
         initialiseThrownWeaponHandler();
         initialiseCarryTypeHandler();
 
-        initialiseAmmunitionEffects();
         initialiseCrossbowCrackShot();
         initialiseCrossbowAce();
         initialiseAlchemicalCrossbow();

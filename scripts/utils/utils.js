@@ -375,3 +375,10 @@ export function getFlag(item, flagName) {
 export function isUsingApplicationV2() {
     return foundry.utils.isNewerVersion(game.version, "13");
 }
+
+/**
+ * Version 7.7 of the system implements its own ammunition system, which is incompatible with the module's system.
+ */
+export function isUsingSystemAmmunitionSystem() {
+    return foundry.utils.isNewerVersion(game.system.version, "7.7");
+}

@@ -2,7 +2,7 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { getEffectFromActor, getFlag, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { checkWeaponJammed, getSelectedAmmunition, isFullyLoaded, isLoaded, isWeaponJammed } from "./utils.js";
+import { checkWeaponJammed, getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.check." + key, data);
 

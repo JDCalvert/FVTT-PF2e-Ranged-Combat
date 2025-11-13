@@ -1,11 +1,16 @@
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getItem, postInteractToChat } from "../../utils/utils.js";
+import { getControlledActorAndToken, getItem, isUsingSystemAmmunitionSystem, postInteractToChat } from "../../utils/utils.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key)
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key, data)
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key);
+const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.consolidateAmmunition." + key, data);
 
 export async function consolidateRepeatingWeaponAmmunition() {
+    if (isUsingSystemAmmunitionSystem()) {
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+        return;
+    }
+
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;

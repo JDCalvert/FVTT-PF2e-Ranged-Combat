@@ -4,7 +4,7 @@ import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { showDialog } from "../utils/dialog.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getItem, isUsingApplicationV2, setEffectTarget } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getItem, setEffectTarget } from "../utils/utils.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
 

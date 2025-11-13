@@ -5,7 +5,7 @@ import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, isUsingSystemAmmunitionSystem, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { applyAmmunitionEffect } from "../ammunition-effects.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
@@ -23,6 +23,11 @@ class ReloadOptions {
 }
 
 export async function reload() {
+    if (isUsingSystemAmmunitionSystem()) {
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+        return;
+    }
+
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;

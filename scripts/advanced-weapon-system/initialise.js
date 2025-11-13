@@ -1,17 +1,20 @@
-import { buildAuxiliaryActions } from "../ammunition-system/auxiliary-actions.js";
 import { isTargetHuntedPrey } from "../hunt-prey/hunted-prey-hook.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { transformWeapon } from "../utils/weapon-utils.js";
+import { isUsingSystemAmmunitionSystem } from "../utils/utils.js";
+import { characterWeaponTransform, transformWeapon } from "../utils/weapon-utils.js";
+import { initialiseAuxiliaryActions } from "./auxiliary-actions.js";
 
 export function initialiseAdvancedWeaponSystem() {
+
+    initialiseAuxiliaryActions();
 
     // Wrapper around preparing strikes
     libWrapper.register(
         "pf2e-ranged-combat",
         "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareStrike",
-        function(wrapper, ...args) {
+        function (wrapper, ...args) {
             const strike = wrapper(...args);
 
             buildAuxiliaryActions(strike);
@@ -28,7 +31,9 @@ export function initialiseAdvancedWeaponSystem() {
                             extraOptions.push("skip-post-processing");
                         }
 
-                        params.consumeAmmo = false;
+                        if (!isUsingSystemAmmunitionSystem()) {
+                            params.consumeAmmo = false;
+                        }
 
                         // If our current target is our hunted prey, add the "hunted-prey" roll option
                         if (isTargetHuntedPrey(actor)) {
@@ -66,7 +71,7 @@ export function initialiseAdvancedWeaponSystem() {
     libWrapper.register(
         "pf2e-ranged-combat",
         "game.pf2e.Check.roll",
-        async function(wrapper, ...args) {
+        async function (wrapper, ...args) {
             const context = args[1];
             const actor = context.actor;
 
@@ -180,4 +185,26 @@ async function getWeapon(flags) {
     }
 
     return transformWeapon(item);
+}
+
+function buildAuxiliaryActions(strike) {
+    const pf2eWeapon = strike.item;
+    const actor = pf2eWeapon.actor;
+    const weapon = characterWeaponTransform(pf2eWeapon);
+
+    const tokens = actor?.getActiveTokens();
+    const token = tokens?.length === 1 ? tokens[0] : { name: actor.name, actor: actor };
+
+    const auxiliaryActions = strike.auxiliaryActions;
+
+    HookManager.call(
+        "auxiliary-actions",
+        {
+            auxiliaryActions,
+            actor,
+            weapon,
+            token,
+            pf2eWeapon
+        }
+    );
 }

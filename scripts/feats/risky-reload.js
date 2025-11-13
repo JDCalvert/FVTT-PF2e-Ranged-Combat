@@ -3,7 +3,7 @@ import { JAMMED_EFFECT_ID } from "../ammunition-system/constants.js";
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getEffectFromActor, getItem, getPreferredName, postActionToChat, postMessage, setEffectTarget } from "../utils/utils.js";
+import { ensureDuration, getEffectFromActor, getItem, getPreferredName, isUsingSystemAmmunitionSystem, postActionToChat, postMessage, setEffectTarget } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
 
 const RISKY_RELOAD_FEAT_ID = "Compendium.pf2e.feats-srd.Item.BmAk6o14CutgnIOG";
@@ -13,7 +13,9 @@ const RISKY_RELOAD_IMG = "modules/pf2e-ranged-combat/art/risky-reload.webp";
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.riskyReload." + key, data);
 
 export function initialiseRiskyReload() {
-    HookManager.register("post-action", handlePostAction);
+    if (!isUsingSystemAmmunitionSystem()) {
+        HookManager.register("post-action", handlePostAction);
+    }
     HookManager.register("weapon-attack", handleWeaponFired);
 
     // If we unload a weapon, delete the Risky Reload effect

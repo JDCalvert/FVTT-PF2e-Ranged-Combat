@@ -3,7 +3,7 @@ import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import * as ItemSelect from "../../utils/item-select-dialog.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, showWarning } from "../../utils/utils.js";
+import { getControlledActorAndToken, isUsingSystemAmmunitionSystem, showWarning } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key);
@@ -11,6 +11,11 @@ const localizeDialog = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitio
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key, data);
 
 export async function switchAmmunition() {
+    if (isUsingSystemAmmunitionSystem()) {
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+        return;
+    }
+
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;

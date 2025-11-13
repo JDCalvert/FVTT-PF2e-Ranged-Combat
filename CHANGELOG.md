@@ -1,3 +1,6 @@
+## 7.3.3 - 2025-11-13 (Pathfinder 2e 7.7.1/6.12.4)
+- Disable ammunition system in system version 7.7 to remove conflicts with the system's implementation.
+
 ## 7.3.2 - 2025-08-25 (Pathfinder 2e 7.3.2)
 - Update Chinese translation.
 

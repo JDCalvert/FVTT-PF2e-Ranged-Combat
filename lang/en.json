@@ -138,6 +138,7 @@
             }
         },
         "ammunitionSystem": {
+            "disabled": "This functionality has been disabled since PF2e system version 7.7 changed how ammunition is handled. It will be restored in future updates.",
             "fireWeapon": "{actor} fires {ammunition}.",
             "fireWeaponRepeating": "{actor} uses {ammunition} ({remaining}/{capacity} remaining).",
             "fireConjuredRound": "{actor} fires their conjured round.",
@@ -206,10 +207,10 @@
                     "reload": "Reload",
                     "unload": "Unload",
                     "reloadMagazine": "Reload Magazine",
-                    "nextChamber": "Next Chamber",
-                    "clearJam": "Clear Jam"
+                    "nextChamber": "Next Chamber"
                 },
                 "clearJam": {
+                    "actionName": "Clear Jam",
                     "warningNoJammedWeapons": "{actor} has no jammed weapons.",
                     "clearJamMessage": "{actor} clears the jam on their {weapon}."
                 },

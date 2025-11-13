@@ -2,7 +2,7 @@ import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, postToChat, setEffectTarget, showWarning } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getItem, getItemFromActor, isUsingSystemAmmunitionSystem, postToChat, setEffectTarget, showWarning } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_ACTION_ID, CONJURE_BULLET_IMG } from "../constants.js";
 import { checkFullyLoaded, isFullyLoaded } from "../utils.js";
@@ -12,6 +12,11 @@ const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSyste
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key, data);
 
 export async function conjureBullet() {
+    if (isUsingSystemAmmunitionSystem()) {
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+        return;
+    }
+
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;
