@@ -1,6 +1,6 @@
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
-import { getEffectFromActor, getFlag, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, isUsingSystemAmmunitionSystem, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { checkWeaponJammed, getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
 
@@ -16,6 +16,10 @@ export function initialiseFireWeaponCheck() {
 async function checkCanWeaponFire({ weapon }) {
     if (checkWeaponJammed(weapon)) {
         return false;
+    }
+
+    if (isUsingSystemAmmunitionSystem(weapon.actor)) {
+        return true;
     }
 
     if (useAdvancedAmmunitionSystem(weapon.actor)) {

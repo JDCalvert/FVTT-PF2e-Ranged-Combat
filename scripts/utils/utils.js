@@ -378,7 +378,13 @@ export function isUsingApplicationV2() {
 
 /**
  * Version 7.7 of the system implements its own ammunition system, which is incompatible with the module's system.
+ * 
+ * @param {PF2eActor} actor 
  */
-export function isUsingSystemAmmunitionSystem() {
-    return foundry.utils.isNewerVersion(game.system.version, "7.7");
+export function isUsingSystemAmmunitionSystem(actor) {
+    if (actor.type === "character") {
+        return foundry.utils.isNewerVersion(game.system.version, "7.7");
+    } else {
+        return false;
+    }
 }

@@ -4,7 +4,7 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { findItemOnActor, getEffectFromActor, getFlag, postMessage, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { findItemOnActor, getEffectFromActor, getFlag, isUsingSystemAmmunitionSystem, postMessage, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, CONJURE_BULLET_IMG, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
 import { clearLoadedChamber, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "./utils.js";
 
@@ -23,6 +23,10 @@ export function initialiseFireWeaponHandler() {
 export function fireWeapon({ updates, weapon }) {
     // If the weapon doesn't use ammunition, we don't need to do anything else
     if (!weapon.usesAmmunition) {
+        return;
+    }
+
+    if (isUsingSystemAmmunitionSystem(weapon.actor)) {
         return;
     }
 

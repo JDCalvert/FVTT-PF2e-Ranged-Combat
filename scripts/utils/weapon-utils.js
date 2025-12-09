@@ -153,6 +153,7 @@ export function characterWeaponTransform(weapon) {
         isCapacity: isCapacity(weapon),
         isEquipped: weapon.isEquipped,
         isStowed: weapon.isStowed,
+        pf2eWeapon: weapon,
     };
 }
 

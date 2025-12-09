@@ -1,12 +1,13 @@
 import { MAGAZINE_LOADED_EFFECT_ID } from "../ammunition-system/constants.js";
 import { fireWeapon } from "../ammunition-system/fire-weapon-handler.js";
 import { isLoaded } from "../ammunition-system/utils.js";
+import { SystemAmmunition } from "../system-ammunition/system-ammunition.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eItem } from "../types/pf2e/item.js";
 import { PF2eToken } from "../types/pf2e/token.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getItemFromActor, postActionToChat, postMessage, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
+import { getEffectFromActor, getFlag, getItemFromActor, isUsingSystemAmmunitionSystem, postActionToChat, postMessage, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
 import { getWeapons } from "../utils/weapon-utils.js";
 
 const FAKE_OUT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Stydu9VtrhQZFZxt";
@@ -53,7 +54,11 @@ async function performFakeOut(actor, fakeOutFeat) {
                 return false;
             }
 
-            if (useAdvancedAmmunitionSystem(actor)) {
+            if (isUsingSystemAmmunitionSystem(actor)) {
+                if (!SystemAmmunition.isLoaded(weapon)) {
+                    return false;
+                }
+            } else if (useAdvancedAmmunitionSystem(actor)) {
                 if (weapon.isRepeating) {
                     const loadedMagazineEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
                     if (!loadedMagazineEffect) {

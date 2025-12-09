@@ -1,4 +1,5 @@
 import { PF2eActor } from "../pf2e/actor.js";
+import { PF2eWeapon } from "../pf2e/weapon.js";
 import { PF2eConsumable } from "../pf2e/consumable.js";
 
 export class Weapon {
@@ -38,6 +39,9 @@ export class Weapon {
 
     /** @type boolean */
     isEquipped;
+
+    /** @type {PF2eWeapon} */
+    pf2eWeapon;
 }
 
 

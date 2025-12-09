@@ -23,11 +23,6 @@ class ReloadOptions {
 }
 
 export async function reload() {
-    if (isUsingSystemAmmunitionSystem()) {
-        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
-        return;
-    }
-
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
         return;
@@ -111,7 +106,8 @@ export async function performReload(actor, token, weapon, updates, options = {})
         return;
     }
 
-    if (useAdvancedAmmunitionSystem(actor)) {
+    if (isUsingSystemAmmunitionSystem(actor)) {
+    } else if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             // With a repeating weapon, we only need to have a magazine loaded with at least one ammunition remaining. The ammunition itself
             // is still only consumed when we fire

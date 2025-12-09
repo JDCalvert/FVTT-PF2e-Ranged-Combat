@@ -12,13 +12,13 @@ const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSyste
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet." + key, data);
 
 export async function conjureBullet() {
-    if (isUsingSystemAmmunitionSystem()) {
-        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+    const { actor, token } = getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
-    const { actor, token } = getControlledActorAndToken();
-    if (!actor) {
+    if (isUsingSystemAmmunitionSystem(actor)) {
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
         return;
     }
 

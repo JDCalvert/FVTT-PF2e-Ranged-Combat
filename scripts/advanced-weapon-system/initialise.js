@@ -31,9 +31,7 @@ export function initialiseAdvancedWeaponSystem() {
                             extraOptions.push("skip-post-processing");
                         }
 
-                        if (!isUsingSystemAmmunitionSystem()) {
-                            params.consumeAmmo = false;
-                        }
+                        params.consumeAmmo = false;
 
                         // If our current target is our hunted prey, add the "hunted-prey" roll option
                         if (isTargetHuntedPrey(actor)) {

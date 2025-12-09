@@ -13,9 +13,6 @@ const RISKY_RELOAD_IMG = "modules/pf2e-ranged-combat/art/risky-reload.webp";
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.riskyReload." + key, data);
 
 export function initialiseRiskyReload() {
-    if (!isUsingSystemAmmunitionSystem()) {
-        HookManager.register("post-action", handlePostAction);
-    }
     HookManager.register("weapon-attack", handleWeaponFired);
 
     // If we unload a weapon, delete the Risky Reload effect
@@ -29,6 +26,10 @@ export function initialiseRiskyReload() {
 }
 
 function handlePostAction({ actor, item, result }) {
+    if (isUsingSystemAmmunitionSystem(actor)) {
+        return;
+    }
+
     if (item.sourceId != RISKY_RELOAD_FEAT_ID) {
         return;
     }
@@ -95,6 +96,10 @@ async function handleForActor(actor, item) {
  * @param {{ weapon: Weapon, updates: Updates, roll: { degreeOfSuccess: number }}} params
  */
 async function handleWeaponFired({ weapon, updates, roll }) {
+    if (isUsingSystemAmmunitionSystem(weapon.actor)) {
+        return;
+    }
+
     const riskyReloadEffect = getEffectFromActor(weapon.actor, RISKY_RELOAD_EFFECT_ID, weapon.id);
     if (!riskyReloadEffect) {
         return;

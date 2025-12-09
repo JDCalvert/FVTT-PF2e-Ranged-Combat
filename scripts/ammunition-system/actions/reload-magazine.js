@@ -22,13 +22,13 @@ const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSys
  *     - Load the new magazine (two actions)
  */
 export async function reloadMagazine() {
-    if (isUsingSystemAmmunitionSystem()) {
-        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+    const { actor, token } = getControlledActorAndToken();
+    if (!actor) {
         return;
     }
 
-    const { actor, token } = getControlledActorAndToken();
-    if (!actor) {
+    if (isUsingSystemAmmunitionSystem(actor)) {
+        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
         return;
     }
 
