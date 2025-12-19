@@ -199,7 +199,7 @@ function updateSystemItems(actor, updates) {
                         {
                             or: [
                                 "hunted-prey",
-                                "target:mark:hunt-prey"
+                                "target:mark:hunted-prey"
                             ]
                         }
                     ];

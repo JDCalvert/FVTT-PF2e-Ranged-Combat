@@ -1,3 +1,6 @@
+## 7.3.4 - 2025-12-19 (Pathfinder 2e 7.8.0/6.12.4)
+- Change Hunt Prey-related TokenMark rules elements to `hunted-prey` instead of `hunt-prey` to match the system's implementation.
+
 ## 7.3.3 - 2025-11-13 (Pathfinder 2e 7.7.1/6.12.4)
 - Disable ammunition system in system version 7.7 to remove conflicts with the system's implementation.
 

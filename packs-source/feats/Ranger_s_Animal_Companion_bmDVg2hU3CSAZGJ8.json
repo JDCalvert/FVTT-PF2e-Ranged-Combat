@@ -41,6 +41,19 @@
         "value": 2
       },
       {
+        "key": "RollOption",
+        "domain": "ranged-attack-roll",
+        "option": "ignore-range-penalty:2",
+        "predicate": [
+          {
+            "or": [
+              "hunted-prey",
+              "target:mark:hunted-prey"
+            ]
+          }
+        ]
+      },
+      {
         "key": "MultipleAttackPenalty",
         "label": "pf2e-ranged-combat.huntPrey.huntersEdge.flurry",
         "selector": "attack",
