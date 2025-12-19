@@ -232,12 +232,13 @@
                     "reload": "装填",
                     "reloadMagazine": "装填弹匣",
                     "nextChamber": "下一个弹仓",
-                    "unload": "卸载"
+                    "unload": "卸载",
+                    "clearJam": "清理卡弹"
                 },
                 "clearJam": {
-                    "actionName": "清理卡弹",
                     "warningNoJammedWeapons": "{actor}未持有卡弹的武器。",
-                    "clearJamMessage": "{actor}清理了{weapon}内的卡弹。"
+                    "clearJamMessage": "{actor}清理了{weapon}内的卡弹。",
+                    "actionName": "卡弹清膛"
                 }
             },
             "itemSelect": {
@@ -272,7 +273,8 @@
             },
             "jammed": {
                 "weaponJammed": "{weapon}已卡弹。"
-            }
+            },
+            "disabled": "由于PF2e系统7.7版本改变了弹药的处理方式，该功能已被暂时停用。它将在未来的更新中恢复。"
         },
         "utils": {
             "singleCharacterSelected": "你必须选择一个角色。",
