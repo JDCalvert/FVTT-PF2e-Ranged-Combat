@@ -79,7 +79,7 @@ export const HUNT_PREY_RULES = [
             {
                 "or": [
                     "hunted-prey",
-                    "target:mark:hunt-prey"
+                    "target:mark:hunted-prey"
                 ]
             }
         ]
@@ -373,7 +373,7 @@ export const MASTERFUL_HUNTER_FLURRY_RULES = [
 export const TOKEN_MARK_RULE = uuid => (
     {
         "key": "TokenMark",
-        "slug": "hunt-prey",
+        "slug": "hunted-prey",
         "uuid": uuid
     }
 )
