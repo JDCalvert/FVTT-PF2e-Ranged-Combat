@@ -15,19 +15,12 @@ const localize = (key) => game.i18n.localize("pf2e-ranged-combat.weaponSystem." 
  * @param {(weapon: Weapon) => boolean} predicate 
  * @param {string} noResultsMessage 
  * @param {(weapon: Weapon) => boolean} priorityPredicate 
- * @returns {Promise<Weapon | null>}
- */
-export async function getWeapon(actor, predicate, noResultsMessage, priorityPredicate) {
-    return getSingleWeapon(getWeapons(actor, predicate, noResultsMessage), priorityPredicate);
-}
-
-/**
  * 
- * @param {Array<Weapon>} weapons 
- * @param {(weapon: Weapon) => boolean} priorityPredicate 
  * @returns {Promise<Weapon | null>}
  */
-async function getSingleWeapon(weapons, priorityPredicate = () => true) {
+export async function getWeapon(actor, predicate, noResultsMessage, priorityPredicate = () => true) {
+    const weapons = getWeapons(actor, predicate, noResultsMessage)
+
     // If there are no weapons, then return nothing
     if (!weapons.length) {
         return;

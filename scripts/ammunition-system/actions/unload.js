@@ -7,6 +7,7 @@ import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, isUsingSystemAmmunitionSystem, postInteractToChat, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";
 import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
+import { SystemAmmunition } from "../system-ammunition.js";
 import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "../utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key);
@@ -19,7 +20,7 @@ export async function unload() {
     }
 
     if (isUsingSystemAmmunitionSystem(actor)) {
-        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
+        SystemAmmunition.unload(actor);
         return;
     }
 

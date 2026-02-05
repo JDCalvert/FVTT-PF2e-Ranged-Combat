@@ -9,6 +9,7 @@ import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getI
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
 import { applyAmmunitionEffect } from "../ammunition-effects.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
+import { SystemAmmunition } from "../system-ammunition.js";
 import { buildLoadedEffectDescription, buildLoadedEffectName, checkFullyLoaded, checkWeaponJammed, isFullyLoaded, updateAmmunitionQuantity } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 import { selectAmmunition } from "./switch-ammunition.js";
@@ -25,6 +26,11 @@ class ReloadOptions {
 export async function reload() {
     const { actor, token } = getControlledActorAndToken();
     if (!actor) {
+        return;
+    }
+
+    if (isUsingSystemAmmunitionSystem(actor)) {
+        SystemAmmunition.reload(actor);
         return;
     }
 
@@ -107,6 +113,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
     }
 
     if (isUsingSystemAmmunitionSystem(actor)) {
+
     } else if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             // With a repeating weapon, we only need to have a magazine loaded with at least one ammunition remaining. The ammunition itself
