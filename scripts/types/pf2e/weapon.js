@@ -2,12 +2,23 @@ import { PF2eConsumable } from "./consumable.js";
 import { PF2eItem } from "./item.js";
 
 export class PF2eWeapon extends PF2eItem {
-    /** @type PF2eConsumable */
+    /** @type {PF2eConsumable} */
     ammo;
 
-    /** @type PF2eWeaponSystem */
+    /** @type {PF2eWeaponSystem} */
     system;
 }
 
 export class PF2eWeaponSystem {
+
+    /** @type {PF2eWeaponAmmunitionData} */
+    ammo;
+
+    /** @type {PF2eItem[]} */
+    subitems;
+}
+
+export class PF2eWeaponAmmunitionData {
+    /** @type {number} */
+    capacity;
 }

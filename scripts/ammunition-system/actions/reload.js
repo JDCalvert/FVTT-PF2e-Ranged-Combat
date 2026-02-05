@@ -112,9 +112,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
         return;
     }
 
-    if (isUsingSystemAmmunitionSystem(actor)) {
-
-    } else if (useAdvancedAmmunitionSystem(actor)) {
+    if (useAdvancedAmmunitionSystem(actor)) {
         if (weapon.isRepeating) {
             // With a repeating weapon, we only need to have a magazine loaded with at least one ammunition remaining. The ammunition itself
             // is still only consumed when we fire

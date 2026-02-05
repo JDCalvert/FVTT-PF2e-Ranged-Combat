@@ -148,7 +148,9 @@
             },
             "ammunitionSelect": {
                 "title": "Ammunition Select",
+                "titleWithWeapon": "Ammunition Select ({weapon})",
                 "action": {
+                    "load": "Select which ammunition to load.",
                     "switch": "Select which ammunition to switch to.",
                     "unload": "Select which ammunition to unload.",
                     "fire": "Select which ammunition to fire."
@@ -275,6 +277,7 @@
         },
         "weaponSystem": {
             "carried": {
+                "held": "Held",
                 "equipped": "Equipped",
                 "worn": "Worn",
                 "stowed": "Stowed"
