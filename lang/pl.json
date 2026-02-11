@@ -215,7 +215,7 @@
                     "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.<br><br>Wybierz amunicję do załadowania.",
                     "warningNotEnoughAmmunition": "Za mało amunicji, aby przeładować {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.<br><br>Wybierz nową amunicję do załadowania.",
-                    "tokenReloadsWeapon": "{token} przeładowuje swoją {weapon}",
+                    "actorReloadsWeapon": "{token} przeładowuje swoją {weapon}",
                     "withAmmunition": "za pomocą {ammunition}.",
                     "warningNoReloadableCapacityWeapons": "Nie posiadasz broni wielokrotnego ładowania z cechą Pojemności."
                 },

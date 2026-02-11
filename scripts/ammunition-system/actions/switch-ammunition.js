@@ -1,7 +1,7 @@
 import { Choice, Section } from "../../../lib/lib-item-select-dialog-types/types.js";
 import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
-import * as ItemSelect from "../../utils/item-select-dialog.js";
+import { ItemSelect } from "../../utils/item-select-dialog.js";
 import { Updates } from "../../utils/updates.js";
 import { getControlledActorAndToken, isUsingSystemAmmunitionSystem, showWarning } from "../../utils/utils.js";
 import { getWeapon } from "../../utils/weapon-utils.js";

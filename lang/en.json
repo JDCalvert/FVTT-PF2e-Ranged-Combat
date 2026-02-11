@@ -249,7 +249,8 @@
                     "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.</p><p>Select new ammunition to load."
                 },
                 "reload": {
-                    "warningNoReloadableWeapons": "You have no reloadable weapons.",
+                    "selectWeapon": "Select a weapon to reload.",
+                    "warningNoReloadableWeapons": "{actor} has no reloadable weapons.",
                     "warningNoReloadableCapacityWeapons": "You have no reloadable weapons with the capacity trait.",
                     "warningNoMagazineLoaded": "{weapon} has no magazine loaded!",
                     "warningMagazineEmpty": "{weapon}'s magazine is empty!",
@@ -260,8 +261,8 @@
                     "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.<br><br>Select the ammunition to load.",
                     "warningNotEnoughAmmunition": "Not enough ammunition to reload {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.<br><br>Select new ammunition to load.",
-                    "tokenReloadsWeapon": "{token} reloads their {weapon}",
-                    "withAmmunition": "with {ammunition}."
+                    "actorReloadsWeapon": "{actor} reloads their {weapon}",
+                    "actorReloadsWeaponWithAmmunition": "{actor} reloads their {weapon} with {ammunition}."
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "You have no weapons that use ammunition.",
@@ -276,6 +277,9 @@
             }
         },
         "weaponSystem": {
+            "weaponSelect": {
+                "title": "Weapon Select"
+            },
             "carried": {
                 "held": "Held",
                 "equipped": "Equipped",

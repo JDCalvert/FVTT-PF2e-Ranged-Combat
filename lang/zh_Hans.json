@@ -212,7 +212,7 @@
                     "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。<br><br>选择要装填的弹药。",
                     "warningNotEnoughAmmunition": "你没有足够弹药装填{weapon}。",
                     "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为空。<br><br>选择新弹药装填。",
-                    "tokenReloadsWeapon": "{token}装填了{weapon}",
+                    "actorReloadsWeapon": "{token}装填了{weapon}",
                     "withAmmunition": "使用{ammunition}。",
                     "warningNoReloadableCapacityWeapons": "你没有具备弹容特征的可装填武器。"
                 },

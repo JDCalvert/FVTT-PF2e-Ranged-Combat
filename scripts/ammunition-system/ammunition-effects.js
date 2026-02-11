@@ -1,10 +1,9 @@
 import { postToChatConfig } from "../pf2e-ranged-combat.js";
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { showDialog } from "../utils/dialog.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getItem, setEffectTarget } from "../utils/utils.js";
+import { Ammunition, Weapon } from "../weapons/types.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
 
@@ -35,7 +34,7 @@ export function initialiseAmmunitionEffects() {
  * Apply the effects of the given ammunition to the weapon.
  * 
  * @param {Weapon} weapon               The weapon firing the ammunition
- * @param {PF2eConsumable} ammunition   The ammunition being fired
+ * @param {Ammunition} ammunition   The ammunition being fired
  * @param {Updates} updates 
  */
 export function applyAmmunitionEffect(weapon, ammunition, updates) {
@@ -62,7 +61,7 @@ export function applyAmmunitionEffect(weapon, ammunition, updates) {
                         "img": ammunition.img,
                         "system": {
                             "rules": rules,
-                            "description": ammunition.system.description
+                            "description": ammunition.descriptionText
                         },
                         "flags.pf2e-ranged-combat.ammunition": {
                             "name": ammunition.name,
@@ -79,6 +78,9 @@ export function applyAmmunitionEffect(weapon, ammunition, updates) {
     );
 }
 
+/**
+ * @param {{weapon: Weapon, ammunition: Ammunition, updates: Updates}} 
+ */
 function handleAmmunitionFired({ weapon, ammunition, updates }) {
     if (!isAmmunitionEffectsEnabled()) {
         return;
@@ -97,10 +99,10 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
 }
 
 /**
- * @param {PF2eConsumable} ammunition 
+ * @param {Ammunition} ammunition 
  */
 function buildAmmunitionRules(ammunition) {
-    for (const rule of ammunition.system.rules) {
+    for (const rule of ammunition.rules) {
         // Change the rule's selector(s) to point directly to the weapon that was fired
         if (rule.selector) {
             for (let i = 0; i < rule.selector.length; i++) {
@@ -120,7 +122,7 @@ function buildAmmunitionRules(ammunition) {
         }
     }
 
-    return ammunition.system.rules;
+    return ammunition.rules;
 }
 
 /**

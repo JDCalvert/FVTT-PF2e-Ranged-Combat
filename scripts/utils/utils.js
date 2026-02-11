@@ -5,17 +5,29 @@ import { showDialog } from "./dialog.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.utils." + key);
 
+export class Util {
+
+    /**
+     * Find a single controlled actor, either from an open character sheet, selected token, or owned actor. 
+     * 
+     * @returns {PF2eActor | null}
+     */
+    static getControlledActor() {
+        /** @type PF2eActor[] */
+        const sheetActors = Object.values(ui.windows).map(window => window.actor).filter(actor => !!actor);
+        if (sheetActors.length === 1) {
+            return sheetActors[0];
+        }
+
+        return getControlledActorAndToken().actor;
+    }
+}
+
 /**
  * Find a single controlled actor, either from an open character sheet, selected token, or owned actor.
  */
 export function getControlledActor() {
-    /** @type PF2eActor[] */
-    const sheetActors = Object.values(ui.windows).map(window => window.actor).filter(actor => !!actor);
-    if (sheetActors.length === 1) {
-        return sheetActors[0];
-    }
-
-    return getControlledActorAndToken().actor;
+    return Util.getControlledActor();
 }
 
 /**

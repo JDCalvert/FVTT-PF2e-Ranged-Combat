@@ -1,54 +1,227 @@
+import { Section } from "../../../lib/lib-item-select-dialog-types/types.js";
 import { CapacityLoadedEffect } from "../../types/pf2e-ranged-combat/loaded-effect.js";
-import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../../types/pf2e/actor.js";
 import { PF2eConsumable } from "../../types/pf2e/consumable.js";
 import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
+import { ItemSelect } from "../../utils/item-select-dialog.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, isUsingSystemAmmunitionSystem, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
+import { getControlledActorAndToken, getEffectFromActor, getFlag, getFlags, getItem, postInteractToChat, postToChat, setEffectTarget, showWarning, useAdvancedAmmunitionSystem, Util } from "../../utils/utils.js";
 import { getWeapon, getWeapons } from "../../utils/weapon-utils.js";
+import { Ammunition, Weapon } from "../../weapons/types.js";
+import { WeaponUtil } from "../../weapons/util.js";
 import { applyAmmunitionEffect } from "../ammunition-effects.js";
 import { CONJURED_ROUND_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../constants.js";
-import { SystemAmmunition } from "../system-ammunition.js";
 import { buildLoadedEffectDescription, buildLoadedEffectName, checkFullyLoaded, checkWeaponJammed, isFullyLoaded, updateAmmunitionQuantity } from "../utils.js";
 import { setLoadedChamber } from "./next-chamber.js";
 import { selectAmmunition } from "./switch-ammunition.js";
 import { unloadAmmunition } from "./unload.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.reload." + key);
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.reload." + key, data);
+const localize = (key, data = {}) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);
 
 class ReloadOptions {
     /** @type boolean */
     fullyReload;
 }
 
+class Reload {
+    /**
+     * @param {PF2eActor} actor 
+     */
+    static async reload(actor) {
+        const weapon = await WeaponUtil.getWeapon(
+            actor,
+            {
+                required: weapon => !weapon.isStowed && weapon.capacity > 0,
+                priority: weapon => {
+                    if (!weapon.isEquipped) {
+                        return false;
+                    }
+
+                    // The weapon has capacity remaining, and we have ammunition to load into it
+                    if (weapon.remainingCapacity > 0 && weapon.compatibleAmmunition.length > 0) {
+                        return true;
+                    }
+
+                    // The weapon is a repeating weapon which takes at least an action to reload, and is not loaded
+                    if (weapon.isRepeating && !weapon.isReadyToFire) {
+                        return true;
+                    }
+                }
+            },
+            localize("actions.reload.selectWeapon"),
+            localize("actions.reload.warningNoReloadableWeapons", { actor: actor.name })
+        );
+        if (!weapon) {
+            return;
+        }
+
+        const updates = new Updates(actor);
+
+        await Reload.perform(actor, weapon, updates);
+
+        updates.handleUpdates();
+    }
+
+    /**
+     * @param {PF2eActor} actor
+     * @param {Weapon} weapon 
+     * @param {Updates} updates 
+     */
+    static async perform(actor, weapon, updates) {
+        if (checkWeaponJammed(weapon)) {
+            return;
+        }
+
+        if (weapon.isRepeating) {
+            // A repeating weapon might need to be loaded because it doesn't have a magazine loaded, or because it needs to be cocked.            
+            if (weapon.isReadyToFire) {
+                showWarning(localize(`actions.reload.warningAlreadyLoaded`, { weapon: weapon.name }));
+                return;
+            }
+
+            /** @type {Ammunition | null} */
+            let ammunition = null;
+            let numActions = 0;
+
+            // If there's no magazine in the weapon, or the existing magazine is empty, we need to load the weapon with a fresh magazine
+            const loadedAmmunition = weapon.loadedAmmunition.length > 0 ? weapon.loadedAmmunition[0] : null;
+            if (!loadedAmmunition || loadedAmmunition.remainingUses === 0) {
+                // If there's a magazine in the weapon with no remaining uses, we need to remove it first
+                if (loadedAmmunition) {
+                    weapon.loadedAmmunition.length === 0;
+                    loadedAmmunition.delete(updates);
+                    numActions++;
+                }
+
+                ammunition = await Reload.getCompatibleAmmunition(weapon);
+                if (!ammunition) {
+                    return;
+                }
+
+                // If we're not already holding the ammunition, we need to spend an action retrieving it.
+                if (!ammunition.isHeld) {
+                    numActions++;
+                }
+
+                numActions++;
+
+                const ammunitionToAdd = ammunition.pop(1, updates);
+                await weapon.createAmmunition(ammunitionToAdd, updates);
+            }
+
+            // Cock the weapon, if required
+            if (weapon.reloadActions > 0) {
+                const loadedEffectSource = await getItem(LOADED_EFFECT_ID);
+                setEffectTarget(loadedEffectSource, weapon);
+                updates.create(loadedEffectSource);
+
+                if (numActions === 0) {
+                    numActions = weapon.reloadActions;
+                }
+            }
+
+            Reload.postToChat(actor, weapon, ammunition, { numActions: numActions });
+        } else {
+            if (weapon.remainingCapacity <= 0) {
+                showWarning(localize(`actions.reload.${weapon.capacity > 1 ? "warningAlreadyFullyLoaded" : "warningAlreadyLoaded"}`, { weapon: weapon.name }));
+                return;
+            }
+
+            const ammunition = await Reload.getCompatibleAmmunition(weapon);
+            if (!ammunition) {
+                return;
+            }
+
+            const ammunitionToAdd = ammunition.pop(1, updates);
+
+            const matching = weapon.loadedAmmunition.find(loaded => loaded.sourceId === ammunitionToAdd.sourceId);
+            if (matching) {
+                matching.push(ammunitionToAdd, updates);
+            } else {
+                await weapon.createAmmunition(ammunitionToAdd, updates);
+            }
+
+            Reload.postToChat(actor, weapon, ammunition);
+        }
+    }
+
+    /**
+     * Find any ammunition that is compatible with the weapon. If multiple are found, offer a choice.
+     * 
+     * @param {Weapon} weapon 
+     * @returns {Promise<Ammunition | null>} The selected ammunition, if any was found and selected.
+     */
+    static async getCompatibleAmmunition(weapon) {
+        if (!weapon.compatibleAmmunition.length) {
+            showWarning(localize("actions.reload.warningNoCompatibleAmmunition"));
+            return null;
+        }
+
+        if (weapon.compatibleAmmunition.length === 1) {
+            return weapon.compatibleAmmunition[0];
+        }
+
+        /** @type {Section<Ammunition>[]} */
+        const sections = [];
+
+        const heldAmmunition = weapon.compatibleAmmunition.filter(ammunition => ammunition.isHeld);
+        if (heldAmmunition.length > 0) {
+            sections.push(
+                new Section(
+                    game.i18n.localize("pf2e-ranged-combat.weaponSystem.carried.held"),
+                    heldAmmunition.map(ItemSelect.buildChoice)
+                )
+            );
+        }
+
+        const wornAmmunition = weapon.compatibleAmmunition.filter(ammunition => !ammunition.isHeld);
+        if (wornAmmunition.length > 0) {
+            sections.push(
+                new Section(
+                    game.i18n.localize("pf2e-ranged-combat.weaponSystem.carried.worn"),
+                    wornAmmunition.map(ItemSelect.buildChoice)
+                )
+            );
+        }
+
+        return ItemSelect.getItem(
+            localize("ammunitionSelect.titleWithWeapon", { weapon: weapon.name }),
+            localize("ammunitionSelect.action.load"),
+            sections
+        );
+    }
+
+    /**
+     * @param {PF2eActor} actor
+     * @param {Weapon} weapon
+     * @param {Ammunition | null} ammunition 
+     * @param {*} options
+     */
+    static postToChat(actor, weapon, ammunition, options = {}) {
+        postInteractToChat(
+            actor,
+            (ammunition ?? weapon).img,
+            localize(
+                `actions.reload.actorReloadsWeapon${ammunition ? "WithAmmunition" : ""}`,
+                {
+                    actor: actor.name,
+                    weapon: weapon.name,
+                    ammunition: ammunition?.name
+                }
+            ),
+            options.numActions ?? weapon.reloadActions
+        );
+    }
+}
+
 export async function reload() {
-    const { actor, token } = getControlledActorAndToken();
+    const actor = Util.getControlledActor();
     if (!actor) {
         return;
     }
 
-    if (isUsingSystemAmmunitionSystem(actor)) {
-        SystemAmmunition.reload(actor);
-        return;
-    }
-
-    const weapon = await getWeapon(
-        actor,
-        weapon => weapon.requiresLoading,
-        localize("warningNoReloadableWeapons"),
-        weapon => !isFullyLoaded(weapon)
-    );
-    if (!weapon) {
-        return;
-    }
-
-    const updates = new Updates(actor);
-
-    await performReload(actor, token, weapon, updates);
-
-    updates.handleUpdates();
+    Reload.reload(actor);
 }
 
 export async function fullyReload() {
@@ -118,17 +291,17 @@ export async function performReload(actor, token, weapon, updates, options = {})
             // is still only consumed when we fire
             const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
             if (!magazineLoadedEffect) {
-                showWarning(format("warningNoMagazineLoaded", { weapon: weapon.name }));
+                showWarning(localize("warningNoMagazineLoaded", { weapon: weapon.name }));
                 return;
             } else if (getFlag(magazineLoadedEffect, "remaining") < 1) {
-                showWarning(format("warningMagazineEmpty", { weapon: weapon.name }));
+                showWarning(localize("warningMagazineEmpty", { weapon: weapon.name }));
                 return;
             }
 
             // If the weapon is already loaded, we don't need to do it again
             const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
             if (loadedEffect) {
-                showWarning(format("warningAlreadyLoaded", { weapon: weapon.name }));
+                showWarning(localize("warningAlreadyLoaded", { weapon: weapon.name }));
                 return;
             }
 
@@ -141,7 +314,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
             await postReloadToChat(token, weapon, null, options);
         } else if (weapon.capacity) {
             if (isFullyLoaded(weapon)) {
-                showWarning(format("warningAlreadyFullyLoaded", { weapon: weapon.name }));
+                showWarning(localize("warningAlreadyFullyLoaded", { weapon: weapon.name }));
                 return;
             }
 
@@ -154,7 +327,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
             // If some chambers are already loaded, we only want to load with the same type of ammunition
             const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
             if (loadedEffect) {
-                /** @type CapacityLoadedEffect */
+                /** @type {CapacityLoadedEffect} */
                 const loaded = getFlags(loadedEffect);
 
                 numRoundsToLoad = options.fullyReload ? loaded.capacity - loaded.loadedChambers : 1;
@@ -207,7 +380,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
 
                 setEffectTarget(loadedEffectSource, weapon);
 
-                /** @type CapacityLoadedEffect */
+                /** @type {CapacityLoadedEffect} */
                 foundry.utils.mergeObject(
                     loadedEffectSource.flags["pf2e-ranged-combat"],
                     {
@@ -262,7 +435,7 @@ export async function performReload(actor, token, weapon, updates, options = {})
                 // If the selected ammunition is the same as what's already loaded, don't reload
                 const loadedAmmunition = getFlag(loadedEffect, "ammunition");
                 if (ammo.sourceId === loadedAmmunition.sourceId) {
-                    showWarning(format("warningAlreadyLoadedWithAmmo", { weapon: weapon.name, ammo: ammo.name }));
+                    showWarning(localize("warningAlreadyLoadedWithAmmo", { weapon: weapon.name, ammo: ammo.name }));
                     return;
                 }
                 await unloadAmmunition(actor, weapon, loadedEffect, updates);
@@ -376,8 +549,8 @@ async function getAmmunition(weapon, updates, ammunitionRequired = 1) {
         return await selectAmmunition(
             weapon,
             updates,
-            format("warningNoCompatibleAmmunition", { weapon: weapon.name }),
-            format("noAmmunitionSelectNew", { weapon: weapon.name }),
+            localize("warningNoCompatibleAmmunition", { weapon: weapon.name }),
+            localize("noAmmunitionSelectNew", { weapon: weapon.name }),
             false,
             false
         );
@@ -385,8 +558,8 @@ async function getAmmunition(weapon, updates, ammunitionRequired = 1) {
         return await selectAmmunition(
             weapon,
             updates,
-            format("warningNotEnoughAmmunition", { weapon: weapon.name }),
-            format("notEnoughAmmunitionSelectNew", { weapon: weapon.name }),
+            localize("warningNotEnoughAmmunition", { weapon: weapon.name }),
+            localize("notEnoughAmmunitionSelectNew", { weapon: weapon.name }),
             true,
             false
         );
@@ -397,9 +570,9 @@ async function getAmmunition(weapon, updates, ammunitionRequired = 1) {
 
 async function postReloadToChat(token, weapon, ammunitionName = null, options = {}) {
     const reloadActions = weapon.reload;
-    let desc = format("tokenReloadsWeapon", { token: token.name, weapon: weapon.name });
+    let desc = localize("actorReloadsWeapon", { token: token.name, weapon: weapon.name });
     if (ammunitionName) {
-        desc = desc + " " + format("withAmmunition", { ammunition: ammunitionName });
+        desc = desc + " " + localize("withAmmunition", { ammunition: ammunitionName });
     } else {
         desc = `${desc}.`;
     }

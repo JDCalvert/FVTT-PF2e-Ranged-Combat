@@ -1,16 +1,30 @@
 export class PF2eItem {
-    /** @type string */
+    /** @type {string} */
     id;
 
-    /** @type string */
+    /** @type {string} */
     sourceId;
 
-    /** @type boolean */
+    /** @type {string} */
+    name;
+
+    /** @type {string} */
+    img;
+
+    /** @type {boolean} */
     isStowed;
 
-    /** @type number */
+    /** @type {number} */
     quantity;
 
-    /** @type string */
+    /** @type {string} */
     type;
+
+    /** @type {PF2eItemSystem} */
+    system;
+}
+
+export class PF2eItemSystem {
+    /** @type {number} */
+    quantity;
 }

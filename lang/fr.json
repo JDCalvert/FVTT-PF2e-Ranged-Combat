@@ -204,7 +204,7 @@
                     "warningNoCompatibleAmmunition": "Vous n'avez pas de munitions compatibles avec votre {weapon}.",
                     "warningNotEnoughAmmunition": "Pas assez de munitions pour recharger votre {weapon}.",
                     "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.<br><br>Sélectionnez de nouvelles munitions à charger.",
-                    "tokenReloadsWeapon": "{token} recharge sa/son {weapon}",
+                    "actorReloadsWeapon": "{token} recharge sa/son {weapon}",
                     "withAmmunition": "avec {ammunition}.",
                     "warningAlreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
                     "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.<br><br>Sélectionnez les munitions à charger.",

@@ -3,11 +3,11 @@ import { CapacityLoadedEffect, LoadedEffect } from "../types/pf2e-ranged-combat/
 import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eConsumable, PF2eConsumableUses } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import * as ItemSelect from "../utils/item-select-dialog.js";
 import { Section } from "../../lib/lib-item-select-dialog-types/types.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getFlag, getFlags, showWarning } from "../utils/utils.js";
 import { CHAMBER_LOADED_EFFECT_ID, CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, JAMMED_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
+import { ItemSelect } from "../utils/item-select-dialog.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem." + key, data);

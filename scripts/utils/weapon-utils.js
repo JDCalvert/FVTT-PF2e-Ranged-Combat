@@ -3,7 +3,7 @@ import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { PF2eActor } from "../types/pf2e/actor.js";
 import { PF2eConsumable } from "../types/pf2e/consumable.js";
 import { PF2eWeapon } from "../types/pf2e/weapon.js";
-import * as ItemSelect from "./item-select-dialog.js";
+import { ItemSelect } from "./item-select-dialog.js";
 import { getFlag, showWarning } from "./utils.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.weaponSystem." + key);
@@ -19,7 +19,7 @@ const localize = (key) => game.i18n.localize("pf2e-ranged-combat.weaponSystem." 
  * @returns {Promise<Weapon | null>}
  */
 export async function getWeapon(actor, predicate, noResultsMessage, priorityPredicate = () => true) {
-    const weapons = getWeapons(actor, predicate, noResultsMessage)
+    const weapons = getWeapons(actor, predicate, noResultsMessage);
 
     // If there are no weapons, then return nothing
     if (!weapons.length) {
