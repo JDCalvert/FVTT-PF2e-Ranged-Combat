@@ -1,9 +1,8 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getEffectFromActor, getFlag, getItem, getItemFromActor, setEffectTarget } from "../utils/utils.js";
-import { getWeapons } from "../utils/weapon-utils.js";
+import { ensureDuration, getItemFromActor, Util } from "../utils/utils.js";
+import { Weapon } from "../weapons/types.js";
+import { WeaponSystem } from "../weapons/system.js";
 
 const CROSSBOW_ACE_FEAT_ID = "Compendium.pf2e.feats-srd.Item.CpjN7v1QN8TQFcvI";
 const CROSSBOW_ACE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.zP0vPd14V5OG9ZFv";
@@ -28,7 +27,7 @@ export function initialiseCrossbowAce() {
         "hunt-prey",
         ({ actor, updates }) => {
             if (hasLegacyCrossbowAce(actor)) {
-                const weapons = getWeapons(actor, weapon => weapon.isEquipped && weapon.group == "crossbow");
+                const weapons = WeaponSystem.getWeapons(actor, weapon => weapon.isEquipped && weapon.group == "crossbow")
                 for (const weapon of weapons) {
                     applyFeatEffect(weapon, updates);
                 }
@@ -40,9 +39,9 @@ export function initialiseCrossbowAce() {
     HookManager.register(
         "weapon-attack",
         ({ weapon, updates }) => {
-            const effect = getEffectFromActor(weapon.actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
+            const effect = Util.getEffect(weapon, CROSSBOW_ACE_EFFECT_ID);
             if (effect) {
-                if (getFlag(effect, "fired")) {
+                if (Util.getFlag(effect, "fired")) {
                     updates.delete(effect);
                 } else {
                     updates.update(effect, { "flags.pf2e-ranged-combat.fired": true });
@@ -55,7 +54,7 @@ export function initialiseCrossbowAce() {
     HookManager.register(
         "weapon-damage",
         ({ weapon, updates }) => {
-            const effect = getEffectFromActor(weapon.actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
+            const effect = Util.getEffect(weapon, CROSSBOW_ACE_EFFECT_ID);
             if (effect) {
                 updates.delete(effect);
             }
@@ -66,7 +65,7 @@ export function initialiseCrossbowAce() {
 /**
  * Check if the actor has the legacy Crossbow Ace feat.
  * 
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  * @returns boolean
  */
 function hasLegacyCrossbowAce(actor) {
@@ -84,7 +83,7 @@ function hasLegacyCrossbowAce(actor) {
  */
 function applyFeatEffect(weapon, updates) {
     // Remove any existing effects
-    const existing = getEffectFromActor(weapon.actor, CROSSBOW_ACE_EFFECT_ID, weapon.id);
+    const existing = Util.getEffect(weapon, CROSSBOW_ACE_EFFECT_ID);
     if (existing) {
         updates.delete(existing);
     }
@@ -92,8 +91,8 @@ function applyFeatEffect(weapon, updates) {
     // Add the new effect
     updates.deferredUpdate(
         async () => {
-            const effect = await getItem(CROSSBOW_ACE_EFFECT_ID);
-            setEffectTarget(effect, weapon);
+            const effect = await Util.getSource(CROSSBOW_ACE_EFFECT_ID);
+            Util.setEffectTarget(effect, weapon);
             ensureDuration(weapon.actor, effect);
             effect.flags["pf2e-ranged-combat"].fired = false;
 

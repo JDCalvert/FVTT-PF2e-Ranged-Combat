@@ -1,5 +1,3 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Updates } from "../utils/updates.js";
 import { getAttackPopout, getFlag } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
@@ -79,7 +77,7 @@ export function initialiseCarryTypeHandler() {
                         );
                 }
 
-                updates.handleUpdates();
+                updates.commit();
             }
 
             // If there's an attack popout open for this item, close it
@@ -196,8 +194,8 @@ async function changeStowed(wrapper, item, container) {
 }
 
 /**
- * @param {Weapon | PF2eWeapon} item 
- * @returns {PF2eWeapon[]}
+ * @param {Weapon | WeaponPF2e} item 
+ * @returns {WeaponPF2e[]}
  */
 export function findGroupStacks(item) {
     const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.type === "weapon" ? item.id : item.weaponId];
@@ -270,7 +268,7 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
             }
         );
 
-        await updates.handleUpdates();
+        await updates.commit();
 
         return targetStack;
     }
@@ -312,7 +310,7 @@ function moveBetweenStacks(item, targetStack) {
         );
     }
 
-    updates.handleUpdates();
+    updates.commit();
 }
 
 function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {

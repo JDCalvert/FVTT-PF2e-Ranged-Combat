@@ -1,6 +1,8 @@
 export class User {
     /**
      * Determine if the current user is the actor's preferred updater
+     * 
+     * @param {ActorPF2e} actor 
      */
     static isPreferredUpdater(actor) {
         return game.user === this.getPreferredUpdater(actor);
@@ -11,6 +13,8 @@ export class User {
      *   - A player who has the actor as their character
      *   - A player who owns the actor
      *   - The actor's primaryUpdater
+     * 
+     * @param {ActorPF2e} actor
      */
     static getPreferredUpdater(actor) {
         const activeUsers = game.users.filter(user => user.active);

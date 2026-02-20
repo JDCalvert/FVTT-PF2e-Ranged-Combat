@@ -1,8 +1,4 @@
 import { Section } from "../../lib/lib-item-select-dialog-types/types.js";
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eConsumable } from "../types/pf2e/consumable.js";
-import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { ItemSelect } from "./item-select-dialog.js";
 import { getFlag, showWarning } from "./utils.js";
 
@@ -11,7 +7,7 @@ const localize = (key) => game.i18n.localize("pf2e-ranged-combat.weaponSystem." 
 /**
  * Choose a single weapon from the given actor that matches the given conditions.
  *
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  * @param {(weapon: Weapon) => boolean} predicate 
  * @param {string} noResultsMessage 
  * @param {(weapon: Weapon) => boolean} priorityPredicate 
@@ -61,7 +57,7 @@ export async function getWeapon(actor, predicate, noResultsMessage, priorityPred
 
 /**
  * 
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  * @param {(weapon: Weapon) => boolean} predicate 
  * @param {string} noResultsMessage 
  * @returns {Weapon[]}
@@ -90,7 +86,7 @@ export function getWeapons(actor, predicate = () => true, noResultsMessage = nul
 }
 
 /**
- * @param {PF2eWeapon} weapon 
+ * @param {WeaponPF2e} weapon 
  * 
  * @returns {Weapon | null}
  */
@@ -110,7 +106,7 @@ export function transformWeapon(weapon) {
 }
 
 /**
- * @param {PF2eWeapon} weapon 
+ * @param {WeaponPF2e} weapon 
  * @returns {Weapon}
  */
 export function characterWeaponTransform(weapon) {
@@ -151,7 +147,7 @@ export function characterWeaponTransform(weapon) {
 }
 
 /**
- * @param {PF2eWeapon} weapon 
+ * @param {WeaponPF2e} weapon 
  * @returns {Weapon}
  */
 function npcWeaponTransform(melee) {
@@ -295,7 +291,7 @@ function getReloadTime(weapon) {
 /**
  * Find out if the weapon uses ammunition
  * 
- * @param {PF2eWeapon} weapon 
+ * @param {WeaponPF2e} weapon 
  */
 function usesAmmunition(weapon) {
     const expend = foundry.utils.isNewerVersion(game.system.version, "7.1.1")
@@ -330,8 +326,8 @@ function requiresAmmunition(weapon) {
 }
 
 /**
- * @param {PF2eWeapon} weapon 
- * @returns {PF2eConsumable | null}
+ * @param {WeaponPF2e} weapon 
+ * @returns {ConsumablePF2e | null}
  */
 function getAmmunition(weapon) {
     if (!usesAmmunition(weapon)) {

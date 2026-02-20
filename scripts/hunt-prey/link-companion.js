@@ -1,4 +1,3 @@
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { Updates } from "../utils/updates.js";
 import { getControlledActor, getFlag, getItem, getItemFromActor, showWarning } from "../utils/utils.js";
 import { ANIMAL_COMPANION_RANGER_FEAT_ID, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID } from "./constants.js";
@@ -35,7 +34,7 @@ export async function linkCompanion() {
         if (existingCompanion) {
             const existingCompanionUpdates = new Updates(existingCompanion);
             deleteRangersAnimalCompanionFeats(existingCompanion, actor.id, existingCompanionUpdates);
-            existingCompanionUpdates.handleUpdates();
+            existingCompanionUpdates.commit();
         }
     }
 
@@ -71,7 +70,7 @@ export async function linkCompanion() {
         await createMasterfulAnimalCompanionFeat(actor, companionUpdates);
     }
 
-    await companionUpdates.handleUpdates();
+    await companionUpdates.commit();
 
     // Notify that the link has been successfully made
     ui.notifications.info(format("linkedCompanion", { master: actor.name, companion: companion.name }));
@@ -109,7 +108,7 @@ export async function createMasterfulAnimalCompanionFeat(actor, companionUpdates
 /**
  * Delete any existing feats relating to this being the ranger's animal companion
  * 
- * @param {PF2eActor} creature
+ * @param {ActorPF2e} creature
  * @param {string} masterId
  * @param {Updates} updates
  */
@@ -119,7 +118,7 @@ function deleteRangersAnimalCompanionFeats(creature, masterId, updates) {
 }
 
 /**
- * @param {PF2eActor} creature 
+ * @param {ActorPF2e} creature 
  * @param {string} masterId 
  * @param {string} featId 
  * @param {Updates} updates 

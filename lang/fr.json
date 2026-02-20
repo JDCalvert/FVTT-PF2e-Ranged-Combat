@@ -131,18 +131,17 @@
         },
         "ammunitionSystem": {
             "fireWeapon": "{actor} tire un(e) {ammunition}.",
-            "utils": {
-                "warningLoaded": "{weapon} est déjà chargé.",
-                "warningFullyLoaded": "{weapon} est déjà totalement chargé(e)."
+            "warning": {
+                "noCompatibleAmmunition": "Vous ne disposez pas de munitions compatibles avec votre {weapon}."
             },
-            "ammunitionSelect": {
+            "select": {
                 "title": "Choisir la munition",
                 "header": {
-                    "loadedAmmunition": "Munition chargée",
+                    "loaded": "Munition chargée",
                     "current": "Actuelle",
                     "equipped": "Équipée"
                 },
-                "loadedAmmunition": "Munition chargée",
+                "loaded": "Munition chargée",
                 "action": {
                     "unload": "Choisissez quelle munition n'est plus utilisée.",
                     "fire": "Choisissez quelle munition tirer.",
@@ -172,53 +171,46 @@
                     "warningSingleRound": "{weapon} ne peut être chargée qu'avec une balle conjurée."
                 },
                 "consolidateAmmunition": {
-                    "chatMessage": "{token} consolide ses munitions.",
+                    "chatMessage": "{actor} consolide ses munitions.",
                     "infoAlreadyConsolidated": "Los munitions de vos armes à répétition sont déjà consolidées !"
                 },
                 "nextChamber": {
                     "noCapacityWeapons": "Vous n'avez pas d'armes disposant du trait capacité.",
                     "warningNotLoaded": "{weapon} n'est pas chargé(e) !",
-                    "chatMessageSelectChamber": "{token} sélectionne une chambre chargée avec un(e) {ammunition} sur sa/son {weapon}.",
+                    "chatMessageSelectChamber": "{actor} sélectionne une chambre chargée avec un(e) {ammunition} sur sa/son {weapon}.",
                     "warningAlreadySelected": "La chambre de {weapon} est déjà chargée !",
                     "warningAlreadyLoaded": "La chambre de {weapon} est déjà chargée avec un(e) {ammunition} sélectionné(e) !",
                     "chatMessageSelectNextChamber": "{token} sélectionne la prochaine chambre chargée de sa/son {weapon}."
                 },
-                "reloadMagazine": {
-                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged combat - Le rechargement du chargeur ne peut être utilisé que si le système de munitions avancé est activé.",
-                    "warningNoRepeatingWeapons": "Vous n'avez pas d'armes à répétition.",
-                    "warningFullyLoaded": "un chargeur plein est déjà chargé dans votre {weapon}.",
-                    "warningAlreadyMoreAmmo": "Le chargeur actuel de votre {weapon} est déjà chargé avec {ammo} munitions",
-                    "tokenLoadsAmmo": "{token} charge sa/son {weapon} avec {ammo} ({charges}/{maxCharges}).",
-                    "warningNotEnoughAmmunition": "Vous n'avez pas assez de munitions pour recharger votre {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.</p><p>Sélectionnez de nouvelles munitions à charger.",
-                    "warningNpcNotSupported": "PF2e Ranged Combat - Le rechargement des chargeurs n'est actuellement pas pris en charge pour les PNJ.",
-                    "warningNoCompatibleAmmunition": "Vous ne disposez pas de munitions compatibles avec votre {weapon}.",
-                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.<br><br>Sélectionnez les munitions à charger."
-                },
                 "reload": {
-                    "warningNoReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
-                    "warningNoMagazineLoaded": "aucun chargeur dans votre {weapon} !",
-                    "warningMagazineEmpty": "Le chargeur de {weapon} est vide !",
-                    "warningAlreadyLoaded": "{weapon} est déjà chargé(e).",
-                    "warningAlreadyLoadedWithAmmo": "{weapon} est déjà chargé(e) avec {ammo}.",
-                    "warningNoCompatibleAmmunition": "Vous n'avez pas de munitions compatibles avec votre {weapon}.",
-                    "warningNotEnoughAmmunition": "Pas assez de munitions pour recharger votre {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Les munitions choisies pour votre {weapon} sont épuisées.<br><br>Sélectionnez de nouvelles munitions à charger.",
-                    "actorReloadsWeapon": "{token} recharge sa/son {weapon}",
-                    "withAmmunition": "avec {ammunition}.",
-                    "warningAlreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
-                    "noAmmunitionSelectNew": "Vous n'avez pas de munitions sélectionnées pour votre {weapon}.<br><br>Sélectionnez les munitions à charger.",
-                    "warningNoReloadableCapacityWeapons": "Vous ne disposez pas d'armes rechargeables avec le trait capacité."
+                    "magazine": {
+                        "warning": {
+                            "noRepeatingWeapons": "Vous n'avez pas d'armes à répétition.",
+                            "fullyLoaded": "un chargeur plein est déjà chargé dans votre {weapon}.",
+                            "alreadyMoreAmmo": "Le chargeur actuel de votre {weapon} est déjà chargé avec {ammo} munitions."
+                        }
+                    },
+                    "warning": {
+                        "noReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
+                        "noMagazineLoaded": "aucun chargeur dans votre {weapon} !",
+                        "magazineEmpty": "Le chargeur de {weapon} est vide !",
+                        "alreadyLoaded": "{weapon} est déjà chargé(e).",
+                        "alreadyFullyLoaded": "{weapon} est déjà totalement chargé(e)."
+                    },
+                    "performed": {
+                        "weapon": "{actor} recharge sa/son {weapon}",
+                        "weaponAmmunition": "{actor} recharge sa/son {weapon} avec {ammunition}.",
+                        "weaponAmmunitionCharges": "{actor} charge sa/son {weapon} avec {ammunition} ({charges}/{maxCharges})."
+                    }
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "Vous n'avez pas d'armes utilisant des munitions.",
-                    "warningNoCompatibleAmmunitionAvailable": "Vous ne disposez pas de munitions compatibles avec votre {weapon}.",
                     "noCompatibleAmmunitionSelectNew": "Sélectionnez la munition à utiliser.",
                     "dialogTitle": "Choisir la munition"
                 },
                 "unload": {
-                    "tokenUnloadsAmmunitionFromWeapon": "{token} retire {ammunition} de sa/son {weapon}.",
-                    "tokenUnloadsWeapon": "{token} décharge sa/son {weapon}",
+                    "unloadWeaponAmmunition": "{actor} retire {ammunition} de sa/son {weapon}.",
+                    "unloadWeapon": "{actor} décharge sa/son {weapon}",
                     "noLoadedWeapons": "Vous n'avez pas d'arme chargée.",
                     "warningNotLoaded": "{weapon} n'est pas chargé(e) !"
                 },

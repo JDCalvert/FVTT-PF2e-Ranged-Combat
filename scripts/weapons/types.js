@@ -1,6 +1,5 @@
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { Updates } from "../utils/updates.js";
-import { getItem } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 
 export class Item {
     /** @type string */
@@ -14,11 +13,23 @@ export class Item {
 
     /** @type string */
     img;
+
+    /** @type number */
+    quantity;
 }
 
 export class Weapon extends Item {
-    /** @type {PF2eActor} */
+    /** @type {ActorPF2e} */
     actor;
+
+    /** @type {string} */
+    group;
+
+    /** @type {string} */
+    baseItem;
+
+    /** @type {number} */
+    damageDice;
 
     /** @type {boolean} */
     isEquipped;
@@ -29,29 +40,44 @@ export class Weapon extends Item {
     /** @type {number} */
     capacity;
 
-    /** @type {number} */
-    remainingCapacity;
-
-    /** @type {number} */
+    /** @type {number | null} */
     expend;
 
-    /** @type {Ammunition[]} */
-    loadedAmmunition;
+    /** @type {number | null} */
+    reloadActions;
 
-    /** @type {number} */
-    numLoadedRounds;
-
-    /** @type {boolean} */
-    isReadyToFire;
+    /**
+     * Whether the weapon has the Capacity-X trait
+     * @type {boolean}
+     */
+    isCapacity;
 
     /** @type {boolean} */
     isRepeating;
 
     /** @type {number} */
-    reloadActions;
+    remainingCapacity;
 
-    /** @type {Ammunition[]} */
+    /** @type {LoadedAmmunition[]} */
+    loadedAmmunition;
+
+    /** @type {LoadedAmmunition | null} */
+    selectedLoadedAmmunition;
+
+    /** @type {boolean} */
+    isReadyToFire;
+
+    /** @type {InventoryAmmunition[]} */
     compatibleAmmunition;
+
+    /**
+     * The ammunition in the inventory that we've selected as this weapon's
+     * default ammunition. We'll prioritise this ammunition when selecting
+     * where to load or unload ammunition.
+     * 
+     * @type {InventoryAmmunition | null}
+     */
+    selectedInventoryAmmunition;
 
     /**
      * Add a new stack of ammunition to the weapon
@@ -62,15 +88,27 @@ export class Weapon extends Item {
      */
     async createAmmunition(ammunition, updates) {
     }
+
+    /**
+     * Set the ammunition as the selected chamber
+     * 
+     * @param {LoadedAmmunition} ammunition
+     * @param {Updates} updates 
+     */
+    async setNextChamber(ammunition, updates) {
+    }
+
+    /**
+     * Set the ammunition that this weapon will use by default, or clear the
+     * selected ammunition.
+     * 
+     * @param {InventoryAmmunition | null} ammunition 
+     * @param {Updates} updates 
+     */
+    setSelectedAmmunition(ammunition, updates) { }
 }
 
 export class Ammunition extends Item {
-    /** @type {Weapon} */
-    weapon;
-
-    /** @type {number} */
-    quantity;
-
     /** @type {boolean} */
     hasUses;
 
@@ -82,6 +120,18 @@ export class Ammunition extends Item {
 
     /** @type {boolean} */
     isHeld;
+
+    /**
+     * Whether to automatically remove this ammunition from a weapon when it has run out of uses
+     * @type {boolean}
+     */
+    autoEject;
+
+    /**
+     * Whether to automatically destroy this ammunition when it's removed from a weapon with no uses remaining
+     * @type {boolean}
+     */
+    allowDestroy;
 
     /** @type {string} */
     descriptionText;
@@ -103,8 +153,12 @@ export class Ammunition extends Item {
         copy.img = this.img;
 
         copy.quantity = this.quantity;
+
+        copy.hasUses = this.hasUses;
         copy.maxUses = this.maxUses;
         copy.remainingUses = this.remainingUses;
+        copy.autoEject = this.autoEject;
+        copy.allowDestroy = this.allowDestroy;
 
         copy.isHeld = this.isHeld;
         copy.descriptionText = this.descriptionText;
@@ -112,45 +166,16 @@ export class Ammunition extends Item {
     }
 
     /**
-     * Create this piece of ammunition in the system
+     * Calculate the total number of uses remaining on this ammunition stack
      * 
-     * @param {Updates} updates
+     * @returns {number}
      */
-    async create(updates) {
-        const ammunitionSource = await getItem(this.sourceId);
-        ammunitionSource.system.quantity = this.quantity;
-        if (this.hasUses) {
-            ammunitionSource.system.uses.value = this.remainingUses;
+    calculateTotalRemainingUses() {
+        if (this.quantity === 0) {
+            return 0;
         }
 
-        updates.create(ammunitionSource);
-    }
-
-    /**
-     * Save any changes to the remaining uses or quantity of the ammunition.
-     * 
-     * @param {Updates} updates
-     */
-    save(updates) {
-        const update = {
-            "system.quantity": this.quantity
-        };
-
-        if (this.hasUses) {
-            update["system.uses.value"] = this.remainingUses;
-        }
-
-        updates.update(this, update);
-    }
-
-    /** 
-     * Delete this piece of ammunition
-     * 
-     * @param {Updates} updates
-     */
-    delete(updates) {
-        // Don't actually delete the ammunition from the inventory, reduce the quantity to 0 and save.
-        this.save(updates);
+        return this.remainingUses + (this.quantity - 1) * this.maxUses;
     }
 
     /**
@@ -194,5 +219,127 @@ export class Ammunition extends Item {
         this.quantity += ammunition.quantity;
 
         this.save(updates);
+    }
+
+    /**
+     * @abstract
+     * 
+     * Run any operation necessary to create this ammunition in the system
+     * @param {Updates} updates
+     */
+    async create(updates) { }
+
+    /**
+     * Save changes to this ammunition in the system
+     * @param {Updates} updates
+     */
+    save(updates) { }
+
+    /** 
+     * Delete this piece of ammunition in the system
+     * @param {Updates} updates
+     */
+    delete(updates) { }
+
+    /**
+     * @param {number} uses The amount of uses to consume
+     * @param {Updates} updates
+     */
+    consume(uses, updates) {
+        if (this.autoEject) {
+            while (uses > 0) {
+                const numToUse = Math.min(this.remainingUses, uses);
+
+                this.remainingUses -= numToUse;
+                uses -= numToUse;
+
+                if (this.remainingUses === 0) {
+                    this.remainingUses = this.maxUses;
+                    this.quantity--;
+                }
+            }
+        } else {
+            // We should have already checked that there are sufficient remaining uses
+            this.remainingUses -= uses;
+        }
+
+        if (this.quantity > 0) {
+            this.save(updates);
+        } else {
+            this.delete(updates);
+        }
+    }
+}
+
+/**
+ * Represents ammunition loaded into a weapon
+ */
+export class LoadedAmmunition extends Ammunition {
+    /**
+     * The weapon this ammunition is loaded into
+     * @type {Weapon}
+     */
+    weapon;
+
+    /**
+     * Delete this piece of ammunition in the system
+     * @param {Updates} updates
+     */
+    delete(updates) {
+        this.weapon.loadedAmmunition.findSplice(loaded => loaded === this);
+        this.onDelete(updates);
+    }
+
+    /**
+     * @abstract
+     * @param {Updates} updates
+     */
+    onDelete(updates) { }
+}
+
+/**
+ * Represents ammunition in an actor's inventory
+ */
+export class InventoryAmmunition extends Ammunition {
+
+    /**
+     * Create this piece of ammunition in the actor's inventory
+     * 
+     * @param {Updates} updates
+     */
+    async create(updates) {
+        const ammunitionSource = await Util.getSource(this.sourceId);
+        ammunitionSource.system.quantity = this.quantity;
+        if (this.hasUses) {
+            ammunitionSource.system.uses.value = this.remainingUses;
+        }
+
+        updates.create(ammunitionSource);
+    }
+
+    /**
+     * Save any changes to the remaining uses or quantity of the ammunition.
+     * 
+     * @param {Updates} updates
+     */
+    save(updates) {
+        const update = {
+            "system.quantity": this.quantity
+        };
+
+        if (this.hasUses) {
+            update["system.uses.value"] = this.remainingUses;
+        }
+
+        updates.update(this, update);
+    }
+
+    /** 
+     * Delete this piece of ammunition
+     * 
+     * @param {Updates} updates
+     */
+    delete(updates) {
+        updates.delete(this);
     }
 }

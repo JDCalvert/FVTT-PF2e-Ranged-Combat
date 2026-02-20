@@ -1,29 +1,25 @@
 import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
 import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
-import { initialiseAdvancedWeaponSystem } from "./advanced-weapon-system/initialise.js";
-import { clearJam, initialiseClearJam } from "./actions/clear-jam.js";
-import { conjureBullet } from "./ammunition-system/actions/conjure-bullet.js";
-import { consolidateRepeatingWeaponAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
-import { nextChamber } from "./ammunition-system/actions/next-chamber.js";
-import { reloadMagazine } from "./ammunition-system/actions/reload-magazine.js";
-import { fullyReload, reload, reloadNPCs } from "./ammunition-system/actions/reload.js";
-import { switchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
-import { unload } from "./ammunition-system/actions/unload.js";
-import { initialiseAmmunitionSystem } from "./ammunition-system/ammunition-system.js";
+import { ClearJam } from "./actions/clear-jam.js";
+import { ConsolidateAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
+import { NextChamber } from "./ammunition-system/actions/next-chamber.js";
+import { Reload } from "./ammunition-system/actions/reload.js";
+import { SwitchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
+import { Unload } from "./ammunition-system/actions/unload.js";
+import { AmmunitionHandlingSystem } from "./ammunition-system/ammunition-system.js";
 import { initialiseChatMessageHooks } from "./chat-message-hook.js";
-import { initialiseConfigurationSettings } from "./config/config.js";
+import { Configuration } from "./config/config.js";
+import { Core } from "./core/core.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
-import { initialiseFakeOut } from "./feats/fake-out.js";
-import { initialiseRiskyReload } from "./feats/risky-reload.js";
+import { FakeOut } from "./feats/fake-out.js";
+import { RiskyReload } from "./feats/risky-reload.js";
 import { initialiseSwordAndPistol } from "./feats/sword-and-pistol.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
-import { initialiseCarryTypeHandler } from "./thrown-weapons/change-carry-type.js";
-import { initialiseThrownWeaponCheck } from "./thrown-weapons/throw-weapon-check.js";
-import { initialiseThrownWeaponHandler } from "./thrown-weapons/throw-weapon-handler.js";
+import { AdvancedThrownWeaponSystem } from "./thrown-weapons/thrown-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 export const postToChatConfig = {
@@ -40,38 +36,34 @@ Hooks.on(
             chatHook: true
         };
 
-        initialiseConfigurationSettings();
+        Configuration.initialise();
 
-        initialiseClearJam();
-        initialiseAmmunitionSystem();
-        initialiseAdvancedWeaponSystem();
+        Core.initialise();
+        AmmunitionHandlingSystem.initialise();
+        ClearJam.initialise();
+
         initialiseHuntPrey();
         initialiseChatMessageHooks();
 
-        initialiseThrownWeaponCheck();
-
-        initialiseThrownWeaponHandler();
-        initialiseCarryTypeHandler();
+        // AdvancedThrownWeaponSystem.initialise();
 
         initialiseCrossbowCrackShot();
         initialiseCrossbowAce();
         initialiseAlchemicalCrossbow();
         initialiseAlchemicalShot();
         initialiseSwordAndPistol();
-        initialiseFakeOut();
-        initialiseRiskyReload();
+
+        FakeOut.initialise();
+        RiskyReload.initialise();
 
         game.pf2eRangedCombat = {
-            reload,
-            unload,
-            clearJam,
-            switchAmmunition,
-            nextChamber,
-            conjureBullet,
-            reloadMagazine,
-            reloadNPCs,
-            fullyReload,
-            consolidateRepeatingWeaponAmmunition,
+            reload: Reload.action,
+            unload: Unload.action,
+            clearJam: ClearJam.action,
+            switchAmmunition: SwitchAmmunition.action,
+            nextChamber: NextChamber.action,
+            reloadMagazine: Reload.actionMagazine,
+            consolidateRepeatingWeaponAmmunition: ConsolidateAmmunition.action,
             huntPrey,
             linkCompanion,
             loadAlchemicalCrossbow,

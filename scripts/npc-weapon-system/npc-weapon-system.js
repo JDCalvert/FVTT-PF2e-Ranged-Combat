@@ -1,5 +1,4 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { showDialog } from "../utils/dialog.js";
 import { getControlledActor, getFlag, isUsingApplicationV2 } from "../utils/utils.js";
 
@@ -36,7 +35,7 @@ export function npcWeaponConfiguration() {
 }
 
 /**
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  * @returns {string}
  */
 function buildContent(actor) {
@@ -145,7 +144,7 @@ function buildContent(actor) {
 }
 
 /**
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  */
 function saveChangesV2(dialog, actor) {
     const element = dialog.element;
@@ -167,7 +166,7 @@ function saveChangesV2(dialog, actor) {
 }
 
 /**
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  */
 function saveChangesV1($html, actor) {
     const data = {

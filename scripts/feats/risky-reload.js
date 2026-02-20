@@ -1,66 +1,80 @@
-import { performReload } from "../ammunition-system/actions/reload.js";
+import { Reload } from "../ammunition-system/actions/reload.js";
 import { JAMMED_EFFECT_ID } from "../ammunition-system/constants.js";
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
+import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getEffectFromActor, getItem, getPreferredName, isUsingSystemAmmunitionSystem, postActionToChat, postMessage, setEffectTarget } from "../utils/utils.js";
-import { getWeapon } from "../utils/weapon-utils.js";
+import { ensureDuration, getItem, isUsingSystemAmmunitionSystem, Util } from "../utils/utils.js";
+import { Weapon } from "../weapons/types.js";
+import { WeaponSystem } from "../weapons/system.js";
 
 const RISKY_RELOAD_FEAT_ID = "Compendium.pf2e.feats-srd.Item.BmAk6o14CutgnIOG";
 const RISKY_RELOAD_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.OoPaU2jwi1RUYWUt";
 const RISKY_RELOAD_IMG = "modules/pf2e-ranged-combat/art/risky-reload.webp";
 
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.riskyReload." + key, data);
-
-export function initialiseRiskyReload() {
-    HookManager.register("weapon-attack", handleWeaponFired);
-
-    // If we unload a weapon, delete the Risky Reload effect
-    Hooks.on(
-        "pf2eRangedCombatUnload",
-        (actor, _, weapon) => {
-            getEffectFromActor(actor, RISKY_RELOAD_EFFECT_ID, weapon.id)
-                ?.delete();
-        }
-    );
-}
-
-function handlePostAction({ actor, item, result }) {
-    if (isUsingSystemAmmunitionSystem(actor)) {
-        return;
+export class RiskyReload {
+    /**
+     * @param {string} key 
+     * @param {object} data 
+     * @returns {string}
+     */
+    static localize(key, data) {
+        return Util.localize(`actions.riskyReload.${key}`, data);
     }
 
-    if (item.sourceId != RISKY_RELOAD_FEAT_ID) {
+    static initialise() {
+        HookManager.register("weapon-attack", handleWeaponFired);
+        HookManager.register("post-action", handlePostAction);
+        // If we unload a weapon, delete the Risky Reload effect
+        Hooks.on(
+            "pf2eRangedCombatUnload",
+            /**
+             * @param {object} data
+             * @param {Weapon} data.weapon 
+             */
+            ({ weapon }) => Util.getEffect(weapon, RISKY_RELOAD_EFFECT_ID)?.delete()
+        );
+    }
+}
+
+/**
+ * @param {PostActionHookData} data
+ */
+function handlePostAction({ actor, item: action, result }) {
+    if (action.sourceId != RISKY_RELOAD_FEAT_ID) {
         return;
     }
 
     result.match = true;
 
-    handleForActor(actor, item);
+    handleAsync(actor, action);
 }
 
-async function handleForActor(actor, item) {
-    const weapon = await getWeapon(
+/**
+ * @param {ActorPF2e} actor
+ * @param {ActionPF2e} action
+ */
+async function handleAsync(actor, action) {
+    const weapon = await WeaponSystem.getWeapon(
         actor,
-        weapon => weapon.isEquipped && weapon.group === "firearm",
-        format("warningNotWieldingProperWeapon", { actor: getPreferredName(actor) })
+        {
+            required: weapon => weapon.isEquipped && weapon.group === "firearm",
+            priority: weapon => weapon.remainingCapacity > 0
+        },
+        "reload",
+        RiskyReload.localize("warningNotWieldingProperWeapon", { actor: Util.getPreferredName(actor) })
     );
     if (!weapon) {
         return;
     }
 
-    const token = { name: getPreferredName(actor), actor: actor };
-
     const updates = new Updates(actor);
 
-    const reloaded = await performReload(
-        actor,
-        token,
+    const reloaded = await Reload.reload(
         weapon,
         updates,
         {
-            message: {
-                actionName: item.name,
+            messageParams: {
+                actionName: action.name,
                 img: RISKY_RELOAD_IMG,
                 traits: ["flourish"]
             }
@@ -70,37 +84,28 @@ async function handleForActor(actor, item) {
         return;
     }
 
-    await postActionToChat(item);
+    await Chat.postAction(action);
 
-    const riskyReloadEffectSource = await getItem(RISKY_RELOAD_EFFECT_ID);
-    setEffectTarget(riskyReloadEffectSource, weapon);
+    const riskyReloadEffectSource = await Util.getSource(RISKY_RELOAD_EFFECT_ID);
+    Util.setEffectTarget(riskyReloadEffectSource, weapon);
     ensureDuration(actor, riskyReloadEffectSource);
-    foundry.utils.mergeObject(
-        riskyReloadEffectSource,
-        {
-            flags: {
-                pf2e: {
-                    rulesSelections: {
-                        weapon: weapon.id
-                    }
-                }
-            }
-        }
-    );
 
     updates.create(riskyReloadEffectSource);
-    updates.handleUpdates();
+    updates.commit();
 }
 
 /**
- * @param {{ weapon: Weapon, updates: Updates, roll: { degreeOfSuccess: number }}} params
+ * @param {object} data
+ * @param {Weapon} data.weapon
+ * @param {Updates} data.updates
+ * @param {{degreeOfSuccess: number}} data.roll
  */
 async function handleWeaponFired({ weapon, updates, roll }) {
     if (isUsingSystemAmmunitionSystem(weapon.actor)) {
         return;
     }
 
-    const riskyReloadEffect = getEffectFromActor(weapon.actor, RISKY_RELOAD_EFFECT_ID, weapon.id);
+    const riskyReloadEffect = Util.getEffect(weapon, RISKY_RELOAD_EFFECT_ID);
     if (!riskyReloadEffect) {
         return;
     }
@@ -117,16 +122,16 @@ async function handleWeaponFired({ weapon, updates, roll }) {
         updates.deferredUpdate(
             async () => {
                 const jammedEffectSource = await getItem(JAMMED_EFFECT_ID);
-                setEffectTarget(jammedEffectSource, weapon);
+                Util.setEffectTarget(jammedEffectSource, weapon);
 
                 updates.create(jammedEffectSource);
             }
         );
 
-        postMessage(
+        Chat.postMessage(
             weapon.actor,
             riskyReloadEffect.img,
-            format("weaponJammed", { actor: getPreferredName(weapon.actor) })
+            RiskyReload.localize("weaponJammed", { actor: Util.getPreferredName(weapon.actor) })
         );
     }
 }

@@ -1,11 +1,12 @@
-import { initialiseAmmunitionEffects } from "./ammunition-effects.js";
-import { initialiseAuxiliaryActions } from "./auxiliary-actions.js";
-import { initialiseFireWeaponCheck } from "./fire-weapon-check.js";
-import { initialiseFireWeaponHandler } from "./fire-weapon-handler.js";
+import { AuxiliaryActions } from "./auxiliary-actions.js";
+import { FireWeaponCheck } from "./fire-weapon-check.js";
+import { FireWeaponProcessor } from "./fire-weapon-processor.js";
 
-export function initialiseAmmunitionSystem() {
-    initialiseFireWeaponCheck();
-    initialiseFireWeaponHandler();
-    initialiseAmmunitionEffects();
-    initialiseAuxiliaryActions();
+export class AmmunitionHandlingSystem {
+    static initialise() {
+        AuxiliaryActions.initialise();
+        FireWeaponCheck.initalise();
+        FireWeaponProcessor.initialise();
+        //initialiseAmmunitionEffects();
+    }
 }

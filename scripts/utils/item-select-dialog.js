@@ -1,9 +1,9 @@
 import { Choice, Option, Response, Section } from "../../lib/lib-item-select-dialog-types/types.js";
-import { PF2eItem } from "../types/pf2e/item.js";
+import { Item } from "../weapons/types.js";
 
 export class ItemSelect {
     /**
-     * @template {PF2eItem} T
+     * @template {Item} T
      * 
      * @param {T} item 
      * @returns {Choice<T>}

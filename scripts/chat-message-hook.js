@@ -86,6 +86,7 @@ export function initialiseChatMessageHooks() {
                                 continue;
                             }
 
+                            // @ts-ignore
                             $(mutation.addedNodes)
                                 .filter(".pf2e-ranged-combat")
                                 .filter(".hide")
@@ -121,7 +122,7 @@ export function initialiseChatMessageHooks() {
 
             const result = { match: false };
 
-            HookManager.call("post-action", { actor, item, result });
+            HookManager.call("post-action", /** @type {PostActionHookData} */({ actor, item, result }));
 
             return !result.match;
         }

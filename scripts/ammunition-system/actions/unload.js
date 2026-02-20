@@ -1,213 +1,140 @@
-import { Ammunition } from "../../types/pf2e-ranged-combat/ammunition.js";
-import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../../types/pf2e/actor.js";
-import { PF2eToken } from "../../types/pf2e/token.js";
 import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, getEffectFromActor, getFlag, getItem, isUsingSystemAmmunitionSystem, postInteractToChat, showWarning, useAdvancedAmmunitionSystem } from "../../utils/utils.js";
-import { getWeapon } from "../../utils/weapon-utils.js";
-import { CONJURED_ROUND_EFFECT_ID, CONJURED_ROUND_ITEM_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../constants.js";
-import { AmmunitionSystem } from "../system-ammunition.js";
-import { clearLoadedChamber, getSelectedAmmunition, isLoaded, removeAmmunition, removeAmmunitionAdvancedCapacity, updateAmmunitionQuantity } from "../utils.js";
+import { Util } from "../../utils/utils.js";
+import { Ammunition, InventoryAmmunition, LoadedAmmunition, Weapon } from "../../weapons/types.js";
+import { AmmunitionSystem, WeaponSystem } from "../../weapons/system.js";
+import { Chat } from "../../utils/chat.js";
+import { LOADED_EFFECT_ID } from "../constants.js";
 
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key);
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.unload." + key, data);
-
-export async function unload() {
-    const { actor, token } = getControlledActorAndToken();
-    if (!actor) {
-        return;
+export class Unload {
+    /**
+     * @param {string} key 
+     * @param {object} data 
+     */
+    static localize(key, data) {
+        return AmmunitionSystem.localize(`actions.unload.${key}`, data);
     }
 
-    if (isUsingSystemAmmunitionSystem(actor)) {
-        AmmunitionSystem.unload(actor);
-        return;
+    /**
+     * @param {Weapon} weapon 
+     * @returns {boolean}
+     */
+    static check(weapon) {
+        if (weapon.isStowed) {
+            return false;
+        }
+
+        if (weapon.loadedAmmunition.length === 0) {
+            return false;
+        }
+
+        return true;
     }
 
-    const weapon = await getLoadedWeapon(actor);
-    if (!weapon) {
-        return;
+    static async action() {
+        const actor = Util.getControlledActor();
+        if (!actor) {
+            return;
+        }
+
+        // Find weapons which are not stowed and use ammunition. Prioritise equipped loaded weapons.
+        const weapon = await WeaponSystem.getWeapon(
+            actor,
+            {
+                required: weapon => !weapon.isStowed && weapon.capacity > 0,
+                priority: weapon => weapon.isEquipped && weapon.remainingCapacity < weapon.capacity
+            },
+            Unload.localize("selectWeapon"),
+            Unload.localize("noLoadedWeapons", { actor: actor.name })
+        );
+        if (!weapon) {
+            return;
+        }
+
+        const updates = new Updates(actor);
+        await Unload.perform(weapon, updates);
+        updates.commit();
     }
 
-    performUnload(actor, token, weapon);
-}
+    /**
+     * @param {Weapon} weapon 
+     * @param {Updates} updates 
+     */
+    static async perform(weapon, updates) {
+        const loadedAmmunition = await AmmunitionSystem.chooseLoadedAmmunition(weapon, "unload");
+        if (!loadedAmmunition) {
+            return;
+        }
 
-/**
- * @param {PF2eActor} actor 
- * @param {PF2eToken} token 
- * @param {Weapon} weapon 
- */
-export async function performUnload(actor, token, weapon) {
-    const updates = new Updates(actor);
+        await Unload.removeFromWeapon(weapon, loadedAmmunition, updates);
 
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weapon.id);
-    const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
-    const magazineLoadedEffect = getEffectFromActor(actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-    if (!loadedEffect && !conjuredRoundEffect && !magazineLoadedEffect) {
-        showWarning(format("warningNotLoaded", { weapon: weapon.name }));
-        return;
-    }
+        if (weapon.isRepeating && weapon.reloadActions > 0) {
+            updates.delete(Util.getEffect(weapon, LOADED_EFFECT_ID));
+        }
 
-    if (useAdvancedAmmunitionSystem(actor)) {
-        if (weapon.isRepeating) {
-            if (loadedEffect) {
-                updates.delete(loadedEffect);
+        Chat.postInteract(
+            weapon.actor,
+            weapon.img,
+            Unload.localize(
+                "unloadWeaponAmmunition",
+                {
+                    actor: weapon.actor.name,
+                    weapon: weapon.name,
+                    ammunition: loadedAmmunition.name
+                }
+            ),
+            {
+                actionSymbol: "1"
             }
-            if (magazineLoadedEffect) {
-                await unloadMagazine(actor, magazineLoadedEffect, updates);
-                postInteractToChat(
-                    actor,
-                    magazineLoadedEffect.img,
-                    format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(magazineLoadedEffect, "ammunitionName"), weapon: weapon.name }),
-                    "1"
-                );
-            }
-        } else if (weapon.capacity) {
-            const ammunition = await getSelectedAmmunition(weapon, "unload");
-            if (!ammunition) {
-                return;
-            }
+        );
 
-            if (ammunition.sourceId === CONJURED_ROUND_ITEM_ID) {
-                const conjuredRoundEffect = getEffectFromActor(actor, CONJURED_ROUND_EFFECT_ID, weapon.id);
-                updates.delete(conjuredRoundEffect);
-                clearLoadedChamber(weapon, ammunition, updates);
+        HookManager.call("unload", { weapon, updates });
+        Hooks.callAll("pf2eRangedCombatUnload", { actor: weapon.actor, weapon });
+    }
+
+    /**
+     * @param {Weapon} weapon 
+     * @param {LoadedAmmunition} ammunition
+     * @param {Updates} updates
+     */
+    static async removeFromWeapon(weapon, ammunition, updates) {
+        // Remove the ammunition from the weapon
+        const unloadedAmmunition = ammunition.pop(1, updates);
+
+        // If the unloaded ammunition still has uses left, add it back to the actor's inventory.
+        // Try to find an existing stack to add it to, otherwise create a new one
+        if (unloadedAmmunition.remainingUses > 0 || !unloadedAmmunition.allowDestroy) {
+            const inventoryAmmunition = Unload.findInventoryAmmunition(weapon, unloadedAmmunition);
+            if (inventoryAmmunition) {
+                inventoryAmmunition.push(unloadedAmmunition, updates);
             } else {
-                moveAmmunitionToInventory(actor, ammunition, updates);
-                removeAmmunitionAdvancedCapacity(actor, weapon, ammunition, updates);
-            }
-            postInteractToChat(
-                actor,
-                ammunition.img,
-                format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: ammunition.name, weapon: weapon.name }),
-                "1"
-            );
-        } else {
-            if (conjuredRoundEffect) {
-                updates.delete(conjuredRoundEffect);
-                postInteractToChat(
-                    actor,
-                    conjuredRoundEffect.img,
-                    format(
-                        "tokenUnloadsAmmunitionFromWeapon",
-                        {
-                            token: token.name,
-                            ammunition: game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.conjureBullet.conjuredRound"),
-                            weapon: weapon.name
-                        }
-                    ),
-                    "1"
-                );
-            } else if (loadedEffect) {
-                unloadAmmunition(actor, weapon, loadedEffect, updates);
-                postInteractToChat(
-                    actor,
-                    loadedEffect.img,
-                    format("tokenUnloadsAmmunitionFromWeapon", { token: token.name, ammunition: getFlag(loadedEffect, "ammunition").name, weapon: weapon.name }),
-                    "1"
-                );
+                const ammunition = new InventoryAmmunition();
+                unloadedAmmunition.copyData(ammunition);
+                await ammunition.create(updates);
             }
         }
-    } else {
-        removeAmmunition(weapon, updates);
-        postInteractToChat(
-            actor,
-            loadedEffect.img,
-            format("tokenUnloadsWeapon", { token: token.name, weapon: weapon.name }),
-            "1"
-        );
     }
 
-    HookManager.call("unload", { weapon, updates });
+    /**
+     * Find ammunition in the inventory to add the unloaded ammunition to
+     * 
+     * @param {Weapon} weapon 
+     * @param {Ammunition} ammunition 
+     * 
+     * @returns {InventoryAmmunition | null}
+     */
+    static findInventoryAmmunition(weapon, ammunition) {
+        // If the unloaded ammunition doesn't have all its uses remaining, always make a new stack
+        if (ammunition.remainingUses < ammunition.maxUses) {
+            return null;
+        }
 
-    updates.handleUpdates();
-    Hooks.callAll("pf2eRangedCombatUnload", actor, token, weapon);
-}
+        // If the weapon has some matching ammunition selected, use that
+        if (weapon.selectedInventoryAmmunition && weapon.selectedInventoryAmmunition.sourceId === ammunition.sourceId) {
+            return weapon.selectedInventoryAmmunition;
+        }
 
-/**
- * @param {PF2eActor} actor 
- * @returns {Promise<Weapon | null>}
- */
-function getLoadedWeapon(actor) {
-    return getWeapon(
-        actor,
-        isWeaponLoaded,
-        localize("noLoadedWeapons")
-    );
-}
-
-/**
- * @param {Weapon} weapon 
- */
-export function isWeaponLoaded(weapon) {
-    if (useAdvancedAmmunitionSystem(weapon.actor) && weapon.isRepeating) {
-        return !!getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-    } else if (weapon.requiresLoading) {
-        return isLoaded(weapon);
-    }
-    return false;
-}
-
-/**
- * Remove the magazine effect and add the remaining ammunition back to the actor
- */
-export async function unloadMagazine(actor, magazineLoadedEffect, updates) {
-    const ammunitionCapacity = getFlag(magazineLoadedEffect, "capacity");
-    const ammunitionRemaining = getFlag(magazineLoadedEffect, "remaining");
-
-    const ammunitionItemId = getFlag(magazineLoadedEffect, "ammunitionItemId");
-    const ammunitionItem = actor.items.find(item => item.id === ammunitionItemId && !item.isStowed);
-
-    if (ammunitionRemaining === ammunitionCapacity && ammunitionItem) {
-        // We found the original stack of ammunition this
-        updates.update(ammunitionItem, { "system.quantity": ammunitionItem.quantity + 1 });
-    } else if (ammunitionRemaining > 0) {
-        // The magazine still has some ammunition left, create a new item with the remaining ammunition
-        const itemSourceId = getFlag(magazineLoadedEffect, "ammunitionSourceId");
-        const ammunitionSource = await getItem(itemSourceId);
-        ammunitionSource.system.uses.value = ammunitionRemaining;
-        updates.create(ammunitionSource);
-    }
-
-    // Finally, remove the existing effect
-    updates.delete(magazineLoadedEffect);
-
-    // If the weapon was loaded, then remove the loaded status as well
-    const weaponId = getFlag(magazineLoadedEffect, "targetId");
-    const loadedEffect = getEffectFromActor(actor, LOADED_EFFECT_ID, weaponId);
-    if (loadedEffect) {
-        updates.delete(loadedEffect);
-    }
-}
-
-export async function unloadAmmunition(actor, weapon, loadedEffect, updates) {
-    const loadedAmmunition = getFlag(loadedEffect, "ammunition");
-
-    if (loadedAmmunition) {
-        moveAmmunitionToInventory(actor, loadedAmmunition, updates);
-    }
-
-    removeAmmunition(weapon, updates);
-}
-
-/**
- * @param {PF2eActor} actor 
- * @param {Ammunition} ammunition 
- * @param {Updates} updates 
- */
-async function moveAmmunitionToInventory(actor, ammunition, updates) {
-    // Try to find either the stack the loaded ammunition came from, or another stack of the same ammunition
-    const ammunitionItem = actor.items.find(item => item.id === ammunition.id && !item.isStowed)
-        || actor.items.find(item => item.sourceId === ammunition.sourceId && !item.isStowed);
-
-    if (ammunitionItem) {
-        // We still have the stack the ammunition originally came from, or another that's the same.
-        // Add the currently loaded ammunition to the stack
-        updateAmmunitionQuantity(updates, ammunitionItem, +1);
-    } else {
-        // Create a new stack with one piece of ammunition in it
-        const ammunitionSource = await getItem(ammunition.sourceId);
-        ammunitionSource.system.quantity = 1;
-        updates.create(ammunitionSource);
+        // Failing this, find some worn matching ammunition
+        return weapon.compatibleAmmunition.find(candidate => candidate.sourceId === ammunition.sourceId) ?? null;
     }
 }

@@ -1,4 +1,3 @@
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
@@ -11,6 +10,9 @@ export function initialiseHuntPrey() {
     // When posting the Hunt Prey chat message, use the Hunt Prey action
     HookManager.register(
         "post-action",
+        /**
+         * @param {PostActionHookData} data
+         */
         ({ actor, item, result }) => {
             if (!(item.sourceId === HUNT_PREY_ACTION_ID || item.name === "Hunt Prey")) {
                 return;
@@ -72,7 +74,8 @@ export function initialiseHuntPrey() {
             }
 
             return wrapper(...args);
-        }
+        },
+        "WRAPPER"
     );
 
     // When creating the Hunt Prey effect, also create Hunted Prey effects on the targets
@@ -154,7 +157,7 @@ export function initialiseHuntPrey() {
                 if (animalCompanion) {
                     const updates = new Updates(animalCompanion);
                     createMasterfulAnimalCompanionFeat(this.actor, updates)
-                        .then(() => updates.handleUpdates());
+                        .then(() => updates.commit());
                 }
             }
 
@@ -173,7 +176,7 @@ export function initialiseHuntPrey() {
                 if (animalCompanion) {
                     const updates = new Updates(animalCompanion);
                     deleteAnimalCompanionFeat(animalCompanion, this.actor.id, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, updates);
-                    updates.handleUpdates();
+                    updates.commit();
                 }
             }
 
@@ -269,7 +272,7 @@ export function initialiseHuntPrey() {
 
 /**
  * For each item that has a precision rule element, reset the precision selection to "first-attack"
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  */
 function resetPrecision(actor) {
     if (actor.primaryUpdater === game.user) {
@@ -299,7 +302,7 @@ function resetPrecision(actor) {
             updateNPCPrecision(actor, updates, true);
         }
 
-        updates.handleUpdates();
+        updates.commit();
     }
 
     // If we have an animal companion, reset them too
@@ -314,7 +317,7 @@ function resetPrecision(actor) {
  * NPCs can have their precision ability on their Hunt Prey ability or a separate Precision ability,
  * which varies by NPC. They may also not have one at all. Find any such rule and update its value.
  * 
- * @param {PF2eActor} actor
+ * @param {ActorPF2e} actor
  * @param {Updates} updates
  * @param {boolean} enableRule whether to set the rule (if found) to enabled or disabled
  */
@@ -359,7 +362,7 @@ function updateForPrecision(precisionFeat, updates) {
 
 /**
  * Check if the user's current target is the actor's hunted prey
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  */
 export function isTargetHuntedPrey(actor) {
     const targetToken = game.user.targets.first();

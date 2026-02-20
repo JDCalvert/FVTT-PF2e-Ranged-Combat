@@ -1,13 +1,18 @@
-import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eItem } from "../types/pf2e/item.js";
-import { PF2eToken } from "../types/pf2e/token.js";
+import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getControlledActorAndToken, getItem, getItemFromActor, postActionToChat, postToChat, showWarning } from "../utils/utils.js";
+import { getControlledActorAndToken, getItem, getItemFromActor, Util } from "../utils/utils.js";
 import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TOKEN_MARK_RULE, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
+
+/**
+ * @typedef {Object} CheckResult
+ * @prop {{num: number, word: string}} [maxTargets]
+ * @prop {TokenPF2e[]} [targets]
+ * @prop {boolean} valid
+ */
 
 export async function huntPrey() {
     const { actor, token } = getControlledActorAndToken();
@@ -17,7 +22,7 @@ export async function huntPrey() {
 
     const huntPreyAction = getHuntPreyAction(actor);
     if (!huntPreyAction) {
-        showWarning(format("warningNoAction", { token: token.name }));
+        Util.warn(format("warningNoAction", { token: token.name }));
         return;
     }
 
@@ -45,6 +50,10 @@ function getHuntPreyAction(actor) {
     return null;
 }
 
+/**
+ * @param {ActorPF2e} actor 
+ * @returns {CheckResult}
+ */
 export function checkHuntPrey(actor) {
     const hasDoublePrey = !!getItemFromActor(actor, DOUBLE_PREY_FEAT_ID);
     const hasTripleThreat = !!getItemFromActor(actor, TRIPLE_THREAT_FEAT_ID);
@@ -65,10 +74,10 @@ export function checkHuntPrey(actor) {
 
 /**
  * 
- * @param {PF2eActor} actor
- * @param {PF2eToken} token
- * @param {PF2eItem} huntPreyAction
- * @param {{ targets: [], maxTargets: { num: number, word: string } }} checkResult
+ * @param {ActorPF2e} actor
+ * @param {TokenPF2e} token
+ * @param {ItemPF2e} huntPreyAction
+ * @param {CheckResult} checkResult
  */
 export async function performHuntPrey(actor, token, huntPreyAction, checkResult) {
     const targets = checkResult.targets;
@@ -101,8 +110,8 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
         }
     }
 
-    await postActionToChat(huntPreyAction);
-    await postToChat(
+    await Chat.postAction(huntPreyAction);
+    await Chat.post(
         actor,
         HUNT_PREY_IMG,
         targets.length === 3
@@ -113,7 +122,7 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
         ,
         {
             actionName: huntPreyAction.name,
-            numActions: 1,
+            actionSymbol: "1",
             traits: ["concentrate"],
             link
         }
@@ -150,18 +159,22 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
 
     HookManager.call("hunt-prey", { actor, updates });
 
-    updates.handleUpdates();
+    updates.commit();
 }
 
+/**
+ * @param {{num: number, word:string}} maxTargets 
+ * @returns {TokenPF2e[]}
+ */
 function getTargets(maxTargets) {
     const targetTokenIds = game.user.targets.ids;
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
 
     if (!targetTokens.length) {
-        showWarning(localize("warningNoTarget"));
+        Util.warn(localize("warningNoTarget"));
         return [];
     } else if (targetTokens.length > maxTargets.num) {
-        showWarning(format("warningTooManyTargets", { maxTargets: maxTargets.word }));
+        Util.warn(format("warningTooManyTargets", { maxTargets: maxTargets.word }));
         return [];
     } else {
         return targetTokens;
@@ -169,7 +182,7 @@ function getTargets(maxTargets) {
 }
 
 /**
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  * @param {Updates} updates
  */
 function updateSystemItems(actor, updates) {
@@ -215,7 +228,7 @@ function updateSystemItems(actor, updates) {
 }
 
 /**
- * @param {PF2eActor} actor
+ * @param {ActorPF2e} actor
  * @param {Updates} updates
  * @param {string} itemId 
  * @param {any[]} rules 

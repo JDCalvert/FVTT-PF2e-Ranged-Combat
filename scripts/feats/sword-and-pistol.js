@@ -1,5 +1,3 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getEffectFromActor, getItem, getItemFromActor } from "../utils/utils.js";
@@ -66,7 +64,7 @@ function handleWeaponAttack({ weapon, updates, context, roll }) {
 /**
  * Add the Sword and Pistol effect to the actor and set its target to the current target
  * 
- * @param {PF2eActor} actor
+ * @param {ActorPF2e} actor
  * @param {string} effectId
  * @returns 
  */

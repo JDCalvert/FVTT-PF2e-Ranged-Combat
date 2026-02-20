@@ -2,7 +2,7 @@ import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { showDialog } from "../utils/dialog.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getItem, setEffectTarget } from "../utils/utils.js";
+import { getFlag, Util } from "../utils/utils.js";
 import { Ammunition, Weapon } from "../weapons/types.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
@@ -42,18 +42,18 @@ export function applyAmmunitionEffect(weapon, ammunition, updates) {
         return;
     }
 
-    const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
+    const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);
     }
 
     updates.deferredUpdate(
         async () => {
-            if (ammunition.system.rules.length) {
+            if (ammunition.rules.length) {
                 const rules = buildAmmunitionRules(ammunition);
 
-                const ammunitionEffectSource = await getItem(AMMUNITION_EFFECT_ID);
-                setEffectTarget(ammunitionEffectSource, weapon, false);
+                const ammunitionEffectSource = await Util.getSource(AMMUNITION_EFFECT_ID);
+                Util.setEffectTarget(ammunitionEffectSource, weapon, false);
                 foundry.utils.mergeObject(
                     ammunitionEffectSource,
                     {
@@ -79,7 +79,7 @@ export function applyAmmunitionEffect(weapon, ammunition, updates) {
 }
 
 /**
- * @param {{weapon: Weapon, ammunition: Ammunition, updates: Updates}} 
+ * @param {{weapon: Weapon, ammunition: Ammunition, updates: Updates}} _
  */
 function handleAmmunitionFired({ weapon, ammunition, updates }) {
     if (!isAmmunitionEffectsEnabled()) {
@@ -87,7 +87,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
     }
 
     // If we already have an effect for the ammunition we're firing, do nothing
-    const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
+    const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
     if (ammunitionEffect) {
         const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
         if (effectAmmunition.sourceId === ammunition.sourceId) {
@@ -137,7 +137,7 @@ function handleWeaponDamage({ weapon, updates }) {
     }
 
     const weaponAmmunition = weapon.ammunition;
-    const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
+    const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
 
     if (ammunitionEffect) {
         const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
@@ -161,7 +161,7 @@ function removeAmmunitionEffect({ weapon, updates }) {
         return;
     }
 
-    const ammunitionEffect = getEffectFromActor(weapon.actor, AMMUNITION_EFFECT_ID, weapon.id);
+    const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
     if (ammunitionEffect) {
         updates.delete(ammunitionEffect);
     }

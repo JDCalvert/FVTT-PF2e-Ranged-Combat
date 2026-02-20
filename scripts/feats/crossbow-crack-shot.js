@@ -1,7 +1,7 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getItem, getItemFromActor, isInCombat, setEffectTarget } from "../utils/utils.js";
+import { getItemFromActor, isInCombat, Util } from "../utils/utils.js";
+import { Weapon } from "../weapons/types.js";
 
 const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.s6h0xkdKf3gecLk6";
 const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.hG9i3aOBDZ9Bq9yi";
@@ -32,12 +32,11 @@ async function handleStartTurn(combatant) {
 /**
  * When reloading, delete any existing Crossbow Crack Shot effect and, if this is the first reload of the round, create a new one.
  * 
- * @param {Weapon} weapon 
- * @param {Updates} updates 
+ * @param {{weapon: Weapon, updates: Updates}} _
  */
 function handleReload({ weapon, updates }) {
     // Remove any existing effect
-    const existing = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
+    const existing = Util.getEffect(weapon, CROSSBOW_CRACK_SHOT_EFFECT_ID);
     if (existing) {
         updates.delete(existing);
     }
@@ -48,11 +47,11 @@ function handleReload({ weapon, updates }) {
     }
 
     // Create the new effect if this is our first reload of the round
-    if (!getFlag(crossbowCrackShotFeat, "reloadedThisTurn") || !isInCombat(weapon.actor)) {
+    if (!Util.getFlag(crossbowCrackShotFeat, "reloadedThisTurn") || !isInCombat(weapon.actor)) {
         updates.deferredUpdate(
             async () => {
-                const source = await getItem(CROSSBOW_CRACK_SHOT_EFFECT_ID);
-                setEffectTarget(source, weapon);
+                const source = await Util.getSource(CROSSBOW_CRACK_SHOT_EFFECT_ID);
+                Util.setEffectTarget(source, weapon);
                 source.flags["pf2e-ranged-combat"].fired = false;
 
                 // There's currently a system bug preventing the weapon damage dice being calculated for the backstabber adjustment - set it manually now
@@ -78,13 +77,12 @@ function handleReload({ weapon, updates }) {
 /**
  * When the weapon is fired, record on the effect that it has been fired, so we can remove it if we fire again.
  * 
- * @param {Weapon} weapon
- * @param {Updates} updates
+ * @param {{weapon: Weapon, updates: Updates}} _
  */
 function handleWeaponFired({ weapon, updates }) {
-    const effect = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
+    const effect = Util.getEffect(weapon, CROSSBOW_CRACK_SHOT_EFFECT_ID);
     if (effect) {
-        if (getFlag(effect, "fired")) {
+        if (Util.getFlag(effect, "fired")) {
             updates.delete(effect);
         } else {
             updates.update(effect, { "flags.pf2e-ranged-combat.fired": true });
@@ -95,11 +93,10 @@ function handleWeaponFired({ weapon, updates }) {
 /**
  * When the weapon damage is rolled, delete the Crossbow Crack Shot effect.
  * 
- * @param {Weapon} weapon 
- * @param {Updates} updates 
+ * @param {{weapon: Weapon, updates: Updates}} _
  */
 function handleWeaponDamage({ weapon, updates }) {
-    const effect = getEffectFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_EFFECT_ID, weapon.id);
+    const effect = Util.getEffect(weapon, CROSSBOW_CRACK_SHOT_EFFECT_ID);
     if (effect) {
         updates.delete(effect);
     }

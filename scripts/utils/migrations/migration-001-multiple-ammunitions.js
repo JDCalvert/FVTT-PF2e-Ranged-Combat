@@ -91,7 +91,7 @@ export class Migration001MultipleAmmunitions {
                 }
             }
 
-            updates.handleUpdates();
+            updates.commit();
         }
     }
 }

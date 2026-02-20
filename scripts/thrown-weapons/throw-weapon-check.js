@@ -1,4 +1,3 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { showWarning } from "../utils/utils.js";
 import { findGroupStacks } from "./change-carry-type.js";

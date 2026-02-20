@@ -1,10 +1,9 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eItem } from "../types/pf2e/item.js";
+import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getControlledActor, getEffectFromActor, getFlag, getItem, getItemFromActor, postActionToChat, postToChat, setEffectTarget, showWarning } from "../utils/utils.js";
+import { ensureDuration, getItemFromActor, showWarning, Util } from "../utils/utils.js";
 import { getWeapon } from "../utils/weapon-utils.js";
+import { Weapon } from "../weapons/types.js";
 
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Q1O4P1YIkCfeedHH";
 const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.IYcN1TxztAmnKXi4";
@@ -21,7 +20,7 @@ export function initialiseAlchemicalShot() {
 /**
  * Handle the action being posted to chat.
  * 
- * @param {{ actor: PF2eActor, item: PF2eItem, result: {match: boolean} }} params
+ * @param {PostActionHookData} params
  */
 function handlePostAction({ actor, item, result }) {
     if (item.sourceId != ALCHEMICAL_SHOT_FEAT_ID) {
@@ -34,7 +33,7 @@ function handlePostAction({ actor, item, result }) {
 }
 
 export async function alchemicalShot() {
-    const actor = getControlledActor();
+    const actor = Util.getControlledActor();
     if (!actor) {
         return;
     }
@@ -49,8 +48,8 @@ export async function alchemicalShot() {
 }
 
 /**
- * @param {PF2eActor} actor 
- * @param {PF2eItem} action
+ * @param {ActorPF2e} actor 
+ * @param {ItemPF2e} action
  */
 async function performForActor(actor, action) {
     const weapon = await getWeapon(
@@ -66,8 +65,8 @@ async function performForActor(actor, action) {
 }
 
 /**
- * @param {PF2eActor} actor
- * @param {PF2eItem} action
+ * @param {ActorPF2e} actor
+ * @param {ItemPF2e} action
  * @param {Weapon} weapon
  */
 async function performForActorAndWeapon(actor, action, weapon) {
@@ -82,14 +81,14 @@ async function performForActorAndWeapon(actor, action, weapon) {
         return;
     }
 
-    await postActionToChat(action);
-    await postToChat(
+    await Chat.postAction(action);
+    await Chat.post(
         actor,
         bomb.img,
         format("pourBombIntoWeapon", { actor: actor.name, weapon: weapon.name, bomb: bomb.name }),
         {
             actionName: localize("alchemicalShot"),
-            numActions: 2,
+            actionSymbol: "2",
             traits: ["manipulate"]
         }
     );
@@ -97,14 +96,14 @@ async function performForActorAndWeapon(actor, action, weapon) {
     const updates = new Updates(actor);
 
     // If there's an existing alchemical shot effect for this weapon, remove it
-    const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
+    const alchemicalShotEffect = Util.getEffect(weapon, ALCHEMICAL_SHOT_EFFECT_ID);
     if (alchemicalShotEffect) {
         updates.delete(alchemicalShotEffect);
     }
 
     // Create the new effect, and set all the choices using the weapon and bomb
-    const alchemicalShotEffectSource = await getItem(ALCHEMICAL_SHOT_EFFECT_ID);
-    setEffectTarget(alchemicalShotEffectSource, weapon);
+    const alchemicalShotEffectSource = await Util.getSource(ALCHEMICAL_SHOT_EFFECT_ID);
+    Util.setEffectTarget(alchemicalShotEffectSource, weapon);
     ensureDuration(actor, alchemicalShotEffectSource);
     foundry.utils.mergeObject(
         alchemicalShotEffectSource,
@@ -138,7 +137,7 @@ async function performForActorAndWeapon(actor, action, weapon) {
         }
     );
 
-    updates.handleUpdates();
+    updates.commit();
 }
 
 /**
@@ -147,9 +146,9 @@ async function performForActorAndWeapon(actor, action, weapon) {
  * - If the "fired" flag is already true, delete the effect
  */
 function handleWeaponFired({ weapon, updates }) {
-    const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
+    const alchemicalShotEffect = Util.getEffect(weapon, ALCHEMICAL_SHOT_EFFECT_ID);
     if (alchemicalShotEffect) {
-        if (getFlag(alchemicalShotEffect, "fired")) {
+        if (Util.getFlag(alchemicalShotEffect, "fired")) {
             updates.delete(alchemicalShotEffect);
         } else {
             alchemicalShotEffect.system.rules.findSplice(rule => rule.selector.some(selector => selector.endsWith("-attack")));
@@ -167,10 +166,10 @@ function handleWeaponFired({ weapon, updates }) {
 /**
  * Remove any Alchemical Shot effects for the weapon.
  * 
- * @param {{ weapon: Weapon, updates: Updates }}
+ * @param {{ weapon: Weapon, updates: Updates }} _
  */
 function handleWeaponDamage({ weapon, updates }) {
-    const alchemicalShotEffect = getEffectFromActor(weapon.actor, ALCHEMICAL_SHOT_EFFECT_ID, weapon.id);
+    const alchemicalShotEffect = Util.getEffect(weapon, ALCHEMICAL_SHOT_EFFECT_ID);
     if (alchemicalShotEffect) {
         updates.delete(alchemicalShotEffect);
     }

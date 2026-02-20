@@ -140,13 +140,12 @@
         "ammunitionSystem": {
             "disabled": "This functionality has been disabled since PF2e system version 7.7 changed how ammunition is handled. It will be restored in future updates.",
             "fireWeapon": "{actor} fires {ammunition}.",
-            "fireWeaponRepeating": "{actor} uses {ammunition} ({remaining}/{capacity} remaining).",
+            "fireWeaponRepeating": "{actor} fires {ammunition} ({remaining}/{capacity} remaining).",
             "fireConjuredRound": "{actor} fires their conjured round.",
-            "utils": {
-                "warningFullyLoaded": "{weapon} is already fully loaded.",
-                "warningLoaded": "{weapon} is already loaded."
+            "warning": {
+                "noCompatibleAmmunition": "{actor} has no equipped ammunition compatible with {weapon}."
             },
-            "ammunitionSelect": {
+            "select": {
                 "title": "Ammunition Select",
                 "titleWithWeapon": "Ammunition Select ({weapon})",
                 "action": {
@@ -156,12 +155,15 @@
                     "fire": "Select which ammunition to fire."
                 },
                 "header": {
-                    "loadedAmmunition": "Loaded Ammunition",
+                    "loaded": "Loaded",
                     "current": "Current",
                     "equipped": "Equipped"
                 },
                 "option": {
                     "setAsAmmunition": "Set as ammunition"
+                },
+                "warning": {
+                    "noneValid": "{weapon} has no valid ammunition."
                 }
             },
             "jammed": {
@@ -171,11 +173,13 @@
                 "weaponNotLoaded": "{weapon} is not loaded.",
                 "magazineNotLoaded": "{weapon} has no magazine loaded.",
                 "magazineEmpty": "{weapon}'s magazine is empty.",
+                "magazineNotEnough": "{weapon}'s magazine does not have enough ammunition",
                 "chamberNotLoaded": "{weapon}'s current chamber is not loaded.",
                 "bothBarrelsNotLoaded": "{weapon} does not have both barrels loaded.",
                 "bothBarrelsNotEnough": "{weapon} does not have enough ammunition to fire both barrels.",
-                "noAmmunitionSelected": "{weapon} has no ammunition selected",
-                "noAmmunitionRemaining": "{weapon} has no ammunition remaining"
+                "noAmmunitionSelected": "{weapon} has no ammunition selected.",
+                "noAmmunitionRemaining": "{weapon} has no ammunition remaining.",
+                "notEnoughAmmunition": "{weapon} does not have enough ammunition remaining."
             },
             "effect": {
                 "config": {
@@ -225,60 +229,57 @@
                     "chatActionName": "Conjure Bullet"
                 },
                 "consolidateAmmunition": {
-                    "chatMessage": "{token} consolidates their ammunition.",
+                    "chatMessage": "{actor} consolidates their ammunition.",
                     "infoAlreadyConsolidated": "Your repeating ammunition is already consolidated!"
                 },
                 "nextChamber": {
                     "noCapacityWeapons": "You have no weapons with the capacity trait.",
-                    "warningNotLoaded": "{weapon} is not loaded!",
                     "warningAlreadyLoaded": "{weapon} already has a chamber loaded with {ammunition} selected!",
-                    "chatMessageSelectChamber": "{token} selects a chamber loaded with {ammunition} on their {weapon}.",
+                    "chatMessageSelectChamber": "{actor} selects a chamber loaded with {ammunition} on their {weapon}.",
                     "warningAlreadySelected": "{weapon} already has a loaded chamber selected!",
-                    "chatMessageSelectNextChamber": "{token} selects the next loaded chamber on their {weapon}."
-                },
-                "reloadMagazine": {
-                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - Magazine Reload can only be used if the Advanced Ammunition System is enabled.",
-                    "warningNpcNotSupported": "PF2e Ranged Combat - Magazine Reload is currently not supported for NPCs.",
-                    "warningNoRepeatingWeapons": "You have no repeating weapons.",
-                    "warningFullyLoaded": "{weapon} is already loaded with a full magazine.",
-                    "warningAlreadyMoreAmmo": "{weapon}'s current magazine is already loaded with as much ammunition as {ammo}",
-                    "tokenLoadsAmmo": "{token} loads their {weapon} with {ammo} ({charges}/{maxCharges}).",
-                    "warningNoCompatibleAmmunition": "You have no equipped ammunition compatible with your {weapon}.",
-                    "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.<br><br>Select the ammunition to load.",
-                    "warningNotEnoughAmmunition": "You don't have enough ammunition to reload your {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.</p><p>Select new ammunition to load."
+                    "chatMessageSelectNextChamber": "{actor} selects the next loaded chamber on their {weapon}."
                 },
                 "reload": {
-                    "selectWeapon": "Select a weapon to reload.",
-                    "warningNoReloadableWeapons": "{actor} has no reloadable weapons.",
-                    "warningNoReloadableCapacityWeapons": "You have no reloadable weapons with the capacity trait.",
-                    "warningNoMagazineLoaded": "{weapon} has no magazine loaded!",
-                    "warningMagazineEmpty": "{weapon}'s magazine is empty!",
-                    "warningAlreadyLoaded": "{weapon} is already loaded.",
-                    "warningAlreadyFullyLoaded": "{weapon} is already fully loaded.",
-                    "warningAlreadyLoadedWithAmmo": "{weapon} is already loaded with {ammo}.",
-                    "warningNoCompatibleAmmunition": "You have no equipped ammunition compatible with {weapon}.",
-                    "noAmmunitionSelectNew": "You have no ammunition selected for your {weapon}.<br><br>Select the ammunition to load.",
-                    "warningNotEnoughAmmunition": "Not enough ammunition to reload {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Your selected ammunition for your {weapon} is empty.<br><br>Select new ammunition to load.",
-                    "actorReloadsWeapon": "{actor} reloads their {weapon}",
-                    "actorReloadsWeaponWithAmmunition": "{actor} reloads their {weapon} with {ammunition}."
+                    "magazine": {
+                        "warning": {
+                            "noRepeatingWeapons": "{actor} has no repeating weapons.",
+                            "fullyLoaded": "{weapon} is already loaded with a full magazine.",
+                            "alreadyMoreAmmo": "{weapon}'s current magazine is already loaded with as much ammunition as {ammo}."
+                        }
+                    },
+                    "warning": {
+                        "noReloadableWeapons": "{actor} has no reloadable weapons.",
+                        "noMagazineLoaded": "{weapon} has no magazine loaded!",
+                        "magazineEmpty": "{weapon}'s magazine is empty!",
+                        "alreadyLoaded": "{weapon} is already loaded.",
+                        "alreadyFullyLoaded": "{weapon} is already fully loaded."
+                    },
+                    "performed": {
+                        "weapon": "{actor} reloads their {weapon}.",
+                        "weaponAmmunition": "{actor} reloads their {weapon} with {ammunition}.",
+                        "weaponAmmunitionCharges": "{actor} reloads their {weapon} with {ammunition} ({charges}/{maxCharges})."
+                    }
                 },
                 "switchAmmunition": {
-                    "warningNoWeaponUsesAmmunition": "You have no weapons that use ammunition.",
-                    "warningNoCompatibleAmmunitionAvailable": "You have no equipped ammunition compatible with your {weapon}."
+                    "warningNoWeaponUsesAmmunition": "{actor} has no weapons that use ammunition."
                 },
                 "unload": {
+                    "noLoadedWeapons": "{actor} has no weapons that can be unloaded.",
                     "warningNotLoaded": "{weapon} is not loaded!",
-                    "tokenUnloadsAmmunitionFromWeapon": "{token} unloads {ammunition} from their {weapon}.",
-                    "tokenUnloadsWeapon": "{token} unloads their {weapon}",
-                    "noLoadedWeapons": "You have no loaded weapons."
+                    "unloadWeapon": "{actor} unloads their {weapon}",
+                    "unloadWeaponAmmunition": "{actor} unloads {ammunition} from their {weapon}."
                 }
             }
         },
         "weaponSystem": {
-            "weaponSelect": {
-                "title": "Weapon Select"
+            "select": {
+                "title": "Weapon Select",
+                "action": {
+                    "generic": "Select as weapon.",
+                    "reload": "Select a weapon to reload.",
+                    "unload": "Select a weapon to unload.",
+                    "switchAmmunition": "Select a weapon to switch ammunition."
+                }
             },
             "carried": {
                 "held": "Held",

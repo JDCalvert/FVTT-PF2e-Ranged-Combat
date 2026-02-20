@@ -141,11 +141,10 @@
             "fireWeapon": "{actor} wystrzeliwuje {ammunition}.",
             "fireWeaponRepeating": "{actor} używa {ammunition} (pozostało {remaining}/{capacity}).",
             "fireConjuredRound": "{actor} wystrzeliwuje wyczarowany pocisk.",
-            "utils": {
-                "warningFullyLoaded": "{weapon} jest już w pełni załadowana.",
-                "warningLoaded": "{weapon} jest już załadowana."
+            "warning": {
+                "noCompatibleAmmunition": "Nie masz amunicji kompatybilnej z twoją {weapon}."
             },
-            "ammunitionSelect": {
+            "select": {
                 "title": "Wybór amunicji",
                 "action": {
                     "switch": "Wybierz amunicję, na którą chcesz się przełączyć.",
@@ -153,7 +152,7 @@
                     "fire": "Wybierz amunicję, którą chcesz wystrzelić."
                 },
                 "header": {
-                    "loadedAmmunition": "Załadowana amunicja",
+                    "loaded": "Załadowana amunicja",
                     "current": "Bieżąca",
                     "equipped": "Wyposażono"
                 },
@@ -181,43 +180,37 @@
                     "chatActionName": "Wyczarowanie Pocisku"
                 },
                 "consolidateAmmunition": {
-                    "chatMessage": "{token} konsoliduje swoją amunicję.",
+                    "chatMessage": "{actor} konsoliduje swoją amunicję.",
                     "infoAlreadyConsolidated": "Twoja amunicja powtarzalna jest już skonsolidowana!"
                 },
                 "nextChamber": {
                     "noCapacityWeapons": "Nie posiadasz broni z cechą Pojemność.",
                     "warningNotLoaded": "{weapon} nie jest załadowana!",
                     "warningAlreadyLoaded": "{weapon} ma już komorę załadowaną amunicją {ammunition}!",
-                    "chatMessageSelectChamber": "{token} wybiera komorę załadowaną {ammunition} w swojej {weapon}.",
+                    "chatMessageSelectChamber": "{actor} wybiera komorę załadowaną {ammunition} w swojej {weapon}.",
                     "warningAlreadySelected": "{weapon} ma już wybraną komorę z nabojami!",
                     "chatMessageSelectNextChamber": "{token} wybiera następną komorę w {weapon}."
                 },
-                "reloadMagazine": {
-                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - Przeładowanie Magazynka może być użyte tylko wtedy, gdy włączony jest Zaawansowany System Amunicji.",
-                    "warningNpcNotSupported": "PF2e Ranged Combat - Przeładowanie Magazynka nie jest obecnie obsługiwane dla postaci niezależnych.",
-                    "warningNoRepeatingWeapons": "Nie masz broni powtarzalnej.",
-                    "warningFullyLoaded": "{weapon} jest już załadowana pełnym magazynkiem.",
-                    "warningAlreadyMoreAmmo": "Magazynek {weapon} jest już załadowany {ammo} sztukami amunicji",
-                    "tokenLoadsAmmo": "{token} ładuje swoją {weapon} - {ammo} ({charges}/{maxCharges}).",
-                    "warningNoCompatibleAmmunition": "Nie masz amunicji kompatybilnej z twoją {weapon}.",
-                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.<br><br>Wybierz amunicję do załadowania.",
-                    "warningNotEnoughAmmunition": "Nie masz wystarczającej ilości amunicji, aby przeładować {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.</p><p>Wybierz nową amunicję do załadowania."
-                },
                 "reload": {
-                    "warningNoReloadableWeapons": "Nie masz broni, którą można ponownie załadować.",
-                    "warningNoMagazineLoaded": "{weapon} nie ma załadowanego magazynka!",
-                    "warningMagazineEmpty": "Magazynek {weapon} jest pusty!",
-                    "warningAlreadyLoaded": "{weapon} jest już załadowana.",
-                    "warningAlreadyFullyLoaded": "{weapon} jest już w pełni załadowana.",
-                    "warningAlreadyLoadedWithAmmo": "{weapon}} jest już załadowana {ammo}.",
-                    "warningNoCompatibleAmmunition": "Nie masz wyposażonej amunicji kompatybilnej z {weapon}.",
-                    "noAmmunitionSelectNew": "Nie masz wybranej amunicji do swojej {weapon}.<br><br>Wybierz amunicję do załadowania.",
-                    "warningNotEnoughAmmunition": "Za mało amunicji, aby przeładować {weapon}.",
-                    "notEnoughAmmunitionSelectNew": "Amunicja wybrana dla {weapon} jest pusta.<br><br>Wybierz nową amunicję do załadowania.",
-                    "actorReloadsWeapon": "{token} przeładowuje swoją {weapon}",
-                    "withAmmunition": "za pomocą {ammunition}.",
-                    "warningNoReloadableCapacityWeapons": "Nie posiadasz broni wielokrotnego ładowania z cechą Pojemności."
+                    "magazine": {
+                        "warning": {
+                            "noRepeatingWeapons": "Nie masz broni powtarzalnej.",
+                            "fullyLoaded": "{weapon} jest już załadowana pełnym magazynkiem.",
+                            "alreadyMoreAmmo": "Magazynek {weapon} jest już załadowany {ammo} sztukami amunicji."
+                        }
+                    },
+                    "warning": {
+                        "noReloadableWeapons": "Nie masz broni, którą można ponownie załadować.",
+                        "noMagazineLoaded": "{weapon} nie ma załadowanego magazynka!",
+                        "magazineEmpty": "Magazynek {weapon} jest pusty!",
+                        "alreadyLoaded": "{weapon} jest już załadowana.",
+                        "alreadyFullyLoaded": "{weapon} jest już w pełni załadowana."
+                    },
+                    "performed": {
+                        "weapon": "{actor} przeładowuje swoją {weapon}.",
+                        "weaponAmmunition": "{actor} przeładowuje swoją {weapon} za pomocą {ammunition}.",
+                        "weaponAmmunitionCharges": "{actor} ładuje swoją {weapon} - {ammunition} ({charges}/{maxCharges})."
+                    }
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "Nie masz broni, która używa amunicji.",
@@ -225,8 +218,8 @@
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon} nie jest załadowana!",
-                    "tokenUnloadsAmmunitionFromWeapon": "{token} rozładowuje {ammunition} ze swojej broni - {weapon}.",
-                    "tokenUnloadsWeapon": "{token} rozładowuje swoją {weapon}",
+                    "unloadWeaponAmmunition": "{actor} rozładowuje {ammunition} ze swojej broni - {weapon}.",
+                    "unloadWeapon": "{actor} rozładowuje swoją {weapon}",
                     "noLoadedWeapons": "Nie masz naładowanej broni."
                 },
                 "names": {
