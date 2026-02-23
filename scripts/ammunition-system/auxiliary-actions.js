@@ -64,7 +64,7 @@ export class AuxiliaryActions {
                 }
 
                 // Next Chamber
-                if (NextChamber.check(weapon)) {
+                if (NextChamber.shouldShowAuxiliaryAction(weapon)) {
                     auxiliaryActions.push(
                         buildAuxiliaryAction(
                             pf2eWeapon,
@@ -75,7 +75,7 @@ export class AuxiliaryActions {
                             1,
                             async () => {
                                 const updates = new Updates(actor);
-                                NextChamber.perform(weapon, updates);
+                                await NextChamber.perform(weapon, updates);
                                 updates.commit();
                             }
                         )
@@ -83,7 +83,7 @@ export class AuxiliaryActions {
                 }
 
                 // Unload, if the weapon can be unloaded
-                if (Unload.check(weapon)) {
+                if (Unload.shouldShowAuxiliaryAction(weapon)) {
                     auxiliaryActions.push(
                         buildAuxiliaryAction(
                             pf2eWeapon,

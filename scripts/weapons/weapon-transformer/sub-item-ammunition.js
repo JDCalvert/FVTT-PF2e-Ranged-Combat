@@ -37,10 +37,12 @@ class SubItemWeapon extends Weapon {
      * @param {Updates} updates 
      */
     async createAmmunition(ammunition, updates) {
-        const loadedAmmunition = this.transformLoadedAmmunition(ammunition);
-        this.loadedAmmunition.push(loadedAmmunition);
+        const newAmmunition = this.transformLoadedAmmunition(ammunition);
+        this.loadedAmmunition.push(newAmmunition);
 
-        await loadedAmmunition.create(updates);
+        await newAmmunition.create(updates);
+
+        return newAmmunition;
     }
 
     /**
@@ -75,24 +77,12 @@ class SubItemWeapon extends Weapon {
             updates.delete(chamberLoadedEffect);
         }
 
+        if (!ammunition) {
+            return;
+        }
+
         const chamberLoadedSource = await Util.getSource(CHAMBER_LOADED_EFFECT_ID);
         Util.setEffectTarget(chamberLoadedSource, this);
-
-        foundry.utils.mergeObject(
-            chamberLoadedSource,
-            {
-                name: `${chamberLoadedSource.name} (${ammunition.name})`,
-                flags: {
-                    "pf2e-ranged-combat": {
-                        name: ammunition.name,
-                        img: ammunition.img,
-                        id: ammunition.id,
-                        sourceId: ammunition.sourceId
-                    }
-                }
-            }
-        );
-
         updates.create(chamberLoadedSource);
 
         // Move the chosen ammunition to the front of the sub-items list
@@ -127,6 +117,8 @@ export class SubItemAmmunition extends LoadedAmmunition {
         subitems.push(ammunitionSource);
 
         updates.update(this.weapon, { "system.subitems": subitems });
+
+        this.id = ammunitionSource._id;
     }
 
     /**
@@ -246,8 +238,17 @@ export class SubItemTransformer extends WeaponTransformer {
         // generic ammunition, and then into loaded ammunition
         weapon.loadedAmmunition = pf2eWeapon.subitems.contents
             .filter(item => item.isAmmoFor(pf2eWeapon))
+            .filter(item => item.quantity > 0)
+            .sort((a, b) => a.sort - b.sort)
             .map(ammo => this.transformAmmunition(ammo))
             .map(ammo => weapon.transformLoadedAmmunition(ammo));
+
+        if (weapon.isCapacity && weapon.loadedAmmunition.length > 0) {
+            const chamberLoadedEffect = Util.getEffect(weapon, CHAMBER_LOADED_EFFECT_ID);
+            if (chamberLoadedEffect) {
+                weapon.selectedLoadedAmmunition = weapon.loadedAmmunition[0];
+            }
+        }
 
         return weapon;
     }

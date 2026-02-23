@@ -21,7 +21,7 @@ export class NextChamber {
      * @param {Weapon} weapon
      * @returns {boolean}
      */
-    static check(weapon) {
+    static shouldShowAuxiliaryAction(weapon) {
         if (weapon.isStowed) {
             return false;
         }

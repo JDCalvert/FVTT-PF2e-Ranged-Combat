@@ -203,11 +203,15 @@ export class Reload {
 
             const ammunitionToLoad = ammunition.pop(1, updates);
 
-            const matching = weapon.loadedAmmunition.find(loaded => loaded.sourceId === ammunitionToLoad.sourceId);
-            if (matching) {
-                matching.push(ammunitionToLoad, updates);
+            let loadedAmmunition = weapon.loadedAmmunition.find(loaded => loaded.sourceId === ammunitionToLoad.sourceId);
+            if (loadedAmmunition) {
+                loadedAmmunition.push(ammunitionToLoad, updates);
             } else {
-                await weapon.createAmmunition(ammunitionToLoad, updates);
+                loadedAmmunition = await weapon.createAmmunition(ammunitionToLoad, updates);
+            }
+
+            if (weapon.isCapacity && !weapon.selectedLoadedAmmunition) {
+                await weapon.setNextChamber(loadedAmmunition, updates);
             }
 
             Reload.postToChat(weapon, ammunitionToLoad, options.messageParams);

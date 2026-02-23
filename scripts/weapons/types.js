@@ -103,8 +103,11 @@ export class Weapon extends Item {
      * @abstract
      * @param {Ammunition} ammunition
      * @param {Updates} updates
+     * 
+     * @returns {Promise<LoadedAmmunition>} The ammunition just loaded
      */
     async createAmmunition(ammunition, updates) {
+        return null;
     }
 
     /**

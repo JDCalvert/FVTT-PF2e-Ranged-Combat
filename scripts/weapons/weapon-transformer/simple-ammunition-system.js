@@ -21,6 +21,8 @@ class SimpleWeapon extends Weapon {
         this.loadedAmmunition.push(newAmmunition);
 
         await newAmmunition.create(updates);
+
+        return newAmmunition;
     }
 
     /**
@@ -48,6 +50,11 @@ class SimpleWeapon extends Weapon {
     async setNextChamber(_ammunition, updates) {
         const nextChamberEffect = Util.getEffect(this, CHAMBER_LOADED_EFFECT_ID);
         if (nextChamberEffect) {
+            return;
+        }
+
+
+        if (!_ammunition) {
             return;
         }
 

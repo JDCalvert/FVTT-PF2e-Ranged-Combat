@@ -64,7 +64,7 @@ export class WeaponTransformer {
      */
     static findTraitValue(weapon, traitName) {
         const match = weapon.traits
-            .map(trait => trait.match(`${traitName}-(\d+)`))
+            .map(trait => trait.match(`${traitName}-(\\d+)`))
             .find(match => !!match);
 
         if (match) {

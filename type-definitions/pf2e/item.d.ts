@@ -15,6 +15,7 @@ class ItemPF2e {
     isEquipped: boolean;
     isStowed: boolean;
 
+    sort: number;
     system: ItemPF2eSystem;
 
     isAmmoFor(weapon: WeaponPF2e): boolean;

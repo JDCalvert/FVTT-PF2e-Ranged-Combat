@@ -19,7 +19,7 @@ export class Unload {
      * @param {Weapon} weapon 
      * @returns {boolean}
      */
-    static check(weapon) {
+    static shouldShowAuxiliaryAction(weapon) {
         if (weapon.isStowed) {
             return false;
         }
@@ -112,6 +112,10 @@ export class Unload {
                 unloadedAmmunition.copyData(ammunition);
                 await ammunition.create(updates);
             }
+        }
+
+        if (weapon.isCapacity && weapon.selectedLoadedAmmunition === ammunition && ammunition.quantity === 0) {
+            await weapon.setNextChamber(null, updates);
         }
     }
 

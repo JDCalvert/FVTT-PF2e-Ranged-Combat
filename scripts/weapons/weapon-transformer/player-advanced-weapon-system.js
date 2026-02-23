@@ -48,6 +48,8 @@ class LocalWeapon extends Weapon {
         }
 
         await newAmmunition.create(updates);
+
+        return newAmmunition;
     }
 
     /**
@@ -78,6 +80,10 @@ class LocalWeapon extends Weapon {
         const chamberLoadedEffect = Util.getEffect(this, CHAMBER_LOADED_EFFECT_ID);
         if (chamberLoadedEffect) {
             updates.delete(chamberLoadedEffect);
+        }
+
+        if (!ammunition) {
+            return;
         }
 
         const chamberLoadedSource = await Util.getSource(CHAMBER_LOADED_EFFECT_ID);
