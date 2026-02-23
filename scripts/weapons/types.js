@@ -288,7 +288,7 @@ export class Ammunition extends Item {
             this.remainingUses -= uses;
         }
 
-        if (this.quantity > 0) {
+        if (this.quantity > 0 || !this.allowDestroy) {
             this.save(updates);
         } else {
             this.delete(updates);

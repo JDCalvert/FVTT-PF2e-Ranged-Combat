@@ -16,11 +16,20 @@ export const SetSelected = {
 };
 
 /**
+ * @enum {number}
+ */
+export const AutoSelect = {
+    None: 0,
+    Selected: 1,
+    SelectedOrOnly: 2
+};
+
+/**
  * @typedef {object} ChooseAmmunitionOptions
  * @property {{predicate: (ammunition: InventoryAmmunition) => boolean, warningMessage?: string}} [filter]
  * @property {SetSelected} [setSelected]
+ * @property {AutoSelect} [autoSelect]
  * @property {boolean} [allowDeselect]
- * @property {boolean} [allowAutoSelect]
  */
 
 export class SwitchAmmunition {
@@ -96,11 +105,11 @@ export class SwitchAmmunition {
         }
 
         const selectedAmmunition = compatibleAmmunition.findSplice(ammunition => ammunition === weapon.selectedInventoryAmmunition);
-        if (selectedAmmunition && options.allowAutoSelect) {
+        if (selectedAmmunition && options.autoSelect >= AutoSelect.Selected) {
             return selectedAmmunition;
         }
 
-        if (compatibleAmmunition.length === 1 && options.allowAutoSelect) {
+        if (compatibleAmmunition.length === 1 && options.autoSelect === AutoSelect.SelectedOrOnly) {
             return compatibleAmmunition[0];
         }
 

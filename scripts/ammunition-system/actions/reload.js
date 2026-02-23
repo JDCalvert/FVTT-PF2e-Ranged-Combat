@@ -6,7 +6,7 @@ import { Util } from "../../utils/utils.js";
 import { AmmunitionSystem, WeaponSystem } from "../../weapons/system.js";
 import { Ammunition, Weapon } from "../../weapons/types.js";
 import { LOADED_EFFECT_ID } from "../constants.js";
-import { SetSelected, SwitchAmmunition } from "./switch-ammunition.js";
+import { AutoSelect, SetSelected, SwitchAmmunition } from "./switch-ammunition.js";
 import { Unload } from "./unload.js";
 
 /**
@@ -311,7 +311,7 @@ export class Reload {
                 filter: {
                     predicate: ammunition => ammunition.quantity > 0 && ammunition.remainingUses > 0,
                 },
-                allowAutoSelect: true,
+                autoSelect: AutoSelect.SelectedOrOnly,
                 setSelected: setSelected
             }
         );

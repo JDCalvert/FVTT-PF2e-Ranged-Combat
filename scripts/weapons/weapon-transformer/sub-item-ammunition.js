@@ -50,6 +50,12 @@ class SubItemWeapon extends Weapon {
     setSelectedAmmunition(ammunition, updates) {
         this.selectedInventoryAmmunition = ammunition;
 
+        // Reload-0 weapons still have an ammunition selection box, so use that instead of a flag
+        if (!this.isRepeating && this.reloadActions === 0) {
+            updates.update(this, { "system.selectedAmmoId": ammunition?.id ?? null });
+            return;
+        }
+
         if (ammunition) {
             updates.update(this, { "flags.pf2e-ranged-combat.ammunitionId": ammunition.id });
         } else {
@@ -229,7 +235,9 @@ export class SubItemTransformer extends WeaponTransformer {
             .map(ammo => this.transformAmmunition(ammo))
             .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
 
-        const selectedAmmunitionId = Util.getFlag(pf2eWeapon, "ammunitionId");
+        const selectedAmmunitionId = (!weapon.isRepeating && weapon.reloadActions === 0)
+            ? pf2eWeapon.system.selectedAmmoId
+            : Util.getFlag(pf2eWeapon, "ammunitionId");
         if (selectedAmmunitionId) {
             weapon.selectedInventoryAmmunition = weapon.compatibleAmmunition.find(compatible => compatible.id === selectedAmmunitionId);
         }

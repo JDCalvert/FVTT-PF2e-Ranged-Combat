@@ -5,6 +5,8 @@ import { Util } from "../utils/utils.js";
 import { Weapon } from "../weapons/types.js";
 import { AmmunitionSystem } from "../weapons/system.js";
 import { LOADED_EFFECT_ID } from "./constants.js";
+import { AutoSelect, SetSelected, SwitchAmmunition } from "./actions/switch-ammunition.js";
+import { Updates } from "../utils/updates.js";
 
 export class FireWeaponCheck {
     /**
@@ -110,9 +112,19 @@ export class FireWeaponCheck {
 
         // Reload-0 weapons that use ammunition must have some ammunition selected
         if (weapon.reloadActions === 0) {
-            // No ammunition selected
+            const updates = new Updates(weapon.actor);
+            weapon.selectedInventoryAmmunition = await SwitchAmmunition.chooseAmmunition(
+                weapon,
+                updates,
+                AmmunitionSystem.localize("select.action.fire"),
+                {
+                    filter: { predicate: ammunition => ammunition.quantity > 0 },
+                    autoSelect: AutoSelect.Selected,
+                    setSelected: SetSelected.DefaultNo
+                }
+            );
+            await updates.commit();
             if (!weapon.selectedInventoryAmmunition) {
-                FireWeaponCheck.warn(weapon, "noAmmunitionSelected");
                 return false;
             }
 
