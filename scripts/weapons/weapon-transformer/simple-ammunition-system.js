@@ -82,6 +82,9 @@ class SimpleWeapon extends Weapon {
     }
 }
 
+/**
+ * @extends {LoadedAmmunition<SimpleWeapon>}
+ */
 class SimpleAmmunition extends LoadedAmmunition {
     /**
      * Reference to the ammunition in the actor's inventory that this refers to

@@ -1,3 +1,4 @@
+import { Configuration } from "../config/config.js";
 import { Item, Weapon } from "../weapons/types.js";
 import { showDialog } from "./dialog.js";
 
@@ -159,7 +160,7 @@ export class Util {
             ui.notifications.warn(message);
         } else {
             let content;
-            if (isUsingApplicationV2()) {
+            if (Configuration.isUsingApplicationV2()) {
                 content = `
             <p>
                 ${localize("warningDialog1")} ${message}
@@ -192,10 +193,6 @@ export class Util {
                 ]
             );
         }
-    }
-
-    static isUsingApplicationV2() {
-        return foundry.utils.isNewerVersion(game.version, "13");
     }
 
     /**
@@ -285,23 +282,6 @@ export function preventFiringWithoutLoading(actor) {
         return game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded");
     } else if (actor.type === "npc") {
         return game.settings.get("pf2e-ranged-combat", "preventFireNotLoadedNPC");
-    } else {
-        return false;
-    }
-}
-
-export function isUsingApplicationV2() {
-    return foundry.utils.isNewerVersion(game.version, "13");
-}
-
-/**
- * Version 7.7 of the system implements its own ammunition system, which is incompatible with the module's system.
- * 
- * @param {ActorPF2e} actor 
- */
-export function isUsingSystemAmmunitionSystem(actor) {
-    if (actor.type === "character") {
-        return foundry.utils.isNewerVersion(game.system.version, "7.7");
     } else {
         return false;
     }

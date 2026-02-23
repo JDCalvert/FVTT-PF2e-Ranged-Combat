@@ -190,12 +190,14 @@ export class Reload {
                 const ammunitionToUnload = await AmmunitionSystem.chooseLoadedAmmunition(
                     weapon,
                     "unload",
-                    [
-                        {
-                            header: "depleted",
-                            predicate: ammunition => ammunition.remainingUses < ammunition.maxUses
-                        }
-                    ]
+                    {
+                        categories: [
+                            {
+                                header: "depleted",
+                                predicate: ammunition => ammunition.remainingUses < ammunition.maxUses
+                            }
+                        ]
+                    },
                 );
 
                 await Unload.removeFromWeapon(weapon, ammunitionToUnload, updates);

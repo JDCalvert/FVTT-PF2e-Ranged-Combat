@@ -1,6 +1,7 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { showDialog } from "../utils/dialog.js";
-import { isUsingApplicationV2, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
+import { Configuration } from "../config/config.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.npcWeaponSystem." + key);
 
@@ -22,7 +23,7 @@ export function npcWeaponConfiguration() {
             {
                 action: "ok",
                 label: localize("dialog.done"),
-                callback: isUsingApplicationV2()
+                callback: Configuration.isUsingApplicationV2()
                     ? (_0, _1, dialog) => saveChangesV2(dialog, actor)
                     : ($html) => saveChangesV1($html, actor)
             },
@@ -50,7 +51,7 @@ function buildContent(actor) {
     let content = "";
 
     // The ApplicationV2 form has a lot of unnecessary space, wrap everything inside a form with no gaps
-    if (isUsingApplicationV2()) {
+    if (Configuration.isUsingApplicationV2()) {
         content += `<div class="dialog-content standard-form" style="gap: 0px"></div>`;
     }
 
@@ -89,8 +90,8 @@ function buildContent(actor) {
         const weaponId = Util.getFlag(attack, "weaponId");
         const ammunitionId = Util.getFlag(attack, "ammunitionId");
 
-        const isRanged = attack.traits.some(trait => trait.startsWith("range-increment") || trait.startsWith("thrown"));
-        const usesAmmunition = attack.traits.some(trait => trait.startsWith("reload-"));
+        const isRanged = attack.system.traits.value.some(trait => trait.startsWith("range-increment") || trait.startsWith("thrown"));
+        const usesAmmunition = attack.system.traits.value.some(trait => trait.startsWith("reload-"));
 
         content += `
             <fieldset style="border: 1px solid #a1a1a1; padding: 5px;">
@@ -116,7 +117,7 @@ function buildContent(actor) {
                         <option/>`;
 
             ammunitions
-                .filter(ammunition => attack.traits.has("repeating") === (ammunition.uses.max > 1))
+                .filter(ammunition => attack.traits.has("repeating") === (ammunition.system.uses.max > 1))
                 .map(ammunition => `<option value="${ammunition.id}" ${ammunitionId === ammunition.id ? `selected="selected"` : ``}>${ammunition.name}</option>`)
                 .forEach(ammunition => content += ammunition);
 
@@ -136,7 +137,7 @@ function buildContent(actor) {
         </fieldset>
     `;
 
-    if (isUsingApplicationV2()) {
+    if (Configuration.isUsingApplicationV2()) {
         content += `</div>`;
     }
 

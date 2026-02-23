@@ -61,7 +61,7 @@ export class Unload {
      * @param {Updates} updates 
      */
     static async perform(weapon, updates) {
-        const loadedAmmunition = await AmmunitionSystem.chooseLoadedAmmunition(weapon, "unload");
+        const loadedAmmunition = await AmmunitionSystem.chooseLoadedAmmunition(weapon, "unload", { autoChooseOnlyOption: true });
         if (!loadedAmmunition) {
             return;
         }

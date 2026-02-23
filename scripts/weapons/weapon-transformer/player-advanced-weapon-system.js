@@ -108,7 +108,14 @@ class LocalWeapon extends Weapon {
     }
 }
 
-class Magazine extends LoadedAmmunition {
+/**
+ * @extends {LoadedAmmunition<LocalWeapon>}
+ */
+class AdvancedLoadedAmmunition extends LoadedAmmunition {
+
+}
+
+class Magazine extends AdvancedLoadedAmmunition {
     /** @type {ItemPF2e} */
     magazineLoadedEffect;
 
@@ -163,7 +170,7 @@ class Magazine extends LoadedAmmunition {
     }
 }
 
-class CapacityAmmunition extends LoadedAmmunition {
+class CapacityAmmunition extends AdvancedLoadedAmmunition {
     /** @type {ItemPF2e} */
     loadedEffect;
 
@@ -262,7 +269,7 @@ class CapacityAmmunition extends LoadedAmmunition {
     }
 }
 
-class StandardAmmunition extends LoadedAmmunition {
+class StandardAmmunition extends AdvancedLoadedAmmunition {
     /** @type {ItemPF2e} */
     loadedEffect;
 

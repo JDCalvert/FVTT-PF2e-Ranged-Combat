@@ -1,4 +1,4 @@
-import { Choice, Option, Section } from "../../lib/lib-item-select-dialog-types/types.js";
+import { Choice, Section } from "../../lib/lib-item-select-dialog-types/types.js";
 import { ItemSelect } from "../utils/item-select-dialog.js";
 import { Util } from "../utils/utils.js";
 import { Ammunition, InventoryAmmunition, LoadedAmmunition, Weapon } from "./types.js";
@@ -117,9 +117,10 @@ export class WeaponSystem {
 
 /**
  * @typedef {object} ChooseAmmunitionOptions
- * @property {{header: string, predicate: (weapon: LoadedAmmunition) => boolean}[]} [categories]
  * @property {{predicate: (ammunition: InventoryAmmunition) => boolean, warningMessage?: string}} [filter]
- * @property {Option[]} [auxiliaryOptions]
+ * @property {{header: string, predicate: (weapon: LoadedAmmunition) => boolean}[]} [categories]
+ * @property {boolean} [autoChooseSelected]
+ * @property {boolean} [autoChooseOnlyOption]
  */
 
 export class AmmunitionSystem {
@@ -138,12 +139,11 @@ export class AmmunitionSystem {
      * 
      * @param {Weapon} weapon 
      * @param {string} action
-     * @param {{header: string, predicate: (weapon: LoadedAmmunition) => boolean}[]} [categories]
-     * @param {{predicate: (weapon: LoadedAmmunition) => boolean, warningMessage?: string}} [filter]
+     * @param {ChooseAmmunitionOptions} [options]
      * 
      * @returns {Promise<LoadedAmmunition | null>}
      */
-    static async chooseLoadedAmmunition(weapon, action, categories = [], filter = { predicate: _ => true }) {
+    static async chooseLoadedAmmunition(weapon, action, options) {
         if (CONFIG.pf2eRangedCombat.silent) {
             return null;
         }
@@ -153,24 +153,38 @@ export class AmmunitionSystem {
             return null;
         }
 
-        const ammunition = weapon.loadedAmmunition.filter(filter.predicate);
+        let ammunition = weapon.loadedAmmunition.filter(options?.filter?.predicate ?? (_ => true));
         if (!ammunition.length) {
-            Util.warn(filter.warningMessage ?? AmmunitionSystem.localize("select.warning.noneValid"));
+            Util.warn(options.filter.warningMessage ?? AmmunitionSystem.localize("select.warning.noneValid"));
             return null;
         }
 
-        if (ammunition.length === 1) {
-            return ammunition[0];
+        const selectedLoadedAmmunition = ammunition.find(loaded => loaded === weapon.selectedLoadedAmmunition);
+        if (selectedLoadedAmmunition && options?.autoChooseSelected) {
+            return selectedLoadedAmmunition;
         }
 
-        let remainingAmmunition = ammunition;
+        if (ammunition.length === 1 && options?.autoChooseOnlyOption) {
+            return ammunition[0];
+        }
 
         /** @type {Section<LoadedAmmunition>[]} */
         const sections = [];
 
+        if (selectedLoadedAmmunition) {
+            ammunition.findSplice(loaded => loaded === selectedLoadedAmmunition);
+
+            sections.push(
+                new Section(
+                    AmmunitionSystem.localize("select.header.current"),
+                    [AmmunitionSystem.buildChoice(selectedLoadedAmmunition)]
+                )
+            );
+        }
+
         // Go through each of the categories, find ammunition that satisfies them, and create sections
-        for (const category of categories) {
-            const choices = remainingAmmunition.filter(category.predicate);
+        for (const category of options?.categories ?? []) {
+            const choices = ammunition.filter(category.predicate);
             if (choices.length > 0) {
                 sections.push(
                     new Section(
@@ -180,15 +194,15 @@ export class AmmunitionSystem {
                 );
             }
 
-            remainingAmmunition = remainingAmmunition.filter(ammunition => !category.predicate(ammunition));
+            ammunition = ammunition.filter(ammunition => !category.predicate(ammunition));
         }
 
         // If there's any ammunition that isn't in any of the categories above, put it in the "loaded" category
-        if (remainingAmmunition.length > 0) {
+        if (ammunition.length > 0) {
             sections.push(
                 new Section(
                     AmmunitionSystem.localize(`select.header.loaded`),
-                    remainingAmmunition.map(AmmunitionSystem.buildChoice)
+                    ammunition.map(AmmunitionSystem.buildChoice)
                 )
             );
         }

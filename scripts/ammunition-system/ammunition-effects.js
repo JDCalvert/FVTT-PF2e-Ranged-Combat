@@ -1,4 +1,4 @@
-import { postToChatConfig } from "../pf2e-ranged-combat.js";
+import { ChatLevel, Configuration } from "../config/config.js";
 import { showDialog } from "../utils/dialog.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
@@ -10,13 +10,26 @@ const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZ
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect." + key);
 
 export class AmmunitionEffects {
-    static initialiseAmmunitionEffects() {
+    /**
+     * @param {ActorPF2e} actor
+     * @returns 
+     */
+    static isAmmunitionEffectsEnabled(actor) {
+        if (Configuration.isUsingSubItemAmmunitionSystem(actor)) {
+            return false;
+        }
+
+        return Configuration.getSetting("ammunitionEffectsEnable");
+    }
+
+    static initialise() {
         // Disable the PF2e system automatically applying ammunition rules to its weapon
         libWrapper.register(
             "pf2e-ranged-combat",
             "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
+            /** @param {function(): void} wrapper  */
             function (wrapper) {
-                if (!isAmmunitionEffectsEnabled()) {
+                if (!AmmunitionEffects.isAmmunitionEffectsEnabled(this.actor)) {
                     wrapper();
                 } else {
                     Object.getPrototypeOf(CONFIG.PF2E.Item.documentClasses.weapon).prototype.prepareSiblingData.apply(this);
@@ -29,61 +42,62 @@ export class AmmunitionEffects {
         HookManager.register("weapon-damage", handleWeaponDamage);
         HookManager.register("unload", removeAmmunitionEffect);
     }
-}
 
-/**
- * Apply the effects of the given ammunition to the weapon.
- * 
- * @param {Weapon} weapon               The weapon firing the ammunition
- * @param {Ammunition} ammunition   The ammunition being fired
- * @param {Updates} updates 
- */
-export function applyAmmunitionEffect(weapon, ammunition, updates) {
-    if (!isAmmunitionEffectsEnabled()) {
-        return;
-    }
-
-    const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
-    if (ammunitionEffect) {
-        updates.delete(ammunitionEffect);
-    }
-
-    updates.deferredUpdate(
-        async () => {
-            if (ammunition.rules.length) {
-                const rules = buildAmmunitionRules(ammunition);
-
-                const ammunitionEffectSource = await Util.getSource(AMMUNITION_EFFECT_ID);
-                Util.setEffectTarget(ammunitionEffectSource, weapon, false);
-                foundry.utils.mergeObject(
-                    ammunitionEffectSource,
-                    {
-                        "name": `${ammunition.name} (${weapon.name})`,
-                        "img": ammunition.img,
-                        "system": {
-                            "rules": rules,
-                            "description": ammunition.descriptionText
-                        },
-                        "flags.pf2e-ranged-combat.ammunition": {
-                            "name": ammunition.name,
-                            "img": ammunition.img,
-                            "id": ammunition.id,
-                            "sourceId": ammunition.sourceId
-                        }
-                    }
-                );
-
-                updates.create(ammunitionEffectSource);
-            }
+    /**
+     * Apply the effects of the given ammunition to the weapon.
+     * 
+     * @param {Weapon} weapon
+     * @param {Ammunition} ammunition
+     * @param {Updates} updates
+     */
+    static applyAmmunitionEffect(weapon, ammunition, updates) {
+        if (!AmmunitionEffects.isAmmunitionEffectsEnabled(weapon.actor)) {
+            return;
         }
-    );
+
+        const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
+        if (ammunitionEffect) {
+            updates.delete(ammunitionEffect);
+        }
+
+        updates.deferredUpdate(
+            async () => {
+                if (ammunition.rules.length) {
+                    const rules = buildAmmunitionRules(ammunition);
+
+                    const ammunitionEffectSource = await Util.getSource(AMMUNITION_EFFECT_ID);
+                    Util.setEffectTarget(ammunitionEffectSource, weapon, false);
+                    foundry.utils.mergeObject(
+                        ammunitionEffectSource,
+                        {
+                            "name": `${ammunition.name} (${weapon.name})`,
+                            "img": ammunition.img,
+                            "system": {
+                                "rules": rules,
+                                "description": ammunition.descriptionText
+                            },
+                            "flags.pf2e-ranged-combat.ammunition": {
+                                "name": ammunition.name,
+                                "img": ammunition.img,
+                                "id": ammunition.id,
+                                "sourceId": ammunition.sourceId
+                            }
+                        }
+                    );
+
+                    updates.create(ammunitionEffectSource);
+                }
+            }
+        );
+    }
 }
+
 
 /**
  * @param {{weapon: Weapon, ammunition: Ammunition, updates: Updates}} _
  */
 function handleAmmunitionFired({ weapon, ammunition, updates }) {
-    if (!isAmmunitionEffectsEnabled()) {
+    if (!AmmunitionEffects.isAmmunitionEffectsEnabled(weapon.actor)) {
         return;
     }
 
@@ -96,7 +110,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
         }
     }
 
-    applyAmmunitionEffect(weapon, ammunition, updates);
+    AmmunitionEffects.applyAmmunitionEffect(weapon, ammunition, updates);
 }
 
 /**
@@ -133,16 +147,16 @@ function buildAmmunitionRules(ammunition) {
  * @param {{ weapon: Weapon, updates: Updates}} params
  */
 function handleWeaponDamage({ weapon, updates }) {
-    if (!isAmmunitionEffectsEnabled()) {
+    if (!AmmunitionEffects.isAmmunitionEffectsEnabled(weapon.actor)) {
         return;
     }
 
-    const weaponAmmunition = weapon.ammunition;
+    const weaponAmmunition = weapon.selectedLoadedAmmunition;
     const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
 
     if (ammunitionEffect) {
         const effectAmmunition = Util.getFlag(ammunitionEffect, "ammunition");
-        if (weaponAmmunition?.sourceId != effectAmmunition?.sourceId) {
+        if (weaponAmmunition && weaponAmmunition.sourceId !== effectAmmunition.sourceId) {
             showWarning("notMatched");
         }
 
@@ -158,7 +172,7 @@ function handleWeaponDamage({ weapon, updates }) {
  * @param {{ weapon: Weapon, updates: Updates}} params
  */
 function removeAmmunitionEffect({ weapon, updates }) {
-    if (!isAmmunitionEffectsEnabled()) {
+    if (!AmmunitionEffects.isAmmunitionEffectsEnabled(weapon.actor)) {
         return;
     }
 
@@ -168,10 +182,6 @@ function removeAmmunitionEffect({ weapon, updates }) {
     }
 }
 
-function isAmmunitionEffectsEnabled() {
-    return game.settings.get("pf2e-ranged-combat", "ammunitionEffectsEnable");
-}
-
 /**
  * Show a warning about the ammunition effect. The warning will be displayed based on the user's preference.
  * 
@@ -179,7 +189,7 @@ function isAmmunitionEffectsEnabled() {
  */
 function showWarning(warningMessage) {
     const warningLevel = game.settings.get("pf2e-ranged-combat", "ammunitionEffectsWarningLevel");
-    if (warningLevel == postToChatConfig.full) {
+    if (warningLevel == ChatLevel.full) {
         showDialog(
             game.i18n.localize("pf2e-ranged-combat.module-name"),
             `<p>${localize(`warning.${warningMessage}.verbose`)}</p>`,
@@ -191,16 +201,16 @@ function showWarning(warningMessage) {
                 {
                     action: "showSimple",
                     label: localize("warning.button.showSimple"),
-                    callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.simple)
+                    callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", ChatLevel.simple)
                 },
                 {
                     action: "doNotShow",
                     label: localize("warning.button.doNotShow"),
-                    callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", postToChatConfig.none)
+                    callback: () => game.settings.set("pf2e-ranged-combat", "ammunitionEffectsWarningLevel", ChatLevel.none)
                 }
             ]
         );
-    } else if (warningLevel == postToChatConfig.simple) {
+    } else if (warningLevel == ChatLevel.simple) {
         ui.notifications.warn(localize(`warning.${warningMessage}.simple`));
     }
 }

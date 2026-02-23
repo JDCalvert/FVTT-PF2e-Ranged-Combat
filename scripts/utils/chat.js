@@ -1,4 +1,5 @@
-import { postToChatConfig } from "../pf2e-ranged-combat.js";
+import { Configuration } from "../config/config.js";
+import { ChatLevel } from "../config/config.js";
 import { Util } from "./utils.js";
 
 /**
@@ -38,7 +39,7 @@ export class Chat {
      * @param {ItemPF2e} action
      */
     static async postAction(action) {
-        if (game.settings.get("pf2e-ranged-combat", "postActionToChat") == postToChatConfig.full) {
+        if (game.settings.get("pf2e-ranged-combat", "postActionToChat") == ChatLevel.full) {
             CONFIG.pf2eRangedCombat.chatHook = false;
             await action.toMessage();
             CONFIG.pf2eRangedCombat.chatHook = true;
@@ -139,7 +140,7 @@ export class Chat {
      * @returns {Promise<string>}
      */
     static async render(path, data) {
-        if (Util.isUsingApplicationV2()) {
+        if (Configuration.isUsingApplicationV2()) {
             return foundry.applications.handlebars.renderTemplate(path, data);
         } else {
             return renderTemplate(path, data);

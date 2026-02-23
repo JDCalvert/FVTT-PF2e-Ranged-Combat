@@ -1,4 +1,4 @@
-import { isUsingApplicationV2 } from "./utils.js";
+import { Configuration } from "../config/config.js";
 
 /**
  * @param {string} title 
@@ -6,7 +6,7 @@ import { isUsingApplicationV2 } from "./utils.js";
  * @param {object[]} buttons 
  */
 export function showDialog(title, content, buttons) {
-    if (isUsingApplicationV2()) {
+    if (Configuration.isUsingApplicationV2()) {
         new foundry.applications.api.DialogV2(
             {
                 window: {

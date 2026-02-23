@@ -97,11 +97,15 @@ export class FireWeaponCheck {
             weapon.selectedLoadedAmmunition = await AmmunitionSystem.chooseLoadedAmmunition(
                 weapon,
                 "fire",
-                [],
                 {
-                    predicate: ammunition => ammunition.calculateTotalRemainingUses() >= weapon.expend,
-                    warningMessage: FireWeaponCheck.localize("notEnoughAmmunition", { weapon: weapon.name })
+                    filter: {
+                        predicate: ammunition => ammunition.calculateTotalRemainingUses() >= weapon.expend,
+                        warningMessage: FireWeaponCheck.localize("notEnoughAmmunition", { weapon: weapon.name })
+                    },
+                    autoChooseSelected: true,
+                    autoChooseOnlyOption: true
                 }
+
             );
 
             // If we don't have a chamber selected, either we cancelled or were already shown a warning

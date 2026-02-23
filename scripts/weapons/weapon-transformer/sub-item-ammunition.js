@@ -1,4 +1,5 @@
 import { CHAMBER_LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
+import { Configuration } from "../../config/config.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
 import { InventoryAmmunitionTransformer } from "../ammunition-transformer/inventory.js";
@@ -71,6 +72,8 @@ class SubItemWeapon extends Weapon {
      * @param {Updates} updates 
      */
     async setNextChamber(ammunition, updates) {
+        this.tidySubItems();
+
         // If we already have a chamber loaded, remove that effect
         const chamberLoadedEffect = Util.getEffect(this, CHAMBER_LOADED_EFFECT_ID);
         if (chamberLoadedEffect) {
@@ -94,8 +97,22 @@ class SubItemWeapon extends Weapon {
 
         updates.update(this, { "system.subitems": subitems });
     }
+
+    tidySubItems() {
+        // Remove any zero-quantity subitems
+        this.pf2eWeapon.system.subitems = this.pf2eWeapon.system.subitems
+            .filter(subitem => subitem.system.quantity > 0)
+            .sort((a, b) => a.sort - b.sort);
+
+        for (let i = 0; i < this.pf2eWeapon.system.subitems.length; i++) {
+            this.pf2eWeapon.system.subitems[i].sort = i;
+        }
+    }
 }
 
+/**
+ * @extends {LoadedAmmunition<SubItemWeapon>}
+ */
 export class SubItemAmmunition extends LoadedAmmunition {
     /** @type {WeaponPF2e} */
     pf2eWeapon;
@@ -105,7 +122,12 @@ export class SubItemAmmunition extends LoadedAmmunition {
      * @param {Updates} updates
      */
     async create(updates) {
+        this.weapon.tidySubItems();
+
         const subitems = this.pf2eWeapon.system.subitems;
+
+        // Tidy up any sub-items that already have zero quantity
+        subitems.splice(0, subitems.length, ...subitems.filter(item => item.system.quantity > 0));
 
         const ammunitionSource = /** @type {SubItem} */ (await Util.getSource(this.sourceId));
         ammunitionSource.system.quantity = this.quantity;
@@ -126,7 +148,10 @@ export class SubItemAmmunition extends LoadedAmmunition {
      * @param {Updates} updates 
      */
     save(updates) {
+        this.weapon.tidySubItems();
+
         const subitems = this.pf2eWeapon.system.subitems;
+
         const matchingAmmunition = subitems.find(subitem => subitem._id === this.id);
         if (matchingAmmunition) {
             matchingAmmunition.system.quantity = this.quantity;
@@ -147,6 +172,41 @@ export class SubItemAmmunition extends LoadedAmmunition {
         subitems.findSplice(subitem => subitem._id === this.id);
         updates.update(this.weapon, { "system.subitems": subitems });
     }
+
+    /**
+     * Override of the normal consume rules - don't remove the ammunition entry immediately if the quantity is reduced to 0.
+     * We won't consider it loaded ammunition, but the system will use it for ammunition effects. We'll tidy it up next time
+     * we reload.
+     * 
+     * @override
+     * @param {number} uses The amount of uses to consume
+     * @param {Updates} updates
+     */
+    consume(uses, updates) {
+        if (this.autoEject) {
+            while (uses > 0) {
+                const numToUse = Math.min(this.remainingUses, uses);
+
+                this.remainingUses -= numToUse;
+                uses -= numToUse;
+
+                if (this.remainingUses === 0) {
+                    this.remainingUses = this.maxUses;
+                    this.quantity--;
+                }
+            }
+        } else {
+            // We should have already checked that there are sufficient remaining uses
+            this.remainingUses -= uses;
+        }
+
+        this.save(updates);
+
+        // Remove this from the loaded ammunition if it's empty
+        if (this.quantity === 0) {
+            this.weapon.loadedAmmunition.findSplice(loaded => loaded.id === this.id);
+        }
+    }
 }
 
 /**
@@ -159,7 +219,7 @@ export class SubItemTransformer extends WeaponTransformer {
      * @returns {boolean}
      */
     isForActor(actor) {
-        return foundry.utils.isNewerVersion(game.system.version, "7.7") && actor.type === "character";
+        return Configuration.isUsingSubItemAmmunitionSystem(actor);
     }
 
     /**
@@ -243,9 +303,8 @@ export class SubItemTransformer extends WeaponTransformer {
             .map(ammo => this.transformAmmunition(ammo))
             .map(ammo => weapon.transformLoadedAmmunition(ammo));
 
-        if (weapon.isCapacity && weapon.loadedAmmunition.length > 0) {
-            const chamberLoadedEffect = Util.getEffect(weapon, CHAMBER_LOADED_EFFECT_ID);
-            if (chamberLoadedEffect) {
+        if (weapon.loadedAmmunition.length > 0) {
+            if (!weapon.isCapacity || Util.getEffect(weapon, CHAMBER_LOADED_EFFECT_ID)) {
                 weapon.selectedLoadedAmmunition = weapon.loadedAmmunition[0];
             }
         }

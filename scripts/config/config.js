@@ -1,16 +1,30 @@
-import { postToChatConfig } from "../pf2e-ranged-combat.js";
-import { isUsingApplicationV2 } from "../utils/utils.js";
+/**
+ * @enum {number}
+ */
+export const ChatLevel = {
+    none: 0,
+    simple: 1,
+    full: 2
+};
 
 const localize = (path) => game.i18n.localize(`pf2e-ranged-combat.config.category.${path}`);
 
 export class Configuration {
+    /**
+     * @param {string} key 
+     * @returns {string}
+     */
+    static localize(key) {
+        return game.i18n.localize(`pf2e-ranged-combat.config.${key}`);
+    }
+
     static initialise() {
         game.settings.register(
             "pf2e-ranged-combat",
             "schemaVersion",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.schemaVersion.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.schemaVersion.hint"),
+                name: Configuration.localize("schemaVersion.name"),
+                hint: Configuration.localize("schemaVersion.hint"),
                 scope: "world",
                 config: false,
                 type: Number,
@@ -22,17 +36,17 @@ export class Configuration {
             "pf2e-ranged-combat",
             "postActionToChat",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.postActionToChat.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.postActionToChat.hint"),
+                name: Configuration.localize("postActionToChat.name"),
+                hint: Configuration.localize("postActionToChat.hint"),
                 scope: "world",
                 config: true,
                 type: Number,
                 choices: {
-                    0: game.i18n.localize("pf2e-ranged-combat.config.postToChat.none"),
-                    1: game.i18n.localize("pf2e-ranged-combat.config.postToChat.simple"),
-                    2: game.i18n.localize("pf2e-ranged-combat.config.postToChat.full")
+                    0: Configuration.localize("postToChat.none"),
+                    1: Configuration.localize("postToChat.simple"),
+                    2: Configuration.localize("postToChat.full")
                 },
-                default: postToChatConfig.simple
+                default: ChatLevel.simple
             }
         );
 
@@ -40,17 +54,17 @@ export class Configuration {
             "pf2e-ranged-combat",
             "postAmmunitionToChat",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.postAmmunitionToChat.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.postAmmunitionToChat.hint"),
+                name: Configuration.localize("postAmmunitionToChat.name"),
+                hint: Configuration.localize("postAmmunitionToChat.hint"),
                 scope: "world",
                 config: true,
                 type: Number,
                 choices: {
-                    0: game.i18n.localize("pf2e-ranged-combat.config.postToChat.none"),
-                    1: game.i18n.localize("pf2e-ranged-combat.config.postToChat.simple"),
-                    2: game.i18n.localize("pf2e-ranged-combat.config.postToChat.full")
+                    0: Configuration.localize("postToChat.none"),
+                    1: Configuration.localize("postToChat.simple"),
+                    2: Configuration.localize("postToChat.full")
                 },
-                default: postToChatConfig.simple
+                default: ChatLevel.simple
             }
         );
 
@@ -58,8 +72,8 @@ export class Configuration {
             "pf2e-ranged-combat",
             "requiredPermissionToShowMessages",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.requiredPermissionToShowMessages.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.requiredPermissionToShowMessages.hint"),
+                name: Configuration.localize("requiredPermissionToShowMessages.name"),
+                hint: Configuration.localize("requiredPermissionToShowMessages.hint"),
                 scope: "world",
                 config: true,
                 type: Number,
@@ -77,8 +91,8 @@ export class Configuration {
             "pf2e-ranged-combat",
             "preventFireNotLoaded",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.hint"),
+                name: Configuration.localize("preventFireNotLoaded.name"),
+                hint: Configuration.localize("preventFireNotLoaded.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -90,8 +104,8 @@ export class Configuration {
             "pf2e-ranged-combat",
             "advancedAmmunitionSystemPlayer",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.advancedAmmunitionSystemPlayer.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.advancedAmmunitionSystemPlayer.hint"),
+                name: Configuration.localize("advancedAmmunitionSystemPlayer.name"),
+                hint: Configuration.localize("advancedAmmunitionSystemPlayer.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -104,8 +118,8 @@ export class Configuration {
             "pf2e-ranged-combat",
             "preventFireNotLoadedNPC",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.preventFireNotLoaded.hint"),
+                name: Configuration.localize("preventFireNotLoaded.name"),
+                hint: Configuration.localize("preventFireNotLoaded.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -136,11 +150,11 @@ export class Configuration {
                 config: true,
                 type: Number,
                 choices: {
-                    0: game.i18n.localize("pf2e-ranged-combat.config.postToChat.none"),
-                    1: game.i18n.localize("pf2e-ranged-combat.config.postToChat.simple"),
-                    2: game.i18n.localize("pf2e-ranged-combat.config.postToChat.full")
+                    0: Configuration.localize("postToChat.none"),
+                    1: Configuration.localize("postToChat.simple"),
+                    2: Configuration.localize("postToChat.full")
                 },
-                default: postToChatConfig.full
+                default: ChatLevel.full
             }
         );
 
@@ -148,8 +162,8 @@ export class Configuration {
             "pf2e-ranged-combat",
             "advancedThrownWeaponSystemPlayer",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.advancedThrownWeaponSystemPlayer.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.advancedThrownWeaponSystemPlayer.hint"),
+                name: Configuration.localize("advancedThrownWeaponSystemPlayer.name"),
+                hint: Configuration.localize("advancedThrownWeaponSystemPlayer.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -192,8 +206,8 @@ export class Configuration {
             "pf2e-ranged-combat",
             "hideTokenIcons",
             {
-                name: game.i18n.localize("pf2e-ranged-combat.config.hideTokenIcons.name"),
-                hint: game.i18n.localize("pf2e-ranged-combat.config.hideTokenIcons.hint"),
+                name: Configuration.localize("hideTokenIcons.name"),
+                hint: Configuration.localize("hideTokenIcons.hint"),
                 scope: "client",
                 config: true,
                 type: Boolean,
@@ -218,7 +232,7 @@ export class Configuration {
             (_, html) => {
                 let headerTemplate;
                 let htmlFind;
-                if (isUsingApplicationV2()) {
+                if (Configuration.isUsingApplicationV2()) {
                     headerTemplate = (headerName, desc = "") => {
                         const doc = html.ownerDocument;
 
@@ -330,5 +344,31 @@ export class Configuration {
                     );
             }
         );
+    }
+
+    static isUsingApplicationV2() {
+        return foundry.utils.isNewerVersion(game.version, "13");
+    }
+
+    /**
+     * Version 7.7 of the system marks the first implementation of the sub-item ammunition system, only used for player characters.
+     * 
+     * @param {ActorPF2e} actor 
+     * @returns {boolean}
+     */
+    static isUsingSubItemAmmunitionSystem(actor) {
+        if (actor.type === "character") {
+            return foundry.utils.isNewerVersion(game.system.version, "7.7");
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * @param {string} setting
+     */
+    static getSetting(setting) {
+        return game.settings.get("pf2e-ranged-combat", setting);
     }
 }

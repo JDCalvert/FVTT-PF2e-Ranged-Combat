@@ -7,8 +7,8 @@ import { Reload } from "./ammunition-system/actions/reload.js";
 import { SwitchAmmunition } from "./ammunition-system/actions/switch-ammunition.js";
 import { Unload } from "./ammunition-system/actions/unload.js";
 import { AmmunitionHandlingSystem } from "./ammunition-system/ammunition-system.js";
-import { initialiseChatMessageHooks } from "./chat-message-hook.js";
 import { Configuration } from "./config/config.js";
+import { ChatCore } from "./core/chat-message-hook.js";
 import { Core } from "./core/core.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
@@ -21,12 +21,6 @@ import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
-export const postToChatConfig = {
-    none: 0,
-    simple: 1,
-    full: 2
-};
-
 Hooks.on(
     "init",
     () => {
@@ -38,11 +32,12 @@ Hooks.on(
         Configuration.initialise();
 
         Core.initialise();
+        ChatCore.initialise();
+        
         AmmunitionHandlingSystem.initialise();
         ClearJam.initialise();
 
         initialiseHuntPrey();
-        initialiseChatMessageHooks();
 
         // AdvancedThrownWeaponSystem.initialise();
 

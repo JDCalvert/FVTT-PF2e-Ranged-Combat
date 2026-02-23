@@ -75,16 +75,7 @@ export class NextChamber {
      * @returns {Promise<void>}
      */
     static async perform(weapon, updates) {
-        const ammunition = await AmmunitionSystem.chooseLoadedAmmunition(
-            weapon,
-            "switch",
-            [
-                {
-                    header: "current",
-                    predicate: ammunition => weapon.selectedLoadedAmmunition === ammunition
-                }
-            ]
-        );
+        const ammunition = await AmmunitionSystem.chooseLoadedAmmunition(weapon, "switch", { autoChooseOnlyOption: true });
         if (!ammunition) {
             return;
         }

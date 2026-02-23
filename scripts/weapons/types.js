@@ -270,6 +270,42 @@ export class Ammunition extends Item {
     delete(updates) { }
 
     /**
+     * @abstract
+     * @param {number} uses The amount of uses to consume
+     * @param {Updates} updates
+     */
+    consume(uses, updates) {
+    }
+}
+
+/**
+ * @template {Weapon} T
+ * 
+ * Represents ammunition loaded into a weapon
+ */
+export class LoadedAmmunition extends Ammunition {
+    /**
+     * The weapon this ammunition is loaded into
+     * @type {T}
+     */
+    weapon;
+
+    /**
+     * Delete this piece of ammunition in the system
+     * @param {Updates} updates
+     */
+    delete(updates) {
+        this.weapon.loadedAmmunition.findSplice(loaded => loaded === this);
+        this.onDelete(updates);
+    }
+
+    /**
+     * @abstract
+     * @param {Updates} updates
+     */
+    onDelete(updates) { }
+
+    /**
      * @param {number} uses The amount of uses to consume
      * @param {Updates} updates
      */
@@ -297,32 +333,6 @@ export class Ammunition extends Item {
             this.delete(updates);
         }
     }
-}
-
-/**
- * Represents ammunition loaded into a weapon
- */
-export class LoadedAmmunition extends Ammunition {
-    /**
-     * The weapon this ammunition is loaded into
-     * @type {Weapon}
-     */
-    weapon;
-
-    /**
-     * Delete this piece of ammunition in the system
-     * @param {Updates} updates
-     */
-    delete(updates) {
-        this.weapon.loadedAmmunition.findSplice(loaded => loaded === this);
-        this.onDelete(updates);
-    }
-
-    /**
-     * @abstract
-     * @param {Updates} updates
-     */
-    onDelete(updates) { }
 }
 
 /**
@@ -369,5 +379,29 @@ export class InventoryAmmunition extends Ammunition {
      */
     delete(updates) {
         updates.delete(this);
+    }
+
+    /**
+     * Remove the number of uses from the ammunition. Since this is being consumed directly from the inventory, this is simpler than loaded ammunition.
+     * Never delete the ammunition as a result of this - we may need it for ammunition effects.
+     * 
+     * @param {number} uses The amount of uses to consume
+     * @param {Updates} updates
+     */
+    consume(uses, updates) {
+        while (uses > 0) {
+            const numToUse = Math.min(this.remainingUses, uses);
+
+            this.remainingUses -= numToUse;
+            uses -= numToUse;
+
+            if (this.remainingUses === 0) {
+                this.remainingUses = this.maxUses;
+                this.quantity--;
+            }
+        }
+
+        // Never delete ammunition that is used directly from the inventory
+        this.save(updates);
     }
 }
