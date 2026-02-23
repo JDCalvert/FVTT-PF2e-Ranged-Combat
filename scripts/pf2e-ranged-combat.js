@@ -1,5 +1,5 @@
-import { initialiseAlchemicalCrossbow, loadAlchemicalCrossbow, unloadAlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
-import { alchemicalShot, initialiseAlchemicalShot } from "./actions/alchemical-shot.js";
+import { AlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
+import { AlchemicalShot } from "./actions/alchemical-shot.js";
 import { ClearJam } from "./actions/clear-jam.js";
 import { ConsolidateAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { NextChamber } from "./ammunition-system/actions/next-chamber.js";
@@ -14,12 +14,11 @@ import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
 import { FakeOut } from "./feats/fake-out.js";
 import { RiskyReload } from "./feats/risky-reload.js";
-import { initialiseSwordAndPistol } from "./feats/sword-and-pistol.js";
+import { SwordAndPistol } from "./feats/sword-and-pistol.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
-import { AdvancedThrownWeaponSystem } from "./thrown-weapons/thrown-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 export const postToChatConfig = {
@@ -49,9 +48,9 @@ Hooks.on(
 
         initialiseCrossbowCrackShot();
         initialiseCrossbowAce();
-        initialiseAlchemicalCrossbow();
-        initialiseAlchemicalShot();
-        initialiseSwordAndPistol();
+        AlchemicalCrossbow.initialise();
+        AlchemicalShot.initialise();
+        SwordAndPistol.initialise();
 
         FakeOut.initialise();
         RiskyReload.initialise();
@@ -66,9 +65,9 @@ Hooks.on(
             consolidateRepeatingWeaponAmmunition: ConsolidateAmmunition.action,
             huntPrey,
             linkCompanion,
-            loadAlchemicalCrossbow,
-            unloadAlchemicalCrossbow,
-            alchemicalShot,
+            loadAlchemicalCrossbow: AlchemicalCrossbow.load,
+            unloadAlchemicalCrossbow: AlchemicalCrossbow.unload,
+            alchemicalShot: AlchemicalShot.action,
             npcWeaponConfiguration
         };
     }

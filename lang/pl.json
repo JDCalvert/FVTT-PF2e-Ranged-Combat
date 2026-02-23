@@ -204,7 +204,8 @@
                         "noMagazineLoaded": "{weapon} nie ma załadowanego magazynka!",
                         "magazineEmpty": "Magazynek {weapon} jest pusty!",
                         "alreadyLoaded": "{weapon} jest już załadowana.",
-                        "alreadyFullyLoaded": "{weapon} jest już w pełni załadowana."
+                        "alreadyFullyLoaded": "{weapon} jest już w pełni załadowana.",
+                        "notEnoughAmmunition": "Amunicja wybrana dla {weapon} jest pusta."
                     },
                     "performed": {
                         "weapon": "{actor} przeładowuje swoją {weapon}.",
@@ -213,8 +214,7 @@
                     }
                 },
                 "switchAmmunition": {
-                    "warningNoWeaponUsesAmmunition": "Nie masz broni, która używa amunicji.",
-                    "warningNoCompatibleAmmunitionAvailable": "Nie masz amunicji kompatybilnej z twoją {weapon}."
+                    "warningNoWeaponUsesAmmunition": "Nie masz broni, która używa amunicji."
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon} nie jest załadowana!",

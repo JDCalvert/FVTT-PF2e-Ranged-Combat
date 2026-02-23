@@ -1,7 +1,8 @@
 class WeaponPF2e extends ItemPF2e {
     ammo: ItemPF2e | null;
     carryType: string;
-    hands: number;
+    handsHeld: number;
+    isRanged: boolean;
     traits: Set<string>;
     system: WeaponPF2eSystem;
 
@@ -19,10 +20,14 @@ class WeaponPF2eSystem extends ItemPF2eSystem {
     };
     baseItem: string;
     damage: {
+        damageType: string;
         dice: number;
     };
     expend: number;
     group: string;
+    level: {
+        value: number;
+    };
     reload: {
         value: string | null;
     };

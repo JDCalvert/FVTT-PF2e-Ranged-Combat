@@ -3,6 +3,7 @@ class ItemPF2e {
     sourceId: string;
     name: string;
     img: string;
+    slug: string;
 
     type: string;
     actor: ActorPF2e;

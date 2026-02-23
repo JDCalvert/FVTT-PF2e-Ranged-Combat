@@ -1,8 +1,8 @@
 import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getItemFromActor, showWarning, Util } from "../utils/utils.js";
-import { getWeapon } from "../utils/weapon-utils.js";
+import { ensureDuration, getItemFromActor, Util } from "../utils/utils.js";
+import { WeaponSystem } from "../weapons/system.js";
 import { Weapon } from "../weapons/types.js";
 
 const ALCHEMICAL_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Q1O4P1YIkCfeedHH";
@@ -11,10 +11,27 @@ const ALCHEMICAL_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.IY
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.actions.alchemicalShot." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.actions.alchemicalShot." + key, data);
 
-export function initialiseAlchemicalShot() {
-    HookManager.register("weapon-attack", handleWeaponFired);
-    HookManager.register("weapon-damage", handleWeaponDamage);
-    HookManager.register("post-action", handlePostAction);
+export class AlchemicalShot {
+    static initialise() {
+        HookManager.register("weapon-attack", handleWeaponFired);
+        HookManager.register("weapon-damage", handleWeaponDamage);
+        HookManager.register("post-action", handlePostAction);
+    }
+
+    static action() {
+        const actor = Util.getControlledActor();
+        if (!actor) {
+            return;
+        }
+
+        const alchemicalShotFeat = getItemFromActor(actor, ALCHEMICAL_SHOT_FEAT_ID);
+        if (!alchemicalShotFeat) {
+            Util.warn(format("warningNoFeat", { actor: actor.name }));
+            return;
+        }
+
+        performForActor(actor, alchemicalShotFeat);
+    }
 }
 
 /**
@@ -31,30 +48,17 @@ function handlePostAction({ actor, item, result }) {
 
     performForActor(actor, item);
 }
-
-export async function alchemicalShot() {
-    const actor = Util.getControlledActor();
-    if (!actor) {
-        return;
-    }
-
-    const alchemicalShotFeat = getItemFromActor(actor, ALCHEMICAL_SHOT_FEAT_ID);
-    if (!alchemicalShotFeat) {
-        showWarning(format("warningNoFeat", { actor: actor.name }));
-        return;
-    }
-
-    performForActor(actor, alchemicalShotFeat);
-}
-
 /**
  * @param {ActorPF2e} actor 
  * @param {ItemPF2e} action
  */
 async function performForActor(actor, action) {
-    const weapon = await getWeapon(
+    const weapon = await WeaponSystem.getWeapon(
         actor,
-        weapon => weapon.isEquipped && (weapon.group == "firearm" || weapon.group == "crossbow"),
+        {
+            required: weapon => weapon.isEquipped && (weapon.group == "firearm" || weapon.group == "crossbow")
+        },
+        "generic",
         format("warningNotWieldingProperWeapon", { actor: actor.name })
     );
     if (!weapon) {
@@ -70,11 +74,12 @@ async function performForActor(actor, action) {
  * @param {Weapon} weapon
  */
 async function performForActorAndWeapon(actor, action, weapon) {
-    const bomb = await getWeapon(
+    const bomb = await WeaponSystem.getWeapon(
         actor,
-        weapon =>
-            weapon.baseType === "alchemical-bomb"
-            && weapon.quantity > 0,
+        {
+            required: weapon => weapon.baseItem === "alchemical-bomb" && weapon.quantity > 0
+        },
+        "generic",
         format("warningNoAlchemicalBombs", { actor: actor.name })
     );
     if (!bomb) {

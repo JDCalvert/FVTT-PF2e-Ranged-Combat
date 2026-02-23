@@ -143,24 +143,27 @@
             "fireWeaponRepeating": "{actor} fires {ammunition} ({remaining}/{capacity} remaining).",
             "fireConjuredRound": "{actor} fires their conjured round.",
             "warning": {
-                "noCompatibleAmmunition": "{actor} has no equipped ammunition compatible with {weapon}."
+                "noCompatibleAmmunition": "{actor} has no ammunition for {weapon}."
             },
             "select": {
                 "title": "Ammunition Select",
                 "titleWithWeapon": "Ammunition Select ({weapon})",
                 "action": {
-                    "load": "Select which ammunition to load.",
-                    "switch": "Select which ammunition to switch to.",
-                    "unload": "Select which ammunition to unload.",
-                    "fire": "Select which ammunition to fire."
+                    "load": "Select ammunition to load.",
+                    "switch": "Select ammunition to switch to.",
+                    "unload": "Select ammunition to unload.",
+                    "fire": "Select ammunition to fire."
                 },
                 "header": {
                     "loaded": "Loaded",
                     "current": "Current",
-                    "equipped": "Equipped"
+                    "equipped": "Equipped",
+                    "depleted": "Depleted",
+                    "clear": "Clear"
                 },
                 "option": {
-                    "setAsAmmunition": "Set as ammunition"
+                    "setAsAmmunition": "Set as ammunition",
+                    "clear": "Clear Selected Ammunition"
                 },
                 "warning": {
                     "noneValid": "{weapon} has no valid ammunition."
@@ -252,7 +255,8 @@
                         "noMagazineLoaded": "{weapon} has no magazine loaded!",
                         "magazineEmpty": "{weapon}'s magazine is empty!",
                         "alreadyLoaded": "{weapon} is already loaded.",
-                        "alreadyFullyLoaded": "{weapon} is already fully loaded."
+                        "alreadyFullyLoaded": "{weapon} is already fully loaded.",
+                        "notEnoughAmmunition": "The selected ammunition for {weapon} is empty."
                     },
                     "performed": {
                         "weapon": "{actor} reloads their {weapon}.",
@@ -266,7 +270,7 @@
                 "unload": {
                     "noLoadedWeapons": "{actor} has no weapons that can be unloaded.",
                     "warningNotLoaded": "{weapon} is not loaded!",
-                    "unloadWeapon": "{actor} unloads their {weapon}",
+                    "unloadWeapon": "{actor} unloads their {weapon}.",
                     "unloadWeaponAmmunition": "{actor} unloads {ammunition} from their {weapon}."
                 }
             }

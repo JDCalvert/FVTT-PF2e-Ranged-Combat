@@ -1,5 +1,5 @@
 import { Updates } from "../utils/updates.js";
-import { getAttackPopout, getFlag } from "../utils/utils.js";
+import { getAttackPopout, Util } from "../utils/utils.js";
 import { useAdvancedThrownWeaponSystem } from "./utils.js";
 
 export function initialiseCarryTypeHandler() {
@@ -62,7 +62,7 @@ export function initialiseCarryTypeHandler() {
                 );
 
                 if (groupStacks.length) {
-                    this.actor.itemTypes.melee.filter(melee => getFlag(melee, "weaponId") === this.id)
+                    this.actor.itemTypes.melee.filter(melee => Util.getFlag(melee, "weaponId") === this.id)
                         .forEach(melee =>
                             updates.update(
                                 melee,

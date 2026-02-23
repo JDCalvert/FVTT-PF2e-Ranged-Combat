@@ -1,11 +1,12 @@
 import { Reload } from "../ammunition-system/actions/reload.js";
 import { JAMMED_EFFECT_ID } from "../ammunition-system/constants.js";
+import { WeaponAttackProcessParams } from "../core/hook-params.js";
 import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getItem, isUsingSystemAmmunitionSystem, Util } from "../utils/utils.js";
-import { Weapon } from "../weapons/types.js";
+import { ensureDuration, Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
+import { Weapon } from "../weapons/types.js";
 
 const RISKY_RELOAD_FEAT_ID = "Compendium.pf2e.feats-srd.Item.BmAk6o14CutgnIOG";
 const RISKY_RELOAD_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.OoPaU2jwi1RUYWUt";
@@ -95,16 +96,9 @@ async function handleAsync(actor, action) {
 }
 
 /**
- * @param {object} data
- * @param {Weapon} data.weapon
- * @param {Updates} data.updates
- * @param {{degreeOfSuccess: number}} data.roll
+ * @param {WeaponAttackProcessParams} data
  */
 async function handleWeaponFired({ weapon, updates, roll }) {
-    if (isUsingSystemAmmunitionSystem(weapon.actor)) {
-        return;
-    }
-
     const riskyReloadEffect = Util.getEffect(weapon, RISKY_RELOAD_EFFECT_ID);
     if (!riskyReloadEffect) {
         return;
@@ -121,7 +115,7 @@ async function handleWeaponFired({ weapon, updates, roll }) {
     if (roll.degreeOfSuccess < 2) {
         updates.deferredUpdate(
             async () => {
-                const jammedEffectSource = await getItem(JAMMED_EFFECT_ID);
+                const jammedEffectSource = await Util.getSource(JAMMED_EFFECT_ID);
                 Util.setEffectTarget(jammedEffectSource, weapon);
 
                 updates.create(jammedEffectSource);

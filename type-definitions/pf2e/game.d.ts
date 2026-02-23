@@ -33,8 +33,13 @@ interface GamePF2e {
     };
     user: UserPF2e;
     users: UserPF2e[];
+    version: string;
 
-    actors: ActorPF2e[];
+    actors: {
+        contents: ActorPF2e[];
+        get(id: string): ActorPF2e | null;
+        find(predicate: (actor: ActorPF2e) => boolean): ActorPF2e | null;
+    };
 
     combat: CombatPF2e;
 

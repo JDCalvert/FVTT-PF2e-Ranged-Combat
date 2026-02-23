@@ -185,13 +185,21 @@ export class SubItemTransformer extends WeaponTransformer {
         weapon.id = pf2eWeapon.id;
         weapon.name = pf2eWeapon.name;
         weapon.img = pf2eWeapon.img;
+        weapon.slug = pf2eWeapon.slug;
 
+        weapon.level = pf2eWeapon.system.level.value;
+
+        weapon.traits = pf2eWeapon.system.traits.value;
+
+        weapon.isRanged = pf2eWeapon.isRanged;
         weapon.group = pf2eWeapon.system.group;
         weapon.baseItem = pf2eWeapon.system.baseItem;
 
         weapon.isStowed = pf2eWeapon.isStowed;
         weapon.isEquipped = pf2eWeapon.isEquipped;
+        weapon.hands = pf2eWeapon.handsHeld;
 
+        weapon.damageType = pf2eWeapon.system.damage.damageType;
         weapon.damageDice = pf2eWeapon.system.damage.dice;
 
         weapon.capacity = pf2eWeapon.system.ammo?.capacity ?? 0;
@@ -207,7 +215,7 @@ export class SubItemTransformer extends WeaponTransformer {
 
         weapon.isRepeating = pf2eWeapon.traits.has("repeating");
 
-        const capacity = WeaponTransformer.findTraitValue(pf2eWeapon, "capacity");
+        const capacity = WeaponTransformer.findTraitValue(weapon, "capacity");
         if (capacity != null) {
             weapon.isCapacity = true;
         }

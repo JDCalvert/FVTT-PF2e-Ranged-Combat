@@ -22,12 +22,12 @@ async function checkThrownWeapon({ weapon }) {
     const groupStacks = findGroupStacks(weapon);
     const equippedWeapons = groupStacks.filter(stack => stack.isEquipped);
     if (!equippedWeapons.length) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.thrownWeapons.warningNotEquipped", { weapon: weapon.name }));
+        Util.warn(game.i18n.format("pf2e-ranged-combat.thrownWeapons.warningNotEquipped", { weapon: weapon.name }));
         return false;
     }
 
     if (!equippedWeapons.filter(stack => stack.quantity).length) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.thrownWeapons.warningNoAmmoLeft", { weapon: weapon.name }));
+        Util.warn(game.i18n.format("pf2e-ranged-combat.thrownWeapons.warningNoAmmoLeft", { weapon: weapon.name }));
         return false;
     }
 

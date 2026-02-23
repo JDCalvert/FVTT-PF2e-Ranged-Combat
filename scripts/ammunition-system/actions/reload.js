@@ -6,6 +6,7 @@ import { Util } from "../../utils/utils.js";
 import { AmmunitionSystem, WeaponSystem } from "../../weapons/system.js";
 import { Ammunition, Weapon } from "../../weapons/types.js";
 import { LOADED_EFFECT_ID } from "../constants.js";
+import { SetSelected, SwitchAmmunition } from "./switch-ammunition.js";
 import { Unload } from "./unload.js";
 
 /**
@@ -132,7 +133,7 @@ export class Reload {
                     return false;
                 }
             },
-            Reload.localize("selectWeapon"),
+            "reload",
             Reload.localize("magazine.warning.noRepeatingWeapons", { actor: actor.name })
         );
         if (!weapon) {
@@ -179,7 +180,7 @@ export class Reload {
                 return false;
             }
 
-            const ammunition = await AmmunitionSystem.chooseCompatibleAmmunition(weapon, "load");
+            const ammunition = await Reload.chooseAmmunition(weapon, updates);
             if (!ammunition) {
                 return false;
             }
@@ -191,7 +192,7 @@ export class Reload {
                     "unload",
                     [
                         {
-                            header: "Depleted",
+                            header: "depleted",
                             predicate: ammunition => ammunition.remainingUses < ammunition.maxUses
                         }
                     ]
@@ -226,7 +227,7 @@ export class Reload {
      * @return {Promise<boolean>}
      */
     static async reloadMagazine(weapon, updates, options = {}) {
-        const ammunition = await AmmunitionSystem.chooseCompatibleAmmunition(weapon, "unload");
+        const ammunition = await Reload.chooseAmmunition(weapon, updates);
         if (!ammunition) {
             return false;
         }
@@ -275,6 +276,45 @@ export class Reload {
         Hooks.callAll("pf2eRangedCombatReloadMagazine", weapon.actor, weapon);
 
         return true;
+    }
+
+    /** 
+     * @param {Weapon} weapon 
+     * @param {Updates} updates
+     * 
+     * @returns {Promise<Ammunition | null>}
+     */
+    static async chooseAmmunition(weapon, updates) {
+        const selectedAmmunition = weapon.selectedInventoryAmmunition;
+
+        const selectedAmmunitionValid = selectedAmmunition && selectedAmmunition.quantity > 0 && selectedAmmunition.remainingUses > 0;
+        if (selectedAmmunitionValid) {
+            return selectedAmmunition;
+        }
+
+        /** @type {string} */ let message;
+        /** @type {SetSelected} */ let setSelected;
+
+        if (!selectedAmmunition) {
+            message = AmmunitionSystem.localize("select.action.load");
+            setSelected = SetSelected.DefaultNo;
+        } else {
+            message = `${Reload.localize("warning.notEnoughAmmunition", { weapon: weapon.name })}<br><br>${AmmunitionSystem.localize("select.action.load")}`;
+            setSelected = SetSelected.DefaultYes;
+        }
+
+        return SwitchAmmunition.chooseAmmunition(
+            weapon,
+            updates,
+            message,
+            {
+                filter: {
+                    predicate: ammunition => ammunition.quantity > 0 && ammunition.remainingUses > 0,
+                },
+                allowAutoSelect: true,
+                setSelected: setSelected
+            }
+        );
     }
 
     /**

@@ -1,7 +1,7 @@
-import { Section } from "../../lib/lib-item-select-dialog-types/types.js";
+import { Choice, Option, Section } from "../../lib/lib-item-select-dialog-types/types.js";
 import { ItemSelect } from "../utils/item-select-dialog.js";
 import { Util } from "../utils/utils.js";
-import { InventoryAmmunition, LoadedAmmunition, Weapon } from "./types.js";
+import { Ammunition, InventoryAmmunition, LoadedAmmunition, Weapon } from "./types.js";
 import { WeaponTransformer } from "./weapon-transformer/base.js";
 import { AdvancedWeaponSystemTransformer } from "./weapon-transformer/player-advanced-weapon-system.js";
 import { SimpleWeaponSystemTransformer } from "./weapon-transformer/simple-ammunition-system.js";
@@ -89,7 +89,7 @@ export class WeaponSystem {
      * Get all the actor's weapons, transformed for use by the module
      * 
      * @param {ActorPF2e} actor 
-     * @param {(weapon: Weapon) => boolean} predicate
+     * @param {(weapon: Weapon) => boolean} [predicate]
      * 
      * @returns {Weapon[]}
      */
@@ -115,6 +115,13 @@ export class WeaponSystem {
     }
 }
 
+/**
+ * @typedef {object} ChooseAmmunitionOptions
+ * @property {{header: string, predicate: (weapon: LoadedAmmunition) => boolean}[]} [categories]
+ * @property {{predicate: (ammunition: InventoryAmmunition) => boolean, warningMessage?: string}} [filter]
+ * @property {Option[]} [auxiliaryOptions]
+ */
+
 export class AmmunitionSystem {
     /**
      * @param {string} key 
@@ -124,63 +131,6 @@ export class AmmunitionSystem {
      */
     static localize(key, params) {
         return Util.localize(`ammunitionSystem.${key}`, params);
-    }
-
-    /**
-     * Find any ammunition that is compatible with the weapon. If multiple are found, offer a choice.
-     * 
-     * @param {Weapon} weapon 
-     * @param {string} action The action being performed, used to display the correct message at the top of the dialog
-     * 
-     * @returns {Promise<InventoryAmmunition | null>} The selected ammunition, if any was found and selected.
-     */
-    static async chooseCompatibleAmmunition(weapon, action) {
-        const compatibleAmmunition = weapon.compatibleAmmunition
-            .filter(ammunition => ammunition.quantity > 0)
-            .filter(ammunition => ammunition.remainingUses > 0);
-
-        // If our weapon's selected ammunition is valid, choose that automatically
-        if (compatibleAmmunition.some(compatible => compatible === weapon.selectedInventoryAmmunition)) {
-            return weapon.selectedInventoryAmmunition;
-        }
-
-        if (!compatibleAmmunition.length) {
-            Util.warn(AmmunitionSystem.localize("warning.noCompatibleAmmunition", { actor: weapon.actor.name, weapon: weapon.name }));
-            return null;
-        }
-
-        if (compatibleAmmunition.length === 1) {
-            return compatibleAmmunition[0];
-        }
-
-        /** @type {Section<InventoryAmmunition>[]} */
-        const sections = [];
-
-        const heldAmmunition = compatibleAmmunition.filter(ammunition => ammunition.isHeld);
-        if (heldAmmunition.length > 0) {
-            sections.push(
-                new Section(
-                    WeaponSystem.localize("carried.held"),
-                    heldAmmunition.map(ItemSelect.buildChoice)
-                )
-            );
-        }
-
-        const wornAmmunition = compatibleAmmunition.filter(ammunition => !ammunition.isHeld);
-        if (wornAmmunition.length > 0) {
-            sections.push(
-                new Section(
-                    WeaponSystem.localize("carried.worn"),
-                    wornAmmunition.map(ItemSelect.buildChoice)
-                )
-            );
-        }
-
-        return ItemSelect.getItem(
-            AmmunitionSystem.localize("select.titleWithWeapon", { weapon: weapon.name }),
-            AmmunitionSystem.localize(`select.action.${action}`),
-            sections
-        );
     }
 
     /**
@@ -225,7 +175,7 @@ export class AmmunitionSystem {
                 sections.push(
                     new Section(
                         AmmunitionSystem.localize(`select.header.${category.header}`),
-                        choices.map(ItemSelect.buildChoice)
+                        choices.map(AmmunitionSystem.buildChoice)
                     )
                 );
             }
@@ -238,7 +188,7 @@ export class AmmunitionSystem {
             sections.push(
                 new Section(
                     AmmunitionSystem.localize(`select.header.loaded`),
-                    remainingAmmunition.map(ItemSelect.buildChoice)
+                    remainingAmmunition.map(AmmunitionSystem.buildChoice)
                 )
             );
         }
@@ -248,6 +198,21 @@ export class AmmunitionSystem {
             AmmunitionSystem.localize(`select.action.${action}`),
             sections
         );
+    }
+
+    /**
+     * @param {Ammunition} ammunition
+     * @returns {Choice}
+     */
+    static buildChoice(ammunition) {
+        const choice = ItemSelect.buildChoice(ammunition);
+
+        choice.info.push(`x${ammunition.quantity}`);
+        if (ammunition.maxUses > 1) {
+            choice.info.push(`${ammunition.remainingUses}/${ammunition.maxUses}`);
+        }
+
+        return choice;
     }
 }
 

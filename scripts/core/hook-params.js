@@ -20,13 +20,27 @@ export class WeaponAttackProcessParams {
     /** @type {Updates} */
     updates;
 
+    /** @type {AttackContext} */
+    context;
 
-    /**
-     * @param {Weapon} weapon 
-     * @param {Updates} updates 
-     */
-    constructor(weapon, updates) {
-        this.weapon = weapon;
-        this.updates = updates;
-    }
+    /** @type {Roll} */
+    roll;
+}
+
+class AttackContext {
+    /** @type {Target} */
+    target;
+}
+
+class Target {
+    /** @type {TokenPF2e} */
+    token;
+
+    /** @type {number} */
+    distance;
+}
+
+class Roll {
+    /** @type {number} */
+    degreeOfSuccess;
 }

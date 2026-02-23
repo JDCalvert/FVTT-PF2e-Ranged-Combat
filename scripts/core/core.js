@@ -111,7 +111,7 @@ export class Core {
                 // Call the weapon attack hook and handle updates, unless we're skipping post-processing
                 if (!context.options.has("skip-post-processing")) {
                     const updates = new Updates(actor);
-                    HookManager.call("weapon-attack", new WeaponAttackProcessParams(weapon, updates));
+                    HookManager.call("weapon-attack", /** @type {WeaponAttackProcessParams} */({ weapon, updates, context, roll }));
                     await updates.commit();
                 }
 

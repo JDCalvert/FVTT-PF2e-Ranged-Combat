@@ -44,7 +44,7 @@ export class Unload {
                 required: weapon => !weapon.isStowed && weapon.capacity > 0,
                 priority: weapon => weapon.isEquipped && weapon.remainingCapacity < weapon.capacity
             },
-            Unload.localize("selectWeapon"),
+            "unload",
             Unload.localize("noLoadedWeapons", { actor: actor.name })
         );
         if (!weapon) {

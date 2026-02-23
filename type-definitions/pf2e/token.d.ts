@@ -10,5 +10,7 @@ class TokenPF2e {
         uuid: string;
     };
 
-    showFloatyText(args: any): void
+    inCombat: boolean;
+
+    showFloatyText(args: any): void;
 }

@@ -18,13 +18,32 @@ export class Util {
      * @returns {ActorPF2e | null}
      */
     static getControlledActor() {
-        /** @type ActorPF2e[] */
+        // If we have one character sheet open, use that actor
+        /** @type {ActorPF2e[]} */
         const sheetActors = Object.values(ui.windows).map(window => window.actor).filter(actor => !!actor);
         if (sheetActors.length === 1) {
             return sheetActors[0];
         }
 
-        return getControlledActorAndToken().actor;
+        // If we have a single token controlled, use its actor
+        const controlledTokens = canvas.tokens.controlled;
+        if (controlledTokens.length) {
+            if (controlledTokens.length === 1) {
+                const actor = controlledTokens[0].actor;
+                if (actor) {
+                    return actor;
+                }
+            }
+        }
+
+        // If we have a character assigned, use that one
+        const actor = game.user.character;
+        if (actor) {
+            return actor;
+        }
+
+        Util.warn(localize("singleCharacterSelected"));
+        return null;
     }
 
     /**
@@ -57,7 +76,7 @@ export class Util {
         return weapon.actor.itemTypes.effect.find(
             effect =>
                 effect.sourceId === sourceId &&
-                (getFlag(effect, "targetId") === weapon.id || effect.flags.pf2e.rulesSelections.weapon === weapon.id) &&
+                (Util.getFlag(effect, "targetId") === weapon.id || effect.flags.pf2e.rulesSelections.weapon === weapon.id) &&
                 !effect.isExpired
         );
     }
@@ -196,58 +215,6 @@ export class Util {
 }
 
 /**
- * Find a single controlled actor, either from an open character sheet, selected token, or owned actor.
- */
-export function getControlledActor() {
-    return Util.getControlledActor();
-}
-
-/**
- * Find a single controlled actor and token.
- * 
- * - If there is exactly one token selected, return that token and its actor
- * - If there are no tokens selected, but the user has an owned actor with one token in the scene, return that actor and token
- * - Otherwise, show a warning and return an empty object
- * 
- * @returns {{actor: ActorPF2e, token: TokenPF2e}|{actor: null, token: null}}
- */
-export function getControlledActorAndToken() {
-    const controlledTokens = canvas.tokens.controlled;
-    if (controlledTokens.length) {
-        if (controlledTokens.length === 1) {
-            const token = controlledTokens[0];
-            const actor = token?.actor;
-            if (actor && token) {
-                return { actor, token };
-            }
-        }
-    } else {
-        const actor = game.user.character;
-        const tokens = actor?.getActiveTokens();
-        const token = tokens?.length === 1 ? tokens[0] : null;
-        if (actor && token) {
-            return { actor, token };
-        }
-    }
-
-    showWarning(localize("singleCharacterSelected"));
-    return { actor: null, token: null };
-}
-
-/**
- * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
- * with the same source ID if one cannot be found.
- * 
- * @param {ActorPF2e} actor
- * @param {string} itemId 
- * @param {string} sourceId
- */
-export function findItemOnActor(actor, itemId, sourceId) {
-    return actor.items.find(item => item.id === itemId && !item.isStowed)
-        || actor.items.find(item => item.sourceId === sourceId && !item.isStowed);
-}
-
-/**
  * Get a specific item from the actor, identified by its source ID
  * 
  * @param {ActorPF2e} actor
@@ -267,21 +234,9 @@ export function getItemFromActor(actor, sourceId) {
 export function getEffectFromActor(actor, sourceId, targetId) {
     return actor.itemTypes.effect.find(effect =>
         effect.sourceId === sourceId
-        && (getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
+        && (Util.getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
         && !effect.isExpired
     );
-}
-
-
-/**
- * Find the item with the given ID, and make a copy of it with a new ID
- */
-export async function getItem(id) {
-    const source = (await fromUuid(id)).toObject();
-    source.flags.core ??= {};
-    source.flags.core.sourceId = id;
-    source._id = foundry.utils.randomID();
-    return source;
 }
 
 export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
@@ -325,23 +280,6 @@ export function getAttackPopout(item) {
     return Object.values(item.actor.apps).find(window => window.constructor.name === "AttackPopout" && window.options.strikeItemId === item.id);
 }
 
-/**
- * For the given actor type, check if the advanced ammunition system is enabled
- * 
- * @param {ActorPF2e} actor
- * 
- * @returns {boolean}
- */
-export function useAdvancedAmmunitionSystem(actor) {
-    if (actor.type === "character") {
-        return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
-    } else if (actor.type === "npc") {
-        return getFlag(actor, "enableAdvancedAmmunitionSystem");
-    } else {
-        return false;
-    }
-}
-
 export function preventFiringWithoutLoading(actor) {
     if (actor.type === "character") {
         return game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded");
@@ -350,21 +288,6 @@ export function preventFiringWithoutLoading(actor) {
     } else {
         return false;
     }
-}
-
-/**
- * @param {string} warningMessage 
- */
-export function showWarning(warningMessage) {
-    Util.warn(warningMessage);
-}
-
-export function getFlags(item) {
-    return item.flags["pf2e-ranged-combat"];
-}
-
-export function getFlag(item, flagName) {
-    return item.flags["pf2e-ranged-combat"]?.[flagName];
 }
 
 export function isUsingApplicationV2() {

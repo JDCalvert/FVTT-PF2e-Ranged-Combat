@@ -4,6 +4,9 @@ class ActorPF2e {
     type: string;
     uuid: string;
 
+    items: {
+        find(predicate: (item: ItemPF2e) => boolean): ItemPF2e | null
+    }
     itemTypes: {
         ammo: AmmoPF2e[];
         action: ActionPF2e[];
@@ -23,12 +26,14 @@ class ActorPF2e {
 
     system: ActorPF2eSystem;
 
+    getReach(): number;
+
     getActiveTokens(): TokenPF2e[];
 
     testUserPermission(user: UserPF2e, permission: any): boolean;
 
     createEmbeddedDocuments(type: string, creates: ItemPF2eSource[]);
-    updateEmbeddedDocuments(type: string, updates: ItemPF2eSource[]);
+    updateEmbeddedDocuments(type: string, updates: any[]);
     deleteEmbeddedDocuments(type: string, deletes: string[]);
 }
 

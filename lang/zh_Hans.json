@@ -201,7 +201,8 @@
                         "noMagazineLoaded": "{weapon}尚未装填弹匣！",
                         "magazineEmpty": "{weapon}的弹匣为空！",
                         "alreadyLoaded": "{weapon}已装填。",
-                        "alreadyFullyLoaded": "{weapon}已装填满。"
+                        "alreadyFullyLoaded": "{weapon}已装填满。",
+                        "notEnoughAmmunition": "你为{weapon}选择的弹药数量为零。"
                     },
                     "performed": {
                         "weapon": "{actor}装填了{weapon}。",
@@ -211,7 +212,6 @@
                 },
                 "switchAmmunition": {
                     "warningNoWeaponUsesAmmunition": "你没有使用弹药的武器。",
-                    "noCompatibleAmmunitionSelectNew": "选择要使用的弹药。",
                     "dialogTitle": "选择弹药"
                 },
                 "unload": {

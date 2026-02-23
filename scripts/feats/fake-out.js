@@ -2,7 +2,7 @@ import { FireWeaponProcessor } from "../ammunition-system/fire-weapon-processor.
 import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getFlag, getItemFromActor, showWarning } from "../utils/utils.js";
+import { getItemFromActor, Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
 
 const FAKE_OUT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Stydu9VtrhQZFZxt";
@@ -54,7 +54,7 @@ async function perform(actor, fakeOutFeat) {
         }
     );
     if (!weapons.length) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
+        Util.warn(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
         return;
     }
 
@@ -63,11 +63,11 @@ async function perform(actor, fakeOutFeat) {
     // Find which of these weapons has the highest attack bonus
     const strikes = actor.system.actions.filter(strike => weaponIds.includes(strike.item?.id));
     if (!strikes.length) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
+        Util.warn(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
         return;
     }
 
-    const hasDoneDamageTarget = getFlag(fakeOutFeat, "hasDoneDamage")?.[target.actor.signature] ?? [];
+    const hasDoneDamageTarget = Util.getFlag(fakeOutFeat, "hasDoneDamage")?.[target.actor.signature] ?? [];
 
     strikes.sort((s1, s2) => {
         const compareModifier = s2.totalModifier - s1.totalModifier;
@@ -159,7 +159,7 @@ function getSingleTarget() {
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
 
     if (targetTokens.length != 1) {
-        showWarning(game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.noTarget"));
+        Util.warn(game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.noTarget"));
         return null;
     }
 
@@ -200,12 +200,16 @@ function handleStartTurn(combatant) {
 }
 
 function handleWeaponDamage({ weapon, target, updates }) {
+    if (!target) {
+        return;
+    }
+
     const fakeOutFeat = getItemFromActor(weapon.actor, FAKE_OUT_FEAT_ID);
     if (!fakeOutFeat) {
         return;
     }
 
-    const hasDoneDamageMap = getFlag(fakeOutFeat, "hasDoneDamage") ?? {};
+    const hasDoneDamageMap = Util.getFlag(fakeOutFeat, "hasDoneDamage") ?? {};
     let hasDoneDamageTarget = hasDoneDamageMap[target.signature];
     if (!hasDoneDamageTarget) {
         hasDoneDamageTarget = [];

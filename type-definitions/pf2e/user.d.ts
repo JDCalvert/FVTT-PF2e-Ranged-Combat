@@ -3,6 +3,7 @@ class UserPF2e {
 
     active: boolean;
     character: ActorPF2e;
+    isGM: boolean;
     role: number;
 
     targets: {

@@ -1,7 +1,7 @@
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getFlag, getItem, getItemFromActor } from "../utils/utils.js";
-import { FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID, SHARED_PREY_EFFECT_IDS, TOKEN_MARK_RULE } from "./constants.js";
+import { getItemFromActor, Util } from "../utils/utils.js";
+import { FLURRY_RULES, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID, SHARED_PREY_EFFECT_IDS, TOKEN_MARK_RULE } from "./constants.js";
 import { checkHuntPrey, performHuntPrey } from "./hunt-prey.js";
 import { createMasterfulAnimalCompanionFeat, deleteAnimalCompanionFeat } from "./link-companion.js";
 
@@ -40,7 +40,7 @@ export function initialiseHuntPrey() {
                 if (originActor) {
                     const originHuntedPreyEffect = getItemFromActor(originActor, HUNTED_PREY_EFFECT_ID);
                     if (originHuntedPreyEffect) {
-                        const targetIds = getFlag(originHuntedPreyEffect, "targetIds");
+                        const targetIds = Util.getFlag(originHuntedPreyEffect, "targetIds");
 
                         tokenMarkRules = canvas.scene.tokens
                             .filter(token => targetIds.includes(token.id))
@@ -86,14 +86,14 @@ export function initialiseHuntPrey() {
             if (this.sourceId === HUNTED_PREY_EFFECT_ID) {
                 const sourceActorName = this.actor.name;
                 const sourceActorID = this.actor.id;
-                const targetIds = getFlag(this, "targetIds") ?? [];
+                const targetIds = Util.getFlag(this, "targetIds") ?? [];
 
                 canvas.scene.tokens
                     .filter(token => targetIds.includes(token.id))
                     .map(token => token.actor)
                     .filter(actor => game.user === actor.primaryUpdater)
                     .forEach(async actor => {
-                        const preyEffectSource = await getItem(PREY_EFFECT_ID);
+                        const preyEffectSource = await Util.getSource(PREY_EFFECT_ID);
                         preyEffectSource.name = `${preyEffectSource.name} (${sourceActorName})`;
                         preyEffectSource.flags = {
                             ...preyEffectSource.flags,
@@ -126,7 +126,7 @@ export function initialiseHuntPrey() {
                         actor.itemTypes.effect
                             .find(effect => {
                                 // Delete any prey's efffect
-                                if (effect.sourceId === PREY_EFFECT_ID && getFlag(effect, "sourceEffectId") === this.id) {
+                                if (effect.sourceId === PREY_EFFECT_ID && Util.getFlag(effect, "sourceEffectId") === this.id) {
                                     return true;
                                 }
 
@@ -152,7 +152,7 @@ export function initialiseHuntPrey() {
         function (wrapper, ...args) {
             // If we're creating the Masterful Companion feat, also create the Masterful Animal Companion feat on our animal companion
             if (this.sourceId == MASTERFUL_COMPANION_RANGER_FEAT_ID) {
-                const animalCompanionId = getFlag(this.actor, "animalCompanionId");
+                const animalCompanionId = Util.getFlag(this.actor, "animalCompanionId");
                 const animalCompanion = game.actors.get(animalCompanionId);
                 if (animalCompanion) {
                     const updates = new Updates(animalCompanion);
@@ -171,7 +171,7 @@ export function initialiseHuntPrey() {
         function (wrapper, ...args) {
             // If we're deleting the Masterful Companion feat, also delete the Masterful Animal Companion feat from our animal companion
             if (this.sourceId == MASTERFUL_COMPANION_RANGER_FEAT_ID) {
-                const animalCompanionId = getFlag(this.actor, "animalCompanionId");
+                const animalCompanionId = Util.getFlag(this.actor, "animalCompanionId");
                 const animalCompanion = game.actors.get(animalCompanionId);
                 if (animalCompanion) {
                     const updates = new Updates(animalCompanion);
@@ -232,7 +232,7 @@ export function initialiseHuntPrey() {
             // An animal companion's precision shared from its master
             const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
             if (rangersAnimalCompanionFeat) {
-                const masterSignature = getFlag(rangersAnimalCompanionFeat, "master-signature");
+                const masterSignature = Util.getFlag(rangersAnimalCompanionFeat, "master-signature");
                 const targetIsHuntedPrey =
                     target?.getRollOptions()?.includes(`self:prey:${masterSignature}`) ||
                     actor.getRollOptions().includes("hunted-prey");
@@ -306,7 +306,7 @@ function resetPrecision(actor) {
     }
 
     // If we have an animal companion, reset them too
-    const animalCompanionId = getFlag(actor, "animalCompanionId");
+    const animalCompanionId = Util.getFlag(actor, "animalCompanionId");
     const animalCompanion = game.actors.get(animalCompanionId);
     if (animalCompanion) {
         resetPrecision(animalCompanion);
@@ -383,7 +383,7 @@ export function isTargetHuntedPrey(actor) {
     // If we're the animal companion of a ranger, check if the target is our master's hunted prey
     const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
     if (rangersAnimalCompanionFeat) {
-        const masterSignature = getFlag(rangersAnimalCompanionFeat, "master-signature");
+        const masterSignature = Util.getFlag(rangersAnimalCompanionFeat, "master-signature");
         if (targetRollOptions.includes(`self:prey:${masterSignature}`)) {
             return true;
         }

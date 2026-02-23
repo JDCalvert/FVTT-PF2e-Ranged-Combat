@@ -2,32 +2,33 @@ import { postToChatConfig } from "../pf2e-ranged-combat.js";
 import { showDialog } from "../utils/dialog.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getFlag, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { Ammunition, Weapon } from "../weapons/types.js";
 
 const AMMUNITION_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.FmD8SBZdehiClhx7";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.effect." + key);
 
-export function initialiseAmmunitionEffects() {
+export class AmmunitionEffects {
+    static initialiseAmmunitionEffects() {
+        // Disable the PF2e system automatically applying ammunition rules to its weapon
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
+            function (wrapper) {
+                if (!isAmmunitionEffectsEnabled()) {
+                    wrapper();
+                } else {
+                    Object.getPrototypeOf(CONFIG.PF2E.Item.documentClasses.weapon).prototype.prepareSiblingData.apply(this);
+                }
+            },
+            "MIXED"
+        );
 
-    // Disable the PF2e system automatically applying ammunition ammunition rules its weapon
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Item.documentClasses.weapon.prototype.prepareSiblingData",
-        function (wrapper) {
-            if (!isAmmunitionEffectsEnabled()) {
-                wrapper();
-            } else {
-                Object.getPrototypeOf(CONFIG.PF2E.Item.documentClasses.weapon).prototype.prepareSiblingData.apply(this);
-            }
-        },
-        "MIXED"
-    );
-
-    HookManager.register("ammunition-fire", handleAmmunitionFired);
-    HookManager.register("weapon-damage", handleWeaponDamage);
-    HookManager.register("unload", removeAmmunitionEffect);
+        HookManager.register("ammunition-fire", handleAmmunitionFired);
+        HookManager.register("weapon-damage", handleWeaponDamage);
+        HookManager.register("unload", removeAmmunitionEffect);
+    }
 }
 
 /**
@@ -89,7 +90,7 @@ function handleAmmunitionFired({ weapon, ammunition, updates }) {
     // If we already have an effect for the ammunition we're firing, do nothing
     const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
     if (ammunitionEffect) {
-        const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
+        const effectAmmunition = Util.getFlag(ammunitionEffect, "ammunition");
         if (effectAmmunition.sourceId === ammunition.sourceId) {
             return;
         }
@@ -140,7 +141,7 @@ function handleWeaponDamage({ weapon, updates }) {
     const ammunitionEffect = Util.getEffect(weapon, AMMUNITION_EFFECT_ID);
 
     if (ammunitionEffect) {
-        const effectAmmunition = getFlag(ammunitionEffect, "ammunition");
+        const effectAmmunition = Util.getFlag(ammunitionEffect, "ammunition");
         if (weaponAmmunition?.sourceId != effectAmmunition?.sourceId) {
             showWarning("notMatched");
         }

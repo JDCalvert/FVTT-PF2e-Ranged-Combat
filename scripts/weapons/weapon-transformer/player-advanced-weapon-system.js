@@ -1,6 +1,6 @@
 import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
 import { Updates } from "../../utils/updates.js";
-import { getFlags, Util } from "../../utils/utils.js";
+import { Util } from "../../utils/utils.js";
 import { InventoryAmmunitionTransformer } from "../ammunition-transformer/inventory.js";
 import { Ammunition, InventoryAmmunition, LoadedAmmunition, Weapon } from "../types.js";
 import { WeaponTransformer } from "./base.js";
@@ -175,7 +175,7 @@ class CapacityAmmunition extends LoadedAmmunition {
 
         if (this.loadedEffect) {
             /** @type {CapacityFlags} */
-            const flags = getFlags(this.loadedEffect);
+            const flags = Util.getFlags(this.loadedEffect);
 
             flags.loadedChambers += this.quantity;
             flags.ammunition.push(effectAmmunition);
@@ -213,7 +213,7 @@ class CapacityAmmunition extends LoadedAmmunition {
      */
     save(updates) {
         /** @type {CapacityFlags} */
-        const flags = getFlags(this.loadedEffect);
+        const flags = Util.getFlags(this.loadedEffect);
 
         const matchingAmmunition = flags.ammunition.find(loaded => loaded.id === this.id);
         if (!matchingAmmunition) {
@@ -231,7 +231,7 @@ class CapacityAmmunition extends LoadedAmmunition {
      */
     onDelete(updates) {
         /** @type {CapacityFlags} */
-        const flags = getFlags(this.loadedEffect);
+        const flags = Util.getFlags(this.loadedEffect);
 
         flags.ammunition.findSplice(loaded => loaded.id === this.id);
 
@@ -344,16 +344,19 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
         weapon.id = pf2eItem.id;
         weapon.name = pf2eItem.name;
+        weapon.slug = pf2eItem.slug;
+
+        weapon.traits = pf2eItem.system.traits.value;
 
         weapon.isCapacity = false;
-        weapon.isRepeating = pf2eItem.traits.has("repeating");
+        weapon.isRepeating = weapon.traits.some(trait => trait === "repeating");
 
         // Calculate the weapon's capacity by either the presence of a Capacity or Double Barrel trait
-        const capacity = WeaponTransformer.findTraitValue(pf2eItem, "capacity");
+        const capacity = WeaponTransformer.findTraitValue(weapon, "capacity");
         if (capacity != null) {
             weapon.isCapacity = true;
             weapon.capacity = capacity;
-        } else if (pf2eItem.traits.has("double-barrel")) {
+        } else if (weapon.traits.some(trait => trait === "double-barrel")) {
             weapon.capacity = 2;
         } else {
             weapon.capacity = 1;
@@ -376,12 +379,17 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
         if (pf2eWeapon) {
             weapon.img = pf2eWeapon.img;
 
+            weapon.level = pf2eWeapon.system.level.value;
+
+            weapon.isRanged = pf2eWeapon.isRanged;
             weapon.group = pf2eWeapon.system.group;
             weapon.baseItem = pf2eWeapon.system.baseItem;
 
             weapon.isStowed = pf2eWeapon.isStowed;
             weapon.isEquipped = pf2eWeapon.isEquipped;
+            weapon.hands = pf2eWeapon.handsHeld;
 
+            weapon.damageType = pf2eWeapon.system.damage.damageType;
             weapon.damageDice = pf2eWeapon.system.damage.dice;
 
             const reload = pf2eWeapon.system.reload.value;
@@ -408,13 +416,15 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
         } else {
             weapon.img = pf2eMelee.img;
 
+            weapon.isRanged = weapon.traits.some(trait => trait.includes("range-increment") || trait.includes("thrown"));
             weapon.group = null;
             weapon.baseItem = null;
 
             weapon.isStowed = false;
             weapon.isEquipped = true;
+            weapon.hands = 0;
 
-            const reload = WeaponTransformer.findTraitValue(pf2eMelee, "reload");
+            const reload = WeaponTransformer.findTraitValue(weapon, "reload");
             if (reload !== null) {
                 weapon.reloadActions = reload;
             }
@@ -458,7 +468,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             // Look for the Magazine Loaded effect
             const magazineLoadedEffect = Util.getEffect(weapon, MAGAZINE_LOADED_EFFECT_ID);
             if (magazineLoadedEffect) {
-                const flags = getFlags(magazineLoadedEffect);
+                const flags = Util.getFlags(magazineLoadedEffect);
 
                 const ammunition = new Magazine();
 
@@ -483,7 +493,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             // Look for the Loaded effect
             const loadedEffect = Util.getEffect(weapon, LOADED_EFFECT_ID);
             if (loadedEffect) {
-                const flags = getFlags(loadedEffect);
+                const flags = Util.getFlags(loadedEffect);
 
                 for (const effectAmmunition of flags.ammunition) {
                     const ammunition = new CapacityAmmunition();
@@ -509,7 +519,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             // Look for the Loaded effect
             const loadedEffect = Util.getEffect(weapon, LOADED_EFFECT_ID);
             if (loadedEffect) {
-                const flags = getFlags(loadedEffect);
+                const flags = Util.getFlags(loadedEffect);
 
                 const ammunition = new StandardAmmunition();
 

@@ -114,7 +114,9 @@ export class NextChamber {
                     ammunition: ammunition.name
                 }
             ),
-            "1"
+            {
+                actionSymbol: "1"
+            }
         );
 
         Hooks.callAll("pf2eRangedCombatNextChamber", weapon.actor, weapon);

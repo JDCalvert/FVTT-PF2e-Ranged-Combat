@@ -1,5 +1,5 @@
 import { LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
-import { getEffectFromActor } from "../../utils/utils.js";
+import { Util } from "../../utils/utils.js";
 import { Weapon } from "../types.js";
 
 /**
@@ -47,7 +47,7 @@ export class WeaponTransformer {
         weapon.isReadyToFire = weapon.loadedAmmunition.some(ammunition => ammunition.calculateTotalRemainingUses() >= weapon.expend);
 
         // A repeating weapon that has a reload value must be cocked to be ready to fire
-        if (weapon.isReadyToFire && weapon.isRepeating && weapon.reloadActions > 0 && !getEffectFromActor(weapon.actor, LOADED_EFFECT_ID, weapon.id)) {
+        if (weapon.isReadyToFire && weapon.isRepeating && weapon.reloadActions > 0 && !Util.getEffect(weapon, LOADED_EFFECT_ID)) {
             weapon.isReadyToFire = false;
         }
 
@@ -57,13 +57,13 @@ export class WeaponTransformer {
     /**
      * Search the given item for a trait with the given name which has a value
      * 
-     * @param {WeaponPF2e | MeleePF2e} pf2eItem
+     * @param {Weapon} weapon
      * @param {string} traitName
      * 
      * @returns {number | null} The value of the trait, if found, or null if the trait was not found
      */
-    static findTraitValue(pf2eItem, traitName) {
-        const match = pf2eItem.system.traits.value
+    static findTraitValue(weapon, traitName) {
+        const match = weapon.traits
             .map(trait => trait.match(`${traitName}-(\d+)`))
             .find(match => !!match);
 

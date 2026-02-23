@@ -1,11 +1,11 @@
 import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
 import { showDialog } from "../utils/dialog.js";
-import { getControlledActor, getFlag, isUsingApplicationV2 } from "../utils/utils.js";
+import { isUsingApplicationV2, Util } from "../utils/utils.js";
 
-const localize = (key) => game.i18n.format("pf2e-ranged-combat.npcWeaponSystem." + key);
+const localize = (key) => game.i18n.localize("pf2e-ranged-combat.npcWeaponSystem." + key);
 
 export function npcWeaponConfiguration() {
-    const actor = getControlledActor();
+    const actor = Util.getControlledActor();
     if (!actor) {
         return;
     }
@@ -86,8 +86,8 @@ function buildContent(actor) {
     `;
 
     for (const attack of attacks) {
-        const weaponId = getFlag(attack, "weaponId");
-        const ammunitionId = getFlag(attack, "ammunitionId");
+        const weaponId = Util.getFlag(attack, "weaponId");
+        const ammunitionId = Util.getFlag(attack, "ammunitionId");
 
         const isRanged = attack.traits.some(trait => trait.startsWith("range-increment") || trait.startsWith("thrown"));
         const usesAmmunition = attack.traits.some(trait => trait.startsWith("reload-"));
@@ -198,8 +198,8 @@ function saveChanges(actor, data) {
     const updates = [];
 
     for (const attack of actor.itemTypes.melee) {
-        const currentWeaponId = getFlag(attack, "weaponId");
-        const currentAmmunitionId = getFlag(attack, "ammunitionId");
+        const currentWeaponId = Util.getFlag(attack, "weaponId");
+        const currentAmmunitionId = Util.getFlag(attack, "ammunitionId");
 
         const weaponId = data.attacks[attack.id].weaponId;
         const ammunitionId = data.attacks[attack.id].ammunitionId;

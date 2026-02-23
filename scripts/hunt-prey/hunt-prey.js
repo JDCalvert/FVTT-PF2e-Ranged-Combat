@@ -1,8 +1,8 @@
 import { Chat } from "../utils/chat.js";
 import { HookManager } from "../utils/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getControlledActorAndToken, getItem, getItemFromActor, Util } from "../utils/utils.js";
-import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TOKEN_MARK_RULE, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
+import { getItemFromActor, Util } from "../utils/utils.js";
+import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TOKEN_MARK_RULE, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
 const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + key, data);
@@ -15,14 +15,14 @@ const format = (key, data) => game.i18n.format("pf2e-ranged-combat.huntPrey." + 
  */
 
 export async function huntPrey() {
-    const { actor, token } = getControlledActorAndToken();
+    const actor = Util.getControlledActor();
     if (!actor) {
         return;
     }
 
     const huntPreyAction = getHuntPreyAction(actor);
     if (!huntPreyAction) {
-        Util.warn(format("warningNoAction", { token: token.name }));
+        Util.warn(format("warningNoAction", { token: actor.name }));
         return;
     }
 
@@ -31,7 +31,7 @@ export async function huntPrey() {
         return;
     }
 
-    performHuntPrey(actor, token, huntPreyAction, checkResult);
+    performHuntPrey(actor, huntPreyAction, checkResult);
 }
 
 function getHuntPreyAction(actor) {
@@ -73,13 +73,11 @@ export function checkHuntPrey(actor) {
 }
 
 /**
- * 
  * @param {ActorPF2e} actor
- * @param {TokenPF2e} token
  * @param {ItemPF2e} huntPreyAction
  * @param {CheckResult} checkResult
  */
-export async function performHuntPrey(actor, token, huntPreyAction, checkResult) {
+export async function performHuntPrey(actor, huntPreyAction, checkResult) {
     const targets = checkResult.targets;
 
     const remainingTargets = checkResult.maxTargets.num - targets.length;
@@ -91,7 +89,7 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
 
     const showTokenNames = !game.settings.get("pf2e", "metagame_tokenSetsNameVisibility");
     const targetNames = targets.map(target => (showTokenNames || target.document.playersCanSeeName) ? target.name : localize("unknownToken"));
-    const targetData = { token: token?.name || actor.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
+    const targetData = { token: actor.name || actor.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
 
     let link = null;
     if (remainingTargets > 0 && getItemFromActor(actor, SHARED_PREY_FEAT_ID)) {
@@ -139,7 +137,7 @@ export async function performHuntPrey(actor, token, huntPreyAction, checkResult)
     }
 
     // Add the new effect
-    const huntedPreyEffectSource = await getItem(HUNTED_PREY_EFFECT_ID);
+    const huntedPreyEffectSource = await Util.getSource(HUNTED_PREY_EFFECT_ID);
     foundry.utils.mergeObject(
         huntedPreyEffectSource,
         {

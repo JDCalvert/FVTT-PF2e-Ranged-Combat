@@ -11,7 +11,7 @@ export class Item {
     /** @type string */
     name;
 
-    /** @type string */
+    /** @type {string} */
     img;
 
     /** @type number */
@@ -23,10 +23,28 @@ export class Weapon extends Item {
     actor;
 
     /** @type {string} */
+    slug;
+
+    /** @type {number} */
+    level;
+
+    /** @type {boolean} */
+    isRanged;
+
+    /** @type {string} */
     group;
 
     /** @type {string} */
     baseItem;
+
+    /** @type {string[]} */
+    traits;
+
+    /** @type {number} */
+    hands;
+
+    /** @type {string} */
+    damageType;
 
     /** @type {number} */
     damageDice;
@@ -106,6 +124,13 @@ export class Weapon extends Item {
      * @param {Updates} updates 
      */
     setSelectedAmmunition(ammunition, updates) { }
+
+    /**
+     * @param {string} traitName 
+     */
+    hasTrait(traitName) {
+        return this.traits.some(trait => trait === traitName);
+    }
 }
 
 export class Ammunition extends Item {

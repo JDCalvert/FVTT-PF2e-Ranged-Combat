@@ -1,5 +1,10 @@
 import { isUsingApplicationV2 } from "./utils.js";
 
+/**
+ * @param {string} title 
+ * @param {string} content 
+ * @param {object[]} buttons 
+ */
 export function showDialog(title, content, buttons) {
     if (isUsingApplicationV2()) {
         new foundry.applications.api.DialogV2(
