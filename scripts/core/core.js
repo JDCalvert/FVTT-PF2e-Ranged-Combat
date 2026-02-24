@@ -101,6 +101,10 @@ export class Core {
                     return;
                 }
 
+                if (weapon.selectedLoadedAmmunition) {
+                    context.options.add(`item:ammunition:id:${weapon.selectedLoadedAmmunition.id}`);
+                }
+
                 // Actually make the roll.
                 // If for some reason the roll doesn't get made, don't do any of the post-roll stuff
                 const roll = await wrapper(...args);

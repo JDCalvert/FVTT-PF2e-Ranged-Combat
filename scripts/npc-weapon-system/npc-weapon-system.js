@@ -5,34 +5,36 @@ import { Configuration } from "../config/config.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.npcWeaponSystem." + key);
 
-export function npcWeaponConfiguration() {
-    const actor = Util.getControlledActor();
-    if (!actor) {
-        return;
-    }
+export class NPCWeaponConfiguration {
+    static show() {
+        const actor = Util.getControlledActor();
+        if (!actor) {
+            return;
+        }
 
-    if (actor.type !== "npc") {
-        ui.notifications.warn(localize("warningNpcOnly"));
-        return;
-    }
+        if (actor.type !== "npc") {
+            ui.notifications.warn(localize("warningNpcOnly"));
+            return;
+        }
 
-    showDialog(
-        localize("dialog.title"),
-        buildContent(actor),
-        [
-            {
-                action: "ok",
-                label: localize("dialog.done"),
-                callback: Configuration.isUsingApplicationV2()
-                    ? (_0, _1, dialog) => saveChangesV2(dialog, actor)
-                    : ($html) => saveChangesV1($html, actor)
-            },
-            {
-                action: "cancel",
-                label: localize("dialog.cancel")
-            }
-        ]
-    );
+        showDialog(
+            localize("dialog.title"),
+            buildContent(actor),
+            [
+                {
+                    action: "ok",
+                    label: localize("dialog.done"),
+                    callback: Configuration.isUsingApplicationV2()
+                        ? (_0, _1, dialog) => saveChangesV2(dialog, actor)
+                        : ($html) => saveChangesV1($html, actor)
+                },
+                {
+                    action: "cancel",
+                    label: localize("dialog.cancel")
+                }
+            ]
+        );
+    }
 }
 
 /**
@@ -46,7 +48,8 @@ function buildContent(actor) {
 
     const attacks = actor.itemTypes.melee;
     const weapons = actor.itemTypes.weapon.filter(weapon => weapon === findGroupStacks(weapon)[0]);
-    const ammunitions = actor.itemTypes.consumable.filter(consumable => consumable.isAmmo && !consumable.isStowed);
+    const ammunitions = (actor.itemTypes.ammo ?? actor.itemTypes.consumable.filter(consumable => consumable.isAmmo))
+        .filter(ammunition => !ammunition.isStowed);
 
     let content = "";
 
@@ -90,7 +93,7 @@ function buildContent(actor) {
         const weaponId = Util.getFlag(attack, "weaponId");
         const ammunitionId = Util.getFlag(attack, "ammunitionId");
 
-        const isRanged = attack.system.traits.value.some(trait => trait.startsWith("range-increment") || trait.startsWith("thrown"));
+        const isRanged = attack.isRanged;
         const usesAmmunition = attack.system.traits.value.some(trait => trait.startsWith("reload-"));
 
         content += `

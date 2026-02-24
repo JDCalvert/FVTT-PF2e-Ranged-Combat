@@ -70,13 +70,14 @@ class SimpleWeapon extends Weapon {
     transformLoadedAmmunition(ammunition) {
         const newAmmunition = this.isRepeating
             ? new Magazine()
-            : this.capacity > 0
+            : this.capacity > 1
                 ? new CapacityAmmunition()
                 : new StandardAmmunition();
 
         ammunition.copyData(newAmmunition);
 
         newAmmunition.linkedAmmunition = ammunition;
+        newAmmunition.weapon = this;
 
         return newAmmunition;
     }
@@ -272,19 +273,7 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
         weapon.traits = pf2eItem.system.traits.value;
 
-        weapon.isCapacity = false;
         weapon.isRepeating = pf2eItem.traits.has("repeating");
-
-        // Calculate the weapon's capacity by either the presence of a Capacity or Double Barrel trait
-        const capacity = WeaponTransformer.findTraitValue(weapon, "capacity");
-        if (capacity != null) {
-            weapon.isCapacity = true;
-            weapon.capacity = capacity;
-        } else if (pf2eItem.traits.has("double-barrel")) {
-            weapon.capacity = 2;
-        } else {
-            weapon.capacity = 1;
-        }
 
         /** @type {WeaponPF2e} */
         let pf2eWeapon;
@@ -351,10 +340,11 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
             const reload = WeaponTransformer.findTraitValue(weapon, "reload");
             if (reload !== null) {
                 weapon.reloadActions = reload;
+                weapon.expend = 1;
+            } else {
+                weapon.reloadActions = null;
+                weapon.expend = null;
             }
-
-            // NPCs currently have no way of firing both barrels of a double-barreled weapon
-            weapon.expend = 1;
 
             weapon.compatibleAmmunition = (
                 weapon.isRepeating
@@ -370,6 +360,25 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
                 .filter(ammunition => ammunition.system.quantity > 0)
                 .map(ammunition => this.transformAmmunition(ammunition))
                 .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
+        }
+
+        weapon.isCapacity = false;
+
+        if (weapon.reloadActions === null) {
+            weapon.capacity = null;
+        } else {
+            weapon.isCapacity = false;
+
+            // Calculate the weapon's capacity by either the presence of a Capacity or Double Barrel trait
+            const capacity = WeaponTransformer.findTraitValue(weapon, "capacity");
+            if (capacity != null) {
+                weapon.isCapacity = true;
+                weapon.capacity = capacity;
+            } else if (weapon.hasTrait("double-barrel")) {
+                weapon.capacity = 2;
+            } else {
+                weapon.capacity = 1;
+            }
         }
 
         if (pf2eItem.type === "weapon") {

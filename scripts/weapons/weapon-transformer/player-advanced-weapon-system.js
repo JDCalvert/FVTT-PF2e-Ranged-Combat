@@ -22,11 +22,13 @@ class LocalWeapon extends Weapon {
     transformLoadedAmmunition(ammunition) {
         const newAmmunition = this.isRepeating
             ? new Magazine()
-            : this.capacity > 0
+            : this.capacity > 1
                 ? new CapacityAmmunition()
                 : new StandardAmmunition();
 
         ammunition.copyData(newAmmunition);
+
+        newAmmunition.weapon = this;
 
         return newAmmunition;
     }
@@ -95,10 +97,12 @@ class LocalWeapon extends Weapon {
                 name: `${chamberLoadedSource.name} (${ammunition.name})`,
                 flags: {
                     "pf2e-ranged-combat": {
-                        name: ammunition.name,
-                        img: ammunition.img,
-                        id: ammunition.id,
-                        sourceId: ammunition.sourceId
+                        ammunition: {
+                            name: ammunition.name,
+                            img: ammunition.img,
+                            id: ammunition.id,
+                            sourceId: ammunition.sourceId
+                        }
                     }
                 }
             }
@@ -248,7 +252,11 @@ class CapacityAmmunition extends AdvancedLoadedAmmunition {
 
         flags.ammunition.findSplice(loaded => loaded.id === this.id);
 
-        updates.update(this.loadedEffect, this.buildUpdates(flags));
+        if (flags.ammunition.length > 0) {
+            updates.update(this.loadedEffect, this.buildUpdates(flags));
+        } else {
+            updates.delete(this.loadedEffect);
+        }
     }
 
     /**
@@ -342,7 +350,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
      * @returns {Weapon[]}
      */
     getWeapons(actor) {
-        return actor.itemTypes.weapon.map(pf2eWeapon => this.transformWeapon(pf2eWeapon));
+        return (actor.type === "character" ? actor.itemTypes.weapon : actor.itemTypes.melee)
+            .map(pf2eWeapon => this.transformWeapon(pf2eWeapon));
     }
 
     /**
@@ -361,19 +370,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
         weapon.traits = pf2eItem.system.traits.value;
 
-        weapon.isCapacity = false;
-        weapon.isRepeating = weapon.traits.some(trait => trait === "repeating");
-
-        // Calculate the weapon's capacity by either the presence of a Capacity or Double Barrel trait
-        const capacity = WeaponTransformer.findTraitValue(weapon, "capacity");
-        if (capacity != null) {
-            weapon.isCapacity = true;
-            weapon.capacity = capacity;
-        } else if (weapon.traits.some(trait => trait === "double-barrel")) {
-            weapon.capacity = 2;
-        } else {
-            weapon.capacity = 1;
-        }
+        weapon.isRepeating = weapon.hasTrait("repeating");
 
         /** @type {WeaponPF2e} */
         let pf2eWeapon;
@@ -440,10 +437,11 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             const reload = WeaponTransformer.findTraitValue(weapon, "reload");
             if (reload !== null) {
                 weapon.reloadActions = reload;
+                weapon.expend = 1;
+            } else {
+                weapon.reloadActions = null;
+                weapon.expend = null;
             }
-
-            // NPCs currently have no way of firing both barrels of a double-barreled weapon
-            weapon.expend = 1;
 
             weapon.compatibleAmmunition = (
                 weapon.isRepeating
@@ -459,6 +457,25 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 .filter(ammunition => ammunition.system.quantity > 0)
                 .map(ammunition => this.transformAmmunition(weapon, ammunition))
                 .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
+        }
+
+        weapon.isCapacity = false;
+
+        if (weapon.reloadActions === null) {
+            weapon.capacity = null;
+        } else {
+            weapon.isCapacity = false;
+
+            // Calculate the weapon's capacity by either the presence of a Capacity or Double Barrel trait
+            const capacity = WeaponTransformer.findTraitValue(weapon, "capacity");
+            if (capacity != null) {
+                weapon.isCapacity = true;
+                weapon.capacity = capacity;
+            } else if (weapon.hasTrait("double-barrel")) {
+                weapon.capacity = 2;
+            } else {
+                weapon.capacity = 1;
+            }
         }
 
         if (pf2eItem.type === "weapon") {
@@ -496,6 +513,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 ammunition.maxUses = flags.capacity;
                 ammunition.remainingUses = flags.remaining;
                 ammunition.autoEject = false;
+                ammunition.allowDestroy = true;
 
                 ammunition.magazineLoadedEffect = magazineLoadedEffect;
 
@@ -522,10 +540,19 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                     ammunition.maxUses = 1;
                     ammunition.remainingUses = 1;
                     ammunition.autoEject = true;
+                    ammunition.allowDestroy = true;
 
                     ammunition.loadedEffect = loadedEffect;
 
                     weapon.loadedAmmunition.push(ammunition);
+                }
+
+                if (weapon.isCapacity) {
+                    const chamberLoadedEffect = Util.getEffect(weapon, CHAMBER_LOADED_EFFECT_ID);
+                    if (chamberLoadedEffect) {
+                        weapon.selectedLoadedAmmunition = weapon.loadedAmmunition
+                            .find(loaded => loaded.id === Util.getFlag(chamberLoadedEffect, "ammunition").id);
+                    }
                 }
             }
         } else {
@@ -547,6 +574,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 ammunition.maxUses = 1;
                 ammunition.remainingUses = 1;
                 ammunition.autoEject = true;
+                ammunition.allowDestroy = true;
 
                 ammunition.loadedEffect = loadedEffect;
 
@@ -554,16 +582,6 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 weapon.selectedLoadedAmmunition = ammunition;
             }
         }
-
-        weapon.compatibleAmmunition = [
-            ...weapon.actor.itemTypes.weapon,
-            ...weapon.actor.itemTypes.ammo
-        ]
-            .filter(ammunition => ammunition.system.quantity > 0)
-            .filter(ammunition => !ammunition.isStowed)
-            .filter(ammunition => ammunition.isAmmoFor(pf2eWeapon))
-            .map(ammunition => this.transformAmmunition(weapon, ammunition))
-            .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
 
         return weapon;
     }

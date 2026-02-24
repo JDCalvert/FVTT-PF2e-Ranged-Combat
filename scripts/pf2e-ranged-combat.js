@@ -8,7 +8,7 @@ import { SwitchAmmunition } from "./ammunition-system/actions/switch-ammunition.
 import { Unload } from "./ammunition-system/actions/unload.js";
 import { AmmunitionHandlingSystem } from "./ammunition-system/ammunition-system.js";
 import { Configuration } from "./config/config.js";
-import { ChatCore } from "./core/chat-message-hook.js";
+import { ChatCore } from "./core/chat.js";
 import { Core } from "./core/core.js";
 import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
 import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
@@ -18,7 +18,7 @@ import { SwordAndPistol } from "./feats/sword-and-pistol.js";
 import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
-import { npcWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
+import { NPCWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 Hooks.on(
@@ -33,7 +33,7 @@ Hooks.on(
 
         Core.initialise();
         ChatCore.initialise();
-        
+
         AmmunitionHandlingSystem.initialise();
         ClearJam.initialise();
 
@@ -63,7 +63,7 @@ Hooks.on(
             loadAlchemicalCrossbow: AlchemicalCrossbow.load,
             unloadAlchemicalCrossbow: AlchemicalCrossbow.unload,
             alchemicalShot: AlchemicalShot.action,
-            npcWeaponConfiguration
+            npcWeaponConfiguration: NPCWeaponConfiguration.show
         };
     }
 );
