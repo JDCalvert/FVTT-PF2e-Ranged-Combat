@@ -1,17 +1,19 @@
 import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getItemFromActor, isInCombat, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { Weapon } from "../weapons/types.js";
 
 const CROSSBOW_CRACK_SHOT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.s6h0xkdKf3gecLk6";
 const CROSSBOW_CRACK_SHOT_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.hG9i3aOBDZ9Bq9yi";
 
-export function initialiseCrossbowCrackShot() {
-    Hooks.on("pf2e.startTurn", handleStartTurn);
+export class CrossbowCrackShot {
+    static initialise() {
+        Hooks.on("pf2e.startTurn", handleStartTurn);
 
-    HookManager.register("reload", handleReload);
-    HookManager.register("weapon-attack", handleWeaponFired);
-    HookManager.register("weapon-damage", handleWeaponDamage);
+        HookManager.register("reload", handleReload);
+        HookManager.register("weapon-attack", handleWeaponFired);
+        HookManager.register("weapon-damage", handleWeaponDamage);
+    }
 }
 
 /**
@@ -23,7 +25,7 @@ async function handleStartTurn(combatant) {
         return;
     }
 
-    const crossbowCrackShotFeat = getItemFromActor(actor, CROSSBOW_CRACK_SHOT_FEAT_ID);
+    const crossbowCrackShotFeat = Util.getItem(actor, CROSSBOW_CRACK_SHOT_FEAT_ID);
     if (crossbowCrackShotFeat) {
         crossbowCrackShotFeat.update({ "flags.pf2e-ranged-combat.reloadedThisTurn": false });
     }
@@ -41,13 +43,13 @@ function handleReload({ weapon, updates }) {
         updates.delete(existing);
     }
 
-    const crossbowCrackShotFeat = getItemFromActor(weapon.actor, CROSSBOW_CRACK_SHOT_FEAT_ID);
+    const crossbowCrackShotFeat = Util.getItem(weapon.actor, CROSSBOW_CRACK_SHOT_FEAT_ID);
     if (!crossbowCrackShotFeat) {
         return;
     }
 
     // Create the new effect if this is our first reload of the round
-    if (!Util.getFlag(crossbowCrackShotFeat, "reloadedThisTurn") || !isInCombat(weapon.actor)) {
+    if (!Util.getFlag(crossbowCrackShotFeat, "reloadedThisTurn") || !Util.isInCombat(weapon.actor)) {
         updates.deferredUpdate(
             async () => {
                 const source = await Util.getSource(CROSSBOW_CRACK_SHOT_EFFECT_ID);

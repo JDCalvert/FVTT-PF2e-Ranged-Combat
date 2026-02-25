@@ -1,4 +1,5 @@
 import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
+import { Configuration } from "../../config/config.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
 import { InventoryAmmunitionTransformer } from "../ammunition-transformer/inventory.js";
@@ -119,7 +120,7 @@ class AdvancedLoadedAmmunition extends LoadedAmmunition {
 }
 
 class Magazine extends AdvancedLoadedAmmunition {
-    /** @type {ItemPF2e} */
+    /** @type {EffectPF2e} */
     magazineLoadedEffect;
 
     /**
@@ -174,7 +175,7 @@ class Magazine extends AdvancedLoadedAmmunition {
 }
 
 class CapacityAmmunition extends AdvancedLoadedAmmunition {
-    /** @type {ItemPF2e} */
+    /** @type {EffectPF2e} */
     loadedEffect;
 
     /**
@@ -277,7 +278,7 @@ class CapacityAmmunition extends AdvancedLoadedAmmunition {
 }
 
 class StandardAmmunition extends AdvancedLoadedAmmunition {
-    /** @type {ItemPF2e} */
+    /** @type {EffectPF2e} */
     loadedEffect;
 
     /**
@@ -333,13 +334,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
      * @returns {boolean}
      */
     isForActor(actor) {
-        if (actor.type === "character") {
-            return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
-        } else if (actor.type === "npc") {
-            return Util.getFlag(actor, "enableAdvancedAmmunitionSystem");
-        } else {
-            return false;
-        }
+        return Configuration.isUsingAdvancedAmmunitionSystem(actor);
     }
 
     /** 
@@ -375,9 +370,9 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
         weapon.isRanged = pf2eItem.isRanged;
         weapon.isRepeating = weapon.hasTrait("repeating");
 
-        /** @type {WeaponPF2e} */
+        /** @type {WeaponPF2e | null} */
         let pf2eWeapon;
-        /** @type {MeleePF2e} */
+        /** @type {MeleePF2e | null} */
         let pf2eMelee;
 
         if (pf2eItem.type === "weapon") {
@@ -393,6 +388,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
         if (pf2eWeapon) {
             weapon.img = pf2eWeapon.img;
+            weapon.sourceId = pf2eWeapon.sourceId;
+            weapon.quantity = pf2eWeapon.quantity;
 
             weapon.level = pf2eWeapon.system.level.value;
 
@@ -429,6 +426,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
         } else {
             weapon.img = pf2eMelee.img;
+            weapon.sourceId = null;
+            weapon.quantity = 1;
 
             weapon.group = null;
             weapon.baseItem = null;

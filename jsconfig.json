@@ -3,6 +3,7 @@
         "module": "nodenext",
         "target": "esnext",
         "checkJs": true,
+        "strict": false,
         "moduleResolution": "nodenext"
     },
     "include": [

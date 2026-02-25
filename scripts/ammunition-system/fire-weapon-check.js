@@ -1,12 +1,13 @@
-import { ClearJam } from "../actions/clear-jam.js";
-import { WeaponAttackCheckParams } from "../hook-manager/types/weapon-attack-check.js";
+import { ClearJam } from "./actions/clear-jam.js";
+import { Configuration } from "../config/config.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
-import { Util } from "../utils/utils.js";
-import { Weapon } from "../weapons/types.js";
-import { AmmunitionSystem } from "../weapons/system.js";
-import { LOADED_EFFECT_ID } from "./constants.js";
-import { AutoSelect, SetSelected, SwitchAmmunition } from "./actions/switch-ammunition.js";
+import { WeaponAttackCheckParams } from "../hook-manager/types/weapon-attack-check.js";
 import { Updates } from "../utils/updates.js";
+import { Util } from "../utils/utils.js";
+import { AmmunitionSystem } from "../weapons/system.js";
+import { Weapon } from "../weapons/types.js";
+import { AutoSelect, SetSelected, SwitchAmmunition } from "./actions/switch-ammunition.js";
+import { LOADED_EFFECT_ID } from "./constants.js";
 
 export class FireWeaponCheck {
     /**
@@ -64,7 +65,7 @@ export class FireWeaponCheck {
                 return false;
             }
 
-            if (weapon.reloadActions > 0 && !Util.getEffect(weapon, LOADED_EFFECT_ID)) {
+            if (weapon.reloadActions > 0 && !Util.getEffect(weapon, LOADED_EFFECT_ID) && Configuration.preventFiringWithoutLoading(weapon.actor)) {
                 FireWeaponCheck.warn(weapon, "weaponNotLoaded");
                 return false;
             }

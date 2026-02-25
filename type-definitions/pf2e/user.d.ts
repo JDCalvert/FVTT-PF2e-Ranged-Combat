@@ -8,5 +8,6 @@ class UserPF2e {
 
     targets: {
         ids: string[];
+        first(): TokenPF2e?;
     };
 }

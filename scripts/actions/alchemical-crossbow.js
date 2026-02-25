@@ -1,8 +1,9 @@
-import { Chat } from "../utils/chat.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
+import { Chat } from "../utils/chat.js";
 import { dialogPrompt } from "../utils/prompt-dialog.js";
 import { Updates } from "../utils/updates.js";
-import { setChoice, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
 import { Weapon } from "../weapons/types.js";
 
@@ -10,6 +11,16 @@ const LOADED_BOMB_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.cA9sBC
 const UNLOAD_BOMB_IMG = "modules/pf2e-ranged-combat/art/unload-alchemical-crossbow.webp";
 
 const DAMAGE_TYPES = ["acid", "cold", "electricity", "fire", "force", "sonic", "vitality", "void"];
+
+/**
+ * @typedef {object} BombLoadedFlags
+ * @property {string} bombItemId
+ * @property {string} bombSourceId
+ * @property {string} bombName
+ * @property {number} bombCharges
+ * @property {number} bombMaxCharges
+ * @property {string} effectName
+ */
 
 export class AlchemicalCrossbow {
     /**
@@ -46,6 +57,7 @@ export class AlchemicalCrossbow {
 
         const loadedBombEffect = Util.getEffect(weapon, LOADED_BOMB_EFFECT_ID);
         if (loadedBombEffect) {
+            /** @type {BombLoadedFlags} */
             const loadedBombFlags = loadedBombEffect.flags["pf2e-ranged-combat"];
             if (loadedBombFlags.bombCharges > 0) {
                 const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
@@ -88,19 +100,22 @@ export class AlchemicalCrossbow {
         const lesserIndex = bomb.name.indexOf(` (${AlchemicalCrossbow.localize("lesser")})`);
         const bombName = lesserIndex > -1 ? bomb.name.substring(0, lesserIndex) : bomb.name;
 
-        const loadedBombEffectSource = await Util.getSource(LOADED_BOMB_EFFECT_ID);
+        const loadedBombEffectSource = /** @type {EffectPF2eSource} */ (await Util.getSource(LOADED_BOMB_EFFECT_ID));
         Util.setEffectTarget(loadedBombEffectSource, weapon, false);
-        setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
+        Util.setChoice(loadedBombEffectSource, "damageType", elementType, bombName);
         foundry.utils.mergeObject(
             loadedBombEffectSource.flags["pf2e-ranged-combat"],
-            {
-                bombItemId: bomb.id,
-                bombSourceId: bomb.sourceId,
-                bombName: bomb.name,
-                bombCharges: 3,
-                bombMaxCharges: 3,
-                effectName: loadedBombEffectSource.name
-            }
+            /** @type {BombLoadedFlags} */
+            (
+                {
+                    bombItemId: bomb.id,
+                    bombSourceId: bomb.sourceId,
+                    bombName: bomb.name,
+                    bombCharges: 3,
+                    bombMaxCharges: 3,
+                    effectName: loadedBombEffectSource.name
+                }
+            )
         );
         loadedBombEffectSource.name += ` (3/3)`;
 
@@ -140,6 +155,7 @@ export class AlchemicalCrossbow {
 
         const updates = new Updates(actor);
 
+        /** @type {BombLoadedFlags} */
         const loadedBombFlags = loadedBombEffect.flags["pf2e-ranged-combat"];
         const hasMaxCharges = bombHasMaxCharges(loadedBombFlags);
 
@@ -191,7 +207,9 @@ export class AlchemicalCrossbow {
     }
 }
 
-
+/**
+ * @param {WeaponAttackProcessParams} data
+ */
 function handleWeaponFired({ weapon, updates }) {
     if (!isAlchemicalCrossbow(weapon)) {
         return;
@@ -202,6 +220,7 @@ function handleWeaponFired({ weapon, updates }) {
         return;
     }
 
+    /** @type {BombLoadedFlags} */
     const flags = loadedBombEffect.flags["pf2e-ranged-combat"];
     if (flags.bombCharges === 0) {
         // We've already fired three bombs, but we kept the effect around for the damage roll
@@ -252,8 +271,12 @@ function getAlchemicalCrossbow(actor, prioritise) {
     );
 }
 
+/**
+ * @param {Weapon} weapon 
+ * @returns {boolean}
+ */
 function isAlchemicalCrossbow(weapon) {
-    return weapon.baseType === "alchemical-crossbow";
+    return weapon.baseItem === "alchemical-crossbow";
 }
 
 /**
@@ -281,6 +304,7 @@ async function getElementalBomb(actor) {
  * @param {Updates} updates
  */
 async function unloadBomb(actor, bombLoadedEffect, updates) {
+    /** @type {BombLoadedFlags} */
     const bombLoadedFlags = bombLoadedEffect.flags["pf2e-ranged-combat"];
     if (bombHasMaxCharges(bombLoadedFlags)) {
         const bombItem = actor.items.find(item => item.id === bombLoadedFlags.bombItemId && !item.isStowed)
@@ -300,6 +324,10 @@ async function unloadBomb(actor, bombLoadedEffect, updates) {
     updates.delete(bombLoadedEffect);
 }
 
+/**
+ * @param {BombLoadedFlags} flags 
+ * @returns {boolean}
+ */
 function bombHasMaxCharges(flags) {
     return flags.bombCharges === flags.bombMaxCharges;
 }

@@ -9,10 +9,16 @@ class EffectPF2e extends ItemPF2e {
         };
         "pf2e-ranged-combat": any;
     };
+
+    origin: {
+        signature: string;
+    }
 }
 
 class EffectPF2eSystem extends ItemPF2eSystem {
-
+    duration: {
+        value: number;
+    }
 }
 
 class EffectPF2eSource extends ItemPF2eSource {

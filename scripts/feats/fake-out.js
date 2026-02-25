@@ -1,8 +1,8 @@
 import { FireWeaponProcessor } from "../ammunition-system/fire-weapon-processor.js";
-import { Chat } from "../utils/chat.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
+import { Chat } from "../utils/chat.js";
 import { Updates } from "../utils/updates.js";
-import { getItemFromActor, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
 
 const FAKE_OUT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Stydu9VtrhQZFZxt";
@@ -196,7 +196,7 @@ function handleStartTurn(combatant) {
         return;
     }
 
-    const fakeOutFeat = getItemFromActor(actor, FAKE_OUT_FEAT_ID);
+    const fakeOutFeat = Util.getItem(actor, FAKE_OUT_FEAT_ID);
     if (!fakeOutFeat) {
         return;
     }
@@ -209,7 +209,7 @@ function handleWeaponDamage({ weapon, target, updates }) {
         return;
     }
 
-    const fakeOutFeat = getItemFromActor(weapon.actor, FAKE_OUT_FEAT_ID);
+    const fakeOutFeat = Util.getItem(weapon.actor, FAKE_OUT_FEAT_ID);
     if (!fakeOutFeat) {
         return;
     }

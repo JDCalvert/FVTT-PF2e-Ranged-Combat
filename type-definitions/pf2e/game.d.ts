@@ -42,6 +42,9 @@ interface GamePF2e {
     };
 
     combat: CombatPF2e;
+    combats: {
+        active: CombatPF2e;
+    };
 
     time: {
         worldTime: number;

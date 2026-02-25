@@ -1,6 +1,5 @@
 import { AlchemicalCrossbow } from "./actions/alchemical-crossbow.js";
-import { AlchemicalShot } from "./actions/alchemical-shot.js";
-import { ClearJam } from "./actions/clear-jam.js";
+import { ClearJam } from "./ammunition-system/actions/clear-jam.js";
 import { ConsolidateAmmunition } from "./ammunition-system/actions/consolidate-ammunition.js";
 import { NextChamber } from "./ammunition-system/actions/next-chamber.js";
 import { Reload } from "./ammunition-system/actions/reload.js";
@@ -10,8 +9,9 @@ import { AmmunitionHandlingSystem } from "./ammunition-system/ammunition-system.
 import { Configuration } from "./config/config.js";
 import { ChatCore } from "./core/chat.js";
 import { Core } from "./core/core.js";
-import { initialiseCrossbowAce } from "./feats/crossbow-ace.js";
-import { initialiseCrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
+import { AlchemicalShot } from "./feats/alchemical-shot.js";
+import { CrossbowAce } from "./feats/crossbow-ace.js";
+import { CrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
 import { FakeOut } from "./feats/fake-out.js";
 import { RiskyReload } from "./feats/risky-reload.js";
 import { SwordAndPistol } from "./feats/sword-and-pistol.js";
@@ -30,26 +30,28 @@ Hooks.on(
             chatHook: true
         };
 
+        // Main drivers of the module
         Configuration.initialise();
-
         Core.initialise();
         ChatCore.initialise();
 
+        // Ammunition and Thrown Weapon systems
         AmmunitionHandlingSystem.initialise();
         ThrownWeaponSystem.initialise();
-        
-        ClearJam.initialise();
 
+        // Hunt Prey
         initialiseHuntPrey();
 
-        initialiseCrossbowCrackShot();
-        initialiseCrossbowAce();
-        AlchemicalCrossbow.initialise();
+        // Feats
         AlchemicalShot.initialise();
-        SwordAndPistol.initialise();
-
+        CrossbowAce.initialise();
+        CrossbowCrackShot.initialise();
         FakeOut.initialise();
         RiskyReload.initialise();
+        SwordAndPistol.initialise();
+
+        // Other actions
+        AlchemicalCrossbow.initialise();
 
         game.pf2eRangedCombat = {
             reload: Reload.action,

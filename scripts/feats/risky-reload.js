@@ -4,7 +4,7 @@ import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-p
 import { Chat } from "../utils/chat.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
 import { Weapon } from "../weapons/types.js";
 
@@ -87,9 +87,9 @@ async function handleAsync(actor, action) {
 
     await Chat.postAction(action);
 
-    const riskyReloadEffectSource = await Util.getSource(RISKY_RELOAD_EFFECT_ID);
+    const riskyReloadEffectSource = /** @type {EffectPF2eSource} */ (await Util.getSource(RISKY_RELOAD_EFFECT_ID));
     Util.setEffectTarget(riskyReloadEffectSource, weapon);
-    ensureDuration(actor, riskyReloadEffectSource);
+    Util.ensureDuration(actor, riskyReloadEffectSource);
 
     updates.create(riskyReloadEffectSource);
     updates.commit();

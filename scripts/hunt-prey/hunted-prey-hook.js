@@ -1,6 +1,6 @@
 import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
-import { getItemFromActor, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { FLURRY_RULES, HUNT_PREY_ACTION_ID, HUNT_PREY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, MASTERFUL_ANIMAL_COMPANION_FEAT_ID, MASTERFUL_COMPANION_RANGER_FEAT_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, PREY_EFFECT_ID, RANGERS_ANIMAL_COMPANION_FEAT_ID, SHARED_PREY_EFFECT_IDS, TOKEN_MARK_RULE } from "./constants.js";
 import { checkHuntPrey, performHuntPrey } from "./hunt-prey.js";
 import { createMasterfulAnimalCompanionFeat, deleteAnimalCompanionFeat } from "./link-companion.js";
@@ -25,7 +25,7 @@ export function initialiseHuntPrey() {
                 return;
             }
 
-            performHuntPrey(actor, null, item, checkResult);
+            performHuntPrey(actor, item, checkResult);
         }
     );
 
@@ -38,7 +38,7 @@ export function initialiseHuntPrey() {
 
                 const originActor = this.origin;
                 if (originActor) {
-                    const originHuntedPreyEffect = getItemFromActor(originActor, HUNTED_PREY_EFFECT_ID);
+                    const originHuntedPreyEffect = Util.getItem(originActor, HUNTED_PREY_EFFECT_ID);
                     if (originHuntedPreyEffect) {
                         const targetIds = Util.getFlag(originHuntedPreyEffect, "targetIds");
 
@@ -94,15 +94,21 @@ export function initialiseHuntPrey() {
                     .filter(actor => game.user === actor.primaryUpdater)
                     .forEach(async actor => {
                         const preyEffectSource = await Util.getSource(PREY_EFFECT_ID);
-                        preyEffectSource.name = `${preyEffectSource.name} (${sourceActorName})`;
-                        preyEffectSource.flags = {
-                            ...preyEffectSource.flags,
-                            "pf2e-ranged-combat": {
-                                "sourceEffectId": this.id,
-                                "hunter-signature": this.actor.signature
+                        foundry.utils.mergeObject(
+                            preyEffectSource,
+                            {
+                                name: `${preyEffectSource.name} (${sourceActorName})`,
+                                flags: {
+                                    "pf2e-ranged-combat": {
+                                        "sourceEffectId": this.id,
+                                        "hunter-signature": this.actor.signature
+                                    }
+                                },
+                                system: {
+                                    slug: `prey-${sourceActorID}`
+                                }
                             }
-                        };
-                        preyEffectSource.system.slug = `prey-${sourceActorID}`;
+                        );
 
                         actor.createEmbeddedDocuments("Item", [preyEffectSource]);
                     });
@@ -162,7 +168,8 @@ export function initialiseHuntPrey() {
             }
 
             return wrapper(...args);
-        }
+        },
+        "WRAPPER"
     );
 
     libWrapper.register(
@@ -181,7 +188,8 @@ export function initialiseHuntPrey() {
             }
 
             return wrapper(...args);
-        }
+        },
+        "WRAPPER"
     );
 
     // On encounter end, reset the precision roll options to the first attack
@@ -195,7 +203,8 @@ export function initialiseHuntPrey() {
             for (const actor of actors) {
                 resetPrecision(actor);
             }
-        }
+        },
+        "WRAPPER"
     );
 
     // At the start of the turn, reset the precision roll options to the first attack
@@ -218,7 +227,7 @@ export function initialiseHuntPrey() {
             }
 
             // A PC ranger's precision feature
-            const precisionFeature = getItemFromActor(actor, PRECISION_FEATURE_ID);
+            const precisionFeature = Util.getItem(actor, PRECISION_FEATURE_ID);
             if (precisionFeature) {
                 const targetIsHuntedPrey =
                     target?.getRollOptions()?.includes(`self:prey:${actor.signature}`) ||
@@ -230,7 +239,7 @@ export function initialiseHuntPrey() {
             }
 
             // An animal companion's precision shared from its master
-            const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
+            const rangersAnimalCompanionFeat = Util.getItem(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
             if (rangersAnimalCompanionFeat) {
                 const masterSignature = Util.getFlag(rangersAnimalCompanionFeat, "master-signature");
                 const targetIsHuntedPrey =
@@ -244,7 +253,7 @@ export function initialiseHuntPrey() {
 
             // The precision ability shared from another player
             for (const effectId of [HUNTERS_EDGE_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_EFFECT_ID]) {
-                const effect = getItemFromActor(actor, effectId);
+                const effect = /** @type {EffectPF2e} */ (Util.getItem(actor, effectId));
                 if (effect) {
                     const hunterSignature = effect.origin?.signature;
                     const targetIsHuntedPrey =
@@ -286,7 +295,7 @@ function resetPrecision(actor) {
         ];
 
         itemIds.forEach(id => {
-            const item = getItemFromActor(actor, id);
+            const item = Util.getItem(actor, id);
             if (item) {
                 const rules = item.toObject().system.rules;
                 const precisionRule = rules.find(rule => rule.key == "RollOption" && rule.option == "precision");
@@ -381,7 +390,7 @@ export function isTargetHuntedPrey(actor) {
     }
 
     // If we're the animal companion of a ranger, check if the target is our master's hunted prey
-    const rangersAnimalCompanionFeat = getItemFromActor(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
+    const rangersAnimalCompanionFeat = Util.getItem(actor, RANGERS_ANIMAL_COMPANION_FEAT_ID);
     if (rangersAnimalCompanionFeat) {
         const masterSignature = Util.getFlag(rangersAnimalCompanionFeat, "master-signature");
         if (targetRollOptions.includes(`self:prey:${masterSignature}`)) {
@@ -391,7 +400,7 @@ export function isTargetHuntedPrey(actor) {
 
     // If we have a shared prey effect, check if the target is the origin actor's hunted prey
     for (const effectId of SHARED_PREY_EFFECT_IDS) {
-        const effect = getItemFromActor(actor, effectId);
+        const effect = /** @type {EffectPF2e} */ (Util.getItem(actor, effectId));
         if (effect) {
             if (targetRollOptions.includes(`self:prey:${effect.origin?.signature}`)) {
                 return true;

@@ -1,4 +1,4 @@
-import { ClearJam } from "../../actions/clear-jam.js";
+import { ClearJam } from "./clear-jam.js";
 import { HookManager } from "../../hook-manager/hook-manager.js";
 import { ReloadHookData } from "../../hook-manager/types/reload.js";
 import { Chat } from "../../utils/chat.js";

@@ -236,6 +236,9 @@ export class SubItemTransformer extends WeaponTransformer {
         weapon.id = pf2eWeapon.id;
         weapon.name = pf2eWeapon.name;
         weapon.img = pf2eWeapon.img;
+        weapon.sourceId = pf2eWeapon.sourceId;
+        weapon.quantity = pf2eWeapon.quantity;
+
         weapon.slug = pf2eWeapon.slug;
 
         weapon.level = pf2eWeapon.system.level.value;

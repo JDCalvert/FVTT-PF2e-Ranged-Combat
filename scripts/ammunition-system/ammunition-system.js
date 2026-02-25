@@ -1,3 +1,4 @@
+import { ClearJam } from "./actions/clear-jam.js";
 import { AmmunitionEffects } from "./ammunition-effects.js";
 import { AuxiliaryActions } from "./auxiliary-actions.js";
 import { FireWeaponCheck } from "./fire-weapon-check.js";
@@ -9,5 +10,7 @@ export class AmmunitionHandlingSystem {
         FireWeaponCheck.initalise();
         FireWeaponProcessor.initialise();
         AmmunitionEffects.initialise();
+
+        ClearJam.initialise();
     }
 }

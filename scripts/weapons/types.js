@@ -2,19 +2,19 @@ import { Updates } from "../utils/updates.js";
 import { Util } from "../utils/utils.js";
 
 export class Item {
-    /** @type string */
+    /** @type {string} */
     id;
 
-    /** @type string */
+    /** @type {string} */
     sourceId;
 
-    /** @type string */
+    /** @type {string} */
     name;
 
     /** @type {string} */
     img;
 
-    /** @type number */
+    /** @type {number} */
     quantity;
 }
 

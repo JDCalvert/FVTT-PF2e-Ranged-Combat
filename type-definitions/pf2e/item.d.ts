@@ -56,6 +56,9 @@ class ItemPF2eSource {
         core: {
             sourceId: string;
         };
+        pf2e: {
+            rulesSelections: any
+        }
     };
     system: ItemPF2eSystem;
 }

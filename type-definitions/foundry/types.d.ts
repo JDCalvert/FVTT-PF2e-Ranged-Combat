@@ -11,6 +11,10 @@ interface Array<T> {
     findSplice(find: (element: T) => boolean, replace?: T): T | null;
 }
 
+interface String {
+    slugify(): string;
+}
+
 namespace CONST {
     namespace CHAT_MESSAGE_STYLES {
         const EMOTE: string;
@@ -65,7 +69,24 @@ namespace foundry {
         namespace handlebars {
             async function renderTemplate(path: string, params: object): Promise<string>;
         }
+
+        namespace api {
+            /**
+             * Only in Foundry v13 and later
+             */
+            class DialogV2 extends Dialog {
+            }
+        }
     }
+}
+
+/**
+ * Only use in Foundry v12 and earlier
+ */
+class Dialog {
+    constructor(params: any);
+
+    render(show: boolean): void;
 }
 
 async function fromUuid(sourceId: string): Promise<ItemPF2e>;

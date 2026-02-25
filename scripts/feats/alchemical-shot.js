@@ -1,7 +1,7 @@
-import { Chat } from "../utils/chat.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
+import { Chat } from "../utils/chat.js";
 import { Updates } from "../utils/updates.js";
-import { ensureDuration, getItemFromActor, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
 import { Weapon } from "../weapons/types.js";
 
@@ -24,7 +24,7 @@ export class AlchemicalShot {
             return;
         }
 
-        const alchemicalShotFeat = getItemFromActor(actor, ALCHEMICAL_SHOT_FEAT_ID);
+        const alchemicalShotFeat = Util.getItem(actor, ALCHEMICAL_SHOT_FEAT_ID);
         if (!alchemicalShotFeat) {
             Util.warn(format("warningNoFeat", { actor: actor.name }));
             return;
@@ -107,9 +107,9 @@ async function performForActorAndWeapon(actor, action, weapon) {
     }
 
     // Create the new effect, and set all the choices using the weapon and bomb
-    const alchemicalShotEffectSource = await Util.getSource(ALCHEMICAL_SHOT_EFFECT_ID);
+    const alchemicalShotEffectSource = /** @type {EffectPF2eSource} */ (await Util.getSource(ALCHEMICAL_SHOT_EFFECT_ID));
     Util.setEffectTarget(alchemicalShotEffectSource, weapon);
-    ensureDuration(actor, alchemicalShotEffectSource);
+    Util.ensureDuration(actor, alchemicalShotEffectSource);
     foundry.utils.mergeObject(
         alchemicalShotEffectSource,
         {

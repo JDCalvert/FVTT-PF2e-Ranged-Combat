@@ -1,5 +1,5 @@
 import { Updates } from "../utils/updates.js";
-import { getAttackPopout, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { findGroupStacks, isThrownWeaponUsingAdvancedThrownWeaponSystem } from "./utils.js";
 
 /**
@@ -98,7 +98,7 @@ export class CarryTypeProcessor {
                 }
 
                 // If there's an attack popout open for this item, close it
-                getAttackPopout(this)?.close({ force: true });
+                Util.getAttackPopout(this)?.close({ force: true });
 
                 wrapper(...args);
             },
@@ -167,7 +167,7 @@ async function changeCarryType(
 
     // If there's a strike window open for this item, but not for the target stack, then open one for the new stack
     if (targetStack) {
-        if (getAttackPopout(item) && !getAttackPopout(targetStack)) {
+        if (Util.getAttackPopout(item) && !Util.getAttackPopout(targetStack)) {
             game.pf2e.rollActionMacro(
                 {
                     actorUUID: "Actor." + targetStack.actor.id,

@@ -371,9 +371,45 @@ export class Configuration {
         }
     }
 
+    /**
+     * @param {ActorPF2e} actor 
+     * @returns 
+     */
+    static isUsingAdvancedAmmunitionSystem(actor) {
+        if (actor.type === "character") {
+            return game.settings.get("pf2e-ranged-combat", "advancedAmmunitionSystemPlayer");
+        } else if (actor.type === "npc") {
+            return actor.flags["pf2e-ranged-combat"]?.["enableAdvancedAmmunitionSystem"];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Used for the Simple Ammunition System only, determine whether we should consider a reloadable weapon loaded even
+     * without the usual indicators.
+     * 
+     * @param {ActorPF2e} actor
+     * @returns {boolean}
+     */
+    static preventFiringWithoutLoading(actor) {
+        // This setting is only for the Simple Ammunition System
+        if (Configuration.isUsingSubItemAmmunitionSystem(actor) || Configuration.isUsingAdvancedAmmunitionSystem(actor)) {
+            return true;
+        }
+
+        if (actor.type === "character") {
+            return Configuration.getSetting("preventFireNotLoaded");
+        } else if (actor.type === "npc") {
+            return Configuration.getSetting("preventFireNotLoadedNPC");
+        } else {
+            return false;
+        }
+    }
 
     /**
      * @param {string} setting
+     * @returns {any}
      */
     static getSetting(setting) {
         return game.settings.get("pf2e-ranged-combat", setting);

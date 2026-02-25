@@ -68,17 +68,39 @@ export class Util {
     }
 
     /**
+     * Get a specific item from the actor, identified by its source ID
+     * 
+     * @param {ActorPF2e} actor
+     * @param {string} sourceId
+     * 
+     * @returns {ItemPF2e}
+     */
+    static getItem(actor, sourceId) {
+        return actor.items.find(item => item.sourceId === sourceId);
+    }
+
+    /**
      * Find an effect on the weapon's actor with the given sourceId that is for this weapon
      * 
      * @param {Weapon} weapon
      * @param {string} sourceId
      */
     static getEffect(weapon, sourceId) {
-        return weapon.actor.itemTypes.effect.find(
-            effect =>
-                effect.sourceId === sourceId &&
-                (Util.getFlag(effect, "targetId") === weapon.id || effect.flags.pf2e.rulesSelections.weapon === weapon.id) &&
-                !effect.isExpired
+        return Util.getEffectFromActor(weapon.actor, sourceId, weapon.id);
+    }
+
+    /**
+     * Get an effect currently on the actor with the specified source ID and target
+     * 
+     * @param {ActorPF2e} actor
+     * @param {string} sourceId
+     * @param {string} targetId
+     */
+    static getEffectFromActor(actor, sourceId, targetId) {
+        return actor.itemTypes.effect.find(effect =>
+            effect.sourceId === sourceId
+            && (Util.getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
+            && !effect.isExpired
         );
     }
 
@@ -138,6 +160,34 @@ export class Util {
     }
 
     /**
+     * @param {EffectPF2eSource} effectSource
+     * @param {string} choiceFlag 
+     * @param {any} choiceValue 
+     * @param {string} [label]
+     */
+    static setChoice(effectSource, choiceFlag, choiceValue, label = null) {
+        if (label) {
+            effectSource.name = `${effectSource.name} (${label})`;
+        }
+
+        foundry.utils.mergeObject(
+            effectSource,
+            {
+                flags: {
+                    pf2e: {
+                        rulesSelections: {}
+                    }
+                }
+            }
+        );
+
+        effectSource.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
+
+        // Remove the ChoiceSet rule since we've already made it
+        effectSource.system.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
+    }
+
+    /**
      * @param {string} message 
      */
     static info(message) {
@@ -162,19 +212,19 @@ export class Util {
             let content;
             if (Configuration.isUsingApplicationV2()) {
                 content = `
-            <p>
-                ${localize("warningDialog1")} ${message}
-                <br><br>
-                ${localize("warningDialog2")} 
-                ${localize("warningDialog3")}
-            </p>
-        `;
+                    <p>
+                        ${localize("warningDialog1")} ${message}
+                        <br><br>
+                        ${localize("warningDialog2")} 
+                        ${localize("warningDialog3")}
+                    </p>
+                `;
             } else {
                 content = `
-            <p>${localize("warningDialog1")} ${message}<p>
-            <p>${localize("warningDialog2")} 
-            ${localize("warningDialog3")}</p>
-        `;
+                    <p>${localize("warningDialog1")} ${message}<p>
+                    <p>${localize("warningDialog2")} 
+                    ${localize("warningDialog3")}</p>
+                `;
             }
 
             showDialog(
@@ -209,80 +259,39 @@ export class Util {
     static getFlag(item, flagName) {
         return item.flags["pf2e-ranged-combat"]?.[flagName];
     }
-}
 
-/**
- * Get a specific item from the actor, identified by its source ID
- * 
- * @param {ActorPF2e} actor
- * @param {string} sourceId
- */
-export function getItemFromActor(actor, sourceId) {
-    return actor.items.find(item => item.sourceId === sourceId);
-}
-
-/**
- * Get an effect currently on the actor with the specified source ID and target
- * 
- * @param {ActorPF2e} actor
- * @param {string} sourceId
- * @param {string} targetId
- */
-export function getEffectFromActor(actor, sourceId, targetId) {
-    return actor.itemTypes.effect.find(effect =>
-        effect.sourceId === sourceId
-        && (Util.getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
-        && !effect.isExpired
-    );
-}
-
-export function setChoice(effectSource, choiceFlag, choiceValue, label = null) {
-    if (label) {
-        effectSource.name = `${effectSource.name} (${label})`;
+    /**
+     * If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
+     * To prevent this, set the duration to 1 round
+     * 
+     * @param {ActorPF2e} actor
+     * @param {EffectPF2eSource} effectSource
+     */
+    static ensureDuration(actor, effectSource) {
+        if (!Util.isInCombat(actor) && effectSource.system.duration.value === 0) {
+            effectSource.system.duration.value = 1;
+        }
     }
 
-    effectSource.flags.pf2e ??= {};
-    effectSource.flags.pf2e.rulesSelections ??= {};
-    effectSource.flags.pf2e.rulesSelections[choiceFlag] = choiceValue;
-
-    // Remove the ChoiceSet rule since we've already made it
-    effectSource.system.rules.findSplice(rule => rule.key === "ChoiceSet" && rule.flag === choiceFlag);
-}
-
-/**
- * If the actor doesn't have at least one token that's in combat, then a duration of 0 will be immediately expired
- * To prevent this, set the duration to 1 round
- */
-export function ensureDuration(actor, effectSource) {
-    if (!isInCombat(actor) && effectSource.system.duration.value === 0) {
-        effectSource.system.duration.value = 1;
-    }
-}
-
-/**
- * Determine if the actor has some token that's in combat
- * 
- * @param {ActorPF2e} actor 
- * @returns {boolean}
- */
-export function isInCombat(actor) {
-    return actor.getActiveTokens().some(token => token.inCombat);
-}
-
-export function getAttackPopout(item) {
-    if (!item.actor) {
-        return null;
+    /**
+     * Determine if the actor has some token that's in combat
+     * 
+     * @param {ActorPF2e} actor 
+     * @returns {boolean}
+     */
+    static isInCombat(actor) {
+        return actor.getActiveTokens().some(token => token.inCombat);
     }
 
-    return Object.values(item.actor.apps).find(window => window.constructor.name === "AttackPopout" && window.options.strikeItemId === item.id);
-}
+    /**
+     * @param {ItemPF2e} item 
+     * @returns 
+     */
+    static getAttackPopout(item) {
+        if (!item.actor) {
+            return null;
+        }
 
-export function preventFiringWithoutLoading(actor) {
-    if (actor.type === "character") {
-        return game.settings.get("pf2e-ranged-combat", "preventFireNotLoaded");
-    } else if (actor.type === "npc") {
-        return game.settings.get("pf2e-ranged-combat", "preventFireNotLoadedNPC");
-    } else {
-        return false;
+        return Object.values(item.actor.apps).find(window => window.constructor.name === "AttackPopout" && window.options.strikeItemId === item.id);
     }
 }

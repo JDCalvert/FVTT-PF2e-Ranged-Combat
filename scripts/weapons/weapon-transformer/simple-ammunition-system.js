@@ -1,4 +1,5 @@
 import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../../ammunition-system/constants.js";
+import { Configuration } from "../../config/config.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
 import { InventoryAmmunitionTransformer } from "../ammunition-transformer/inventory.js";
@@ -191,17 +192,19 @@ class CapacityAmmunition extends SimpleAmmunition {
     save(updates) {
         super.save(updates);
 
-        /** @type {SimpleCapacityFlags} */
-        const flags = Util.getFlags(this.loadedEffect);
-        flags.loadedChambers = this.quantity;
+        if (this.loadedEffect) {
+            /** @type {SimpleCapacityFlags} */
+            const flags = Util.getFlags(this.loadedEffect);
+            flags.loadedChambers = this.quantity;
 
-        updates.update(
-            this.loadedEffect,
-            {
-                "name": `${flags.name} (${flags.loadedChambers}/${flags.capacity})`,
-                "flags.pf2e-ranged-combat": flags
-            }
-        );
+            updates.update(
+                this.loadedEffect,
+                {
+                    "name": `${flags.name} (${flags.loadedChambers}/${flags.capacity})`,
+                    "flags.pf2e-ranged-combat": flags
+                }
+            );
+        }
     }
 }
 
@@ -269,6 +272,8 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
         if (pf2eWeapon) {
             weapon.img = pf2eWeapon.img;
+            weapon.sourceId = pf2eWeapon.sourceId;
+            weapon.quantity = pf2eWeapon.quantity;
 
             weapon.level = pf2eWeapon.system.level.value;
 
@@ -305,6 +310,8 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
                 .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
         } else {
             weapon.img = pf2eMelee.img;
+            weapon.sourceId = null;
+            weapon.quantity = 1;
 
             weapon.group = null;
             weapon.baseItem = null;
@@ -368,6 +375,9 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
             const ammunitionId = Util.getFlag(pf2eItem, "ammunitionId");
             if (ammunitionId) {
                 weapon.selectedInventoryAmmunition = weapon.compatibleAmmunition.find(compatible => compatible.id === ammunitionId) || null;
+            } else {
+                // Pick some compatible ammunition
+                weapon.selectedInventoryAmmunition = weapon.compatibleAmmunition.length ? weapon.compatibleAmmunition[0] : null;
             }
         }
 
@@ -395,10 +405,7 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
                 weapon.selectedLoadedAmmunition = ammunition;
             } else if (weapon.capacity > 1) {
                 const loadedEffect = Util.getEffect(weapon, LOADED_EFFECT_ID);
-                if (loadedEffect) {
-                    /** @type {CapacityFlags} */
-                    const flags = Util.getFlags(loadedEffect);
-
+                if (loadedEffect || !Configuration.preventFiringWithoutLoading(weapon.actor)) {
                     const ammunition = new CapacityAmmunition();
                     weapon.selectedInventoryAmmunition.copyData(ammunition);
 
@@ -408,7 +415,15 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
                     ammunition.autoEject = true;
                     ammunition.isHeld = false;
-                    ammunition.quantity = flags.loadedChambers;
+
+                    if (loadedEffect) {
+                        /** @type {CapacityFlags} */
+                        const flags = Util.getFlags(loadedEffect);
+                        ammunition.quantity = flags.loadedChambers;
+                    } else {
+                        // If we don't actually have a loaded effect, consider one round loaded into the weapon
+                        ammunition.quantity = 1;
+                    }
 
                     weapon.selectedInventoryAmmunition.quantity -= ammunition.quantity;
 
@@ -417,14 +432,14 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
                     // If this is a capacity weapon, check if we have a loaded chamber
                     if (weapon.isCapacity) {
                         const chamberLoadedEffect = Util.getEffect(weapon, CHAMBER_LOADED_EFFECT_ID);
-                        if (chamberLoadedEffect) {
+                        if (chamberLoadedEffect || !Configuration.preventFiringWithoutLoading(weapon.actor)) {
                             weapon.selectedLoadedAmmunition = ammunition;
                         }
                     }
                 }
             } else {
                 const loadedEffect = Util.getEffect(weapon, LOADED_EFFECT_ID);
-                if (loadedEffect) {
+                if (loadedEffect || !Configuration.preventFiringWithoutLoading(weapon.actor)) {
                     const ammunition = new StandardAmmunition();
 
                     weapon.selectedInventoryAmmunition.copyData(ammunition);

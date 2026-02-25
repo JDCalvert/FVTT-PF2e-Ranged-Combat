@@ -1,6 +1,6 @@
-import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
-import { getEffectFromActor, getItemFromActor, Util } from "../utils/utils.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
+import { Util } from "../utils/utils.js";
 
 const SWORD_AND_PISTOL_FEAT_ID = "Compendium.pf2e.feats-srd.Item.dWbISC0di0r4oPCi";
 const SWORD_AND_PISTOL_MELEE_EFFECT_ID = "Compendium.pf2e-ranged-combat.effects.Item.uBNgQB5SpFpRzg3w";
@@ -19,7 +19,7 @@ export class SwordAndPistol {
  * @param {WeaponAttackProcessParams} params
  */
 function handleWeaponAttack({ weapon, updates, context, roll }) {
-    const swordAndPistolFeat = getItemFromActor(weapon.actor, SWORD_AND_PISTOL_FEAT_ID);
+    const swordAndPistolFeat = Util.getItem(weapon.actor, SWORD_AND_PISTOL_FEAT_ID);
     if (!swordAndPistolFeat) {
         return;
     }
@@ -37,8 +37,8 @@ function handleWeaponAttack({ weapon, updates, context, roll }) {
 
     const targetUuid = target.token.uuid;
 
-    const existingMeleeEffect = getEffectFromActor(weapon.actor, SWORD_AND_PISTOL_MELEE_EFFECT_ID, targetUuid);
-    const existingRangedEffect = getEffectFromActor(weapon.actor, SWORD_AND_PISTOL_RANGED_EFFECT_ID, targetUuid);
+    const existingMeleeEffect = Util.getEffectFromActor(weapon.actor, SWORD_AND_PISTOL_MELEE_EFFECT_ID, targetUuid);
+    const existingRangedEffect = Util.getEffectFromActor(weapon.actor, SWORD_AND_PISTOL_RANGED_EFFECT_ID, targetUuid);
 
     if (weapon.isRanged && (weapon.group == "firearm" || weapon.group == "crossbow")) {
         // Remove the existing melee effect

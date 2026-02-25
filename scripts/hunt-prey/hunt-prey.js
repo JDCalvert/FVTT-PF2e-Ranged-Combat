@@ -1,7 +1,7 @@
-import { Chat } from "../utils/chat.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
+import { Chat } from "../utils/chat.js";
 import { Updates } from "../utils/updates.js";
-import { getItemFromActor, Util } from "../utils/utils.js";
+import { Util } from "../utils/utils.js";
 import { DOUBLE_PREY_FEAT_ID, FLURRY_FEATURE_ID, FLURRY_RULES, HUNT_PREY_ACTION_ID, HUNT_PREY_IMG, HUNT_PREY_RULES, HUNTED_PREY_EFFECT_ID, HUNTERS_EDGE_FLURRY_EFFECT_ID, HUNTERS_EDGE_OUTWIT_EFFECT_ID, HUNTERS_EDGE_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_EFFECT_ID, MASTERFUL_HUNTER_FLURRY_FEATURE_ID, MASTERFUL_HUNTER_FLURRY_RULES, MASTERFUL_HUNTER_OUTWIT_EFFECT_ID, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID, MASTERFUL_HUNTER_OUTWIT_RULES, MASTERFUL_HUNTER_PRECISION_EFFECT_ID, MASTERFUL_HUNTER_PRECISION_FEATURE_ID, MASTERFUL_HUNTER_PRECISION_RULES, MASTERFUL_HUNTER_RULES, OUTWIT_FEATURE_ID, OUTWIT_RULES, PRECISION_FEATURE_ID, PRECISION_RULES, SHARED_PREY_FEAT_ID, TOKEN_MARK_RULE, TRIPLE_THREAT_FEAT_ID } from "./constants.js";
 
 const localize = (key) => game.i18n.localize("pf2e-ranged-combat.huntPrey." + key);
@@ -36,7 +36,7 @@ export async function huntPrey() {
 
 function getHuntPreyAction(actor) {
     const findFunctions = [
-        actor => getItemFromActor(actor, HUNT_PREY_ACTION_ID),
+        actor => Util.getItem(actor, HUNT_PREY_ACTION_ID),
         actor => actor.itemTypes.action.find(action => action.name === "Hunt Prey")
     ];
 
@@ -55,8 +55,8 @@ function getHuntPreyAction(actor) {
  * @returns {CheckResult}
  */
 export function checkHuntPrey(actor) {
-    const hasDoublePrey = !!getItemFromActor(actor, DOUBLE_PREY_FEAT_ID);
-    const hasTripleThreat = !!getItemFromActor(actor, TRIPLE_THREAT_FEAT_ID);
+    const hasDoublePrey = !!Util.getItem(actor, DOUBLE_PREY_FEAT_ID);
+    const hasTripleThreat = !!Util.getItem(actor, TRIPLE_THREAT_FEAT_ID);
 
     const maxTargets = hasTripleThreat
         ? { num: 3, word: localize("maxTargetsThree") }
@@ -83,7 +83,7 @@ export async function performHuntPrey(actor, huntPreyAction, checkResult) {
     const remainingTargets = checkResult.maxTargets.num - targets.length;
     const remainingTargetsText = remainingTargets === 2
         ? localize("shareWithTwo")
-        : remainingTargets === 1 && !!getItemFromActor(actor, SHARED_PREY_FEAT_ID)
+        : remainingTargets === 1 && !!Util.getItem(actor, SHARED_PREY_FEAT_ID)
             ? localize("shareWithOne")
             : "";
 
@@ -92,18 +92,18 @@ export async function performHuntPrey(actor, huntPreyAction, checkResult) {
     const targetData = { token: actor.name || actor.name, target1: targetNames[0], target2: targetNames[1], target3: targetNames[2] };
 
     let link = null;
-    if (remainingTargets > 0 && getItemFromActor(actor, SHARED_PREY_FEAT_ID)) {
-        if (getItemFromActor(actor, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID)) {
+    if (remainingTargets > 0 && Util.getItem(actor, SHARED_PREY_FEAT_ID)) {
+        if (Util.getItem(actor, MASTERFUL_HUNTER_OUTWIT_FEATURE_ID)) {
             link = MASTERFUL_HUNTER_OUTWIT_EFFECT_ID;
-        } else if (getItemFromActor(actor, MASTERFUL_HUNTER_FLURRY_FEATURE_ID)) {
+        } else if (Util.getItem(actor, MASTERFUL_HUNTER_FLURRY_FEATURE_ID)) {
             link = MASTERFUL_HUNTER_FLURRY_EFFECT_ID;
-        } else if (getItemFromActor(actor, MASTERFUL_HUNTER_PRECISION_FEATURE_ID)) {
+        } else if (Util.getItem(actor, MASTERFUL_HUNTER_PRECISION_FEATURE_ID)) {
             link = MASTERFUL_HUNTER_PRECISION_EFFECT_ID;
-        } else if (getItemFromActor(actor, OUTWIT_FEATURE_ID)) {
+        } else if (Util.getItem(actor, OUTWIT_FEATURE_ID)) {
             link = HUNTERS_EDGE_OUTWIT_EFFECT_ID;
-        } else if (getItemFromActor(actor, FLURRY_FEATURE_ID)) {
+        } else if (Util.getItem(actor, FLURRY_FEATURE_ID)) {
             link = HUNTERS_EDGE_FLURRY_EFFECT_ID;
-        } else if (getItemFromActor(actor, PRECISION_FEATURE_ID)) {
+        } else if (Util.getItem(actor, PRECISION_FEATURE_ID)) {
             link = HUNTERS_EDGE_PRECISION_EFFECT_ID;
         }
     }
@@ -131,7 +131,7 @@ export async function performHuntPrey(actor, huntPreyAction, checkResult) {
     updateSystemItems(actor, updates);
 
     // Remove any existing hunted prey effects
-    const existingHuntedPreyEffect = getItemFromActor(actor, HUNTED_PREY_EFFECT_ID);
+    const existingHuntedPreyEffect = Util.getItem(actor, HUNTED_PREY_EFFECT_ID);
     if (existingHuntedPreyEffect) {
         updates.delete(existingHuntedPreyEffect);
     }
@@ -232,7 +232,7 @@ function updateSystemItems(actor, updates) {
  * @param {any[]} rules 
  */
 function updateRules(actor, updates, itemId, rules) {
-    const item = getItemFromActor(actor, itemId);
+    const item = Util.getItem(actor, itemId);
     if (item) {
         updates.update(item, { "system.rules": rules });
     }
