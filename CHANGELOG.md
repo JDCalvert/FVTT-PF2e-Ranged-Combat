@@ -1,5 +1,9 @@
 ## 8.0.0 - 2026-02-25 (Pathfinder 2e 7.10.1 / 6.12.4)
-- 
+### Feature
+- Rewrite most of the module to support both Foundry v12 and v13 simutaneously and simplify code base.
+
+### Removed
+- Support for Conjure Bullet.
 
 ## 7.3.4 - 2025-12-19 (Pathfinder 2e 7.8.0/6.12.4)
 - Change Hunt Prey-related TokenMark rules elements to `hunted-prey` instead of `hunt-prey` to match the system's implementation.
