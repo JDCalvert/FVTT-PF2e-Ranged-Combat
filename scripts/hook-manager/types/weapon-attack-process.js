@@ -1,17 +1,5 @@
-import { Updates } from "../utils/updates.js";
-import { Weapon } from "../weapons/types.js";
-
-export class WeaponAttackCheckParams {
-    /** @type {Weapon} */
-    weapon;
-
-    /**
-     * @param {Weapon} weapon 
-     */
-    constructor(weapon) {
-        this.weapon = weapon;
-    }
-}
+import { Updates } from "../../utils/updates.js";
+import { Weapon } from "../../weapons/types.js";
 
 export class WeaponAttackProcessParams {
     /** @type {Weapon} */

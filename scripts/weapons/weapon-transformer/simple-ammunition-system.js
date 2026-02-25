@@ -1,4 +1,4 @@
-import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../../ammunition-system/constants.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
 import { InventoryAmmunitionTransformer } from "../ammunition-transformer/inventory.js";
@@ -17,9 +17,10 @@ class SimpleWeapon extends Weapon {
      * @param {Updates} updates
      */
     async createAmmunition(ammunition, updates) {
+        this.setSelectedAmmunition(ammunition, updates);
+
         const newAmmunition = this.transformLoadedAmmunition(ammunition);
         this.loadedAmmunition.push(newAmmunition);
-
         await newAmmunition.create(updates);
 
         return newAmmunition;
@@ -48,11 +49,10 @@ class SimpleWeapon extends Weapon {
      * @param {Updates} updates
      */
     async setNextChamber(_ammunition, updates) {
-        const nextChamberEffect = Util.getEffect(this, CHAMBER_LOADED_EFFECT_ID);
-        if (nextChamberEffect) {
-            return;
+        const chamberLoadedEffect = Util.getEffect(this, CHAMBER_LOADED_EFFECT_ID);
+        if (chamberLoadedEffect) {
+            updates.delete(chamberLoadedEffect);
         }
-
 
         if (!_ammunition) {
             return;
@@ -76,7 +76,7 @@ class SimpleWeapon extends Weapon {
 
         ammunition.copyData(newAmmunition);
 
-        newAmmunition.linkedAmmunition = ammunition;
+        newAmmunition.linkedAmmunition = this.compatibleAmmunition.find(item => item.id === ammunition.id);
         newAmmunition.weapon = this;
 
         return newAmmunition;
@@ -106,10 +106,15 @@ class SimpleAmmunition extends LoadedAmmunition {
      * @param {Updates} updates 
      */
     async create(updates) {
-        if (this.linkedAmmunition) {
-            this.linkedAmmunition.quantity += this.quantity;
-            updates.update(this.linkedAmmunition, { "system.quantity": this.linkedAmmunition.quantity });
-        }
+        this.syncLinkedAmmunition(updates);
+    }
+
+    /**
+     * Update the linked ammunition
+     * @param {Updates} updates 
+     */
+    save(updates) {
+        this.syncLinkedAmmunition(updates);
     }
 
     /**
@@ -119,40 +124,20 @@ class SimpleAmmunition extends LoadedAmmunition {
      */
     onDelete(updates) {
         updates.delete(this.loadedEffect);
+        this.syncLinkedAmmunition(updates);
     }
 
     /**
-     * Update the linked ammunition as well as this one
-     * 
-     * @param {number} quantity
-     * @param {Updates} updates
-     * 
-     * @returns {Ammunition} A new ammunition stack containing the removed ammunition
-     */
-    pop(quantity, updates) {
-        const removedAmmunition = super.pop(quantity, updates);
-
-        // Also remove from the linked ammunition, if we have one
-        if (this.linkedAmmunition) {
-            this.linkedAmmunition.quantity -= quantity;
-            updates.update(this.linkedAmmunition, { "system.quantity": this.linkedAmmunition.quantity });
-        }
-
-        return removedAmmunition;
-    }
-
-    /**
-     * Update the linked ammunition as well as this one
-     * 
-     * @param {Ammunition} ammunition 
      * @param {Updates} updates 
      */
-    push(ammunition, updates) {
-        super.push(ammunition, updates);
-
+    syncLinkedAmmunition(updates) {
         if (this.linkedAmmunition) {
-            this.linkedAmmunition.quantity += ammunition.quantity;
-            updates.update(this.linkedAmmunition, { "system.quantity": this.linkedAmmunition.quantity });
+            const update = { "system.quantity": this.linkedAmmunition.quantity + this.quantity };
+            if (this.linkedAmmunition.hasUses) {
+                update["system.uses.value"] = this.remainingUses;
+            }
+
+            updates.update(this.linkedAmmunition, update);
         }
     }
 }
@@ -169,14 +154,6 @@ class StandardAmmunition extends SimpleAmmunition {
         const loadedEffectSource = await Util.getSource(LOADED_EFFECT_ID);
         Util.setEffectTarget(loadedEffectSource, this.weapon);
         updates.create(loadedEffectSource);
-    }
-
-    /**
-     * This type of ammunition should never be updated this way.
-     * 
-     * @param {Updates} updates
-     */
-    save(updates) {
     }
 }
 
@@ -212,6 +189,8 @@ class CapacityAmmunition extends SimpleAmmunition {
      * @param {Updates} updates
      */
     save(updates) {
+        super.save(updates);
+
         /** @type {SimpleCapacityFlags} */
         const flags = Util.getFlags(this.loadedEffect);
         flags.loadedChambers = this.quantity;
@@ -227,11 +206,7 @@ class CapacityAmmunition extends SimpleAmmunition {
 }
 
 class Magazine extends SimpleAmmunition {
-    /**
-     * @param {Updates} updates 
-     */
-    save(updates) {
-    }
+
 }
 
 export class SimpleWeaponSystemTransformer extends WeaponTransformer {
@@ -273,7 +248,8 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
         weapon.traits = pf2eItem.system.traits.value;
 
-        weapon.isRepeating = pf2eItem.traits.has("repeating");
+        weapon.isRanged = pf2eItem.isRanged;
+        weapon.isRepeating = weapon.hasTrait("repeating");
 
         /** @type {WeaponPF2e} */
         let pf2eWeapon;
@@ -289,12 +265,13 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
             pf2eWeapon = weaponId ? weapon.actor.itemTypes.weapon.find(weapon => weapon.id === weaponId) : null;
         }
 
+        weapon.pf2eWeapon = pf2eWeapon;
+
         if (pf2eWeapon) {
             weapon.img = pf2eWeapon.img;
 
             weapon.level = pf2eWeapon.system.level.value;
 
-            weapon.isRanged = pf2eWeapon.isRanged;
             weapon.group = pf2eWeapon.system.group;
             weapon.baseItem = pf2eWeapon.system.baseItem;
 
@@ -329,7 +306,6 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
         } else {
             weapon.img = pf2eMelee.img;
 
-            weapon.isRanged = pf2eMelee.system.traits.value.some(trait => trait.includes("range-increment") || trait.includes("thrown"));
             weapon.group = null;
             weapon.baseItem = null;
 
@@ -405,12 +381,15 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
                 // Create a copy of the selected ammunition to act as a dummy loaded magazine
                 weapon.selectedInventoryAmmunition.copyData(ammunition);
+
                 ammunition.weapon = weapon;
                 ammunition.linkedAmmunition = weapon.selectedInventoryAmmunition;
 
                 ammunition.autoEject = true;
                 ammunition.isHeld = false;
                 ammunition.quantity = 1;
+
+                weapon.selectedInventoryAmmunition.quantity -= ammunition.quantity;
 
                 weapon.loadedAmmunition.push(ammunition);
                 weapon.selectedLoadedAmmunition = ammunition;
@@ -425,10 +404,13 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
                     ammunition.weapon = weapon;
                     ammunition.linkedAmmunition = weapon.selectedInventoryAmmunition;
+                    ammunition.loadedEffect = loadedEffect;
 
                     ammunition.autoEject = true;
                     ammunition.isHeld = false;
                     ammunition.quantity = flags.loadedChambers;
+
+                    weapon.selectedInventoryAmmunition.quantity -= ammunition.quantity;
 
                     weapon.loadedAmmunition.push(ammunition);
 
@@ -449,10 +431,13 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
 
                     ammunition.weapon = weapon;
                     ammunition.linkedAmmunition = weapon.selectedInventoryAmmunition;
+                    ammunition.loadedEffect = loadedEffect;
 
                     ammunition.autoEject = true;
                     ammunition.isHeld = false;
                     ammunition.quantity = 1;
+
+                    weapon.selectedInventoryAmmunition.quantity -= ammunition.quantity;
 
                     weapon.loadedAmmunition.push(ammunition);
                 }
@@ -463,26 +448,26 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
     }
 
     /**
-     * @param {WeaponPF2e | ConsumablePF2e | AmmoPF2e} pf2eAmmo 
+     * @param {WeaponPF2e | ConsumablePF2e | AmmoPF2e} pf2eAmmunition 
      * @returns {Ammunition}
      */
-    transformAmmunition(pf2eAmmo) {
+    transformAmmunition(pf2eAmmunition) {
         const ammunition = new Ammunition();
-        ammunition.id = pf2eAmmo.id;
-        ammunition.sourceId = pf2eAmmo.sourceId;
-        ammunition.name = pf2eAmmo.sourceId;
-        ammunition.img = pf2eAmmo.img;
+        ammunition.id = pf2eAmmunition.id;
+        ammunition.sourceId = pf2eAmmunition.sourceId;
+        ammunition.name = pf2eAmmunition.name;
+        ammunition.img = pf2eAmmunition.img;
 
-        ammunition.quantity = pf2eAmmo.system.quantity;
-        ammunition.isHeld = pf2eAmmo.system.equipped.carryType === "held";
-        ammunition.descriptionText = pf2eAmmo.system.description.value;
-        ammunition.rules = pf2eAmmo.system.rules;
+        ammunition.quantity = pf2eAmmunition.system.quantity;
+        ammunition.isHeld = pf2eAmmunition.system.equipped.carryType === "held";
+        ammunition.descriptionText = pf2eAmmunition.system.description.value;
+        ammunition.rules = pf2eAmmunition.system.rules;
 
-        if (pf2eAmmo.system.uses) {
+        if (pf2eAmmunition.system.uses) {
             ammunition.hasUses = true;
-            ammunition.remainingUses = pf2eAmmo.system.uses.value;
-            ammunition.maxUses = pf2eAmmo.system.uses.max;
-            ammunition.allowDestroy = pf2eAmmo.system.uses.autoDestroy;
+            ammunition.remainingUses = pf2eAmmunition.system.uses.value;
+            ammunition.maxUses = pf2eAmmunition.system.uses.max;
+            ammunition.allowDestroy = pf2eAmmunition.system.uses.autoDestroy;
         } else {
             ammunition.hasUses = false;
             ammunition.remainingUses = 1;

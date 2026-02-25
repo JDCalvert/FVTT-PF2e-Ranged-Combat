@@ -1,6 +1,6 @@
 import { ClearJam } from "../actions/clear-jam.js";
-import { WeaponAttackCheckParams } from "../core/hook-params.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { WeaponAttackCheckParams } from "../hook-manager/types/weapon-attack-check.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Util } from "../utils/utils.js";
 import { Weapon } from "../weapons/types.js";
 import { AmmunitionSystem } from "../weapons/system.js";

@@ -94,7 +94,7 @@ export class Configuration {
                 name: Configuration.localize("preventFireNotLoaded.name"),
                 hint: Configuration.localize("preventFireNotLoaded.hint"),
                 scope: "world",
-                config: true,
+                config: !Configuration.isPlayerCharactersUsingSubItemAmmunitionSystem(),
                 type: Boolean,
                 default: true
             }
@@ -107,7 +107,7 @@ export class Configuration {
                 name: Configuration.localize("advancedAmmunitionSystemPlayer.name"),
                 hint: Configuration.localize("advancedAmmunitionSystemPlayer.hint"),
                 scope: "world",
-                config: true,
+                config: !Configuration.isPlayerCharactersUsingSubItemAmmunitionSystem(),
                 type: Boolean,
                 default: true
             }
@@ -351,6 +351,13 @@ export class Configuration {
     }
 
     /**
+     * @returns {boolean}
+     */
+    static isPlayerCharactersUsingSubItemAmmunitionSystem() {
+        return foundry.utils.isNewerVersion(game.system.version, "7.7");
+    }
+
+    /**
      * Version 7.7 of the system marks the first implementation of the sub-item ammunition system, only used for player characters.
      * 
      * @param {ActorPF2e} actor 
@@ -358,7 +365,7 @@ export class Configuration {
      */
     static isUsingSubItemAmmunitionSystem(actor) {
         if (actor.type === "character") {
-            return foundry.utils.isNewerVersion(game.system.version, "7.7");
+            return this.isPlayerCharactersUsingSubItemAmmunitionSystem();
         } else {
             return false;
         }

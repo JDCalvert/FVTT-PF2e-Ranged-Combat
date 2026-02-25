@@ -23,6 +23,7 @@ class ItemPF2e {
     toObject(): ItemPF2eSource;
     async toMessage(): Promise<void>;
 
+    async update(update: any): Promise<void>;
     async delete(): Promise<void>;
 }
 

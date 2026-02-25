@@ -1,5 +1,5 @@
 import { AuxiliaryActionHookParams, buildAuxiliaryAction } from "../core/auxiliary-actions.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { AmmunitionSystem } from "../weapons/system.js";
 import { NextChamber } from "./actions/next-chamber.js";

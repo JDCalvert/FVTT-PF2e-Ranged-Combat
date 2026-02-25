@@ -9,13 +9,6 @@ import { WeaponTransformer } from "./base.js";
 class SubItemWeapon extends Weapon {
 
     /**
-     * Reference to the actual weapon
-     * 
-     * @type {WeaponPF2e}
-     */
-    pf2eWeapon;
-
-    /**
      * Transform a generic piece of ammunition to loaded ammunition
      * 
      * @param {Ammunition} ammunition

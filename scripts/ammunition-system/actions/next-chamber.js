@@ -1,8 +1,10 @@
+import { HookManager } from "../../hook-manager/hook-manager.js";
+import { WeaponAmmunitionData } from "../../hook-manager/types/ammunition-fire.js";
 import { Chat } from "../../utils/chat.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
-import { Weapon } from "../../weapons/types.js";
 import { AmmunitionSystem, WeaponSystem } from "../../weapons/system.js";
+import { Weapon } from "../../weapons/types.js";
 import { CHAMBER_LOADED_EFFECT_ID, SELECT_NEXT_CHAMBER_IMG } from "../constants.js";
 
 export class NextChamber {
@@ -110,6 +112,7 @@ export class NextChamber {
             }
         );
 
+        HookManager.call("next-chamber", /** @type {WeaponAmmunitionData} */ ({ weapon, ammunition, updates }));
         Hooks.callAll("pf2eRangedCombatNextChamber", weapon.actor, weapon);
     }
 }

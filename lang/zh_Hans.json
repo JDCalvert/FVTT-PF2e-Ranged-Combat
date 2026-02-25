@@ -135,7 +135,6 @@
         "ammunitionSystem": {
             "fireWeapon": "{actor}击发了{ammunition}。",
             "fireWeaponRepeating": "{actor}使用了{ammunition} (尚余{remaining}/{capacity})。",
-            "fireConjuredRound": "{actor}击发了召回子弹。",
             "warning": {
                 "noCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。"
             },
@@ -167,14 +166,6 @@
                 "bothBarrelsNotLoaded": "{weapon}的双管弹仓尚未全部装填。"
             },
             "actions": {
-                "conjureBullet": {
-                    "conjuredRound": "召唤子弹",
-                    "warningNoAction": "{token}没有召唤子弹动作。",
-                    "noReloadableWeapons": "你没有可再装填的武器。",
-                    "chatMessage": "{token}使用召唤子弹装填了{weapon}。",
-                    "chatActionName": "召唤子弹",
-                    "warningSingleRound": "{weapon}只能被一颗召唤子弹装填。"
-                },
                 "consolidateAmmunition": {
                     "chatMessage": "{actor}合并了子弹。",
                     "chatActionInteract": "交互",

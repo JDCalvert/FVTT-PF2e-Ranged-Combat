@@ -1,11 +1,17 @@
-import { HookManager } from "../utils/hook-manager.js";
-import { createNewStack, findGroupStacks } from "./change-carry-type.js";
-import { useAdvancedThrownWeaponSystem } from "./utils.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
+import { createNewStack } from "./change-carry-type.js";
+import { findGroupStacks, useAdvancedThrownWeaponSystem } from "./utils.js";
 
-export function initialiseThrownWeaponHandler() {
-    HookManager.register("weapon-attack", handleThrownWeapon);
+export class ThrownWeaponProcessor {
+    static initialise() {
+        HookManager.register("weapon-attack", handleThrownWeapon);
+    }
 }
 
+/**
+ * @param {WeaponAttackProcessParams} data
+ */
 function handleThrownWeapon({ weapon }) {
     if (!useAdvancedThrownWeaponSystem(weapon.actor)) {
         return;
@@ -17,8 +23,14 @@ function handleThrownWeapon({ weapon }) {
         return;
     }
 
+    // This functionality is only relevant for weapons that are tied to an actual weapon
+    const pf2eWeapon = weapon.pf2eWeapon;
+    if (!pf2eWeapon) {
+        return;
+    }
+
     // If the weapon has a returning rune, then we don't need to do anything
-    if (weapon.propertyRunes.includes("returning")) {
+    if (pf2eWeapon.system.runes.property.includes("returning")) {
         return;
     }
 
@@ -27,18 +39,16 @@ function handleThrownWeapon({ weapon }) {
     // and place the thrown weapon into a "dropped" stack
 
     // Find the other stacks in this weapon's group
-    const groupStacks = findGroupStacks(weapon);
+    const groupStacks = findGroupStacks(pf2eWeapon);
 
-    const sourceStack = weapon.isEquipped
-        ? weapon.actor.items.find(i => i.id === weapon.weaponId)
-        : groupStacks.find(stack => stack.isEquipped);
+    const sourceStack = pf2eWeapon.isEquipped ? pf2eWeapon : groupStacks.find(stack => stack.isEquipped);
 
     // Find the stack that has the carry type we're trying to set
     const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === "dropped");
 
     if (targetStack) {
         // We have a dropped stack already
-        weapon.actor.updateEmbeddedDocuments(
+        pf2eWeapon.actor.updateEmbeddedDocuments(
             "Item",
             [
                 {

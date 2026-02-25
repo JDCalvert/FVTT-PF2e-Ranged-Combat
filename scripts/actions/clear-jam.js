@@ -2,7 +2,7 @@ import { AuxiliaryActionHookParams } from "../core/auxiliary-actions.js";
 import { buildAuxiliaryAction } from "../core/auxiliary-actions.js";
 import { CLEAR_JAM_IMG, JAMMED_EFFECT_ID } from "../ammunition-system/constants.js";
 import { Chat } from "../utils/chat.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { Util } from "../utils/utils.js";
 import { Weapon } from "../weapons/types.js";

@@ -1,8 +1,8 @@
 import { Reload } from "../ammunition-system/actions/reload.js";
 import { JAMMED_EFFECT_ID } from "../ammunition-system/constants.js";
-import { WeaponAttackProcessParams } from "../core/hook-params.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
 import { Chat } from "../utils/chat.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { ensureDuration, Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
@@ -99,6 +99,10 @@ async function handleAsync(actor, action) {
  * @param {WeaponAttackProcessParams} data
  */
 async function handleWeaponFired({ weapon, updates, roll }) {
+    if (!roll) {
+        return;
+    }
+
     const riskyReloadEffect = Util.getEffect(weapon, RISKY_RELOAD_EFFECT_ID);
     if (!riskyReloadEffect) {
         return;

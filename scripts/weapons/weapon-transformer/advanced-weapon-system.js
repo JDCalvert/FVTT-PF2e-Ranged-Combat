@@ -8,7 +8,6 @@ import { WeaponTransformer } from "./base.js";
 class LocalWeapon extends Weapon {
     /**
      * Reference to the system item
-     * 
      * @type {WeaponPF2e | MeleePF2e}
      */
     pf2eItem;
@@ -344,14 +343,17 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
     }
 
     /** 
-     * @override
-     * 
      * @param {ActorPF2e} actor
      * @returns {Weapon[]}
      */
     getWeapons(actor) {
-        return (actor.type === "character" ? actor.itemTypes.weapon : actor.itemTypes.melee)
-            .map(pf2eWeapon => this.transformWeapon(pf2eWeapon));
+        if (actor.type === "character") {
+            return actor.itemTypes.weapon.map(pf2eWeapon => this.transformWeapon(pf2eWeapon));
+        } else if (actor.type === "npc") {
+            return actor.itemTypes.melee.map(melee => this.transformWeapon(melee));
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -370,6 +372,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
         weapon.traits = pf2eItem.system.traits.value;
 
+        weapon.isRanged = pf2eItem.isRanged;
         weapon.isRepeating = weapon.hasTrait("repeating");
 
         /** @type {WeaponPF2e} */
@@ -386,12 +389,13 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             pf2eWeapon = weaponId ? weapon.actor.itemTypes.weapon.find(weapon => weapon.id === weaponId) : null;
         }
 
+        weapon.pf2eWeapon = pf2eWeapon;
+
         if (pf2eWeapon) {
             weapon.img = pf2eWeapon.img;
 
             weapon.level = pf2eWeapon.system.level.value;
 
-            weapon.isRanged = pf2eWeapon.isRanged;
             weapon.group = pf2eWeapon.system.group;
             weapon.baseItem = pf2eWeapon.system.baseItem;
 
@@ -426,7 +430,6 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
         } else {
             weapon.img = pf2eMelee.img;
 
-            weapon.isRanged = weapon.traits.some(trait => trait.includes("range-increment") || trait.includes("thrown"));
             weapon.group = null;
             weapon.baseItem = null;
 
@@ -588,7 +591,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
     /**
      * @param {Weapon} weapon
-     * @param {WeaponPF2e | AmmoPF2e} pf2eAmmunition
+     * @param {WeaponPF2e | ConsumablePF2e | AmmoPF2e} pf2eAmmunition
      * @returns {Ammunition}
      */
     transformAmmunition(weapon, pf2eAmmunition) {

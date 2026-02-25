@@ -1,4 +1,4 @@
-import { findGroupStacks } from "../thrown-weapons/change-carry-type.js";
+import { findGroupStacks } from "../thrown-weapons/utils.js";
 import { showDialog } from "../utils/dialog.js";
 import { Util } from "../utils/utils.js";
 import { Configuration } from "../config/config.js";

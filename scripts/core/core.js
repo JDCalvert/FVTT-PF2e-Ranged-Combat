@@ -1,10 +1,11 @@
 import { isTargetHuntedPrey } from "../hunt-prey/hunted-prey-hook.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { Weapon } from "../weapons/types.js";
 import { WeaponSystem } from "../weapons/system.js";
 import { AuxiliaryActionHookParams } from "./auxiliary-actions.js";
-import { WeaponAttackCheckParams, WeaponAttackProcessParams } from "./hook-params.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
+import { WeaponAttackCheckParams } from "../hook-manager/types/weapon-attack-check.js";
 
 export class Core {
     static initialise() {
@@ -97,7 +98,7 @@ export class Core {
                 }
 
                 // Run any registered checks before rolling the attack
-                if (!await HookManager.runCheck("weapon-attack", new WeaponAttackCheckParams(weapon))) {
+                if (!await HookManager.runCheck("weapon-attack", /** @type {WeaponAttackCheckParams} */({ weapon }))) {
                     return;
                 }
 
@@ -190,6 +191,11 @@ export class Core {
 
         const item = /** @type {WeaponPF2e | MeleePF2e} */ (await fromUuid(uuid));
         if (!item) {
+            return null;
+        }
+
+        // If the attack was granted by something else, don't interact with the module
+        if (!(item.type == "weapon" || item.type == "melee")) {
             return null;
         }
 

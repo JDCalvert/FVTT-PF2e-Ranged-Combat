@@ -1,6 +1,6 @@
 import { FireWeaponProcessor } from "../ammunition-system/fire-weapon-processor.js";
 import { Chat } from "../utils/chat.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getItemFromActor, Util } from "../utils/utils.js";
 import { WeaponSystem } from "../weapons/system.js";
@@ -126,7 +126,9 @@ async function perform(actor, fakeOutFeat) {
         FireWeaponProcessor.processWeaponFired(
             {
                 weapon: weapon,
-                updates: updates
+                updates: updates,
+                context: null,
+                roll: null
             }
         );
         updates.commit();
@@ -185,6 +187,9 @@ function postFakeOutMessage(actor, message, bonus) {
     );
 }
 
+/**
+ * @param {CombatantPF2e} combatant 
+ */
 function handleStartTurn(combatant) {
     const actor = combatant.actor;
     if (!actor) {

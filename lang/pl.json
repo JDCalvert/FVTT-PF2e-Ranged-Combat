@@ -140,7 +140,6 @@
         "ammunitionSystem": {
             "fireWeapon": "{actor} wystrzeliwuje {ammunition}.",
             "fireWeaponRepeating": "{actor} używa {ammunition} (pozostało {remaining}/{capacity}).",
-            "fireConjuredRound": "{actor} wystrzeliwuje wyczarowany pocisk.",
             "warning": {
                 "noCompatibleAmmunition": "Nie masz amunicji kompatybilnej z twoją {weapon}."
             },
@@ -171,14 +170,6 @@
                 "noAmmunitionRemaining": "{weapon} nie ma już amunicji"
             },
             "actions": {
-                "conjureBullet": {
-                    "conjuredRound": "Wyczarowany Pocisk",
-                    "warningNoAction": "{token} nie posiada akcji Wyczarowany Pocisk.",
-                    "noReloadableWeapons": "Nie masz broni, którą można ponownie załadować.",
-                    "warningSingleRound": "{weapon} może być załadowana tylko jednym wyczarowanym pociskiem.",
-                    "chatMessage": "{token} używa Wyczarowania Pocisku, aby załadować swoją {weapon}.",
-                    "chatActionName": "Wyczarowanie Pocisku"
-                },
                 "consolidateAmmunition": {
                     "chatMessage": "{actor} konsoliduje swoją amunicję.",
                     "infoAlreadyConsolidated": "Twoja amunicja powtarzalna jest już skonsolidowana!"

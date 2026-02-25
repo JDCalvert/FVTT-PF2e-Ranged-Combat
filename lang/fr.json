@@ -162,14 +162,6 @@
                 "magazineNotLoaded": "aucun chargeur dans {weapon}."
             },
             "actions": {
-                "conjureBullet": {
-                    "conjuredRound": "Balle invoquée",
-                    "warningNoAction": "{token} ne possède pas l'action Conjurer une balle.",
-                    "noReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
-                    "chatMessage": "{token} utilise Balle conjurée pour charger sa/son {weapon}.",
-                    "chatActionName": "Balle conjurée",
-                    "warningSingleRound": "{weapon} ne peut être chargée qu'avec une balle conjurée."
-                },
                 "consolidateAmmunition": {
                     "chatMessage": "{actor} consolide ses munitions.",
                     "infoAlreadyConsolidated": "Los munitions de vos armes à répétition sont déjà consolidées !"
@@ -221,7 +213,6 @@
                     "reloadMagazine": "Recharger le chargeur"
                 }
             },
-            "fireConjuredRound": "{actor} tire sa balle conjurée.",
             "fireWeaponRepeating": "{actor} utilise un(e) {ammunition} (Il en reste {remaining}/{capacity}).",
             "effect": {
                 "config": {

@@ -1,5 +1,5 @@
 import { Chat } from "../utils/chat.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { dialogPrompt } from "../utils/prompt-dialog.js";
 import { Updates } from "../utils/updates.js";
 import { setChoice, Util } from "../utils/utils.js";

@@ -1,5 +1,5 @@
 import { Configuration } from "../config/config.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 
 export class ChatCore {
     static initialise() {

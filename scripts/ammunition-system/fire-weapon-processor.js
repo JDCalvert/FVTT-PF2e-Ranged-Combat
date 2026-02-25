@@ -1,9 +1,10 @@
-import { WeaponAttackProcessParams } from "../core/hook-params.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
 import { Chat } from "../utils/chat.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Util } from "../utils/utils.js";
 import { AmmunitionSystem } from "../weapons/system.js";
 import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID } from "./constants.js";
+import { WeaponAmmunitionData } from "../hook-manager/types/ammunition-fire.js";
 
 export class FireWeaponProcessor {
     static initialise() {
@@ -43,6 +44,8 @@ export class FireWeaponProcessor {
                     }
                 )
             );
+
+            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition, updates }));
         } else if (weapon.capacity > 0) {
             weapon.selectedLoadedAmmunition.consume(weapon.expend, updates);
 
@@ -62,6 +65,8 @@ export class FireWeaponProcessor {
                     }
                 )
             );
+
+            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition: weapon.selectedLoadedAmmunition, updates }));
         } else {
             // Weapons that have no capacity consumer ammunition directly from the inventory
             weapon.selectedInventoryAmmunition.consume(weapon.expend, updates);
@@ -77,6 +82,8 @@ export class FireWeaponProcessor {
                     }
                 )
             );
+
+            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition: weapon.selectedInventoryAmmunition, updates }));
         }
     }
 }

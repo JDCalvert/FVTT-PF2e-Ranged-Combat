@@ -19,6 +19,7 @@ import { huntPrey } from "./hunt-prey/hunt-prey.js";
 import { initialiseHuntPrey } from "./hunt-prey/hunted-prey-hook.js";
 import { linkCompanion } from "./hunt-prey/link-companion.js";
 import { NPCWeaponConfiguration } from "./npc-weapon-system/npc-weapon-system.js";
+import { AdvancedThrownWeaponSystem as ThrownWeaponSystem } from "./thrown-weapons/thrown-weapon-system.js";
 import { runMigrations } from "./utils/migrations/migration.js";
 
 Hooks.on(
@@ -35,11 +36,11 @@ Hooks.on(
         ChatCore.initialise();
 
         AmmunitionHandlingSystem.initialise();
+        ThrownWeaponSystem.initialise();
+        
         ClearJam.initialise();
 
         initialiseHuntPrey();
-
-        // AdvancedThrownWeaponSystem.initialise();
 
         initialiseCrossbowCrackShot();
         initialiseCrossbowAce();

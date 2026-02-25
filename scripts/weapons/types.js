@@ -18,9 +18,22 @@ export class Item {
     quantity;
 }
 
+/**
+ * @class {object} Weapon
+ * @property {WeaponPF2e} [pf2eWeapon]
+ */
 export class Weapon extends Item {
     /** @type {ActorPF2e} */
     actor;
+
+    /**
+     * The actual weapon item relating to this weapon.
+     * Note that this will be null for attacks that have no corresponding weapon, such as NPC attacks not linked to
+     * a weapon.
+     * 
+     * @type {WeaponPF2e}
+     */
+    pf2eWeapon;
 
     /** @type {string} */
     slug;

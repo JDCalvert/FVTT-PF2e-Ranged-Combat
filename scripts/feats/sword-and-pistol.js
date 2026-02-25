@@ -1,5 +1,5 @@
-import { WeaponAttackProcessParams } from "../core/hook-params.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { getEffectFromActor, getItemFromActor, Util } from "../utils/utils.js";
 
 const SWORD_AND_PISTOL_FEAT_ID = "Compendium.pf2e.feats-srd.Item.dWbISC0di0r4oPCi";

@@ -3,7 +3,7 @@ import { ItemSelect } from "../utils/item-select-dialog.js";
 import { Util } from "../utils/utils.js";
 import { Ammunition, InventoryAmmunition, LoadedAmmunition, Weapon } from "./types.js";
 import { WeaponTransformer } from "./weapon-transformer/base.js";
-import { AdvancedWeaponSystemTransformer } from "./weapon-transformer/player-advanced-weapon-system.js";
+import { AdvancedWeaponSystemTransformer } from "./weapon-transformer/advanced-weapon-system.js";
 import { SimpleWeaponSystemTransformer } from "./weapon-transformer/simple-ammunition-system.js";
 import { SubItemTransformer } from "./weapon-transformer/sub-item-ammunition.js";
 

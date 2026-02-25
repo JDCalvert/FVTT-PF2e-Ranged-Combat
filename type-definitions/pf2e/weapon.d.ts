@@ -1,6 +1,9 @@
 class WeaponPF2e extends ItemPF2e {
     ammo: ItemPF2e | null;
     carryType: string;
+    /** The number of hands required to wield the weapon */
+    hands: number;
+    /** The number of hands currently holding the weapon */
     handsHeld: number;
     isRanged: boolean;
     traits: Set<string>;
@@ -19,6 +22,7 @@ class WeaponPF2eSystem extends ItemPF2eSystem {
         capacity: number;
     };
     baseItem: string;
+    containerId: string;
     damage: {
         damageType: string;
         dice: number;
@@ -30,6 +34,9 @@ class WeaponPF2eSystem extends ItemPF2eSystem {
     };
     reload: {
         value: string | null;
+    };
+    runes: {
+        property: string[];
     };
     subitems: SubItem[]; // Only in v13+
     selectedAmmoId: string; // Only in v12

@@ -1,14 +1,14 @@
 import { AuxiliaryActions } from "./auxiliary-actions.js";
-import { initialiseCarryTypeHandler } from "./change-carry-type.js";
-import { initialiseThrownWeaponCheck } from "./throw-weapon-check.js";
-import { initialiseThrownWeaponHandler } from "./throw-weapon-handler.js";
+import { CarryTypeProcessor } from "./change-carry-type.js";
+import { ThrownWeaponCheck } from "./throw-weapon-check.js";
+import { ThrownWeaponProcessor } from "./throw-weapon-processor.js";
 
 export class AdvancedThrownWeaponSystem {
     static initialise() {
-        initialiseCarryTypeHandler()
-        initialiseThrownWeaponCheck();
-        initialiseThrownWeaponHandler();
-
         AuxiliaryActions.initialise();
+        CarryTypeProcessor.initialise();
+        
+        ThrownWeaponCheck.initialise();
+        ThrownWeaponProcessor.initialise();
     }
 }

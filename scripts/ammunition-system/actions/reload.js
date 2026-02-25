@@ -1,6 +1,7 @@
 import { ClearJam } from "../../actions/clear-jam.js";
+import { HookManager } from "../../hook-manager/hook-manager.js";
+import { ReloadHookData } from "../../hook-manager/types/reload.js";
 import { Chat } from "../../utils/chat.js";
-import { HookManager } from "../../utils/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
 import { AmmunitionSystem, WeaponSystem } from "../../weapons/system.js";
@@ -88,7 +89,7 @@ export class Reload {
                 }
             },
             "reload",
-            Reload.localize("warningNoReloadableWeapons", { actor: actor.name })
+            Reload.localize("warning.noReloadableWeapons", { actor: actor.name })
         );
         if (!weapon) {
             return;
@@ -174,6 +175,8 @@ export class Reload {
             updates.create(loadedEffectSource);
 
             Reload.postToChat(weapon, null, options.messageParams);
+
+            HookManager.call("reload", /** @type {ReloadHookData} */{ weapon, ammunition: weapon.loadedAmmunition[0], updates });
         } else {
             if (weapon.remainingCapacity == 0 && weapon.loadedAmmunition.every(loaded => loaded.remainingUses == loaded.maxUses)) {
                 Util.warn(Reload.localize(`warning.${weapon.capacity > 1 ? "alreadyFullyLoaded" : "alreadyLoaded"}`, { weapon: weapon.name }));
@@ -217,9 +220,10 @@ export class Reload {
             }
 
             Reload.postToChat(weapon, ammunitionToLoad, options.messageParams);
+
+            HookManager.call("reload", /** @type {ReloadHookData} */{ weapon, ammunition: loadedAmmunition, updates });
         }
 
-        HookManager.call("reload", { weapon, updates });
         Hooks.callAll("pf2eRangedCombatReload", weapon.actor, weapon);
 
         return true;
@@ -267,7 +271,7 @@ export class Reload {
         numActions++;
 
         const ammunitionToAdd = ammunition.pop(1, updates);
-        await weapon.createAmmunition(ammunitionToAdd, updates);
+        const loadedAmmunition = await weapon.createAmmunition(ammunitionToAdd, updates);
 
         // If the weapon needs cocking, do so
         if (weapon.reloadActions > 0) {
@@ -278,7 +282,7 @@ export class Reload {
 
         Reload.postToChat(weapon, ammunitionToAdd, Chat.mergeParams(options.messageParams, { actionSymbol: String(numActions) }));
 
-        HookManager.call("reload", { weapon, updates });
+        HookManager.call("reload", /** @type {ReloadHookData} */({ weapon, ammunition: loadedAmmunition, updates }));
         Hooks.callAll("pf2eRangedCombatReloadMagazine", weapon.actor, weapon);
 
         return true;

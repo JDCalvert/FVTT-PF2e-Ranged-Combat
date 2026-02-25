@@ -1,4 +1,4 @@
-import { HookManager } from "../../utils/hook-manager.js";
+import { HookManager } from "../../hook-manager/hook-manager.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
 import { Ammunition, InventoryAmmunition, LoadedAmmunition, Weapon } from "../../weapons/types.js";

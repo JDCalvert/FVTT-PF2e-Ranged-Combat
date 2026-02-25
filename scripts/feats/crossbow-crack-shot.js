@@ -1,4 +1,4 @@
-import { HookManager } from "../utils/hook-manager.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
 import { Updates } from "../utils/updates.js";
 import { getItemFromActor, isInCombat, Util } from "../utils/utils.js";
 import { Weapon } from "../weapons/types.js";

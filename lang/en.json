@@ -141,7 +141,6 @@
             "disabled": "This functionality has been disabled since PF2e system version 7.7 changed how ammunition is handled. It will be restored in future updates.",
             "fireWeapon": "{actor} fires {ammunition}.",
             "fireWeaponRepeating": "{actor} fires {ammunition} ({remaining}/{capacity} remaining).",
-            "fireConjuredRound": "{actor} fires their conjured round.",
             "warning": {
                 "noCompatibleAmmunition": "{actor} has no ammunition for {weapon}."
             },
@@ -222,14 +221,6 @@
                     "actionName": "Clear Jam",
                     "warningNoJammedWeapons": "{actor} has no jammed weapons.",
                     "clearJamMessage": "{actor} clears the jam on their {weapon}."
-                },
-                "conjureBullet": {
-                    "conjuredRound": "Conjured Round",
-                    "warningNoAction": "{token} does not have the Conjure Bullet action.",
-                    "noReloadableWeapons": "You have no reloadable weapons.",
-                    "warningSingleRound": "{weapon} can only be loaded with one conjured round.",
-                    "chatMessage": "{token} uses Conjure Bullet to load their {weapon}.",
-                    "chatActionName": "Conjure Bullet"
                 },
                 "consolidateAmmunition": {
                     "chatMessage": "{actor} consolidates their ammunition.",
