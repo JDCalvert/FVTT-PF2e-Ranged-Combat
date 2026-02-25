@@ -1,3 +1,7 @@
+## 8.0.1 - 2026-02-25 (Pathfinder 2e 7.10.1 / 6.12.4)
+### Fix
+- Fix errors when rolling spell attacks.
+
 ## 8.0.0 - 2026-02-25 (Pathfinder 2e 7.10.1 / 6.12.4)
 ### Feature
 - Rewrite most of the module to support both Foundry v12 and v13 simutaneously and simplify code base.

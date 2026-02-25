@@ -88,7 +88,7 @@ export class Core {
 
                 // If we don't have all the information we need, or this isn't an attack roll,
                 // then just call the actual function
-                if (!actor || !contextWeapon || context.type !== "attack-roll") {
+                if (!(actor && contextWeapon && ["weapon", "melee"].includes(contextWeapon.type) && context.type === "attack-roll")) {
                     return wrapper(...args);
                 }
 
@@ -100,10 +100,6 @@ export class Core {
                 // Run any registered checks before rolling the attack
                 if (!await HookManager.runCheck("weapon-attack", /** @type {WeaponAttackCheckParams} */({ weapon }))) {
                     return;
-                }
-
-                if (weapon.selectedLoadedAmmunition) {
-                    context.options.add(`item:ammunition:id:${weapon.selectedLoadedAmmunition.id}`);
                 }
 
                 // Actually make the roll.
