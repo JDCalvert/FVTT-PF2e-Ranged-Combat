@@ -370,9 +370,9 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
         weapon.isRanged = pf2eItem.isRanged;
         weapon.isRepeating = weapon.hasTrait("repeating");
 
-        /** @type {WeaponPF2e | null} */
+        /** @type {WeaponPF2e} */
         let pf2eWeapon;
-        /** @type {MeleePF2e | null} */
+        /** @type {MeleePF2e} */
         let pf2eMelee;
 
         if (pf2eItem.type === "weapon") {
@@ -519,6 +519,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
                 ammunition.magazineLoadedEffect = magazineLoadedEffect;
 
+                applyRules(weapon, ammunition);
+
                 weapon.loadedAmmunition.push(ammunition);
                 weapon.selectedLoadedAmmunition = ammunition;
             }
@@ -526,6 +528,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             // Look for the Loaded effect
             const loadedEffect = Util.getEffect(weapon, LOADED_EFFECT_ID);
             if (loadedEffect) {
+                /** @type {CapacityFlags} */
                 const flags = Util.getFlags(loadedEffect);
 
                 for (const effectAmmunition of flags.ammunition) {
@@ -546,6 +549,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
                     ammunition.loadedEffect = loadedEffect;
 
+                    applyRules(weapon, ammunition);
+
                     weapon.loadedAmmunition.push(ammunition);
                 }
 
@@ -561,6 +566,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             // Look for the Loaded effect
             const loadedEffect = Util.getEffect(weapon, LOADED_EFFECT_ID);
             if (loadedEffect) {
+                /** @type {LoadedFlags} */
                 const flags = Util.getFlags(loadedEffect);
 
                 const ammunition = new StandardAmmunition();
@@ -579,6 +585,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 ammunition.allowDestroy = true;
 
                 ammunition.loadedEffect = loadedEffect;
+
+                applyRules(weapon, ammunition);
 
                 weapon.loadedAmmunition.push(ammunition);
                 weapon.selectedLoadedAmmunition = ammunition;
@@ -642,4 +650,22 @@ function buildCapacityLoadedEffectDescription(flags) {
             (previous, current) => previous + current,
             flags.originalDescription
         );
+}
+
+/**
+ * Attempt to find some inventory ammunition that matches the loaded ammunition so we can copy its rules and description
+ * 
+ * @param {Weapon} weapon 
+ * @param {LoadedAmmunition} ammunition 
+ */
+function applyRules(weapon, ammunition) {
+    const compatibleAmmunition = weapon.compatibleAmmunition.find(compatible => compatible.id === ammunition.id) ??
+        weapon.compatibleAmmunition.find(compatible => compatible.sourceId === ammunition.sourceId);
+    if (compatibleAmmunition) {
+        ammunition.rules = compatibleAmmunition.rules;
+        ammunition.descriptionText = compatibleAmmunition.descriptionText;
+    } else {
+        ammunition.rules = [];
+        ammunition.descriptionText = "";
+    }
 }

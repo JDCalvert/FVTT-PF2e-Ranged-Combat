@@ -80,6 +80,21 @@ export class Util {
     }
 
     /**
+     * Find a non-stowed item on the actor, preferably matching the passed item ID, but fall back on an item
+     * with the same source ID if one cannot be found.
+     * 
+     * @param {ActorPF2e} actor
+     * @param {string} itemId 
+     * @param {string} sourceId
+     * 
+     * @returns {ItemPF2e}
+     */
+    static findItem(actor, itemId, sourceId) {
+        return actor.items.find(item => item.id === itemId)
+            || actor.items.find(item => item.sourceId === sourceId);
+    }
+
+    /**
      * Find an effect on the weapon's actor with the given sourceId that is for this weapon
      * 
      * @param {Weapon} weapon

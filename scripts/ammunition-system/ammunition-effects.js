@@ -84,7 +84,7 @@ function applyAmmunitionEffect({ weapon, ammunition, updates }) {
                         "img": ammunition.img,
                         "system": {
                             "rules": rules,
-                            "description": ammunition.descriptionText
+                            "description.value": ammunition.descriptionText
                         },
                         "flags.pf2e-ranged-combat.ammunition": {
                             "name": ammunition.name,

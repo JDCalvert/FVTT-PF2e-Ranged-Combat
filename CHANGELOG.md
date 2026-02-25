@@ -1,3 +1,6 @@
+## 8.0.0 - 2026-02-25 (Pathfinder 2e 7.10.1 / 6.12.4)
+- 
+
 ## 7.3.4 - 2025-12-19 (Pathfinder 2e 7.8.0/6.12.4)
 - Change Hunt Prey-related TokenMark rules elements to `hunted-prey` instead of `hunt-prey` to match the system's implementation.
 
