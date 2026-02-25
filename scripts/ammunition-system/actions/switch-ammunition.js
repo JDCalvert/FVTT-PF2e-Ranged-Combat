@@ -1,137 +1,190 @@
-import { Choice, Section } from "../../../lib/lib-item-select-dialog-types/types.js";
-import { Weapon } from "../../types/pf2e-ranged-combat/weapon.js";
-import { PF2eConsumable } from "../../types/pf2e/consumable.js";
-import * as ItemSelect from "../../utils/item-select-dialog.js";
+import { Option, Section } from "../../../lib/lib-item-select-dialog-types/types.js";
+import { ItemSelect } from "../../utils/item-select-dialog.js";
 import { Updates } from "../../utils/updates.js";
-import { getControlledActorAndToken, isUsingSystemAmmunitionSystem, showWarning } from "../../utils/utils.js";
-import { getWeapon } from "../../utils/weapon-utils.js";
-
-const localize = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key);
-const localizeDialog = (key) => game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.ammunitionSelect." + key);
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.actions.switchAmmunition." + key, data);
-
-export async function switchAmmunition() {
-    if (isUsingSystemAmmunitionSystem()) {
-        ui.notifications.warn(game.i18n.localize("pf2e-ranged-combat.ammunitionSystem.disabled"));
-        return;
-    }
-
-    const { actor, token } = getControlledActorAndToken();
-    if (!actor) {
-        return;
-    }
-
-    const weapon = await getWeapon(actor, weapon => weapon.usesAmmunition, localize("warningNoWeaponUsesAmmunition"));
-    if (!weapon) {
-        return;
-    }
-
-    const updates = new Updates(actor);
-
-    await selectAmmunition(
-        weapon,
-        updates,
-        format("warningNoCompatibleAmmunitionAvailable", { weapon: weapon.name }),
-        localizeDialog("action.switch"),
-        true,
-        true
-    );
-
-    updates.handleUpdates();
-    Hooks.callAll("pf2eRangedCombatSwitchAmmunition", actor, token, weapon);
-}
+import { Util } from "../../utils/utils.js";
+import { AmmunitionSystem, WeaponSystem } from "../../weapons/system.js";
+import { InventoryAmmunition, Weapon } from "../../weapons/types.js";
+import { UNLOAD_IMG } from "../constants.js";
 
 /**
- * @param {Weapon} weapon 
- * @param {Updates} updates 
- * @param {string} nonAvailableMessage 
- * @param {string} selectNewMessage 
- * @param {boolean} defaultSetAsAmmunition 
- * @param {boolean} alwaysSetAsAmmunition 
- * @returns 
+ * @enum {number}
  */
-export async function selectAmmunition(
-    weapon,
-    updates,
-    nonAvailableMessage,
-    selectNewMessage,
-    defaultSetAsAmmunition,
-    alwaysSetAsAmmunition
-) {
-    const consumableAmmunition = weapon.actor.itemTypes.consumable
-        .filter(item => item.isAmmo && !item.isStowed)
-        .filter(ammo => ammo.quantity > 0 || !ammo.system.uses.autoDestroy)
-        .filter(ammo => weapon.isAmmunitionForWeapon(ammo));
+export const SetSelected = {
+    DefaultNo: 1,
+    DefaultYes: 2,
+    Always: 3
+};
 
-    const weaponAmmunition = weapon.actor.itemTypes.weapon
-        .filter(item => !item.isStowed)
-        .filter(item => item.quantity > 0)
-        .filter(item => weapon.isAmmunitionForWeapon(item));
+/**
+ * @enum {number}
+ */
+export const AutoSelect = {
+    None: 0,
+    Selected: 1,
+    SelectedOrOnly: 2
+};
 
-    const availableAmmunition = consumableAmmunition.concat(weaponAmmunition);
+/**
+ * @typedef {object} ChooseAmmunitionOptions
+ * @property {{predicate: (ammunition: InventoryAmmunition) => boolean, warningMessage?: string}} [filter]
+ * @property {SetSelected} [setSelected]
+ * @property {AutoSelect} [autoSelect]
+ * @property {boolean} [allowDeselect]
+ */
 
-    if (!availableAmmunition.length) {
-        showWarning(nonAvailableMessage);
-        return;
+export class SwitchAmmunition {
+    /**
+     * @param {string} key 
+     * @param {object} data 
+     * 
+     * @returns {string}
+     */
+    static localize(key, data) {
+        return AmmunitionSystem.localize(`actions.switchAmmunition.${key}`, data);
     }
 
-    const availableAmmunitionChoices = availableAmmunition.map(
-        ammunition => {
-            return new Choice(
-                ammunition.id,
-                `${ammunition.name} (${ammunition.quantity})`,
-                ammunition.img,
-                ammunition
-            );
+    static async action() {
+        const actor = Util.getControlledActor();
+        if (!actor) {
+            return;
         }
-    );
 
-    /** @type Section<PF2eConsumable>[] */
-    const sections = [];
-
-    if (weapon.ammunition) {
-        const currentAmmunition = availableAmmunitionChoices.findSplice(ammo => ammo.id === weapon.ammunition.id);
-        if (currentAmmunition) {
-            sections.push(
-                new Section(localizeDialog("header.current"), [currentAmmunition])
-            );
-        }
-    };
-    if (availableAmmunitionChoices.length) {
-        sections.push(new Section(localizeDialog("header.equipped"), availableAmmunitionChoices));
-    }
-
-    const result = await ItemSelect.getItemWithOptions(
-        localizeDialog("title"),
-        selectNewMessage,
-        sections,
-        alwaysSetAsAmmunition
-            ? []
-            : [
-                {
-                    id: "set-as-ammunition",
-                    label: localizeDialog("option.setAsAmmunition"),
-                    value: defaultSetAsAmmunition
-                }
-            ]
-    );
-
-    if (!result) {
-        return;
-    }
-
-    const selectedAmmunition = availableAmmunition.find(ammunition => ammunition.id === result.choice.id);
-
-    if (alwaysSetAsAmmunition || result.options["set-as-ammunition"]) {
-        updates.update(
-            weapon,
+        const weapon = await WeaponSystem.getWeapon(
+            actor,
             {
-                system: {
-                    selectedAmmoId: selectedAmmunition.id
-                }
+                required: weapon => weapon.expend > 0
+            },
+            "switchAmmunition",
+            SwitchAmmunition.localize("warningNoWeaponUsesAmmunition", { actor: actor.name })
+        );
+        if (!weapon) {
+            return;
+        }
+
+        const updates = new Updates(actor);
+
+        const ammunition = await SwitchAmmunition.chooseAmmunition(
+            weapon,
+            updates,
+            AmmunitionSystem.localize(`select.action.switch`),
+            {
+                setSelected: SetSelected.Always,
+                allowDeselect: true
             }
         );
+
+        updates.commit();
+
+        // Only call the hook if we actually changed or cleared the selected ammunition
+        if (ammunition) {
+            Hooks.callAll("pf2eRangedCombatSwitchAmmunition", actor, weapon);
+        }
     }
 
-    return selectedAmmunition;
+    /**
+     * Display a choice of all the ammunition compatible with the weapon, as well as the option to clear the selected ammunition
+     * 
+     * @param {Weapon} weapon 
+     * @param {Updates} updates
+     * @param {string} message Message to display at the top of the dialog
+     * @param {ChooseAmmunitionOptions} options
+     * 
+     * @returns {Promise<InventoryAmmunition | null>}
+     */
+    static async chooseAmmunition(weapon, updates, message, options) {
+        if (!weapon.compatibleAmmunition.length) {
+            Util.warn(AmmunitionSystem.localize("warning.noCompatibleAmmunition", { actor: weapon.actor.name, weapon: weapon.name }));
+            return null;
+        }
+
+        // Apply the filter given in options, if any
+        let compatibleAmmunition = weapon.compatibleAmmunition.filter(options?.filter?.predicate ?? (_ => true));
+        if (!compatibleAmmunition.length) {
+            Util.warn(options.filter?.warningMessage ?? AmmunitionSystem.localize("select.warning.noneValid", { weapon: weapon.name }));
+            return null;
+        }
+
+        const selectedAmmunition = compatibleAmmunition.findSplice(ammunition => ammunition === weapon.selectedInventoryAmmunition);
+        if (selectedAmmunition && options.autoSelect >= AutoSelect.Selected) {
+            return selectedAmmunition;
+        }
+
+        if (compatibleAmmunition.length === 1 && options.autoSelect === AutoSelect.SelectedOrOnly) {
+            return compatibleAmmunition[0];
+        }
+
+        /** @type {Section<InventoryAmmunition>[]} */
+        const sections = [];
+
+        // Display the currently-selected ammunition in its own category
+        if (selectedAmmunition) {
+            sections.push(
+                new Section(
+                    AmmunitionSystem.localize("select.header.current"),
+                    [AmmunitionSystem.buildChoice(selectedAmmunition)]
+                )
+            );
+        }
+
+        const heldAmmunition = compatibleAmmunition.filter(ammunition => ammunition.isHeld);
+        if (heldAmmunition.length > 0) {
+            sections.push(
+                new Section(
+                    WeaponSystem.localize("carried.held"),
+                    heldAmmunition.map(AmmunitionSystem.buildChoice)
+                )
+            );
+        }
+
+        const wornAmmunition = compatibleAmmunition.filter(ammunition => !ammunition.isHeld);
+        if (wornAmmunition.length > 0) {
+            sections.push(
+                new Section(
+                    WeaponSystem.localize("carried.worn"),
+                    wornAmmunition.map(AmmunitionSystem.buildChoice)
+                )
+            );
+        }
+
+        // Allow the option to clear the selected ammunition
+        if (selectedAmmunition && options.allowDeselect) {
+            const clearAmmunitionItem = new InventoryAmmunition();
+            clearAmmunitionItem.id = "clear";
+            clearAmmunitionItem.name = AmmunitionSystem.localize("select.option.clear");
+            clearAmmunitionItem.img = UNLOAD_IMG;
+
+            sections.push(new Section(AmmunitionSystem.localize("select.header.clear"), [ItemSelect.buildChoice(clearAmmunitionItem)]));
+        }
+
+        /** @type {Option[]} */
+        const selectOptions = [];
+        if (options.setSelected === SetSelected.DefaultNo || options.setSelected === SetSelected.DefaultYes) {
+            selectOptions.push(
+                {
+                    id: "set-as-ammunition",
+                    label: AmmunitionSystem.localize("select.option.setAsAmmunition"),
+                    value: options.setSelected === SetSelected.DefaultYes
+                }
+            );
+        }
+
+        const result = await ItemSelect.getItemWithOptions(
+            AmmunitionSystem.localize("select.titleWithWeapon", { weapon: weapon.name }),
+            message,
+            sections,
+            selectOptions
+        );
+        if (!result) {
+            return null;
+        }
+
+        // If we chose to clear the selected ammunition, do so and return nothing
+        if (result.choice.id === "clear") {
+            weapon.setSelectedAmmunition(null, updates);
+        } else if (options.setSelected === SetSelected.Always || result.options["set-as-ammunition"]) {
+            weapon.setSelectedAmmunition(result.choice.item, updates);
+        }
+
+        return result.choice.item;
+    }
 }

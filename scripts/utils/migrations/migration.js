@@ -1,12 +1,4 @@
-import { Migration001MultipleAmmunitions } from "./migration-001-multiple-ammunitions.js";
-import { Migration002ThrownWeaponGroups } from "./migration-002-thrown-weapon-groups.js";
-import { Migration003HuntedPreyArray } from "./migration-003-hunted-prey-array.js";
-
-const MIGRATIONS = [
-    new Migration001MultipleAmmunitions(),
-    new Migration002ThrownWeaponGroups(),
-    new Migration003HuntedPreyArray()
-];
+const MIGRATIONS = [];
 const LATEST_SCHEMA_VERSION = 3;
 
 export async function runMigrations() {

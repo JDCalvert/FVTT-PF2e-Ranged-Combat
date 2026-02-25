@@ -1,48 +1,45 @@
-import { MAGAZINE_LOADED_EFFECT_ID } from "../ammunition-system/constants.js";
-import { fireWeapon } from "../ammunition-system/fire-weapon-handler.js";
-import { isLoaded } from "../ammunition-system/utils.js";
-import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eItem } from "../types/pf2e/item.js";
-import { PF2eToken } from "../types/pf2e/token.js";
-import { HookManager } from "../utils/hook-manager.js";
+import { FireWeaponProcessor } from "../ammunition-system/fire-weapon-processor.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
+import { Chat } from "../utils/chat.js";
 import { Updates } from "../utils/updates.js";
-import { getEffectFromActor, getFlag, getItemFromActor, postActionToChat, postMessage, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
-import { getWeapons } from "../utils/weapon-utils.js";
+import { Util } from "../utils/utils.js";
+import { WeaponSystem } from "../weapons/system.js";
 
 const FAKE_OUT_FEAT_ID = "Compendium.pf2e.feats-srd.Item.Stydu9VtrhQZFZxt";
 
-export function initialiseFakeOut() {
-    HookManager.register("post-action", handlePostAction);
-    HookManager.register("weapon-damage", handleWeaponDamage);
-    Hooks.on("pf2e.startTurn", handleStartTurn);
+export class FakeOut {
+    static initialise() {
+        HookManager.register("post-action", handlePostAction);
+        HookManager.register("weapon-damage", handleWeaponDamage);
+        Hooks.on("pf2e.startTurn", handleStartTurn);
+    }
 }
 
 /**
- * @param {{ actor: PF2eActor, item: PF2eItem, result: any }}
+ * @param {PostActionHookData} data
  */
-function handlePostAction({ actor, item, result }) {
-    if (item.sourceId != FAKE_OUT_FEAT_ID) {
+function handlePostAction({ actor, item: action, result }) {
+    if (action.sourceId != FAKE_OUT_FEAT_ID) {
         return;;
     }
 
     result.match = true;
 
-    performFakeOut(actor, item);
+    perform(actor, action);
 }
 
 /**
- * 
- * @param {PF2eActor} actor 
- * @param {PF2eItem} fakeOutFeat 
+ * @param {ActorPF2e} actor 
+ * @param {ItemPF2e} fakeOutFeat 
  */
-async function performFakeOut(actor, fakeOutFeat) {
+async function perform(actor, fakeOutFeat) {
     const target = getSingleTarget();
     if (!target) {
         return;
     }
 
     // Find a wielded, loaded, firearm
-    const weapons = getWeapons(
+    const weapons = WeaponSystem.getWeapons(
         actor,
         weapon => {
             if (!(weapon.group === "firearm" || weapon.group === "crossbow")) {
@@ -53,32 +50,11 @@ async function performFakeOut(actor, fakeOutFeat) {
                 return false;
             }
 
-            if (useAdvancedAmmunitionSystem(actor)) {
-                if (weapon.isRepeating) {
-                    const loadedMagazineEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-                    if (!loadedMagazineEffect) {
-                        return false;
-                    }
-
-                    if (getFlag(loadedMagazineEffect, "remaining") < 1) {
-                        return false;
-                    }
-                }
-
-                if (weapon.requiresLoading && !isLoaded(weapon)) {
-                    return false;
-                }
-            } else if (preventFiringWithoutLoading(weapon.actor) && weapon.requiresLoading) {
-                if (!isLoaded(weapon)) {
-                    return false;
-                }
-            }
-
-            return true;
+            return weapon.isReadyToFire;
         }
     );
     if (!weapons.length) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
+        Util.warn(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
         return;
     }
 
@@ -87,11 +63,11 @@ async function performFakeOut(actor, fakeOutFeat) {
     // Find which of these weapons has the highest attack bonus
     const strikes = actor.system.actions.filter(strike => weaponIds.includes(strike.item?.id));
     if (!strikes.length) {
-        showWarning(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
+        Util.warn(game.i18n.format("pf2e-ranged-combat.feat.fakeOut.noWeapon", { actor: actor.name }));
         return;
     }
 
-    const hasDoneDamageTarget = getFlag(fakeOutFeat, "hasDoneDamage")?.[target.actor.signature] ?? [];
+    const hasDoneDamageTarget = Util.getFlag(fakeOutFeat, "hasDoneDamage")?.[target.actor.signature] ?? [];
 
     strikes.sort((s1, s2) => {
         const compareModifier = s2.totalModifier - s1.totalModifier;
@@ -128,26 +104,40 @@ async function performFakeOut(actor, fakeOutFeat) {
         };
     }
 
-    await postActionToChat(fakeOutFeat);
+    await Chat.postAction(fakeOutFeat);
+
+    const weapon = weapons.find(weapon => weapon.id === strike.item.id);
+
+    // If we're actually going to fire the weapon, perform a more rigorous check
+    // if (game.settings.get("pf2e-ranged-combat", "fakeOutFireWeapon")) {
+    //     const canActuallyFireWeapon = await FireWeaponCheck.runCheck({ weapon });
+    //     if (!canActuallyFireWeapon) {
+    //         return;
+    //     }
+    // }
+
+    const roll = await strike.roll(params);
+    if (!roll) {
+        return;
+    }
 
     if (game.settings.get("pf2e-ranged-combat", "fakeOutFireWeapon")) {
         const updates = new Updates(actor);
-        fireWeapon(
+        FireWeaponProcessor.processWeaponFired(
             {
-                updates,
-                weapon: weapons.find(weapon => weapon.id === strike.item.id)
+                weapon: weapon,
+                updates: updates,
+                context: null,
+                roll: null
             }
         );
-        updates.handleUpdates();
+        updates.commit();
     }
-
-
-    const roll = await strike.roll(params);
 
     switch (roll.degreeOfSuccess) {
         case 3:
             const match = strike.options.map(option => option.match(/proficiency:rank:(\d)/)).find(match => !!match);
-            const bonus = Math.max(2, match[1]);
+            const bonus = Math.max(2, Number(match[1]));
 
             postFakeOutMessage(actor, "success", bonus);
             break;
@@ -164,14 +154,14 @@ async function performFakeOut(actor, fakeOutFeat) {
 }
 
 /**
- * @returns {PF2eToken?} target
+ * @returns {TokenPF2e} target
  */
 function getSingleTarget() {
     const targetTokenIds = game.user.targets.ids;
     const targetTokens = canvas.tokens.placeables.filter(token => targetTokenIds.includes(token.id));
 
     if (targetTokens.length != 1) {
-        showWarning(game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.noTarget"));
+        Util.warn(game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.noTarget"));
         return null;
     }
 
@@ -179,31 +169,34 @@ function getSingleTarget() {
 }
 
 /**
- * @param {PF2eActor} actor 
+ * @param {ActorPF2e} actor 
  * @param {string} message 
  * @param {number?} bonus 
  */
 function postFakeOutMessage(actor, message, bonus) {
-    postMessage(
+    Chat.postMessage(
         actor,
         "systems/pf2e/icons/actions/Reaction.webp",
         game.i18n.format(`pf2e-ranged-combat.feat.fakeOut.result.${message}`, { bonus }),
         {
             actionName: game.i18n.localize("pf2e-ranged-combat.feat.fakeOut.name"),
-            numActions: "r",
+            actionSymbol: "r",
             traits: ["visual"],
             link: bonus ? "Compendium.pf2e.other-effects.Item.AHMUpMbaVkZ5A1KX" : null
         }
     );
 }
 
+/**
+ * @param {CombatantPF2e} combatant 
+ */
 function handleStartTurn(combatant) {
     const actor = combatant.actor;
     if (!actor) {
         return;
     }
 
-    const fakeOutFeat = getItemFromActor(actor, FAKE_OUT_FEAT_ID);
+    const fakeOutFeat = Util.getItem(actor, FAKE_OUT_FEAT_ID);
     if (!fakeOutFeat) {
         return;
     }
@@ -212,12 +205,16 @@ function handleStartTurn(combatant) {
 }
 
 function handleWeaponDamage({ weapon, target, updates }) {
-    const fakeOutFeat = getItemFromActor(weapon.actor, FAKE_OUT_FEAT_ID);
+    if (!target) {
+        return;
+    }
+
+    const fakeOutFeat = Util.getItem(weapon.actor, FAKE_OUT_FEAT_ID);
     if (!fakeOutFeat) {
         return;
     }
 
-    const hasDoneDamageMap = getFlag(fakeOutFeat, "hasDoneDamage") ?? {};
+    const hasDoneDamageMap = Util.getFlag(fakeOutFeat, "hasDoneDamage") ?? {};
     let hasDoneDamageTarget = hasDoneDamageMap[target.signature];
     if (!hasDoneDamageTarget) {
         hasDoneDamageTarget = [];

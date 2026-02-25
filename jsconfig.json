@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "nodenext",
+        "target": "esnext",
+        "checkJs": true,
+        "strict": false,
+        "moduleResolution": "nodenext"
+    },
+    "include": [
+        "**/*.js",
+        "type-definitions/**/*.d.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

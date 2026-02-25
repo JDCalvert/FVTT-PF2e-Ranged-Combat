@@ -1,24 +1,26 @@
-import { PF2eActor } from "../types/pf2e/actor.js";
-import { PF2eItem } from "../types/pf2e/item.js";
+import { Item } from "../weapons/types.js";
 
 export class Updates {
-    /** @type PF2eActor */
+    /** @type {ActorPF2e} */
     actor;
 
-    /** @type PF2eItem[] */
+    /** @type {ItemPF2eSource[]} */
     creates;
 
-    /** @type PF2eItem[] */
+    /** @type {string[]} */
     deletes;
 
-    /** @type PF2eItem[] */
+    /** @type {ItemPF2eSource[]} */
     updates;
 
     /** @type {(() => Promise<void>)[]} */
     deferredUpdates;
 
+    /** @type {{text: string, up: boolean}[]} */
+    floatyTextToShow;
+
     /**
-     * @param {PF2eActor} actor 
+     * @param {ActorPF2e} actor 
      */
     constructor(actor) {
         this.actor = actor;
@@ -32,16 +34,20 @@ export class Updates {
     }
 
     /**
-     * @param {PF2eItem} item 
+     * @param {ItemPF2eSource} item 
      */
     create(item) {
         this.creates.push(item);
     }
 
     /**
-     * @param {PF2eItem} item 
+     * @param {Item} item 
      */
     delete(item) {
+        if (!item) {
+            return;
+        }
+
         const existingDelete = this.deletes.find(deleteId => deleteId === item.id);
         if (!existingDelete) {
             this.deletes.push(item.id);
@@ -52,8 +58,8 @@ export class Updates {
      * Add the given update to the updates list.
      * If another update for the same item exists, merges the existing and new updates.
      * 
-     * @param {PF2eItem} item 
-     * @param {any} update 
+     * @param {Item} item 
+     * @param {object} update 
      */
     update(item, update) {
         const existingUpdate = this.updates.find(updateItem => updateItem._id === item.id);
@@ -89,10 +95,10 @@ export class Updates {
      * @returns {boolean}
      */
     hasChanges() {
-        return this.creates.length || this.deletes.length || this.updates.length || this.deferredUpdates.length;
+        return !!this.creates.length || !!this.deletes.length || !!this.updates.length || !!this.deferredUpdates.length;
     }
 
-    async handleUpdates() {
+    async commit() {
         for (const deferredUpdate of this.deferredUpdates) {
             await deferredUpdate();
         }
@@ -109,7 +115,7 @@ export class Updates {
                     for (const token of tokens) {
                         floatyText.up
                             ? token.showFloatyText({ create: { name: floatyText.text } })
-                            : token.showFloatyText({ upadte: { name: floatyText.text } });
+                            : token.showFloatyText({ update: { name: floatyText.text } });
                     }
                 },
                 i * 500

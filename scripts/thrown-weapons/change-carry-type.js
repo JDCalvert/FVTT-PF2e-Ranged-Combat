@@ -1,100 +1,122 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { PF2eWeapon } from "../types/pf2e/weapon.js";
 import { Updates } from "../utils/updates.js";
-import { getAttackPopout, getFlag } from "../utils/utils.js";
-import { useAdvancedThrownWeaponSystem } from "./utils.js";
+import { Util } from "../utils/utils.js";
+import { findGroupStacks, isThrownWeaponUsingAdvancedThrownWeaponSystem } from "./utils.js";
 
-export function initialiseCarryTypeHandler() {
-    /**
-     * Override the function for changing an items carrying position
-     */
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Actor.documentClasses.character.prototype.changeCarryType",
-        changeCarryType,
-        "MIXED"
-    );
+/**
+ * @typedef {object} ChangeCarryTypeOptions
+ * @property {string} carryType
+ * @property {number} handsHeld
+ * @property {boolean} inSlot
+ */
 
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Actor.documentClasses.npc.prototype.changeCarryType",
-        changeCarryType,
-        "MIXED"
-    );
+export class CarryTypeProcessor {
+    static initialise() {
+        /**
+         * Override the function for changing an items carrying position
+         */
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.character.prototype.changeCarryType",
+            changeCarryType,
+            "MIXED"
+        );
 
-    /** 
-     * Override the function for stowing or unstowing an item
-     */
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Actor.documentClasses.character.prototype.stowOrUnstow",
-        changeStowed,
-        "MIXED"
-    );
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.npc.prototype.changeCarryType",
+            changeCarryType,
+            "MIXED"
+        );
 
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Actor.documentClasses.npc.prototype.stowOrUnstow",
-        changeStowed,
-        "MIXED"
-    );
+        /** 
+         * Override the function for stowing or unstowing an item
+         */
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.character.prototype.stowOrUnstow",
+            changeStowed,
+            "MIXED"
+        );
 
-    libWrapper.register(
-        "pf2e-ranged-combat",
-        "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",
-        function(wrapper, ...args) {
-            if (this.actor && this.actor.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)) {
-                const updates = new Updates(this.actor);
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Actor.documentClasses.npc.prototype.stowOrUnstow",
+            changeStowed,
+            "MIXED"
+        );
 
-                const groupStacks = findGroupStacks(this);
-                const groupStackIds = groupStacks.map(stack => stack.id);
+        /**
+         * When deleting an item, remove its ID from all items 
+         */
+        libWrapper.register(
+            "pf2e-ranged-combat",
+            "CONFIG.PF2E.Item.documentClasses.weapon.prototype._onDelete",
+            /**
+             * @this {WeaponPF2e}
+             * @param {function(...any): void} wrapper
+             * @param  {...any} args
+             */
+            function (wrapper, ...args) {
+                if (this.actor && this.actor.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)) {
+                    const updates = new Updates(this.actor);
 
-                // Update all the weapons in the group to remove this item's ID
-                groupStacks.forEach(stack =>
-                    updates.update(
-                        stack,
-                        {
-                            flags: {
-                                "pf2e-ranged-combat": {
-                                    groupIds: groupStackIds
-                                }
-                            }
-                        }
-                    )
-                );
+                    const groupStacks = findGroupStacks(this);
+                    const groupStackIds = groupStacks.map(stack => stack.id);
 
-                if (groupStacks.length) {
-                    this.actor.itemTypes.melee.filter(melee => getFlag(melee, "weaponId") === this.id)
-                        .forEach(melee =>
-                            updates.update(
-                                melee,
-                                {
-                                    flags: {
-                                        "pf2e-ranged-combat": {
-                                            weaponId: groupStackIds[0]
-                                        }
+                    // Update all the weapons in the group to remove this item's ID
+                    groupStacks.forEach(stack =>
+                        updates.update(
+                            stack,
+                            {
+                                flags: {
+                                    "pf2e-ranged-combat": {
+                                        groupIds: groupStackIds
                                     }
                                 }
-                            )
-                        );
+                            }
+                        )
+                    );
+
+                    // If we still have some stacks, 
+                    if (groupStacks.length) {
+                        this.actor.itemTypes.melee.filter(melee => Util.getFlag(melee, "weaponId") === this.id)
+                            .forEach(melee =>
+                                updates.update(
+                                    melee,
+                                    {
+                                        flags: {
+                                            "pf2e-ranged-combat": {
+                                                weaponId: groupStackIds[0]
+                                            }
+                                        }
+                                    }
+                                )
+                            );
+                    }
+
+                    updates.commit();
                 }
 
-                updates.handleUpdates();
-            }
+                // If there's an attack popout open for this item, close it
+                Util.getAttackPopout(this)?.close({ force: true });
 
-            // If there's an attack popout open for this item, close it
-            getAttackPopout(this)?.close({ force: true });
-
-            wrapper(...args);
-        },
-        "WRAPPER"
-    );
+                wrapper(...args);
+            },
+            "WRAPPER"
+        );
+    }
 }
 
 /**
  * When we try to change the carry type of an item that represents a dropped version of another item,
  * move one item from the dropped stack to the original stack and perform the operation on the original,
  * if it puts the item in the character's hands.
+ * 
+ * @param {WeaponPF2e} item
+ * @param {function(ItemPF2e, ChangeCarryTypeOptions): Promise<void>} wrapper 
+ * @param {ChangeCarryTypeOptions} equipped
+ * 
+ * @returns {Promise<void>}
  */
 async function changeCarryType(
     wrapper,
@@ -122,7 +144,7 @@ async function changeCarryType(
 
     if (item.quantity === 0 && groupStacks.length > 1) {
         item.delete();
-        return [];
+        return;
     }
 
     // Find the stack that has the carry type we're trying to set
@@ -145,7 +167,7 @@ async function changeCarryType(
 
     // If there's a strike window open for this item, but not for the target stack, then open one for the new stack
     if (targetStack) {
-        if (getAttackPopout(item) && !getAttackPopout(targetStack)) {
+        if (Util.getAttackPopout(item) && !Util.getAttackPopout(targetStack)) {
             game.pf2e.rollActionMacro(
                 {
                     actorUUID: "Actor." + targetStack.actor.id,
@@ -157,9 +179,14 @@ async function changeCarryType(
         }
     }
 
-    return [];
+    return;
 }
 
+/**
+ * @param {function(ItemPF2e, ContainerPF2e): void} wrapper
+ * @param {WeaponPF2e} item Not actually a weapon at this point, but we exit early if this isn't a weapon
+ * @param {ContainerPF2e} container
+ */
 async function changeStowed(wrapper, item, container) {
     // Fall back on the default function if any of:
     // - The item isn't a thrown weapon
@@ -193,15 +220,6 @@ async function changeStowed(wrapper, item, container) {
     } else {
         moveBetweenStacks(item, targetStack);
     }
-}
-
-/**
- * @param {Weapon | PF2eWeapon} item 
- * @returns {PF2eWeapon[]}
- */
-export function findGroupStacks(item) {
-    const groupIds = item.flags["pf2e-ranged-combat"]?.groupIds ?? [item.type === "weapon" ? item.id : item.weaponId];
-    return item.actor.items.filter(i => groupIds.includes(i.id));
 }
 
 export async function createNewStack(item, groupStacks, carryType, handsHeld, inSlot, container = null) {
@@ -270,12 +288,16 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
             }
         );
 
-        await updates.handleUpdates();
+        await updates.commit();
 
         return targetStack;
     }
 }
 
+/**
+ * @param {WeaponPF2e} item
+ * @param {WeaponPF2e} targetStack
+ */
 function moveBetweenStacks(item, targetStack) {
     const updates = new Updates(item.actor);
 
@@ -283,6 +305,7 @@ function moveBetweenStacks(item, targetStack) {
     if (item.id === targetStack.id) {
         return;
     }
+
     // If we have zero in this stack, just delete it and don't increase the other stack's quantity
     if (item.quantity === 0) {
         updates.delete(item);
@@ -312,11 +335,7 @@ function moveBetweenStacks(item, targetStack) {
         );
     }
 
-    updates.handleUpdates();
+    updates.commit();
 }
 
-function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
-    return useAdvancedThrownWeaponSystem(item.actor)
-        && item.type === "weapon"
-        && item.system.traits.value.some(trait => trait.startsWith("thrown") || trait === "consumable");
-}
+

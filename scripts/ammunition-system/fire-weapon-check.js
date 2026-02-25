@@ -1,138 +1,145 @@
-import { Weapon } from "../types/pf2e-ranged-combat/weapon.js";
-import { HookManager } from "../utils/hook-manager.js";
-import { getEffectFromActor, getFlag, preventFiringWithoutLoading, showWarning, useAdvancedAmmunitionSystem } from "../utils/utils.js";
-import { CHAMBER_LOADED_EFFECT_ID, MAGAZINE_LOADED_EFFECT_ID } from "./constants.js";
-import { checkWeaponJammed, getSelectedAmmunition, isFullyLoaded, isLoaded } from "./utils.js";
+import { ClearJam } from "./actions/clear-jam.js";
+import { Configuration } from "../config/config.js";
+import { HookManager } from "../hook-manager/hook-manager.js";
+import { WeaponAttackCheckParams } from "../hook-manager/types/weapon-attack-check.js";
+import { Updates } from "../utils/updates.js";
+import { Util } from "../utils/utils.js";
+import { AmmunitionSystem } from "../weapons/system.js";
+import { Weapon } from "../weapons/types.js";
+import { AutoSelect, SetSelected, SwitchAmmunition } from "./actions/switch-ammunition.js";
+import { LOADED_EFFECT_ID } from "./constants.js";
 
-const format = (key, data) => game.i18n.format("pf2e-ranged-combat.ammunitionSystem.check." + key, data);
-
-export function initialiseFireWeaponCheck() {
-    HookManager.registerCheck("weapon-attack", checkCanWeaponFire);
-}
-
-/**
- * @param {Weapon} weapon 
- */
-async function checkCanWeaponFire({ weapon }) {
-    if (checkWeaponJammed(weapon)) {
-        return false;
+export class FireWeaponCheck {
+    /**
+     * @param {string} key 
+     * @param {object} data 
+     * 
+     * @returns {string}
+     */
+    static localize(key, data) {
+        return AmmunitionSystem.localize(`check.${key}`, data);
     }
 
-    if (useAdvancedAmmunitionSystem(weapon.actor)) {
-        // For repeating weapons, check that a magazine is loaded
+    /**
+     * @param {Weapon} weapon
+     * @param {string} reason
+     */
+    static warn(weapon, reason) {
+        Util.warn(FireWeaponCheck.localize(reason, { weapon: weapon.name }));
+    }
+
+    static initalise() {
+        HookManager.registerCheck("weapon-attack", FireWeaponCheck.runCheck);
+    }
+
+    /**
+     * Check that the weapon can be fired.
+     * 
+     * @param {WeaponAttackCheckParams} data
+     */
+    static async runCheck({ weapon }) {
+        // If the weapon doesn't use ammunition, we don't need to check
+        if (weapon.expend == null) {
+            return true;
+        }
+
+        // Cannot fire if jammed
+        if (ClearJam.checkJammed(weapon)) {
+            return false;
+        }
+
+        // Repeating weapons must have a magazine loaded with enough uses remaining and
+        // may need to have an action spent to reload them.
         if (weapon.isRepeating) {
-            if (!checkLoadedMagazine(weapon)) {
+            if (weapon.loadedAmmunition.length === 0) {
+                FireWeaponCheck.warn(weapon, "magazineNotLoaded");
+                return false;
+            }
+
+            const ammunition = weapon.loadedAmmunition[0];
+            if (ammunition.remainingUses === 0) {
+                FireWeaponCheck.warn(weapon, "magazineEmpty");
+                return false;
+            } else if (ammunition.remainingUses < weapon.expend) {
+                FireWeaponCheck.warn(weapon, "magazineNotEnough");
+                return false;
+            }
+
+            if (weapon.reloadActions > 0 && !Util.getEffect(weapon, LOADED_EFFECT_ID) && Configuration.preventFiringWithoutLoading(weapon.actor)) {
+                FireWeaponCheck.warn(weapon, "weaponNotLoaded");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Capacity weapons must have ammunition loaded and a chamber already selected
+        if (weapon.isCapacity) {
+            // No ammunition
+            if (weapon.loadedAmmunition.length === 0) {
+                FireWeaponCheck.warn(weapon, "weaponNotLoaded");
+                return false;
+            }
+
+            // Weapons with Capacity-X need to have a chamber selected before firing
+            if (!weapon.selectedLoadedAmmunition) {
+                FireWeaponCheck.warn(weapon, "chamberNotLoaded");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Weapons that can be loaded but do not have the Capacity-X trait must be loaded with some ammunition to fire.
+        // They may be loaded with multiple type of ammunition, but we must only fire one type on a given Strike.
+        // Filter to loaded ammunition that meets these requirements and, if there are multiple, give a choice. If there
+        // is none, then show a warning.
+        if (weapon.capacity > 0) {
+            weapon.selectedLoadedAmmunition = await AmmunitionSystem.chooseLoadedAmmunition(
+                weapon,
+                "fire",
+                {
+                    filter: {
+                        predicate: ammunition => ammunition.calculateTotalRemainingUses() >= weapon.expend,
+                        warningMessage: FireWeaponCheck.localize("notEnoughAmmunition", { weapon: weapon.name })
+                    },
+                    autoChooseSelected: true,
+                    autoChooseOnlyOption: true
+                }
+
+            );
+
+            // If we don't have a chamber selected, either we cancelled or were already shown a warning
+            if (!weapon.selectedLoadedAmmunition) {
                 return false;
             }
         }
 
-        // For reloadable weapons, check that the weapon is loaded
-        if (weapon.requiresLoading) {
-            if (!await checkLoadedRound(weapon)) {
+        // Reload-0 weapons that use ammunition must have some ammunition selected
+        if (weapon.reloadActions === 0) {
+            const updates = new Updates(weapon.actor);
+            weapon.selectedInventoryAmmunition = await SwitchAmmunition.chooseAmmunition(
+                weapon,
+                updates,
+                AmmunitionSystem.localize("select.action.fire"),
+                {
+                    filter: { predicate: ammunition => ammunition.quantity > 0 },
+                    autoSelect: AutoSelect.Selected,
+                    setSelected: SetSelected.DefaultNo
+                }
+            );
+            await updates.commit();
+            if (!weapon.selectedInventoryAmmunition) {
+                return false;
+            }
+
+            // Not enough uses left in the selected ammunition to fire
+            if (weapon.selectedInventoryAmmunition.calculateTotalRemainingUses() < weapon.expend) {
+                FireWeaponCheck.warn(weapon, "notEnoughAmmunition");
                 return false;
             }
         }
 
-        // For non-repeating weapons that don't require loading, we need to have enough
-        // ammunition in our selected stack to fire
-        if (weapon.usesAmmunition && !weapon.isRepeating && !weapon.requiresLoading) {
-            if (!checkAmmunition(weapon)) {
-                return false;
-            }
-        }
-    } else {
-        // Check the weapon has ammunition to fire
-        if (weapon.requiresAmmunition) {
-            if (!checkAmmunition(weapon)) {
-                return false;
-            }
-        }
-
-        // If Prevent Firing Weapon if not Loaded is enabled, check the weapon is loaded
-        if (preventFiringWithoutLoading(weapon.actor) && weapon.requiresLoading) {
-            if (!await checkLoadedRound(weapon)) {
-                return false;
-            }
-        }
+        return true;
     }
-
-    return true;
-}
-
-/**
- * Check if the weapon has a magazine loaded with at least one shot remaining
- */
-function checkLoadedMagazine(weapon) {
-    const magazineLoadedEffect = getEffectFromActor(weapon.actor, MAGAZINE_LOADED_EFFECT_ID, weapon.id);
-
-    // Check the weapon has a magazine loaded
-    if (!magazineLoadedEffect) {
-        showWarning(format("magazineNotLoaded", { weapon: weapon.name }));
-        return false;
-    }
-
-    // Check the magazine has at least one round remaining
-    if (getFlag(magazineLoadedEffect, "remaining") < 1) {
-        showWarning(format("magazineEmpty", { weapon: weapon.name }));
-        return false;
-    }
-
-    return true;
-}
-
-/**
- * Check the weapon has a round loaded
- */
-async function checkLoadedRound(weapon) {
-    if (!isLoaded(weapon)) {
-        showWarning(format("weaponNotLoaded", { weapon: weapon.name }));
-        return false;
-    }
-
-    if (weapon.isCapacity) {
-        if (!checkChamberLoaded(weapon)) {
-            return false;
-        }
-    }
-
-    if (weapon.isFiringBothBarrels && !isFullyLoaded(weapon)) {
-        showWarning(format("bothBarrelsNotLoaded", { weapon: weapon.name }));
-        return false;
-    }
-
-    if (useAdvancedAmmunitionSystem(weapon.actor) && weapon.isDoubleBarrel && !weapon.isFiringBothBarrels) {
-        const selectedAmmunition = await getSelectedAmmunition(weapon, "fire");
-        if (!selectedAmmunition) {
-            return false;
-        }
-
-        weapon.selectedAmmunition = selectedAmmunition;
-    }
-
-    return true;
-}
-
-function checkChamberLoaded(weapon) {
-    if (!getEffectFromActor(weapon.actor, CHAMBER_LOADED_EFFECT_ID, weapon.id)) {
-        showWarning(format("chamberNotLoaded", { weapon: weapon.name }));
-        return false;
-    }
-
-    return true;
-}
-
-function checkAmmunition(weapon) {
-    const ammunition = weapon.ammunition;
-    if (!ammunition) {
-        showWarning(format("noAmmunitionSelected", { weapon: weapon.name }));
-        return false;
-    } else if (ammunition.quantity < 1) {
-        showWarning(format("noAmmunitionRemaining", { weapon: weapon.name }));
-        return false;
-    } else if (weapon.isFiringBothBarrels && ammunition.quantity < 2) {
-        showWarning(format("bothBarrelsNotEnough", { weapon: weapon.name }));
-        return false;
-    }
-
-    return true;
 }
