@@ -177,7 +177,7 @@
                     "chatMessageSelectChamber": "{actor} sélectionne une chambre chargée avec un(e) {ammunition} sur sa/son {weapon}.",
                     "warningAlreadySelected": "La chambre de {weapon} est déjà chargée !",
                     "warningAlreadyLoaded": "La chambre de {weapon} est déjà chargée avec un(e) {ammunition} sélectionné(e) !",
-                    "chatMessageSelectNextChamber": "{token} sélectionne la prochaine chambre chargée de sa/son {weapon}."
+                    "chatMessageSelectNextChamber": "{actor} sélectionne la prochaine chambre chargée de sa/son {weapon}."
                 },
                 "reload": {
                     "magazine": {
