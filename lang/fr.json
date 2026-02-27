@@ -139,17 +139,22 @@
                 "header": {
                     "loaded": "Munition chargée",
                     "current": "Actuelle",
-                    "equipped": "Équipée"
+                    "equipped": "Équipée",
+                    "depleted": "Épuisé",
+                    "clear": "Supprimer"
                 },
                 "loaded": "Munition chargée",
                 "action": {
                     "unload": "Choisissez quelle munition n'est plus utilisée.",
                     "fire": "Choisissez quelle munition tirer.",
-                    "switch": "Choisissez quelle munition utiliser désormais."
+                    "switch": "Choisissez quelle munition utiliser désormais.",
+                    "load": "Sélectionnez la munition à charger."
                 },
                 "option": {
-                    "setAsAmmunition": "Définir comme munition"
-                }
+                    "setAsAmmunition": "Définir comme munition",
+                    "clear": "Effacer la munition sélectionnée"
+                },
+                "titleWithWeapon": "Sélectionner la munition ({weapon})"
             },
             "check": {
                 "weaponNotLoaded": "{weapon} n'est pas chargé(e).",
@@ -213,7 +218,7 @@
                     "reloadMagazine": "Recharger le chargeur"
                 }
             },
-            "fireWeaponRepeating": "{actor} utilise un(e) {ammunition} (Il en reste {remaining}/{capacity}).",
+            "fireWeaponRepeating": "{actor} tire un(e) {ammunition} (Il en reste {remaining}/{capacity}).",
             "effect": {
                 "config": {
                     "enable": {
@@ -240,7 +245,8 @@
                         "verbose": "Les munitions actuelles de votre arme ne correspondent pas aux munitions dont l'effet a été appliqué au jet de dégâts. Les munitions de l'arme peuvent avoir été modifiées depuis son dernier jet d'attaque."
                     }
                 }
-            }
+            },
+            "disabled": "Cette fonctionnalité a été désactivée depuis que la version 7.7 du système PF2e a modifié la manière dont les munitions sont gérées. Elle sera rétablie dans les prochaines mises à jour."
         },
         "utils": {
             "singleCharacterSelected": "Vous ne devez choisir qu'un personnage.",
