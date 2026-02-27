@@ -1,322 +1,358 @@
 {
-    "pf2e-ranged-combat": {
+  "pf2e-ranged-combat": {
+    "module-name": "PF2e Combat à distance",
+    "config": {
+      "schemaVersion": {
+        "name": "Version du schéma",
+        "hint": "La version actuelle des données relatives à ce module"
+      },
+      "postToChat": {
+        "none": "Aucun",
+        "simple": "Simple",
+        "full": "Complet"
+      },
+      "postActionToChat": {
+        "name": "Poster une action complète à partir de macros",
+        "hint": "Lorsque vous exécutez des macros qui simulent des actions, envoyez la description complète de l'action dans la conversation."
+      },
+      "postAmmunitionToChat": {
+        "name": "Afficher la description complète des munitions",
+        "hint": "Lorsque vous utilisez une arme à distance avec des munitions non standard, affichez la description de la munition dans la conversation."
+      },
+      "preventFireNotLoaded": {
+        "name": "Empêcher de tirer avec l'arme si elle n'est pas chargée",
+        "hint": "Pour les armes avec rechargement de 1 ou plus, empêchez les jets d'attaque avec cette arme à moins que vous n'ayez l'effet rechargement pour cette arme."
+      },
+      "advancedAmmunitionSystemPlayer": {
+        "name": "Système de munitions avancé",
+        "hint": "Personnages joueurs seulement. Suivre les munitions chargées pour les armes rechargeables et à répétition. Cette option est prioritaire sur l'option Empêcher de tirer avec l'arme si elle n'est pas chargée."
+      },
+      "advancedThrownWeaponSystemPlayer": {
+        "name": "Système d'arme de jet avancé",
+        "hint": "Personnages joueurs seulement. S'assure que les armes de jet soient lâchées après utilisation et nécessite qu'une autre arme soit dégainée avant une nouvelle attaque."
+      },
+      "requiredPermissionToShowMessages": {
+        "name": "Autorisation minimale pour voir les messages",
+        "hint": "Plusieurs fonctions de ce module envoient des messages dans la conversation, par exemple Recharger.\nCe module cachera ces messages aux joueurs n'ayant pas la permission requise sur l'acteur effectuant l'action."
+      },
+      "hideTokenIcons": {
+        "name": "Cacher les icônes d'effet des jetons",
+        "hint": "Cache les icônes des jetons pour les effets créés par ce module."
+      },
+      "category": {
+        "chatControls": {
+          "header": "Contrôles de la conversation",
+          "description": {
+            "main": "Paramètres permettant de poster dans la conversation.",
+            "full": "Plein : Poster l'action ou l'objet au complet.",
+            "simple": "Simple : Poster un petit message décrivant ce qui s'est passé.",
+            "none": "Aucun : Ne pas poster de message."
+          }
+        },
+        "ammunitionSystemPlayer": {
+          "header": "Système de munition (Joueur)",
+          "description": "Contrôle la manière dont le module test et régit les munitions en faisant des attaques à distance avec des personnages joueurs."
+        },
+        "ammunitionSystemNPC": {
+          "header": "Système de munition (PNJ)",
+          "description": {
+            "line1": "Contrôle la manière dont le module test et régit les munitions en faisant les attaques à distance avec des personnages PNJ.",
+            "line2": "Prenez note que le Système de munition avancé est contrôlé par le biais de la macro Configuration d'arme de PNJ incluse dans le module."
+          }
+        },
+        "ammunitionEffects": {
+          "header": "Effets des munitions",
+          "description": "Lorsqu'il est activé, ce module remplace la gestion des effets des munitions du système. Lorsque vous tirez avec une arme utilisant des munitions avec un effet, l'effet est appliqué au prochain jet de dégâts en utilisant cette arme avec les effets de la munition. Changer les munitions de l'arme entre le tir et le jet de dégâts appliquera les effets de la munition qui a été tirée et pas ceux de la munition sélectionnée pour l'arme."
+        },
+        "advancedThrownWeaponSystem": {
+          "header": "Système d'arme de jet avancé",
+          "description": {
+            "line1": "Lorsque cette option est activée, le module gère les piles d'armes de jet lancées (ex. les couteaux et les bombes). Le fait de tirer, rengainer ou ranger une arme crée une nouvelle pile contenant un objet dans le nouvel état. Le reste de la pile restera inchangé. S'il existe déjà une pile contenant cet objet dans le nouvel état, l'objet sera déplacé vers cette pile.",
+            "line2": "Notez que cette option ne s'applique qu'aux acteurs de type personnage joueur. Elle peut être activée pour un PNJ en utilisant la macro Configuration des armes de PNJ incluse dans le module."
+          }
+        },
+        "miscellaneous": {
+          "header": "Divers",
+          "description": "Autres paramètres du module qui n'ont pas leur place ailleurs."
+        }
+      }
+    },
+    "dialog": {
+      "button": {
+        "cancel": "Annuler"
+      }
+    },
+    "huntPrey": {
+      "warningNoAction": "{token} n'a pas l'action Chasser une proie.",
+      "unknownToken": "Jeton inconnu",
+      "maxTargetsOne": "une",
+      "maxTargetsTwo": "deux",
+      "maxTargetsThree": "trois",
+      "shareWithTwo": "Il peut partager l'effet avec deux alliés.",
+      "shareWithOne": "Il peut partager l'effet avec un allié.",
+      "huntThreeTargets": "{token} fait de {target1}, {target2} et {target3} ses proies.",
+      "huntTwoTargets": "{token} fait de {target1} et {target2} ses proies.",
+      "huntOneTarget": "{token} fait de {target1} sa proie.",
+      "warningNoTarget": "Pas de cible sélectionnée.",
+      "warningTooManyTargets": "Vous ne pouvez avoir que {maxTargets} proie(s).",
+      "precision": {
+        "attackNumber": "Attaque sur la proie",
+        "first": "Première",
+        "second": "Deuxième",
+        "third": "Troisième",
+        "subsequent": "Suivante"
+      },
+      "huntersEdge": {
+        "flurry": "Déluge",
+        "precision": "Précision",
+        "outwit": "Ruse"
+      }
+    },
+    "linkCompanion": {
+      "noAnimalCompanionFeat": "{actor} ne possède pas le don Compagnon animal du rôdeur.",
+      "noTarget": "Vous devez choisir une cible unique pour qu'elle devienne votre compagnon animal.",
+      "rangersAnimalCompanion": "Compagnon animal de {actor}",
+      "masterfulAnimalCompanion": "Compagnon magistral de {actor}",
+      "linkedCompanion": "Le compagnon est désormais le compagnon de {master}."
+    },
+    "thrownWeapons": {
+      "warningNotEquipped": "Vous n'avez pas équipé votre {weapon} !",
+      "warningNoAmmoLeft": "Vous n'avez plus aucun(e) {weapon} !"
+    },
+    "npcWeaponSystem": {
+      "warningNpcOnly": "Vous ne pouvez utiliser ceci que sur les PNJ.",
+      "dialog": {
+        "title": "Configuration des armes des PNJ",
+        "hint": "Ici, vous pouvez configurer le PNJ qui sera utilisé par le module PF2e Ranged Combat.",
+        "legendGeneral": "Général",
+        "enableAmmunition": "Activer le système de munitions avancées",
+        "enableThrown": "Activer le système d'arme de jet avancé",
+        "legendMapping": "Cartographie des armes",
+        "mappingHint": "Vous pouvez associer chaque attaque de votre PNJ à une arme et à des munitions, de sorte que le module les traite comme les armes d'un PJ.",
+        "labelWeapon": "Arme",
+        "weaponTypeMelee": "Corps-à-corps",
+        "weaponTypeRanged": "À distance",
+        "labelAmmunition": "Munition",
+        "done": "Terminé",
+        "cancel": "Annuler"
+      }
+    },
+    "ammunitionSystem": {
+      "disabled": "Cette fonctionnalité a été désactivée depuis que la version 7.7 du système PF2e a modifié la manière dont les munitions sont gérées. Elle sera rétablie dans les prochaines mises à jour.",
+      "fireWeapon": "{actor} tire un(e) {ammunition}.",
+      "fireWeaponRepeating": "{actor} tire un(e) {ammunition} (Il en reste {remaining}/{capacity}).",
+      "warning": {
+        "noCompatibleAmmunition": "Vous ne disposez pas de munitions compatibles avec votre {weapon}."
+      },
+      "select": {
+        "title": "Choisir la munition",
+        "titleWithWeapon": "Sélectionner la munition ({weapon})",
+        "action": {
+          "load": "Sélectionnez la munition à charger.",
+          "switch": "Choisissez quelle munition utiliser désormais.",
+          "unload": "Choisissez quelle munition n'est plus utilisée.",
+          "fire": "Choisissez quelle munition tirer."
+        },
+        "header": {
+          "loaded": "Munition chargée",
+          "current": "Actuelle",
+          "equipped": "Équipée",
+          "depleted": "Épuisée",
+          "clear": "Supprimer"
+        },
+        "option": {
+          "setAsAmmunition": "Définir comme munition",
+          "clear": "Effacer la munition sélectionnée"
+        },
+        "warning": {
+          "noneValid": "{weapon} ne dispose d'aucune munition valide."
+        }
+      },
+      "jammed": {
+        "weaponJammed": "{weapon} est enrayée."
+      },
+      "check": {
+        "weaponNotLoaded": "{weapon} n'est pas chargé(e).",
+        "magazineNotLoaded": "aucun chargeur dans {weapon}.",
+        "magazineEmpty": "Le chargeur de {weapon} est vide.",
+        "magazineNotEnough": "Le chargeur de {weapon} ne contient pas assez de munitions",
+        "chamberNotLoaded": "La chambre actuelle de {weapon} n'est pas chargée.",
+        "bothBarrelsNotLoaded": "Les deux canons de {weapon} ne sont pas chargés.",
+        "bothBarrelsNotEnough": "Il n'y a pas assez de munitions dans {weapon} pour faire feu avec les deux canons.",
+        "noAmmunitionSelected": "Pas de munitions sélectionnées pour {weapon}.",
+        "noAmmunitionRemaining": "Pas de munition restante pour {weapon}.",
+        "notEnoughAmmunition": "{weapon} ne dispose pas de suffisamment de munitions."
+      },
+      "effect": {
         "config": {
-            "postActionToChat": {
-                "name": "Poster une action complète à partir de macros",
-                "hint": "Lorsque vous exécutez des macros qui simulent des actions, envoyez la description complète de l'action dans la conversation."
-            },
-            "postAmmunitionToChat": {
-                "name": "Afficher la description complète des munitions",
-                "hint": "Lorsque vous utilisez une arme à distance avec des munitions non standard, affichez la description de la munition dans la conversation."
-            },
-            "schemaVersion": {
-                "name": "Version du schéma",
-                "hint": "La version actuelle des données relatives à ce module"
-            },
-            "advancedAmmunitionSystemPlayer": {
-                "name": "Système de munitions avancé",
-                "hint": "Personnages joueurs seulement. Suivre les munitions chargées pour les armes rechargeables et à répétition. Cette option est prioritaire sur l'option Empêcher de tirer avec l'arme si elle n'est pas chargée."
-            },
-            "advancedThrownWeaponSystemPlayer": {
-                "name": "Système d'arme de jet avancé",
-                "hint": "Personnages joueurs seulement. S'assure que les armes de jet soient lâchées après utilisation et nécessite qu'une autre arme soit dégainée avant une nouvelle attaque."
-            },
-            "requiredPermissionToShowMessages": {
-                "name": "Autorisation minimale pour voir les messages",
-                "hint": "Plusieurs fonctions de ce module envoient des messages dans la conversation, par exemple Recharger.\nCe module cachera ces messages aux joueurs n'ayant pas la permission requise sur l'acteur effectuant l'action."
-            },
-            "hideTokenIcons": {
-                "name": "Cacher les icônes d'effet des jetons",
-                "hint": "Cache les icônes des jetons pour les effets créés par ce module."
-            },
-            "preventFireNotLoaded": {
-                "name": "Empêcher de tirer avec l'arme si elle n'est pas chargée",
-                "hint": "Pour les armes avec rechargement de 1 ou plus, empêchez les jets d'attaque avec cette arme à moins que vous n'ayez l'effet rechargement pour cette arme."
-            },
-            "postToChat": {
-                "none": "Aucun",
-                "simple": "Simple",
-                "full": "Complet"
-            },
-            "category": {
-                "ammunitionSystemPlayer": {
-                    "header": "Système de munition (Joueur)",
-                    "description": "Contrôle la manière dont le module test et régit les munitions en faisant des attaques à distance avec des personnages joueurs."
-                },
-                "ammunitionSystemNPC": {
-                    "header": "Système de munition (PNJ)",
-                    "description": {
-                        "line1": "Contrôle la manière dont le module test et régit les munitions en faisant les attaques à distance avec des personnages PNJ.",
-                        "line2": "Prenez note que le Système de munition avancé est contrôlé par le biais de la macro Configuration d'arme de PNJ incluse dans le module."
-                    }
-                },
-                "chatControls": {
-                    "description": {
-                        "simple": "Simple : Poster un petit message décrivant ce qui s'est passé.",
-                        "main": "Paramètres permettant de poster dans la conversation.",
-                        "full": "Plein : Poster l'action ou l'objet au complet.",
-                        "none": "Aucun : Ne pas poster de message."
-                    },
-                    "header": "Contrôles de la conversation"
-                },
-                "ammunitionEffects": {
-                    "header": "Effets des munitions",
-                    "description": "Lorsqu'il est activé, ce module remplace la gestion des effets des munitions du système. Lorsque vous tirez avec une arme utilisant des munitions avec un effet, l'effet est appliqué au prochain jet de dégâts en utilisant cette arme avec les effets de la munition. Changer les munitions de l'arme entre le tir et le jet de dégâts appliquera les effets de la munition qui a été tirée et pas ceux de la munition sélectionnée pour l'arme."
-                },
-                "advancedThrownWeaponSystem": {
-                    "header": "Système d'arme de jet avancé",
-                    "description": {
-                        "line2": "Notez que cette option ne s'applique qu'aux acteurs de type personnage joueur. Elle peut être activée pour un PNJ en utilisant la macro Configuration des armes de PNJ incluse dans le module.",
-                        "line1": "Lorsque cette option est activée, le module gère les piles d'armes de jet lancées (ex. les couteaux et les bombes). Le fait de tirer, rengainer ou ranger une arme crée une nouvelle pile contenant un objet dans le nouvel état. Le reste de la pile restera inchangé. S'il existe déjà une pile contenant cet objet dans le nouvel état, l'objet sera déplacé vers cette pile."
-                    }
-                },
-                "miscellaneous": {
-                    "header": "Divers",
-                    "description": "Autres paramètres du module qui n'ont pas leur place ailleurs."
-                }
-            }
+          "enable": {
+            "name": "Autoriser les effets des munitions",
+            "hint": "Remplacer les effets des munitions du système avec une qui utilise les effets des munitions précédemment tirées"
+          },
+          "warningLevel": {
+            "name": "Niveau d'avertissement des effets des munitions",
+            "hint": "Le niveau d'avertissement pour montrer lorsque les effets des munitions ne s'appliquent pas comme prévu."
+          }
         },
-        "dialog": {
-            "button": {
-                "cancel": "Annuler"
-            }
+        "warning": {
+          "notMatched": {
+            "verbose": "Les munitions actuelles de votre arme ne correspondent pas aux munitions dont l'effet a été appliqué au jet de dégâts. Les munitions de l'arme peuvent avoir été modifiées depuis son dernier jet d'attaque.",
+            "simple": "Les munitions de l'arme ne correspondent pas à l'effet des munitions."
+          },
+          "damageWithoutEffect": {
+            "verbose": "Les munitions actuelles de votre arme possèdent un effet, mais il n'a pas été appliqué à ce jet de dégâts. Il se peut que les munitions de l'arme aient changé depuis le dernier jet d'attaque ou que des dégâts aient été lancés sans qu'il n'y ait eu de jet d'attaque préalable.",
+            "simple": "Dégâts des armes lancés sans les effets des munitions."
+          },
+          "button": {
+            "ok": "Ok",
+            "showSimple": "Ok (montrer les messages simples)",
+            "doNotShow": "Ok (ne plus montrer les messages)"
+          }
+        }
+      },
+      "actions": {
+        "names": {
+          "reload": "Recharger",
+          "unload": "Décharger",
+          "reloadMagazine": "Recharger le chargeur",
+          "nextChamber": "Chambre suivante"
         },
-        "huntPrey": {
-            "warningNoAction": "{token} n'a pas l'action Chasser une proie.",
-            "unknownToken": "Jeton inconnu",
-            "maxTargetsTwo": "deux",
-            "maxTargetsThree": "trois",
-            "shareWithOne": "Il peut partager l'effet avec un allié.",
-            "huntThreeTargets": "{token} fait de {target1}, {target2} et {target3} ses proies.",
-            "huntTwoTargets": "{token} fait de {target1} et {target2} ses proies.",
-            "warningNoTarget": "Pas de cible sélectionnée.",
-            "warningTooManyTargets": "Vous ne pouvez avoir que {maxTargets} proie(s).",
-            "maxTargetsOne": "une",
-            "shareWithTwo": "Il peut partager l'effet avec deux alliés.",
-            "huntOneTarget": "{token} fait de {target1} sa proie.",
-            "precision": {
-                "attackNumber": "Attaque sur la proie",
-                "first": "Première",
-                "second": "Deuxième",
-                "third": "Troisième",
-                "subsequent": "Suivante"
-            },
-            "huntersEdge": {
-                "flurry": "Déluge",
-                "outwit": "Ruse",
-                "precision": "Précision"
-            }
+        "clearJam": {
+          "actionName": "Débloquer l'enrayement",
+          "warningNoJammedWeapons": "{actor} n'a aucune arme enrayée.",
+          "clearJamMessage": "{acteur} débloque l'enrayement de {arme}."
         },
-        "thrownWeapons": {
-            "warningNotEquipped": "Vous n'avez pas équipé votre {weapon} !",
-            "warningNoAmmoLeft": "Vous n'avez plus aucun(e) {weapon} !"
+        "consolidateAmmunition": {
+          "chatMessage": "{actor} consolide ses munitions.",
+          "infoAlreadyConsolidated": "Los munitions de vos armes à répétition sont déjà consolidées !"
         },
-        "npcWeaponSystem": {
-            "warningNpcOnly": "Vous ne pouvez utiliser ceci que sur les PNJ.",
-            "dialog": {
-                "hint": "Ici, vous pouvez configurer le PNJ qui sera utilisé par le module PF2e Ranged Combat.",
-                "legendGeneral": "Général",
-                "enableAmmunition": "Activer le système de munitions avancées",
-                "legendMapping": "Cartographie des armes",
-                "labelWeapon": "Arme",
-                "weaponTypeMelee": "Corps-à-corps",
-                "weaponTypeRanged": "À distance",
-                "labelAmmunition": "Munition",
-                "cancel": "Annuler",
-                "done": "Terminé",
-                "title": "Configuration des armes des PNJ",
-                "enableThrown": "Activer le système d'arme de jet avancé",
-                "mappingHint": "Vous pouvez associer chaque attaque de votre PNJ à une arme et à des munitions, de sorte que le module les traite comme les armes d'un PJ."
-            }
+        "nextChamber": {
+          "noCapacityWeapons": "Vous n'avez pas d'armes disposant du trait capacité.",
+          "warningAlreadyLoaded": "La chambre de {weapon} est déjà chargée avec un(e) {ammunition} sélectionné(e) !",
+          "chatMessageSelectChamber": "{actor} sélectionne une chambre chargée avec un(e) {ammunition} sur sa/son {weapon}.",
+          "warningAlreadySelected": "La chambre de {weapon} est déjà chargée !",
+          "chatMessageSelectNextChamber": "{actor} sélectionne la prochaine chambre chargée de sa/son {weapon}."
         },
-        "ammunitionSystem": {
-            "fireWeapon": "{actor} tire un(e) {ammunition}.",
+        "reload": {
+          "magazine": {
             "warning": {
-                "noCompatibleAmmunition": "Vous ne disposez pas de munitions compatibles avec votre {weapon}."
-            },
-            "select": {
-                "title": "Choisir la munition",
-                "header": {
-                    "loaded": "Munition chargée",
-                    "current": "Actuelle",
-                    "equipped": "Équipée",
-                    "depleted": "Épuisé",
-                    "clear": "Supprimer"
-                },
-                "loaded": "Munition chargée",
-                "action": {
-                    "unload": "Choisissez quelle munition n'est plus utilisée.",
-                    "fire": "Choisissez quelle munition tirer.",
-                    "switch": "Choisissez quelle munition utiliser désormais.",
-                    "load": "Sélectionnez la munition à charger."
-                },
-                "option": {
-                    "setAsAmmunition": "Définir comme munition",
-                    "clear": "Effacer la munition sélectionnée"
-                },
-                "titleWithWeapon": "Sélectionner la munition ({weapon})"
-            },
-            "check": {
-                "weaponNotLoaded": "{weapon} n'est pas chargé(e).",
-                "magazineEmpty": "Le chargeur de {weapon} est vide.",
-                "chamberNotLoaded": "La chambre actuelle de {weapon} n'est pas chargée.",
-                "bothBarrelsNotLoaded": "Les deux canons de {weapon} ne sont pas chargés.",
-                "noAmmunitionSelected": "Pas de munitions sélectionnées pour {weapon}.",
-                "noAmmunitionRemaining": "Pas de munition restante pour {weapon}.",
-                "bothBarrelsNotEnough": "Il n'y a pas assez de munitions dans {weapon} pour faire feu avec les deux canons.",
-                "magazineNotLoaded": "aucun chargeur dans {weapon}."
-            },
-            "actions": {
-                "consolidateAmmunition": {
-                    "chatMessage": "{actor} consolide ses munitions.",
-                    "infoAlreadyConsolidated": "Los munitions de vos armes à répétition sont déjà consolidées !"
-                },
-                "nextChamber": {
-                    "noCapacityWeapons": "Vous n'avez pas d'armes disposant du trait capacité.",
-                    "warningNotLoaded": "{weapon} n'est pas chargé(e) !",
-                    "chatMessageSelectChamber": "{actor} sélectionne une chambre chargée avec un(e) {ammunition} sur sa/son {weapon}.",
-                    "warningAlreadySelected": "La chambre de {weapon} est déjà chargée !",
-                    "warningAlreadyLoaded": "La chambre de {weapon} est déjà chargée avec un(e) {ammunition} sélectionné(e) !",
-                    "chatMessageSelectNextChamber": "{actor} sélectionne la prochaine chambre chargée de sa/son {weapon}."
-                },
-                "reload": {
-                    "magazine": {
-                        "warning": {
-                            "noRepeatingWeapons": "Vous n'avez pas d'armes à répétition.",
-                            "fullyLoaded": "un chargeur plein est déjà chargé dans votre {weapon}.",
-                            "alreadyMoreAmmo": "Le chargeur actuel de votre {weapon} est déjà chargé avec {ammo} munitions."
-                        }
-                    },
-                    "warning": {
-                        "noReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
-                        "noMagazineLoaded": "aucun chargeur dans votre {weapon} !",
-                        "magazineEmpty": "Le chargeur de {weapon} est vide !",
-                        "alreadyLoaded": "{weapon} est déjà chargé(e).",
-                        "alreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
-                        "notEnoughAmmunition": "Les munitions choisies pour votre {weapon} sont épuisées."
-                    },
-                    "performed": {
-                        "weapon": "{actor} recharge sa/son {weapon}.",
-                        "weaponAmmunition": "{actor} recharge sa/son {weapon} avec {ammunition}.",
-                        "weaponAmmunitionCharges": "{actor} charge sa/son {weapon} avec {ammunition} ({charges}/{maxCharges})."
-                    }
-                },
-                "switchAmmunition": {
-                    "warningNoWeaponUsesAmmunition": "Vous n'avez pas d'armes utilisant des munitions.",
-                    "dialogTitle": "Choisir la munition"
-                },
-                "unload": {
-                    "unloadWeaponAmmunition": "{actor} retire {ammunition} de sa/son {weapon}.",
-                    "unloadWeapon": "{actor} décharge sa/son {weapon}.",
-                    "noLoadedWeapons": "Vous n'avez pas d'arme chargée.",
-                    "warningNotLoaded": "{weapon} n'est pas chargé(e) !"
-                },
-                "names": {
-                    "unload": "Décharger",
-                    "reload": "Recharger",
-                    "nextChamber": "Chambre suivante",
-                    "reloadMagazine": "Recharger le chargeur"
-                }
-            },
-            "fireWeaponRepeating": "{actor} tire un(e) {ammunition} (Il en reste {remaining}/{capacity}).",
-            "effect": {
-                "config": {
-                    "enable": {
-                        "name": "Autoriser les effets des munitions",
-                        "hint": "Remplacer les effets des munitions du système avec une qui utilise les effets des munitions précédemment tirées"
-                    },
-                    "warningLevel": {
-                        "name": "Niveau d'avertissement des effets des munitions",
-                        "hint": "Le niveau d'avertissement pour montrer lorsque les effets des munitions ne s'appliquent pas comme prévu."
-                    }
-                },
-                "warning": {
-                    "button": {
-                        "ok": "Ok",
-                        "doNotShow": "Ok (ne plus montrer les messages)",
-                        "showSimple": "Ok (montrer les messages simples)"
-                    },
-                    "damageWithoutEffect": {
-                        "simple": "Dégâts des armes lancés sans les effets des munitions.",
-                        "verbose": "Les munitions actuelles de votre arme possèdent un effet, mais il n'a pas été appliqué à ce jet de dégâts. Il se peut que les munitions de l'arme aient changé depuis le dernier jet d'attaque ou que des dégâts aient été lancés sans qu'il n'y ait eu de jet d'attaque préalable."
-                    },
-                    "notMatched": {
-                        "simple": "Les munitions de l'arme ne correspondent pas à l'effet des munitions.",
-                        "verbose": "Les munitions actuelles de votre arme ne correspondent pas aux munitions dont l'effet a été appliqué au jet de dégâts. Les munitions de l'arme peuvent avoir été modifiées depuis son dernier jet d'attaque."
-                    }
-                }
-            },
-            "disabled": "Cette fonctionnalité a été désactivée depuis que la version 7.7 du système PF2e a modifié la manière dont les munitions sont gérées. Elle sera rétablie dans les prochaines mises à jour."
-        },
-        "utils": {
-            "singleCharacterSelected": "Vous ne devez choisir qu'un personnage.",
-            "warningDialog1": "Vous ne pouvez accomplir cette action parce que :",
-            "buttonOK": "Ok",
-            "buttonDoNotShowAgain": "Ok (Ne plus afficher)",
-            "migration": {
-                "multipleAmmunitions.consoleInfo": "PF2e Ranged combat - Migration en cours 1 : Mise à jour des munitions multiples",
-                "thrownWeaponGroups.consoleInfo": "PF2e Ranged combat - Migration en cours 2 : Groupes des armes de jet",
-                "huntedPrey.consoleInfo": "PF2e Ranged Combat : Migration en cours 3 : série Chasser une proie"
-            },
-            "warningDialog2": "Il s'agit d'une fonctionnalité du module PF2e Ranged combat.",
-            "warningDialog3": "Vous pouvez apprendre comment utiliser le module <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">ici</a>."
-        },
-        "actions": {
-            "alchemicalCrossbow": {
-                "warningAlreadyLoaded": "{weeapon} de {token} est déjà chargée avec {bomb}.",
-                "bombWillBeReturned": "{bomb} sera remis(e) dans votre inventaire.",
-                "usesWillBeWasted": "Les utilisations restantes de {bomb} seront gâchées.",
-                "loadInsteadDialogTitle": "{weapon} déjà chargée",
-                "loadInstead": "Voulez-vous charger {bomb} à la place ?",
-                "buttonLoad": "Charger",
-                "buttonDoNotLoad": "Ne pas charger",
-                "lesser": "Inférieur(e)",
-                "tokenLoadsWeaponWithBomb": "{token} charge sa/son {weapon} avec {bomb}.",
-                "warningWeaponNotLoaded": "{weapon} de {token} n'est pas chargé avec une bombe alchimique.",
-                "shouldUnloadDialogTitle": "Défausser {bomb}",
-                "shouldUnloadInstead": "Etes-vous sûr de vouloir décharger {bomb} de {weapon} ?",
-                "buttonUnload": "Décharger",
-                "buttonDoNotUnload": "Ne pas décharger",
-                "tokenUnloadsBombFromWeapon": "{token} décharge {bomb} de sa/son {weapon}.",
-                "warningNoAlchemicalCrossbow": "{token} n'a pas d'Arbalète alchimique.",
-                "weaponIsLoadedWithCharges": "{weapon} est chargé(e) avec {bomb} avec {charges}/{maxCharges} utilisations restantes.",
-                "shouldUnloadDialogRestWasted": "Les utilisations restantes seront gâchées.",
-                "warningNoLesserAlchemicalBombs": "{token} ne possède pas de bombes alchimiques inférieures infligeant des dégâts d'énergie."
-            },
-            "alchemicalShot": {
-                "warningNoFeat": "{actor} n'a pas le don Tir alchimique.",
-                "warningNotWieldingProperWeapon": "{actor} ne manie pas d'arme à feu ni d'arbalète.",
-                "warningNoAlchemicalBombs": "{actor} n'a pas de bombes alchimiques.",
-                "pourBombIntoWeapon": "{actor} verse le contenu de {bomb} dans sa/son {weapon}.",
-                "alchemicalShot": "Tir alchimique"
+              "noRepeatingWeapons": "Vous n'avez pas d'armes à répétition.",
+              "fullyLoaded": "un chargeur plein est déjà chargé dans votre {weapon}.",
+              "alreadyMoreAmmo": "Le chargeur actuel de votre {weapon} est déjà chargé avec {ammo} munitions."
             }
+          },
+          "warning": {
+            "noReloadableWeapons": "Vous ne possédez aucune arme à recharger.",
+            "noMagazineLoaded": "aucun chargeur dans votre {weapon} !",
+            "magazineEmpty": "Le chargeur de {weapon} est vide !",
+            "alreadyLoaded": "{weapon} est déjà chargé(e).",
+            "alreadyFullyLoaded": "{weapon} est déjà totalement chargé(e).",
+            "notEnoughAmmunition": "Les munitions choisies pour votre {weapon} sont épuisées."
+          },
+          "performed": {
+            "weapon": "{actor} recharge sa/son {weapon}.",
+            "weaponAmmunition": "{actor} recharge sa/son {weapon} avec {ammunition}.",
+            "weaponAmmunitionCharges": "{actor} charge sa/son {weapon} avec {ammunition} ({charges}/{maxCharges})."
+          }
         },
-        "feat": {
-            "fakeOut": {
-                "noTarget": "Vous ne pouvez sélectionner qu'une cible.",
-                "config": {
-                    "dc": {
-                        "enemyDC": "CA de l'ennemi",
-                        "name": "Tromper le DD",
-                        "hint": "Lors de l'utilisation de l'action Tromper le DD, le DD contre lequel il faut lancer le dé est le même que celui de l'action Tromper. Le DD standard de l'aide était de 20 avant le remaster et de 15 après le remaster, bien qu'une règle maison populaire consiste à utiliser la CA de l'ennemi."
-                    }
-                },
-                "result": {
-                    "criticalFailure": "Votre allié subit une pénalité de circonstances de -1 à son test.",
-                    "failure": "Vous ne parvenez pas à aider votre allié.",
-                    "success": "Vous accordez à votre allié un bonus de circonstances de +{bonus} à son test."
-                },
-                "noWeapon": "{actor} ne brandit pas d'arme à feu ou d'arbalète chargée.",
-                "name": "Tromper"
-            }
+        "switchAmmunition": {
+          "warningNoWeaponUsesAmmunition": "Vous n'avez pas d'armes utilisant des munitions."
         },
-        "linkCompanion": {
-            "rangersAnimalCompanion": "Compagnon animal de {actor}",
-            "linkedCompanion": "Le compagnon est désormais le compagnon de {master}.",
-            "noAnimalCompanionFeat": "{actor} ne possède pas le don Compagnon animal du rôdeur.",
-            "noTarget": "Vous devez choisir une cible unique pour qu'elle devienne votre compagnon animal.",
-            "masterfulAnimalCompanion": "Compagnon magistral de {actor}"
+        "unload": {
+          "noLoadedWeapons": "Vous n'avez pas d'arme chargée.",
+          "warningNotLoaded": "{weapon} n'est pas chargé(e) !",
+          "unloadWeapon": "{actor} décharge sa/son {weapon}.",
+          "unloadWeaponAmmunition": "{actor} retire {ammunition} de sa/son {weapon}."
+        }
+      }
+    },
+    "weaponSystem": {
+      "select": {
+        "title": "Sélection d'arme",
+        "action": {
+          "generic": "Sélectionner comme arme.",
+          "reload": "Sélectionner une arme à recharger.",
+          "unload": "Sélectionner une arme à décharger.",
+          "switchAmmunition": "Sélectionner une arme pour changer de munitions."
+        }
+      },
+      "carried": {
+        "held": "Détenue",
+        "equipped": "Équipée",
+        "worn": "Portée",
+        "stowed": "Rangée"
+      }
+    },
+    "utils": {
+      "singleCharacterSelected": "Vous ne devez choisir qu'un personnage.",
+      "warningDialog1": "Vous ne pouvez accomplir cette action parce que :",
+      "warningDialog2": "Il s'agit d'une fonctionnalité du module PF2e Ranged combat.",
+      "warningDialog3": "Vous pouvez apprendre comment utiliser le module <a href=\"https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/README.md\">ici</a>.",
+      "buttonOK": "Ok",
+      "buttonDoNotShowAgain": "Ok (Ne plus afficher)",
+      "migration": {
+        "multipleAmmunitions.consoleInfo": "PF2e Ranged combat - Migration en cours 1 : Mise à jour des munitions multiples",
+        "thrownWeaponGroups.consoleInfo": "PF2e Ranged combat - Migration en cours 2 : Groupes des armes de jet",
+        "huntedPrey.consoleInfo": "PF2e Ranged Combat : Migration en cours 3 : série Chasser une proie"
+      }
+    },
+    "actions": {
+      "alchemicalCrossbow": {
+        "warningAlreadyLoaded": "{weeapon} de {token} est déjà chargée avec {bomb}.",
+        "bombWillBeReturned": "{bomb} sera remis(e) dans votre inventaire.",
+        "usesWillBeWasted": "Les utilisations restantes de {bomb} seront gâchées.",
+        "loadInsteadDialogTitle": "{weapon} déjà chargée",
+        "weaponIsLoadedWithCharges": "{weapon} est chargé(e) avec {bomb} avec {charges}/{maxCharges} utilisations restantes.",
+        "loadInstead": "Voulez-vous charger {bomb} à la place ?",
+        "buttonLoad": "Charger",
+        "buttonDoNotLoad": "Ne pas charger",
+        "lesser": "Inférieur(e)",
+        "tokenLoadsWeaponWithBomb": "{token} charge sa/son {weapon} avec {bomb}.",
+        "warningWeaponNotLoaded": "{weapon} de {token} n'est pas chargé avec une bombe alchimique.",
+        "shouldUnloadDialogTitle": "Défausser {bomb}",
+        "shouldUnloadDialogRestWasted": "Les utilisations restantes seront gâchées.",
+        "shouldUnloadInstead": "Etes-vous sûr de vouloir décharger {bomb} de {weapon} ?",
+        "buttonUnload": "Décharger",
+        "buttonDoNotUnload": "Ne pas décharger",
+        "tokenUnloadsBombFromWeapon": "{token} décharge {bomb} de sa/son {weapon}.",
+        "warningNoAlchemicalCrossbow": "{token} n'a pas d'Arbalète alchimique.",
+        "warningNoLesserAlchemicalBombs": "{token} ne possède pas de bombes alchimiques inférieures infligeant des dégâts d'énergie."
+      },
+      "alchemicalShot": {
+        "warningNoFeat": "{actor} n'a pas le don Tir alchimique.",
+        "warningNotWieldingProperWeapon": "{actor} ne manie pas d'arme à feu ni d'arbalète.",
+        "warningNoAlchemicalBombs": "{actor} n'a pas de bombes alchimiques.",
+        "pourBombIntoWeapon": "{actor} verse le contenu de {bomb} dans sa/son {weapon}.",
+        "alchemicalShot": "Tir alchimique"
+      },
+      "riskyReload": {
+        "warningNotWieldingProperWeapon": "{actor} ne manie pas d'arme à feu.",
+        "weaponJammed": "L'arme de {actor} s'est enrayée après l'échec de sa Frappe de Rechargement risqué !"
+      }
+    },
+    "feat": {
+      "fakeOut": {
+        "config": {
+          "description": "Contrôle la façon dont le module gère l'automatisation de Leurrer.",
+          "dc": {
+            "name": "DD de Leurrer",
+            "hint": "Lors de l'utilisation de l'action Leurrer, le DD contre lequel il faut lancer le dé est le DD standard d'Aider. Il était de 20 avant le remaster et de 15 après le remaster, bien qu'une règle maison populaire consiste à utiliser la CA de l'ennemi.",
+            "enemyDC": "CA de l'ennemi"
+          },
+          "fireWeapon": {
+            "name": "Tirer avec l'arme",
+            "hint": "Faut-il réellement tirer avec l'arme en utilisant Leurrer ? Les règles du de la Pathfinder Society précisent que ce n'est pas nécessaire."
+          }
         },
-        "module-name": "PF2e Combat à distance"
+        "name": "Leurrer",
+        "noWeapon": "{actor} ne brandit pas d'arme à feu ou d'arbalète chargée.",
+        "noTarget": "Vous ne pouvez sélectionner qu'une cible.",
+        "result": {
+          "success": "Vous accordez à votre allié un bonus de circonstances de +{bonus} à son test.",
+          "failure": "Vous ne parvenez pas à aider votre allié.",
+          "criticalFailure": "Votre allié subit une pénalité de circonstances de -1 à son test."
+        }
+      }
     }
+  }
 }
