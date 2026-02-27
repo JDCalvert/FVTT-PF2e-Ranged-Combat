@@ -133,16 +133,18 @@
             }
         },
         "ammunitionSystem": {
-            "fireWeapon": "{actor}击发了{ammunition}。",
-            "fireWeaponRepeating": "{actor}使用了{ammunition} (尚余{remaining}/{capacity})。",
-            "warning": {
-                "noCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。"
+            "fireWeapon": "{actor}发射了{ammunition}。",
+            "fireWeaponRepeating": "{actor}发射了{ammunition}（剩余{remaining}/{capacity}）。",
+            "fireConjuredRound": "{actor}击发了召回子弹。",
+            "utils": {
+                "warningFullyLoaded": "{weapon}已装填满。",
+                "warningLoaded": "{weapon}已被装填。"
             },
-            "select": {
+            "ammunitionSelect": {
                 "title": "选择弹药",
-                "loaded": "装填中的弹药",
+                "loadedAmmunition": "装填中的弹药",
                 "header": {
-                    "loaded": "已装填弹药",
+                    "loadedAmmunition": "已装填弹药",
                     "equipped": "装备弹药",
                     "current": "当前弹药"
                 },
@@ -161,11 +163,21 @@
                 "magazineEmpty": "{weapon}的弹匣已空。",
                 "chamberNotLoaded": "{weapon}的当前弹仓尚未装填。",
                 "bothBarrelsNotEnough": "弹药不足以装填{weapon}的双管弹仓。",
-                "noAmmunitionSelected": "未选择{weapon}的弹药",
-                "noAmmunitionRemaining": "{weapon}没有弹药剩余了",
-                "bothBarrelsNotLoaded": "{weapon}的双管弹仓尚未全部装填。"
+                "noAmmunitionSelected": "未选择{weapon}的弹药。",
+                "noAmmunitionRemaining": "{weapon}没有弹药剩余了。",
+                "bothBarrelsNotLoaded": "{weapon}的双管弹仓尚未全部装填。",
+                "magazineNotEnough": "{weapon}的弹匣内没有足额弹药",
+                "notEnoughAmmunition": "{weapon}没有足额弹药剩余了。"
             },
             "actions": {
+                "conjureBullet": {
+                    "conjuredRound": "召唤子弹",
+                    "warningNoAction": "{token}没有召唤子弹动作。",
+                    "noReloadableWeapons": "你没有可再装填的武器。",
+                    "chatMessage": "{token}使用召唤子弹装填了{weapon}。",
+                    "chatActionName": "召唤子弹",
+                    "warningSingleRound": "{weapon}只能被一颗召唤子弹装填。"
+                },
                 "consolidateAmmunition": {
                     "chatMessage": "{actor}合并了子弹。",
                     "chatActionInteract": "交互",
@@ -175,41 +187,70 @@
                     "noCapacityWeapons": "你没有具备弹容特征的武器。",
                     "warningNotLoaded": "{weapon}尚未装填！",
                     "chatMessageSelectChamber": "{actor}选择用{ammunition}装填了{weapon}的一个弹仓。",
-                    "chatMessageSelectNextChamber": "{token}选择了{weapon}的下一个弹仓。",
+                    "chatMessageSelectNextChamber": "{actor}选择了{weapon}的下一个弹仓。",
                     "warningAlreadyLoaded": "{weapon}的一个弹仓已装填了所选{ammunition}！",
                     "warningAlreadySelected": "已经选择了{weapon}的一个已装填弹仓！"
                 },
+                "reloadMagazine": {
+                    "warningAdvancedAmmunitionNeeded": "PF2e Ranged Combat - 装填弹匣仅在启用进阶弹药系统时可用。",
+                    "warningNpcNotSupported": "PF2e Ranged Combat - 装填弹匣目前不支持NPC使用。",
+                    "warningNoRepeatingWeapons": "你没有连发武器。",
+                    "warningFullyLoaded": "{weapon}的弹匣已装满。",
+                    "warningAlreadyMoreAmmo": "{weapon}当前弹匣已装填了{ammo}颗弹药",
+                    "tokenLoadsAmmo": "{token}用{ammo}装填了{weapon} ({charges}/{maxCharges})。",
+                    "warningNoCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。",
+                    "warningNotEnoughAmmunition": "你没有足够弹药来装填{weapon}。",
+                    "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为零。</p><p>选择新弹药装填。",
+                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。<br><br>选择要装填的弹药。"
+                },
                 "reload": {
+                    "warningNoReloadableWeapons": "你没有可再装填的武器。",
+                    "warningNoMagazineLoaded": "{weapon}尚未装填弹匣！",
+                    "warningMagazineEmpty": "{weapon}的弹匣为空！",
+                    "warningAlreadyLoaded": "{weapon}已装填。",
+                    "warningAlreadyFullyLoaded": "{weapon}已装填满。",
+                    "warningAlreadyLoadedWithAmmo": "{weapon}已装填{ammo}。",
+                    "warningNoCompatibleAmmunition": "你没有装备可用于{weapon}的弹药。",
+                    "noAmmunitionSelectNew": "你没有为{weapon}选择弹药。<br><br>选择要装填的弹药。",
+                    "warningNotEnoughAmmunition": "你没有足够弹药装填{weapon}。",
+                    "notEnoughAmmunitionSelectNew": "你为{weapon}选择的弹药数量为空。<br><br>选择新弹药装填。",
+                    "tokenReloadsWeapon": "{token}装填了{weapon}",
+                    "withAmmunition": "使用{ammunition}。",
+                    "warningNoReloadableCapacityWeapons": "你没有具备弹容特征的可装填武器。",
                     "magazine": {
                         "warning": {
-                            "noRepeatingWeapons": "你没有连发武器。",
-                            "fullyLoaded": "{weapon}的弹匣已装满。",
-                            "alreadyMoreAmmo": "{weapon}当前弹匣已装填了{ammo}颗弹药"
+                            "noRepeatingWeapons": "{actor}没有连发武器。",
+                            "fullyLoaded": "{weapon}已被装填了一个满弹弹匣。",
+                            "alreadyMoreAmmo": "{weapon}的弹匣当前已装填了与{ammo}相同数量的弹药。"
                         }
                     },
                     "warning": {
-                        "noReloadableWeapons": "你没有可再装填的武器。",
-                        "noMagazineLoaded": "{weapon}尚未装填弹匣！",
-                        "magazineEmpty": "{weapon}的弹匣为空！",
-                        "alreadyLoaded": "{weapon}已装填。",
-                        "alreadyFullyLoaded": "{weapon}已装填满。",
-                        "notEnoughAmmunition": "你为{weapon}选择的弹药数量为零。"
+                        "alreadyLoaded": "{weapon}已被装填。",
+                        "alreadyFullyLoaded": "{weapon}已被装填满弹。",
+                        "noReloadableWeapons": "{actor}没有可装填的武器。",
+                        "noMagazineLoaded": "{weapon}未被装填弹匣！",
+                        "magazineEmpty": "{weapon}的弹匣空空如也！",
+                        "notEnoughAmmunition": "{weapon}所选的弹药已耗尽。"
                     },
                     "performed": {
-                        "weapon": "{actor}装填了{weapon}。",
-                        "weaponAmmunition": "{actor}装填了{weapon}使用{ammunition}。",
-                        "weaponAmmunitionCharges": "{actor}用{ammunition}装填了{weapon} ({charges}/{maxCharges})。"
+                        "weapon": "{actor}装填自己的{weapon}。",
+                        "weaponAmmunition": "{actor}用{ammunition}装填自己的{weapon}。",
+                        "weaponAmmunitionCharges": "{actor}用{ammunition}装填自己的{weapon}（{charges}/{maxCharges}）。"
                     }
                 },
                 "switchAmmunition": {
-                    "warningNoWeaponUsesAmmunition": "你没有使用弹药的武器。",
+                    "warningNoWeaponUsesAmmunition": "{actor}没有使用弹药的武器。",
+                    "warningNoCompatibleAmmunitionAvailable": "你没有装备可用于{weapon}的弹药。",
+                    "noCompatibleAmmunitionSelectNew": "选择要使用的弹药。",
                     "dialogTitle": "选择弹药"
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon}尚未装填！",
-                    "unloadWeaponAmmunition": "{actor}将{ammunition}从{weapon}上卸载。",
-                    "unloadWeapon": "{actor}卸载{weapon}的弹药",
-                    "noLoadedWeapons": "你没有已装填的武器。"
+                    "tokenUnloadsAmmunitionFromWeapon": "{token}将{ammunition}从{weapon}上卸载。",
+                    "tokenUnloadsWeapon": "{token}卸载{weapon}的弹药",
+                    "noLoadedWeapons": "{actor}没有可以被卸载弹药的武器。",
+                    "unloadWeapon": "{actor}卸载了自己的{weapon}。",
+                    "unloadWeaponAmmunition": "{actor}从自己的{weapon}中卸载{ammunition}。"
                 },
                 "names": {
                     "reload": "装填",
@@ -257,7 +298,34 @@
             "jammed": {
                 "weaponJammed": "{weapon}已卡弹。"
             },
-            "disabled": "由于PF2e系统7.7版本改变了弹药的处理方式，该功能已被暂时停用。它将在未来的更新中恢复。"
+            "disabled": "由于PF2e系统7.7版本改变了弹药的处理方式，该功能已被暂时停用。它将在未来的更新中恢复。",
+            "select": {
+                "title": "弹药选择",
+                "titleWithWeapon": "弹药选择（{weapon}）",
+                "action": {
+                    "load": "选择要装填的弹药。",
+                    "switch": "选择要切换的弹药。",
+                    "unload": "选择要卸载的弹药。",
+                    "fire": "选择要发射的弹药。"
+                },
+                "header": {
+                    "loaded": "已装填",
+                    "clear": "清空",
+                    "current": "当前",
+                    "equipped": "已装备",
+                    "depleted": "已耗尽"
+                },
+                "option": {
+                    "setAsAmmunition": "设置为弹药",
+                    "clear": "清空所选弹药"
+                },
+                "warning": {
+                    "noneValid": "{weapon}没有可用的弹药。"
+                }
+            },
+            "warning": {
+                "noCompatibleAmmunition": "{actor}没有可用于{weapon}的弹药。"
+            }
         },
         "utils": {
             "singleCharacterSelected": "你必须选择一个角色。",
@@ -349,7 +417,17 @@
             "carried": {
                 "worn": "穿戴",
                 "stowed": "存放",
-                "equipped": "装备"
+                "equipped": "装备",
+                "held": "持握"
+            },
+            "select": {
+                "title": "武器选择",
+                "action": {
+                    "generic": "选择为武器。",
+                    "reload": "选择要装填的一把武器。",
+                    "unload": "选择要卸载的一把武器。",
+                    "switchAmmunition": "选择要切换弹药的一把武器。"
+                }
             }
         }
     }
