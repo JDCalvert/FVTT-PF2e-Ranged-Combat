@@ -92,7 +92,7 @@
         {
             "lang": "cn",
             "name": "中文（简体）",
-            "path": "lang/zh_Hans.json"
+            "path": "lang/zh_CN.json"
         },
         {
             "lang": "fr",
