@@ -156,8 +156,8 @@
                 "magazineEmpty": "Le chargeur de {weapon} est vide.",
                 "chamberNotLoaded": "La chambre actuelle de {weapon} n'est pas chargée.",
                 "bothBarrelsNotLoaded": "Les deux canons de {weapon} ne sont pas chargés.",
-                "noAmmunitionSelected": "Pas de munitions sélectionnées pour {weapon}",
-                "noAmmunitionRemaining": "Pas de munition restante pour {weapon}",
+                "noAmmunitionSelected": "Pas de munitions sélectionnées pour {weapon}.",
+                "noAmmunitionRemaining": "Pas de munition restante pour {weapon}.",
                 "bothBarrelsNotEnough": "Il n'y a pas assez de munitions dans {weapon} pour faire feu avec les deux canons.",
                 "magazineNotLoaded": "aucun chargeur dans {weapon}."
             },
@@ -191,7 +191,7 @@
                         "notEnoughAmmunition": "Les munitions choisies pour votre {weapon} sont épuisées."
                     },
                     "performed": {
-                        "weapon": "{actor} recharge sa/son {weapon}",
+                        "weapon": "{actor} recharge sa/son {weapon}.",
                         "weaponAmmunition": "{actor} recharge sa/son {weapon} avec {ammunition}.",
                         "weaponAmmunitionCharges": "{actor} charge sa/son {weapon} avec {ammunition} ({charges}/{maxCharges})."
                     }
@@ -202,7 +202,7 @@
                 },
                 "unload": {
                     "unloadWeaponAmmunition": "{actor} retire {ammunition} de sa/son {weapon}.",
-                    "unloadWeapon": "{actor} décharge sa/son {weapon}",
+                    "unloadWeapon": "{actor} décharge sa/son {weapon}.",
                     "noLoadedWeapons": "Vous n'avez pas d'arme chargée.",
                     "warningNotLoaded": "{weapon} n'est pas chargé(e) !"
                 },
