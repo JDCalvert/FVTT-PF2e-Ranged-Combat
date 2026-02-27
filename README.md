@@ -2,7 +2,7 @@
 A module for the Foundry VTT Pathfinder 2e system that provides helper effects and macros for ranged combat.
 
 ![Github All Releases](https://img.shields.io/github/downloads/JDCalvert/FVTT-PF2e-Ranged-Combat/total.svg)
-![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/8.0.1/total)
+![Github Latest Release](https://img.shields.io/github/downloads/JDCalvert/fvtt-pf2e-ranged-combat/8.0.2/total)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jdcalvert)
 
@@ -15,10 +15,13 @@ In summary, each release of this module only officially supports the latest rele
 release, which will be listed in the [Changelog](/CHANGELOG.md). If you encounter an issue, please make sure you're using the latest system version. If the
 issue persists on the most recent version, please [report it](https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/issues/new)!
 
-<small>
-Note: Pathfinder 2e system version 7.7 introduces a system-side implementation of loading ammunition, which conflicts with this module. As a result, all
-parts of this module relating to ammunition have been disabled. 
-</small>
+## Localisation
+Localisation is provided by excellent volunteers. Currently the following languages are available:
+- Français
+- 中文（简体）
+- polski
+
+If you would like to contribute to localisation, please visit the module's [GitLocalize](https://gitlocalize.com/repo/10691) page!
 
 ## Features
 

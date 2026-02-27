@@ -1,3 +1,6 @@
+## 8.0.2 - 2026-02-27 (Pathfinder 2e 7.10.1 / 6.12.4)
+- Update French translation.
+
 ## 8.0.1 - 2026-02-25 (Pathfinder 2e 7.10.1 / 6.12.4)
 ### Fix
 - Fix errors when rolling spell attacks.
