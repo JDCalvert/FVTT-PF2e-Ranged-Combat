@@ -1,3 +1,7 @@
+## 8.0.3 - 2026-03-15 (Pathfinder 2e 7.11.x / 6.12.4)
+### Fix
+- Fix stale Off-Guard effect UUID in Fake Out chat link.
+
 ## 8.0.2 - 2026-02-27 (Pathfinder 2e 7.10.1 / 6.12.4)
 - Update French translation.
 
