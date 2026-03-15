@@ -13,7 +13,9 @@ export function findGroupStacks(weapon) {
 }
 
 /**
- * Determine if this is a valid item
+ * Determine if this is a valid thrown weapon item.
+ * Checks both stored traits and the synthesized trait set to catch
+ * dynamically-added thrown traits (e.g. Hurl at the Horizon via ItemAlteration).
  *
  * @param {WeaponPF2e} item
  * @returns {boolean}
@@ -21,7 +23,8 @@ export function findGroupStacks(weapon) {
 export function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
     return useAdvancedThrownWeaponSystem(item.actor)
         && item.type === "weapon"
-        && item.system.traits.value.some(trait => trait.startsWith("thrown"));
+        && (item.system.traits.value.some(trait => trait.startsWith("thrown"))
+            || item.traits?.some(trait => trait.startsWith("thrown")));
 }
 
 /**
