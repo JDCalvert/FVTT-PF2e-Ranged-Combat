@@ -463,7 +463,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
 
         weapon.isCapacity = false;
 
-        if (weapon.reloadActions === null) {
+        if (weapon.reloadActions === null || (!weapon.isRepeating && weapon.reloadActions === 0)) {
             weapon.capacity = null;
         } else {
             weapon.isCapacity = false;

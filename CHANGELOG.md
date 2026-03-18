@@ -1,3 +1,6 @@
+## 8.0.3 - 2026-03-18 (Pathfinder 2e 7.11.3 / 6.12.4)
+- Fix firing reload-0 weapons for PCs (v12 only) and NPCs.
+
 ## 8.0.2 - 2026-02-27 (Pathfinder 2e 7.10.1 / 6.12.4)
 - Update French translation.
 
