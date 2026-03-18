@@ -353,6 +353,11 @@
                     "criticalFailure": "Your ally takes a -1 circumstance penalty to their check."
                 }
             }
+        },
+        "exemplar": {
+            "shadowSheath": {
+                "load": "Load into Shadow Sheath"
+            }
         }
     }
 }

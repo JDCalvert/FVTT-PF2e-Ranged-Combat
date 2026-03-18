@@ -1,8 +1,12 @@
 class WeaponPF2e extends ItemPF2e {
     ammo: ItemPF2e | null;
+    bulk: {
+        isLight: boolean;
+        isNegligible: boolean;
+    };
     carryType: string;
     /** The number of hands required to wield the weapon */
-    hands: number;
+    hands: string;
     /** The number of hands currently holding the weapon */
     handsHeld: number;
     isRanged: boolean;

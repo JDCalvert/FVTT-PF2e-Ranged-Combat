@@ -43,7 +43,7 @@ export class AuxiliaryActions {
                         if (pf2eWeapon.quantity === 0) {
                             auxiliaryActions.push(AuxiliaryActions.buildCarryTypeAuxiliaryAction(pf2eWeapon, wornStack, "Draw1H", 1));
 
-                            if (pf2eWeapon.hands === 2) {
+                            if (pf2eWeapon.hands === "2") {
                                 auxiliaryActions.push(AuxiliaryActions.buildCarryTypeAuxiliaryAction(pf2eWeapon, wornStack, "Draw2H", 2));
                             }
                         } else {
@@ -57,7 +57,7 @@ export class AuxiliaryActions {
                         if (pf2eWeapon.quantity === 0) {
                             auxiliaryActions.push(AuxiliaryActions.buildCarryTypeAuxiliaryAction(pf2eWeapon, droppedStack, "PickUp1H", 1));
 
-                            if (pf2eWeapon.hands === 2) {
+                            if (pf2eWeapon.hands === "2") {
                                 auxiliaryActions.push(AuxiliaryActions.buildCarryTypeAuxiliaryAction(pf2eWeapon, droppedStack, "PickUp2H", 2));
                             }
                         } else {

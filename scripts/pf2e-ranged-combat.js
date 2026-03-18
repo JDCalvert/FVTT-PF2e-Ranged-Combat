@@ -9,6 +9,7 @@ import { AmmunitionHandlingSystem } from "./ammunition-system/ammunition-system.
 import { Configuration } from "./config/config.js";
 import { ChatCore } from "./core/chat.js";
 import { Core } from "./core/core.js";
+import { Exemplar } from "./exemplar/exemplar.js";
 import { AlchemicalShot } from "./feats/alchemical-shot.js";
 import { CrossbowAce } from "./feats/crossbow-ace.js";
 import { CrossbowCrackShot } from "./feats/crossbow-crack-shot.js";
@@ -41,6 +42,9 @@ Hooks.on(
 
         // Hunt Prey
         initialiseHuntPrey();
+
+        // Exemplar
+        Exemplar.initialise();
 
         // Feats
         AlchemicalShot.initialise();

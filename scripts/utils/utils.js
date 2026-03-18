@@ -110,11 +110,12 @@ export class Util {
      * @param {ActorPF2e} actor
      * @param {string} sourceId
      * @param {string} targetId
+     * @param {string} rulesSelectionName
      */
-    static getEffectFromActor(actor, sourceId, targetId) {
+    static getEffectFromActor(actor, sourceId, targetId, rulesSelectionName = "weapon") {
         return actor.itemTypes.effect.find(effect =>
             effect.sourceId === sourceId
-            && (Util.getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections.weapon === targetId)
+            && (Util.getFlag(effect, "targetId") === targetId || effect.flags.pf2e.rulesSelections?.[rulesSelectionName] === targetId)
             && !effect.isExpired
         );
     }
@@ -142,11 +143,12 @@ export class Util {
     /**
      * Set the given item as the effect's targeted item
      * 
-     * @param {ItemPF2eSource} effectSource 
-     * @param {Item} item 
-     * @param {boolean} adjustName 
+     * @param {ItemPF2eSource} effectSource
+     * @param {Item} item
+     * @param {boolean} [adjustName]
+     * @param {string} [rulesSelectionName]
      */
-    static setEffectTarget(effectSource, item, adjustName = true) {
+    static setEffectTarget(effectSource, item, adjustName = true, rulesSelectionName = "weapon") {
         if (adjustName) {
             effectSource.name = `${effectSource.name} (${item.name})`;
         }
@@ -159,11 +161,12 @@ export class Util {
                 },
                 "pf2e": {
                     rulesSelections: {
-                        weapon: item.id
                     }
                 }
             }
         );
+
+        effectSource.flags.pf2e.rulesSelections[rulesSelectionName] = item.id;
 
         if (game.settings.get("pf2e-ranged-combat", "hideTokenIcons")) {
             effectSource.system.tokenIcon.show = false;
