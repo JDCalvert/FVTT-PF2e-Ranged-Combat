@@ -21,7 +21,9 @@ async function checkThrownWeapon({ weapon }) {
     }
 
     // If the weapon isn't thrown, then we don't need to do anything
-    const isThrownWeapon = weapon.isRanged && Array.from(weapon.traits).some(trait => trait.startsWith("thrown"));
+    // Note: we don't gate on isRanged here because feats like Hurl at the Horizon
+    // can dynamically add the thrown trait to a melee weapon via ItemAlteration
+    const isThrownWeapon = Array.from(weapon.traits).some(trait => trait.startsWith("thrown"));
     if (!isThrownWeapon) {
         return true;
     }
