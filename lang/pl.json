@@ -139,7 +139,7 @@
         },
         "ammunitionSystem": {
             "fireWeapon": "{actor} wystrzeliwuje {ammunition}.",
-            "fireWeaponRepeating": "{actor} używa {ammunition} (pozostało {remaining}/{capacity}).",
+            "fireWeaponRepeating": "{actor} strzela za pomocą {ammunition} (pozostało {remaining}/{capacity}).",
             "warning": {
                 "noCompatibleAmmunition": "Nie masz amunicji kompatybilnej z twoją {weapon}."
             },
@@ -148,15 +148,23 @@
                 "action": {
                     "switch": "Wybierz amunicję, na którą chcesz się przełączyć.",
                     "unload": "Wybierz amunicję, którą chcesz rozładować.",
-                    "fire": "Wybierz amunicję, którą chcesz wystrzelić."
+                    "fire": "Wybierz amunicję, którą chcesz wystrzelić.",
+                    "load": "Wybierz amunicję do załadowania."
                 },
                 "header": {
                     "loaded": "Załadowana amunicja",
                     "current": "Bieżąca",
-                    "equipped": "Wyposażono"
+                    "equipped": "Wyposażono",
+                    "depleted": "Wyczerpany",
+                    "clear": "Wyczyść"
                 },
                 "option": {
-                    "setAsAmmunition": "Ustaw jako amunicję"
+                    "setAsAmmunition": "Ustaw jako amunicję",
+                    "clear": "Wyczyść wybraną amunicję"
+                },
+                "titleWithWeapon": "Wybierz amunicję ({weapon})",
+                "warning": {
+                    "noneValid": "{weapon} nie ma odpowiedniej amunicji."
                 }
             },
             "check": {
@@ -167,7 +175,9 @@
                 "bothBarrelsNotLoaded": "{weapon} nie ma załadowanych obu luf.",
                 "bothBarrelsNotEnough": "{weapon} nie ma wystarczającej ilości amunicji, aby wystrzelić z obu luf.",
                 "noAmmunitionSelected": "{weapon} nie ma wybranej amunicji.",
-                "noAmmunitionRemaining": "{weapon} nie ma już amunicji."
+                "noAmmunitionRemaining": "{weapon} nie ma już amunicji.",
+                "notEnoughAmmunition": "{weapon} nie ma wystarczającej ilości amunicji.",
+                "magazineNotEnough": "W magazynku {weapon} nie ma wystarczającej ilości amunicji"
             },
             "actions": {
                 "consolidateAmmunition": {
@@ -205,19 +215,24 @@
                     }
                 },
                 "switchAmmunition": {
-                    "warningNoWeaponUsesAmmunition": "Nie masz broni, która używa amunicji."
+                    "warningNoWeaponUsesAmmunition": "{actor} nie posiada broni wykorzystującej amunicję."
                 },
                 "unload": {
                     "warningNotLoaded": "{weapon} nie jest załadowana!",
                     "unloadWeaponAmmunition": "{actor} rozładowuje {ammunition} ze swojej broni - {weapon}.",
                     "unloadWeapon": "{actor} rozładowuje swoją {weapon}.",
-                    "noLoadedWeapons": "Nie masz naładowanej broni."
+                    "noLoadedWeapons": "{actor} nie posiada broni, z której można wystrzelić nabój."
                 },
                 "names": {
                     "unload": "Rozładuj",
                     "nextChamber": "Następna komora",
                     "reload": "Przeładowanie",
                     "reloadMagazine": "Przeładuj magazynek"
+                },
+                "clearJam": {
+                    "actionName": "Usuń zacięcie",
+                    "clearJamMessage": "{actor} usuwa zacięcie ze swojej {weapon}.",
+                    "warningNoJammedWeapons": "{actor} nie ma zaciętej broni."
                 }
             },
             "effect": {
@@ -246,6 +261,10 @@
                         "doNotShow": "OK (Nie pokazuj wiadomości)"
                     }
                 }
+            },
+            "disabled": "Ta funkcja została wyłączona, ponieważ w wersji 7.7 systemu PF2e zmieniono sposób obsługi amunicji. Zostanie ona przywrócona w przyszłych aktualizacjach.",
+            "jammed": {
+                "weaponJammed": "{weapon} się zacięła."
             }
         },
         "utils": {
@@ -289,6 +308,10 @@
                 "warningNoAlchemicalBombs": "{actor} nie posiada bomb alchemicznych.",
                 "pourBombIntoWeapon": "{actor} wylewa zawartość {bomb} do swojej {weapon}.",
                 "alchemicalShot": "Alchemiczny Strzał"
+            },
+            "riskyReload": {
+                "warningNotWieldingProperWeapon": "{actor} nie ma przy sobie broni palnej.",
+                "weaponJammed": "Broń {actor} zacięła się po nieudanym ataku „Ryzykowne przeładowanie”!"
             }
         },
         "linkCompanion": {
@@ -305,6 +328,11 @@
                         "name": "ST Zmyłki",
                         "enemyDC": "KP wroga",
                         "hint": "Podczas używania akcji Zmyłka, przeciwko której należy wykonać rzut ST. Standardowa wartość Wsparcia wynosiła 20 przed remasterem, a po remasterze wynosi 15, chociaż popularną zasadą domową jest używanie KP przeciwnika."
+                    },
+                    "description": "Określa sposób, w jaki moduł obsługuje automatyzację typu „Fake Out”.",
+                    "fireWeapon": {
+                        "name": "Broń palna",
+                        "hint": "Czy podczas użycia zdolności „Fake Out” należy faktycznie wystrzelić z broni. Zasady Pathfinder Society stanowią, że nie należy tego robić."
                     }
                 },
                 "name": "Zmyłka",
@@ -317,6 +345,23 @@
                 "noWeapon": "{actor} nie dzierży naładowanej broni palnej ani kuszy."
             }
         },
-        "module-name": "PF2e Ranged Combat"
+        "module-name": "PF2e Ranged Combat",
+        "weaponSystem": {
+            "select": {
+                "action": {
+                    "reload": "Wybierz broń do przeładowania.",
+                    "unload": "Wybierz broń, którą chcesz rozładować.",
+                    "switchAmmunition": "Wybierz broń, aby zmienić amunicję.",
+                    "generic": "Wybierz jako broń."
+                },
+                "title": "Wybór broni"
+            },
+            "carried": {
+                "held": "Zatrzymano",
+                "equipped": "Wyposażono",
+                "worn": "Noszono",
+                "stowed": "Schowano"
+            }
+        }
     }
 }
