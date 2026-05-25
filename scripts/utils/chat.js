@@ -120,7 +120,7 @@ export class Chat {
 
         await ChatMessage.create(
             {
-                type: CONST.CHAT_MESSAGE_STYLES.EMOTE,
+                style: CONST.CHAT_MESSAGE_STYLES.EMOTE,
                 speaker: ChatMessage.getSpeaker({ actor }),
                 flavor: flavor + (params.link ? `@UUID[${params.link}]` : ""),
                 content,

@@ -279,7 +279,7 @@ export class SubItemTransformer extends WeaponTransformer {
             ...weapon.actor.itemTypes.ammo
         ]
             .filter(ammo => !ammo.isStowed)
-            .filter(ammo => ammo.isAmmoFor(pf2eWeapon))
+            .filter(ammo => ammo.isAmmoFor?.(pf2eWeapon))
             .map(ammo => this.transformAmmunition(ammo))
             .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
 
@@ -293,7 +293,7 @@ export class SubItemTransformer extends WeaponTransformer {
         // Find the weapon's sub-items that are ammunition, transform them into
         // generic ammunition, and then into loaded ammunition
         weapon.loadedAmmunition = pf2eWeapon.subitems.contents
-            .filter(item => item.isAmmoFor(pf2eWeapon))
+            .filter(item => item.isAmmoFor?.(pf2eWeapon))
             .filter(item => item.quantity > 0)
             .sort((a, b) => a.sort - b.sort)
             .map(ammo => this.transformAmmunition(ammo))

@@ -421,7 +421,7 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
                 ...(weapon.actor.itemTypes.ammo ?? weapon.actor.itemTypes.consumable) // AmmoPF2e for v7.7+, ConsumablePF2e before
             ]
                 .filter(item => !item.isStowed)
-                .filter(item => item.isAmmoFor(pf2eWeapon))
+                .filter(item => item.isAmmoFor?.(pf2eWeapon))
                 .map(ammunition => this.transformAmmunition(weapon, ammunition))
                 .map(ammunition => InventoryAmmunitionTransformer.transform(ammunition));
         } else {

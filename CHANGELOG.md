@@ -1,3 +1,7 @@
+## 8.0.4 - 2026-05-25 (Pathfinder 2e 8.1.2)
+- Fixed compatibility errors with Foundry v14.
+- Fixed errors caused by weapon attachments.
+
 ## 8.0.3 - 2026-03-18 (Pathfinder 2e 7.11.3 / 6.12.4)
 - Fix firing reload-0 weapons for PCs (v12 only) and NPCs.
 
