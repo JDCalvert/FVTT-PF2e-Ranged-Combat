@@ -4,24 +4,38 @@ import { Util } from "../utils/utils.js";
 /**
  * Find all items in the same group as this item
  * 
- * @param {WeaponPF2e} weapon
- * @returns {WeaponPF2e[]}
+ * @param {ItemPF2e} weapon
+ * @returns {ItemPF2e[]}
  */
 export function findGroupStacks(weapon) {
     const groupIds = weapon.flags["pf2e-ranged-combat"]?.groupIds ?? [weapon.id];
-    return weapon.actor.itemTypes.weapon.filter(item => groupIds.includes(item.id));
+    return [
+        ...weapon.actor.itemTypes.weapon,
+        ...weapon.actor.itemTypes.shield
+    ]
+        .filter(item => groupIds.includes(item.id));
 }
 
 /**
  * Determine if this is a valid item
  *
- * @param {WeaponPF2e} item
+ * @param {ItemPF2e} item
  * @returns {boolean}
  */
 export function isThrownWeaponUsingAdvancedThrownWeaponSystem(item) {
-    return useAdvancedThrownWeaponSystem(item.actor)
-        && item.type === "weapon"
-        && item.system.traits.value.some(trait => trait.startsWith("thrown"));
+    if (!useAdvancedThrownWeaponSystem(item.actor)) {
+        return false;
+    }
+
+    if (item.type === "weapon") {
+        return item.system.traits.value.some(trait => trait.startsWith("thrown"));
+    }
+
+    if (item.type === "shield") {
+        return item.system.traits.value.some(trait => trait.startsWith("shield-throw"));
+    }
+
+    return false;
 }
 
 /**

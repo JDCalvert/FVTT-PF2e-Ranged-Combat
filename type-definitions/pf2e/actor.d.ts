@@ -5,6 +5,7 @@ class ActorPF2e {
     uuid: string;
 
     items: {
+        get(id: string): ItemPF2e | null;
         find(predicate: (item: ItemPF2e) => boolean): ItemPF2e | null;
         filter(predicate: (item: ItemPF2e) => boolean): ItemPF2e[];
     };
@@ -16,6 +17,7 @@ class ActorPF2e {
         feat: FeatPF2e[];
         melee: MeleePF2e[];
         weapon: WeaponPF2e[];
+        shield: WeaponPF2e[];
     };
 
 

@@ -1,3 +1,6 @@
+## 8.0.5 - 2026-05-26 (Pathfinder 2e 8.1.2)
+- Fix thrown shields not working.
+
 ## 8.0.4 - 2026-05-25 (Pathfinder 2e 8.1.2)
 - Fixed compatibility errors with Foundry v14.
 - Fixed errors caused by weapon attachments.

@@ -11,11 +11,17 @@ export class AuxiliaryActions {
             (args) => {
                 const { pf2eWeapon, auxiliaryActions } = args;
 
-                // If the weapon is equipped, and there are other stacks of the same type
-                if (pf2eWeapon.isEquipped) {
-                    const groupStacks = findGroupStacks(pf2eWeapon);
+                // Some weapons are fake items created from other items. For this, we need the original
+                const pf2eItem = pf2eWeapon.actor.items.get(pf2eWeapon.id)
+                if (!pf2eItem) {
+                    return;
+                }
 
-                    if (groupStacks.length && pf2eWeapon.quantity === 0) {
+                // If the weapon is equipped, and there are other stacks of the same type
+                if (pf2eItem.isEquipped) {
+                    const groupStacks = findGroupStacks(pf2eItem);
+
+                    if (groupStacks.length && pf2eItem.quantity === 0) {
                         auxiliaryActions.findSplice(action =>
                             action.label === game.i18n.localize("PF2E.Actions.Release.ChangeGrip.Title") ||
                             action.label === game.i18n.localize("PF2E.Actions.Interact.ChangeGrip.Title")
@@ -38,9 +44,9 @@ export class AuxiliaryActions {
                     }
 
                     // If there is a stack in the group that is worn, add options to draw from that stack
-                    const wornStack = groupStacks.find(weapon => weapon.carryType === "worn");
+                    const wornStack = groupStacks.find(item => item.carryType === "worn");
                     if (wornStack) {
-                        if (pf2eWeapon.quantity === 0) {
+                        if (pf2eItem.quantity === 0) {
                             auxiliaryActions.push(AuxiliaryActions.buildCarryTypeAuxiliaryAction(pf2eWeapon, wornStack, "Draw1H", 1));
 
                             if (pf2eWeapon.hands === 2) {

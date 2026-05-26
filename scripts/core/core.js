@@ -203,6 +203,7 @@ export class Core {
      */
     static buildAuxiliaryActions(strike) {
         const pf2eWeapon = strike.item;
+
         const actor = pf2eWeapon.actor;
         const weapon = WeaponSystem.transformWeapon(actor, pf2eWeapon);
 

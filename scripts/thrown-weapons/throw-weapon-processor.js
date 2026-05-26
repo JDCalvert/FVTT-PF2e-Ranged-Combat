@@ -1,5 +1,5 @@
-import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
 import { HookManager } from "../hook-manager/hook-manager.js";
+import { WeaponAttackProcessParams } from "../hook-manager/types/weapon-attack-process.js";
 import { createNewStack } from "./change-carry-type.js";
 import { findGroupStacks, useAdvancedThrownWeaponSystem } from "./utils.js";
 
@@ -38,17 +38,23 @@ function handleThrownWeapon({ weapon }) {
     // roll damage unless the weapon is equipped, so we have to reduce the quantity of this "equipped" stack
     // and place the thrown weapon into a "dropped" stack
 
-    // Find the other stacks in this weapon's group
-    const groupStacks = findGroupStacks(pf2eWeapon);
+    // Some strikes are made with fake weapons - we need the original item for the next step
+    const pf2eItem = weapon.actor.items.get(weapon.id);
+    if (!pf2eItem) {
+        return;
+    }
 
-    const sourceStack = pf2eWeapon.isEquipped ? pf2eWeapon : groupStacks.find(stack => stack.isEquipped);
+    // Find the other stacks in this weapon's group
+    const groupStacks = findGroupStacks(pf2eItem);
+
+    const sourceStack = pf2eItem.isEquipped ? pf2eItem : groupStacks.find(stack => stack.isEquipped);
 
     // Find the stack that has the carry type we're trying to set
     const targetStack = groupStacks.find(stack => stack.system.equipped.carryType === "dropped");
 
     if (targetStack) {
         // We have a dropped stack already
-        pf2eWeapon.actor.updateEmbeddedDocuments(
+        pf2eItem.actor.updateEmbeddedDocuments(
             "Item",
             [
                 {

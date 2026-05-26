@@ -14,6 +14,7 @@ class ItemPF2e {
 
     isEquipped: boolean;
     isStowed: boolean;
+    carryType: string;
 
     sort: number;
     system: ItemPF2eSystem;
@@ -35,6 +36,7 @@ class ItemPF2eSystem {
     equipped: {
         carryType: string;
     };
+    containerId: string;
     rules: Rule[];
 
     uses?: {
@@ -45,6 +47,10 @@ class ItemPF2eSystem {
 
     tokenIcon: {
         show: boolean;
+    };
+
+    traits: {
+        value: string[];
     };
 }
 
@@ -57,8 +63,8 @@ class ItemPF2eSource {
             sourceId: string;
         };
         pf2e: {
-            rulesSelections: any
-        }
+            rulesSelections: any;
+        };
     };
     system: ItemPF2eSystem;
 }

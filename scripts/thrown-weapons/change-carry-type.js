@@ -112,7 +112,7 @@ export class CarryTypeProcessor {
  * move one item from the dropped stack to the original stack and perform the operation on the original,
  * if it puts the item in the character's hands.
  * 
- * @param {WeaponPF2e} item
+ * @param {ItemPF2e} item
  * @param {function(ItemPF2e, ChangeCarryTypeOptions): Promise<void>} wrapper 
  * @param {ChangeCarryTypeOptions} equipped
  * 
@@ -136,6 +136,13 @@ async function changeCarryType(
     // If we're keeping the same carry type (e.g. two-handed to one-handed) then call
     // the normal function
     if (carryType === item.system.equipped.carryType) {
+        return wrapper(item, { carryType, handsHeld, inSlot });
+    }
+
+    // If this has come from an auxiliary action, the item here could be a fake weapon.
+    // Get the original item.
+    item = item.actor.items.get(item.id);
+    if (!item) {
         return wrapper(item, { carryType, handsHeld, inSlot });
     }
 
@@ -223,9 +230,17 @@ async function changeStowed(wrapper, item, container) {
 }
 
 export async function createNewStack(item, groupStacks, carryType, handsHeld, inSlot, container = null) {
+    const actor = item.actor;
+
+    // The item may be a fake weapon - get the original item from the actor's inventory
+    const originalItem = actor.items.get(item.id);
+    if (!originalItem) {
+        return [];
+    }
+
     // Make a copy of this item, with a quantity of zero
-    const itemSource = item.toObject();
-    const [targetStack] = await item.actor.createEmbeddedDocuments(
+    const itemSource = originalItem.toObject();
+    const [targetStack] = await actor.createEmbeddedDocuments(
         "Item",
         [
             {
@@ -280,10 +295,10 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
 
         // Finally, reduce the quantity of the original stack by one
         updates.update(
-            item,
+            originalItem,
             {
                 system: {
-                    quantity: item.quantity - 1
+                    quantity: originalItem.quantity - 1
                 }
             }
         );
@@ -295,8 +310,8 @@ export async function createNewStack(item, groupStacks, carryType, handsHeld, in
 }
 
 /**
- * @param {WeaponPF2e} item
- * @param {WeaponPF2e} targetStack
+ * @param {ItemPF2e} item
+ * @param {ItemPF2e} targetStack
  */
 function moveBetweenStacks(item, targetStack) {
     const updates = new Updates(item.actor);
