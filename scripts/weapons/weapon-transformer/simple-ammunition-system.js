@@ -381,6 +381,29 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
             }
         }
 
+        // If we're ignoring the ammunition requirement, create a fake one here
+        if (!weapon.selectedInventoryAmmunition && !Configuration.requireAmmunition(weapon.actor)) {
+            const fakeAmmunition = new InventoryAmmunition();
+            fakeAmmunition.id = "FAKE";
+            fakeAmmunition.sourceId = "FAKE";
+            fakeAmmunition.name = weapon.name;
+            fakeAmmunition.img = weapon.img;
+
+            fakeAmmunition.quantity = 1;
+
+            fakeAmmunition.hasUses = true;
+            fakeAmmunition.maxUses = 1;
+            fakeAmmunition.remainingUses = 1;
+            fakeAmmunition.autoEject = false;
+            fakeAmmunition.allowDestroy = true;
+
+            fakeAmmunition.isHeld = false;
+            fakeAmmunition.descriptionText = "";
+            fakeAmmunition.rules = [];
+
+            weapon.selectedInventoryAmmunition = fakeAmmunition;
+        }
+
         weapon.loadedAmmunition = [];
 
         // We only consider the weapon to be loaded if there's any ammunition selected

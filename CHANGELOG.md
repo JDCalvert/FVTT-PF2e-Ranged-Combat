@@ -1,3 +1,6 @@
+## 8.0.6 - 2026-06-14 (Pathfinder 2e 8.2.0)
+- Add setting to ignore NPCs not having ammunition for ranged weapons.
+
 ## 8.0.5 - 2026-05-26 (Pathfinder 2e 8.1.2)
 - Fix thrown shields not working.
 

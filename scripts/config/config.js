@@ -113,13 +113,25 @@ export class Configuration {
             }
         );
 
-
         game.settings.register(
             "pf2e-ranged-combat",
             "preventFireNotLoadedNPC",
             {
                 name: Configuration.localize("preventFireNotLoaded.name"),
                 hint: Configuration.localize("preventFireNotLoaded.hint"),
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: false
+            }
+        );
+
+        game.settings.register(
+            "pf2e-ranged-combat",
+            "requireAmmunitionNPC",
+            {
+                name: Configuration.localize("requireAmmunition.name"),
+                hint: Configuration.localize("requireAmmunition.hint"),
                 scope: "world",
                 config: true,
                 type: Boolean,
@@ -402,6 +414,27 @@ export class Configuration {
             return Configuration.getSetting("preventFireNotLoaded");
         } else if (actor.type === "npc") {
             return Configuration.getSetting("preventFireNotLoadedNPC");
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Used for the Simple Ammunition System only, determine whether we require the actor to have ammunition for the weapon
+     * being fired.
+     * 
+     * @param {ActorPF2e} actor 
+     * @returns {boolean}
+     */
+    static requireAmmunition(actor) {
+        if (Configuration.isUsingSubItemAmmunitionSystem(actor) || Configuration.isUsingAdvancedAmmunitionSystem(actor)) {
+            return true;
+        }
+
+        if (actor.type === "character") {
+            return true;
+        } else if (actor.type === "npc") {
+            return Configuration.getSetting("requireAmmunitionNPC");
         } else {
             return false;
         }

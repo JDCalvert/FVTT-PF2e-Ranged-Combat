@@ -1,6 +1,8 @@
 import { Item } from "../weapons/types.js";
 
 export class Updates {
+    static FAKE_ITEM_ID = "FAKE";
+
     /** @type {ActorPF2e} */
     actor;
 
@@ -99,6 +101,11 @@ export class Updates {
     }
 
     async commit() {
+        // Remove any FAKE items from the updates
+        this.creates.findSplice(create => create._id === Updates.FAKE_ITEM_ID);
+        this.updates.findSplice(update => update._id === Updates.FAKE_ITEM_ID);
+        this.deletes.findSplice(deleteId => deleteId === Updates.FAKE_ITEM_ID);
+
         for (const deferredUpdate of this.deferredUpdates) {
             await deferredUpdate();
         }
