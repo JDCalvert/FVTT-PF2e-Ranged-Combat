@@ -32,7 +32,7 @@ export class FireWeaponProcessor {
                 updates.delete(Util.getEffect(weapon, LOADED_EFFECT_ID));
             }
 
-            if (weapon.selectedInventoryAmmunition.id !== Updates.FAKE_ITEM_ID) {
+            if (ammunition.id !== Updates.FAKE_ITEM_ID) {
                 Chat.post(
                     weapon.actor,
                     ammunition.img,
@@ -50,47 +50,51 @@ export class FireWeaponProcessor {
 
             HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition, updates }));
         } else if (weapon.capacity > 0) {
-            weapon.selectedLoadedAmmunition.consume(weapon.expend, updates);
+            const ammunition = weapon.selectedLoadedAmmunition;
+
+            ammunition.consume(weapon.expend, updates);
 
             // Capacity weapons clear their selected chamber
             if (weapon.isCapacity) {
                 updates.delete(Util.getEffect(weapon, CHAMBER_LOADED_EFFECT_ID));
             }
 
-            if (weapon.selectedInventoryAmmunition.id !== Updates.FAKE_ITEM_ID) {
+            if (ammunition.id !== Updates.FAKE_ITEM_ID) {
                 Chat.post(
                     weapon.actor,
-                    weapon.selectedLoadedAmmunition.img,
+                    ammunition.img,
                     AmmunitionSystem.localize(
                         "fireWeapon",
                         {
                             actor: weapon.actor.name,
-                            ammunition: weapon.selectedLoadedAmmunition.name
+                            ammunition: ammunition.name
                         }
                     )
                 );
             }
 
-            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition: weapon.selectedLoadedAmmunition, updates }));
+            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition, updates }));
         } else {
             // Weapons that have no capacity consumer ammunition directly from the inventory
-            weapon.selectedInventoryAmmunition.consume(weapon.expend, updates);
+            const ammunition = weapon.selectedInventoryAmmunition;
 
-            if (weapon.selectedInventoryAmmunition.id !== Updates.FAKE_ITEM_ID) {
+            ammunition.consume(weapon.expend, updates);
+
+            if (ammunition.id !== Updates.FAKE_ITEM_ID) {
                 Chat.post(
                     weapon.actor,
-                    weapon.selectedInventoryAmmunition.img,
+                    ammunition.img,
                     AmmunitionSystem.localize(
                         "fireWeapon",
                         {
                             actor: weapon.actor.name,
-                            ammunition: weapon.selectedInventoryAmmunition.name
+                            ammunition: ammunition.name
                         }
                     )
                 );
             }
 
-            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition: weapon.selectedInventoryAmmunition, updates }));
+            HookManager.call("ammunition-fire", /** @type {WeaponAmmunitionData} */({ weapon, ammunition, updates }));
         }
     }
 }

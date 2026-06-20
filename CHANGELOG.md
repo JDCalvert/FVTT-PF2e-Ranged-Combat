@@ -1,3 +1,6 @@
+## 8.0.7 - 2026-06-20 (Pathfinder 2e 8.2.0)
+- Fix error when processing fired ammunition.
+
 ## 8.0.6 - 2026-06-14 (Pathfinder 2e 8.2.0)
 - Add setting to ignore NPCs not having ammunition for ranged weapons.
 
