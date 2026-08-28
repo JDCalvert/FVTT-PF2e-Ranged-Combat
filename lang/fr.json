@@ -23,6 +23,10 @@
         "name": "Empêcher de tirer avec l'arme si elle n'est pas chargée",
         "hint": "Pour les armes avec rechargement de 1 ou plus, empêchez les jets d'attaque avec cette arme à moins que vous n'ayez l'effet rechargement pour cette arme."
       },
+      "requireAmmunition": {
+        "name": "Nécessite des munitions pour Tirer",
+        "hint": "Pour les armes utilisant des munitions, il est nécessaire de sélectionner les munitions pour pouvoir tirer."
+      },
       "advancedAmmunitionSystemPlayer": {
         "name": "Système de munitions avancé",
         "hint": "Personnages joueurs seulement. Suivre les munitions chargées pour les armes rechargeables et à répétition. Cette option est prioritaire sur l'option Empêcher de tirer avec l'arme si elle n'est pas chargée."
