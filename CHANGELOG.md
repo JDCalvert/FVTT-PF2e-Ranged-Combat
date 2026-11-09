@@ -1,3 +1,7 @@
+## Unreleased
+- Update French translation.
+- Fix NPC Require Ammunition to Fire setting.
+
 ## 8.0.7 - 2026-06-20 (Pathfinder 2e 8.2.0)
 - Fix error when processing fired ammunition.
 

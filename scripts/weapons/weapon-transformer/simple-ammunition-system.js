@@ -401,6 +401,7 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
             fakeAmmunition.descriptionText = "";
             fakeAmmunition.rules = [];
 
+            weapon.compatibleAmmunition = [fakeAmmunition];
             weapon.selectedInventoryAmmunition = fakeAmmunition;
         }
 
