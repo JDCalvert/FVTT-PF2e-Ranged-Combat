@@ -1,0 +1,13 @@
+{
+  "id": "pf2e-ranged-combat",
+  "release": {
+    "version": "8.0.8",
+    "manifest": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/releases/download/8.0.8/module.json",
+    "notes": "https://github.com/JDCalvert/FVTT-PF2e-Ranged-Combat/blob/main/CHANGELOG.md",
+    "compatibility": {
+      "minimum": "11",
+      "verified": "14",
+      "maximum": ""
+    }
+  }
+}

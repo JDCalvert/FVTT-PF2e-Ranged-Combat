@@ -1,3 +1,5 @@
 *.zip
 
 packs/*
+
+release/auth.txt
