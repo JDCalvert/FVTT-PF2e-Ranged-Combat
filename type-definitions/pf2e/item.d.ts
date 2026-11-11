@@ -10,6 +10,8 @@ class ItemPF2e {
 
     flags: any;
 
+    level: number;
+
     quantity: number;
 
     isEquipped: boolean;

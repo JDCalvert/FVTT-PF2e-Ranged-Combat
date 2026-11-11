@@ -1,3 +1,6 @@
+## 8.0.9 - 2026-11-11 (Pathfinder 2e 8.7.0)
+- Fix posting full ammunition to chat.
+
 ## 8.0.8 - 2026-11-09 (Pathfinder 2e 8.7.0)
 - Update French translation.
 - Fix NPC Require Ammunition to Fire setting.

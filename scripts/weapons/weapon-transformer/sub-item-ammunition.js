@@ -296,7 +296,7 @@ export class SubItemTransformer extends WeaponTransformer {
             .filter(item => item.isAmmoFor?.(pf2eWeapon))
             .filter(item => item.quantity > 0)
             .sort((a, b) => a.sort - b.sort)
-            .map(ammo => this.transformAmmunition(ammo))
+            .map((/** @type {WeaponPF2e | AmmoPF2e} */ammo) => this.transformAmmunition(ammo))
             .map(ammo => weapon.transformLoadedAmmunition(ammo));
 
         if (weapon.loadedAmmunition.length > 0) {
@@ -309,7 +309,7 @@ export class SubItemTransformer extends WeaponTransformer {
     }
 
     /**
-     * @param {ItemPF2e} pf2eAmmunition
+     * @param {WeaponPF2e | AmmoPF2e} pf2eAmmunition
      * @returns {Ammunition}
      */
     transformAmmunition(pf2eAmmunition) {
@@ -318,6 +318,8 @@ export class SubItemTransformer extends WeaponTransformer {
         ammunition.sourceId = pf2eAmmunition.sourceId;
         ammunition.name = pf2eAmmunition.name;
         ammunition.img = pf2eAmmunition.img;
+
+        ammunition.pf2eItem = pf2eAmmunition;
 
         ammunition.quantity = pf2eAmmunition.system.quantity;
         ammunition.isHeld = pf2eAmmunition.system.equipped.carryType === "held";

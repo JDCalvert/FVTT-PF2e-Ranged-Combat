@@ -43,7 +43,7 @@ export class Updates {
     }
 
     /**
-     * @param {Item} item 
+     * @param {Item | ItemPF2e} item 
      */
     delete(item) {
         if (!item) {
@@ -60,7 +60,7 @@ export class Updates {
      * Add the given update to the updates list.
      * If another update for the same item exists, merges the existing and new updates.
      * 
-     * @param {Item} item 
+     * @param {Item | ItemPF2e} item 
      * @param {object} update 
      */
     update(item, update) {

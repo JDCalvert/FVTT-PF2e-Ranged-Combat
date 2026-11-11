@@ -593,6 +593,10 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
             }
         }
 
+        for (const loadedAmmunition of weapon.loadedAmmunition) {
+            loadedAmmunition.pf2eItem = weapon.actor.items.get(loadedAmmunition.id);
+        }
+
         return weapon;
     }
 
@@ -607,6 +611,8 @@ export class AdvancedWeaponSystemTransformer extends WeaponTransformer {
         ammunition.sourceId = pf2eAmmunition.sourceId;
         ammunition.name = pf2eAmmunition.name;
         ammunition.img = pf2eAmmunition.img;
+
+        ammunition.pf2eItem = pf2eAmmunition;
 
         ammunition.quantity = pf2eAmmunition.system.quantity;
         ammunition.isHeld = pf2eAmmunition.system.equipped.carryType === "held";

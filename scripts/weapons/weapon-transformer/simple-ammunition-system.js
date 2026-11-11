@@ -1,4 +1,4 @@
-import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID, RELOAD_AMMUNITION_IMG } from "../../ammunition-system/constants.js";
+import { CHAMBER_LOADED_EFFECT_ID, LOADED_EFFECT_ID } from "../../ammunition-system/constants.js";
 import { Configuration } from "../../config/config.js";
 import { Updates } from "../../utils/updates.js";
 import { Util } from "../../utils/utils.js";
@@ -483,6 +483,10 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
             }
         }
 
+        for (const loadedAmmunition of weapon.loadedAmmunition) {
+            loadedAmmunition.pf2eItem = weapon.actor.items.get(loadedAmmunition.id);
+        }
+
         return weapon;
     }
 
@@ -496,6 +500,8 @@ export class SimpleWeaponSystemTransformer extends WeaponTransformer {
         ammunition.sourceId = pf2eAmmunition.sourceId;
         ammunition.name = pf2eAmmunition.name;
         ammunition.img = pf2eAmmunition.img;
+
+        ammunition.pf2eItem = pf2eAmmunition;
 
         ammunition.quantity = pf2eAmmunition.system.quantity;
         ammunition.isHeld = pf2eAmmunition.system.equipped.carryType === "held";

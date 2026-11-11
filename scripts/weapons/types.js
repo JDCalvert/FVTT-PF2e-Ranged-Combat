@@ -180,6 +180,9 @@ export class Ammunition extends Item {
     /** @type {object[]} */
     rules;
 
+    /** @type {WeaponPF2e | ConsumablePF2e | AmmoPF2e} */
+    pf2eItem;
+
     /**
      * Copy the fields from this ammunition to 
      * 
@@ -204,6 +207,8 @@ export class Ammunition extends Item {
         copy.isHeld = this.isHeld;
         copy.descriptionText = this.descriptionText;
         copy.rules = this.rules;
+
+        copy.pf2eItem = this.pf2eItem;
     }
 
     /**
